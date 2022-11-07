@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme attribute for the default style for the ForagePanEditText component. -->
+    <attr name="foragePanEditTextStyle" format="reference" />
+
+    <!-- Style attributes for the ForagePanEditText component. -->
+    <declare-styleable name="ForagePANEditText">
+        <!-- Style attribute for the TextInputLayout  -->
+        <attr name="textInputLayoutStyle" format="reference" />
+        <!-- Reusing android:text attribute -->
+        <attr name="android:textColor" />
+        <!-- Reusing android:textColor attribute -->
+        <attr name="android:textSize" />
+    </declare-styleable>
+
+    <!-- Style attributes for the ForagePanEditText component. -->
+    <declare-styleable name="ForagePINEditText">
+        <!-- Style attribute for the TextInputLayout  -->
+        <attr name="pinInputLayoutStyle" format="reference" />
+
+        <attr name="hint" />
+        <attr name="text" />
+        <attr name="textSize" />
+        <attr name="textColor" />
+        <attr name="boxStrokeColor" />
+        <attr name="hintTextColor" format="color" />
+        <attr format="dimension" name="boxCornerRadiusTopEnd" />
+
+        <attr format="dimension" name="boxCornerRadiusTopStart" />
+
+        <attr format="dimension" name="boxCornerRadiusBottomStart" />
+
+        <attr format="dimension" name="boxCornerRadiusBottomEnd" />
+        <attr format="dimension" name="boxCornerRadius" />
+    </declare-styleable>
+</resources>
