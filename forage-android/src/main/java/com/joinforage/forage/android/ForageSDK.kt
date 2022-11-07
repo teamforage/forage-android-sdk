@@ -61,6 +61,7 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentMethodRef: String,
         cardToken: String,
+        idempotencyKey: String,
         onResponseListener: ResponseListener
     ) {
         val vgsForm = VGSCollect.Builder(context, VAULT_ID)
@@ -99,7 +100,7 @@ object ForageSDK : ForageSDKApi {
                                     checkBalanceHeaders(
                                         merchantAccount,
                                         encryptionKey,
-                                        paymentMethodRef
+                                        idempotencyKey
                                     )
                                 )
                                 .setCustomData(checkBalanceBody(cardToken))
@@ -121,6 +122,7 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentRef: String,
         cardToken: String,
+        idempotencyKey: String,
         onResponseListener: ResponseListener
     ) {
         val vgsForm = VGSCollect.Builder(context, VAULT_ID)
@@ -159,7 +161,7 @@ object ForageSDK : ForageSDKApi {
                                     checkBalanceHeaders(
                                         merchantAccount,
                                         encryptionKey,
-                                        paymentRef
+                                        idempotencyKey
                                     )
                                 )
                                 .setCustomData(checkBalanceBody(cardToken))
@@ -183,12 +185,12 @@ object ForageSDK : ForageSDKApi {
     private fun checkBalanceHeaders(
         merchantAccount: String,
         encryptionKey: EncryptionKey,
-        paymentMethodRef: String
+        idempotencyKey: String
     ): HashMap<String, String> {
         val headers = HashMap<String, String>()
         headers["X-KEY"] = encryptionKey.alias
         headers["Merchant-Account"] = merchantAccount
-        headers["IDEMPOTENCY-KEY"] = paymentMethodRef
+        headers["IDEMPOTENCY-KEY"] = idempotencyKey
         return headers
     }
 

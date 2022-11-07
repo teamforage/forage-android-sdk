@@ -18,6 +18,7 @@ internal interface ForageSDKApi {
         bearerToken: String,
         paymentMethodRef: String,
         cardToken: String,
+        idempotencyKey: String,
         onResponseListener: ResponseListener
     )
 
@@ -28,6 +29,7 @@ internal interface ForageSDKApi {
         bearerToken: String,
         paymentRef: String,
         cardToken: String,
+        idempotencyKey: String,
         onResponseListener: ResponseListener
     )
 }

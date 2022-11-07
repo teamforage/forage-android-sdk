@@ -14,6 +14,7 @@ import com.joinforage.forage.android.network.model.Response
 import com.joinforage.forage.android.network.model.ResponseListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
+import java.util.UUID
 
 @AndroidEntryPoint
 class FlowCapturePaymentFragment : Fragment() {
@@ -50,28 +51,28 @@ class FlowCapturePaymentFragment : Fragment() {
                 bearerToken = viewModel.bearer,
                 paymentRef = viewModel.snapPaymentRef,
                 cardToken = viewModel.cardToken,
+                idempotencyKey = UUID.randomUUID().toString(),
                 onResponseListener = object : ResponseListener {
                     override fun onResponse(response: Response?) {
-                        binding.progressBar.visibility = View.GONE
+                        activity?.runOnUiThread {
+                            binding.progressBar.visibility = View.GONE
 
-                        when (response) {
-                            is Response.SuccessResponse -> {
-                                println("Capture Payment Response Code: \n ${response.successCode}")
-                                println("Capture Payment Response Code: \n $response")
+                            when (response) {
+                                is Response.SuccessResponse -> {
+                                    println("Capture Payment Response Code: \n ${response.successCode}")
+                                    println("Capture Payment Response Code: \n $response")
 
-                                val resp = response.body?.let { JSONObject(it) }
+                                    val resp = response.body?.let { JSONObject(it) }
 
-                                activity?.runOnUiThread {
                                     binding.snapResponse.text = resp.toString()
                                 }
-                            }
-                            is Response.ErrorResponse -> {
-                                println("Capture Payment Response Code: \n $response")
-                                activity?.runOnUiThread {
+                                is Response.ErrorResponse -> {
+                                    println("Capture Payment Response Code: \n $response")
+
                                     binding.snapResponse.text = response.body.toString()
                                 }
-                            }
-                            else -> {
+                                else -> {
+                                }
                             }
                         }
                     }
@@ -90,22 +91,25 @@ class FlowCapturePaymentFragment : Fragment() {
                 bearerToken = viewModel.bearer,
                 paymentRef = viewModel.cashPaymentRef,
                 cardToken = viewModel.cardToken,
+                idempotencyKey = UUID.randomUUID().toString(),
                 onResponseListener = object : ResponseListener {
                     override fun onResponse(response: Response?) {
-                        binding.progressBar.visibility = View.GONE
-                        when (response) {
-                            is Response.SuccessResponse -> {
-                                println("Capture Payment Response Code: \n ${response.successCode}")
-                                println("Capture Payment Response Code: \n $response")
+                        activity?.runOnUiThread {
+                            binding.progressBar.visibility = View.GONE
+                            when (response) {
+                                is Response.SuccessResponse -> {
+                                    println("Capture Payment Response Code: \n ${response.successCode}")
+                                    println("Capture Payment Response Code: \n $response")
 
-                                val resp = response.body?.let { JSONObject(it) }
-                                binding.cashResponse.text = resp.toString()
-                            }
-                            is Response.ErrorResponse -> {
-                                println("Capture Payment Response Code: \n $response")
-                                binding.cashResponse.text = response.body.toString()
-                            }
-                            else -> {
+                                    val resp = response.body?.let { JSONObject(it) }
+                                    binding.cashResponse.text = resp.toString()
+                                }
+                                is Response.ErrorResponse -> {
+                                    println("Capture Payment Response Code: \n $response")
+                                    binding.cashResponse.text = response.body.toString()
+                                }
+                                else -> {
+                                }
                             }
                         }
                     }

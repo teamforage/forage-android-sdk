@@ -11,6 +11,7 @@ import com.joinforage.forage.android.network.model.ResponseListener
 import com.joinforage.forage.android.ui.ForagePINEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.json.JSONObject
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -64,6 +65,7 @@ class FlowBalanceViewModel @Inject constructor(
             bearerToken = bearer,
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
+            idempotencyKey = UUID.randomUUID().toString(),
             onResponseListener = object : ResponseListener {
                 override fun onResponse(response: Response?) {
                     when (response) {
