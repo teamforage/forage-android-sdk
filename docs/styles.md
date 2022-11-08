@@ -4,17 +4,36 @@ Table of contents
 =================
 
 <!--ts-->
-   * [Overview](#overview)
+   * [ForagePANEditText](#foragepanedittext)
 <!--te-->
 
-## Overview
+## ForagePANEditText
 
-| Part of View       | Parameter        | How to change              |
-|--------------------|------------------|----------------------------|
-| Hint / Label       | default color    | android:textColorHint      |
-| Box                | background color | boxBackgroundColor         |
-| for FilledBox and  | corners          | boxCornerRadiusTopStart    |
-| OutlinedBox styles |                  | boxCornerRadiusTopEnd      |
-|                    |                  | boxCornerRadiusBottomStart |
-|                    |                  | boxCornerRadiusBottomEnd   |
+### Hint / Label
 
+| Part of View   | Parameter              |
+|----------------|------------------------|
+| default color  | android:textColorHint  |
+
+### Error
+
+| Part of View      | Parameter            |
+|-------------------|----------------------|
+| color, size, font | errorTextAppearance  |
+
+### Box - for FilledBox and OutlinedBox styles
+
+| Part of View     | Parameter                  |
+|------------------|----------------------------|
+| background color | boxBackgroundColor         |
+| corners          | boxCornerRadiusTopStart    |
+| corners          | boxCornerRadiusTopEnd      |
+| corners          | boxCornerRadiusBottomStart |
+| corners          | boxCornerRadiusBottomEnd   |
+
+### Border - for OutlinedBox styles
+
+| Part of View | Parameter                  |
+|--------------|----------------------------|
+| color        | boxStrokeColor             |
+| width        | boxStrokeWidth             |
