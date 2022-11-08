@@ -14,7 +14,6 @@ import com.joinforage.forage.android.network.model.Response
 import com.joinforage.forage.android.network.model.ResponseListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
-import java.util.UUID
 
 @AndroidEntryPoint
 class FlowCapturePaymentFragment : Fragment() {
@@ -51,7 +50,6 @@ class FlowCapturePaymentFragment : Fragment() {
                 bearerToken = viewModel.bearer,
                 paymentRef = viewModel.snapPaymentRef,
                 cardToken = viewModel.cardToken,
-                idempotencyKey = UUID.randomUUID().toString(),
                 onResponseListener = object : ResponseListener {
                     override fun onResponse(response: Response?) {
                         activity?.runOnUiThread {
@@ -91,7 +89,6 @@ class FlowCapturePaymentFragment : Fragment() {
                 bearerToken = viewModel.bearer,
                 paymentRef = viewModel.cashPaymentRef,
                 cardToken = viewModel.cardToken,
-                idempotencyKey = UUID.randomUUID().toString(),
                 onResponseListener = object : ResponseListener {
                     override fun onResponse(response: Response?) {
                         activity?.runOnUiThread {

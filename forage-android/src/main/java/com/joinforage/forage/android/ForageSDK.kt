@@ -21,6 +21,7 @@ import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
 import okhttp3.Call
 import okhttp3.Callback
 import java.io.IOException
+import java.util.UUID
 import okhttp3.Response as OkHttpResponse
 
 object ForageSDK : ForageSDKApi {
@@ -61,7 +62,6 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentMethodRef: String,
         cardToken: String,
-        idempotencyKey: String,
         onResponseListener: ResponseListener
     ) {
         val vgsForm = VGSCollect.Builder(context, VAULT_ID)
@@ -99,8 +99,7 @@ object ForageSDK : ForageSDKApi {
                                 .setCustomHeader(
                                     checkBalanceHeaders(
                                         merchantAccount,
-                                        encryptionKey,
-                                        idempotencyKey
+                                        encryptionKey
                                     )
                                 )
                                 .setCustomData(checkBalanceBody(cardToken))
@@ -122,7 +121,6 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentRef: String,
         cardToken: String,
-        idempotencyKey: String,
         onResponseListener: ResponseListener
     ) {
         val vgsForm = VGSCollect.Builder(context, VAULT_ID)
@@ -161,7 +159,7 @@ object ForageSDK : ForageSDKApi {
                                     checkBalanceHeaders(
                                         merchantAccount,
                                         encryptionKey,
-                                        idempotencyKey
+                                        idempotencyKey = paymentRef
                                     )
                                 )
                                 .setCustomData(checkBalanceBody(cardToken))
@@ -185,7 +183,7 @@ object ForageSDK : ForageSDKApi {
     private fun checkBalanceHeaders(
         merchantAccount: String,
         encryptionKey: EncryptionKey,
-        idempotencyKey: String
+        idempotencyKey: String = UUID.randomUUID().toString()
     ): HashMap<String, String> {
         val headers = HashMap<String, String>()
         headers["X-KEY"] = encryptionKey.alias
