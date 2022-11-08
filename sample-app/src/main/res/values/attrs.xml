@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TokenizeFragment -->
+    <!-- Theme attribute for the ForagePANEditText on the tokenize fragment. -->
+    <attr name="tokenizeForagePANEditTextStyle" format="reference" />
+    <attr name="tokenizeForageTextInputLayoutStyle" format="reference" />
+
+    <!-- CatalogFragment -->
+    <!-- Theme attribute for the first ForagePanEditText on the catalog fragment. -->
+    <attr name="catalogFirstForagePanEditTextStyle" format="reference" />
+    <attr name="catalogFirstForageTextInputLayoutStyle" format="reference" />
+
+    <!-- Theme attribute for the second ForagePanEditText on the catalog fragment. -->
+    <attr name="catalogSecondForagePanEditTextStyle" format="reference" />
+    <attr name="catalogSecondForageTextInputLayoutStyle" format="reference" />
+
+    <!-- Theme attribute for the third ForagePanEditText on the catalog fragment. -->
+    <attr name="catalogThirdForagePanEditTextStyle" format="reference" />
+    <attr name="catalogThirdForageTextInputLayoutStyle" format="reference" />
+</resources>
