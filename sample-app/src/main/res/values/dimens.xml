@@ -11,4 +11,5 @@
     <dimen name="box_corner_radius_top_end">4dp</dimen>
     <dimen name="box_corner_radius_bottom_start">4dp</dimen>
     <dimen name="box_corner_radius_bottom_end">0dp</dimen>
+    <dimen name="small_text">16sp</dimen>
 </resources>
