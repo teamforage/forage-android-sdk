@@ -12,6 +12,7 @@ import com.joinforage.forage.android.network.model.Response
 import com.joinforage.forage.android.network.model.ResponseListener
 import com.joinforage.forage.android.network.tokenizeCard
 import com.joinforage.forage.android.ui.ForagePINEditText
+import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.Environment
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
 import com.verygoodsecurity.vgscollect.core.VGSCollect
@@ -64,16 +65,14 @@ object ForageSDK : ForageSDKApi {
         cardToken: String,
         onResponseListener: ResponseListener
     ) {
-        val vgsForm = VGSCollect.Builder(context, VAULT_ID)
-            .setEnvironment(ENVIRONMENT)
-            .create()
+        val vgsCollect = buildVGSCollect(context)
 
-        vgsForm.bindView(pinForageEditText.getTextInputEditText())
+        vgsCollect.bindView(pinForageEditText.getTextInputEditText())
 
-        vgsForm.addOnResponseListeners(object : VgsCollectResponseListener {
+        vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
                 onResponseListener.onResponse(response?.toResponse())
-                vgsForm.onDestroy()
+                vgsCollect.onDestroy()
             }
         })
 
@@ -105,13 +104,20 @@ object ForageSDK : ForageSDKApi {
                                 .setCustomData(checkBalanceBody(cardToken))
                                 .build()
 
-                            vgsForm.asyncSubmit(request)
+                            vgsCollect.asyncSubmit(request)
                         }
                         else -> {}
                     }
                 }
             }
         )
+    }
+
+    private fun buildVGSCollect(context: Context): VGSCollect {
+        VGSCollectLogger.isEnabled = false
+        return VGSCollect.Builder(context, VAULT_ID)
+            .setEnvironment(ENVIRONMENT)
+            .create()
     }
 
     override fun capturePayment(
@@ -123,16 +129,14 @@ object ForageSDK : ForageSDKApi {
         cardToken: String,
         onResponseListener: ResponseListener
     ) {
-        val vgsForm = VGSCollect.Builder(context, VAULT_ID)
-            .setEnvironment(ENVIRONMENT)
-            .create()
+        val vgsCollect = buildVGSCollect(context)
 
-        vgsForm.bindView(pinForageEditText.getTextInputEditText())
+        vgsCollect.bindView(pinForageEditText.getTextInputEditText())
 
-        vgsForm.addOnResponseListeners(object : VgsCollectResponseListener {
+        vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
                 onResponseListener.onResponse(response?.toResponse())
-                vgsForm.onDestroy()
+                vgsCollect.onDestroy()
             }
         })
 
@@ -165,7 +169,7 @@ object ForageSDK : ForageSDKApi {
                                 .setCustomData(checkBalanceBody(cardToken))
                                 .build()
 
-                            vgsForm.asyncSubmit(request)
+                            vgsCollect.asyncSubmit(request)
                         }
                         else -> {}
                     }

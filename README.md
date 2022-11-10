@@ -11,6 +11,7 @@ Table of contents
    * [UI Components](#ui-components)
      * [ForagePANEditText](#foragepanedittext)
      * [ForagePINEditText](#foragepinedittext)
+     * [How to provide styles](/docs/styles.md) 
    * [Tokenizing an EBT Card](#tokenize-ebt-card-number) 
    * [Performing a balance check](#performing-a-balance-check) 
    * [The ResponseListener interface](#the-responselistener-interface)
