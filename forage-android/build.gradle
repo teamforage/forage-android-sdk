@@ -64,6 +64,10 @@ android {
             includeAndroidResources = true
         }
     }
+
+    lint {
+        sarifReport true
+    }
 }
 
 dependencies {
