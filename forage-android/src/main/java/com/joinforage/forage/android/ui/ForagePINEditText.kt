@@ -98,6 +98,8 @@ class ForagePINEditText @JvmOverloads constructor(
         textInputLayout.addView(textInputEditText)
 
         addView(textInputLayout)
+
+        addView(getLogoImageViewLayout(context))
     }
 
     private fun TypedArray.getBoxCornerRadiusBottomStart(boxCornerRadius: Float): Float {

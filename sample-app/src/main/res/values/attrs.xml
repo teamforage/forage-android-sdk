@@ -17,4 +17,8 @@
     <!-- Theme attribute for the third ForagePanEditText on the catalog fragment. -->
     <attr name="catalogThirdForagePanEditTextStyle" format="reference" />
     <attr name="catalogThirdForageTextInputLayoutStyle" format="reference" />
+
+    <!-- Theme attribute for the fourth ForagePanEditText on the catalog fragment. -->
+    <attr name="catalogFourthForagePanEditTextStyle" format="reference" />
+    <attr name="catalogFourthForageTextInputLayoutStyle" format="reference" />
 </resources>

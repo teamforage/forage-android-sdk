@@ -55,9 +55,31 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <!-- Style for the fourth ForagePanEditText in catalog Fragment. -->
+    <style name="CatalogFourthForagePanEditTextStyle" parent="DefaultForagePANEditTextStyle">
+        <item name="textInputLayoutStyle">@attr/catalogFourthForageTextInputLayoutStyle</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="CatalogFourthForageTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:hint">@string/catalog_fourth_forage_edit_text_hint</item>
+        <item name="boxBackgroundColor">@color/light_grey</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="endIconMode">custom</item>
+        <item name="endIconDrawable">@drawable/ic_balance_24</item>
+        <item name="endIconTint">@color/colorAccent</item>
+        <item name="boxStrokeColor">@color/colorAccent</item>
+    </style>
+
+    <style name="CatalogFourthForageTextInputEditTextStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="ForagePINEditTextStyle" parent="">
         <item name="android:layout_marginStart">@dimen/pin_field_margin</item>
         <item name="android:layout_marginEnd">@dimen/pin_field_margin</item>
+        <item name="android:layout_marginTop">@dimen/pin_field_margin</item>
+        <item name="android:layout_marginBottom">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
         <item name="boxStrokeColor">@color/purple_700</item>
@@ -81,4 +103,14 @@
         <item name="android:textSize">@dimen/small_text</item>
         <item name="android:textColor">@color/red</item>
     </style>
+
+    <style name="ThirdForagePINEditTextStyle" parent="">
+        <item name="android:layout_margin">@dimen/pin_field_margin</item>
+        <item name="hint">@string/pin</item>
+        <item name="textSize">@dimen/pin_text_size</item>
+        <item name="boxStrokeColor">@color/colorAccent</item>
+        <item name="hintTextColor">@color/colorAccent</item>
+        <item name="boxCornerRadius">@dimen/corner_radius</item>
+    </style>
+
 </resources>
