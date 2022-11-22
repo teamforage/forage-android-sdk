@@ -1,12 +1,12 @@
 package com.joinforage.android.example.network.di
 
+import com.joinforage.android.example.BuildConfig
 import com.joinforage.android.example.network.ForageApi
 import com.joinforage.android.example.network.interceptors.AuthInterceptor
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.addAdapter
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,10 +20,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ForageApiModule {
+    private fun provideBaseUrl() = when (BuildConfig.FLAVOR) {
+        "dev" -> "https://api.dev.joinforage.app/"
+        else -> "https://api.sandbox.joinforage.app/"
+    }
+
     @Provides
     fun provideMoshi(): Moshi = Moshi.Builder()
         .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
-        .add(KotlinJsonAdapterFactory())
         .build()
 
     private fun provideMoshiConverterFactory(): MoshiConverterFactory =
@@ -34,7 +38,7 @@ object ForageApiModule {
     private fun provideRetrofit(
         httpClient: OkHttpClient
     ) = Retrofit.Builder()
-        .baseUrl("https://api.sandbox.joinforage.app/")
+        .baseUrl(provideBaseUrl())
         .client(httpClient)
         .addConverterFactory(provideMoshiConverterFactory())
         .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
