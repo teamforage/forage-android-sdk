@@ -362,3 +362,19 @@ This project uses [Spotless](https://github.com/diffplug/spotless) to format the
  ./gradlew spotlessCheck # Checks that sourcecode satisfies formatting steps 
  ./gradlew spotlessApply  # Applies code formatting steps to sourcecode in-place
 ```
+
+### Code coverage
+We use [Kover](https://github.com/Kotlin/kotlinx-kover) to extract our code coverage.
+To check the SDK coverage, you can run:
+
+```shell
+ ./gradlew forage-android:koverHtmlReport  
+```
+
+Kover will provide the report link when it finishes running:
+
+```shell
+> Task :forage-android:koverHtmlReport
+Kover: HTML report for ':forage-android' file:///<project_path>/forage-android/forage-android/build/reports/kover/html/index.html
+```
+- We are not filtering out classes/files that unit tests will not cover.
