@@ -1,30 +1,28 @@
 package com.joinforage.android.example.ui.complete.flow.tokenize
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.network.model.Response
-import com.joinforage.forage.android.network.model.ResponseListener
+import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FlowTokenizeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val moshi: Moshi
-) : ViewModel(), ResponseListener {
+) : ViewModel() {
 
     private val args = FlowTokenizeFragmentArgs.fromSavedStateHandle(savedStateHandle)
     val merchantAccount = args.merchantAccount
     val bearer = args.bearer
-
-    private val TAG = FlowTokenizeViewModel::class.java.simpleName
 
     private val _paymentMethod = MutableLiveData<PaymentMethod>().apply {
         value = null
@@ -44,38 +42,27 @@ class FlowTokenizeViewModel @Inject constructor(
 
     val error: LiveData<String?> = _error
 
-    fun onSubmit() {
+    fun onSubmit() = viewModelScope.launch {
         _isLoading.value = true
 
-        ForageSDK.tokenizeEBTCard(
+        val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
-            bearerToken = bearer,
-            this@FlowTokenizeViewModel
+            bearerToken = bearer
         )
-    }
 
-    override fun onResponse(response: Response?) {
         when (response) {
-            is Response.SuccessResponse -> {
+            is ForageApiResponse.Success -> {
                 val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
 
-                val result = response.rawResponse?.let { adapter.fromJson(it) }
+                val result = adapter.fromJson(response.data)
 
-                Log.d(TAG, "PaymentMethod:")
-                Log.d(TAG, "$result")
-
-                _paymentMethod.postValue(result)
+                _paymentMethod.value = result
             }
-            is Response.ErrorResponse -> {
-                val body = response.body
-                Log.e(TAG, "Client Error")
-                Log.e(TAG, body.orEmpty())
-
-                _error.postValue(body)
-            }
-            else -> {
+            is ForageApiResponse.Failure -> {
+                _error.value = response.message
             }
         }
-        _isLoading.postValue(false)
+
+        _isLoading.value = false
     }
 }
