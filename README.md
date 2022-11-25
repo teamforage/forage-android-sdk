@@ -360,6 +360,7 @@ interface ResponseListener {
 
 ## Dependencies
 - Minimum API Level Android 5.0 (API level 21)
+- [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) v1.6.4
 - 3rd party libraries:
     - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
       - [OkHttp](https://github.com/square/okhttp) v4.10.0
