@@ -11,15 +11,14 @@ internal interface ForageSDKApi {
         bearerToken: String
     ): ForageApiResponse<String>
 
-    fun checkBalance(
+    suspend fun checkBalance(
         context: Context,
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
         paymentMethodRef: String,
-        cardToken: String,
-        onResponseListener: ResponseListener
-    )
+        cardToken: String
+    ): ForageApiResponse<String>
 
     fun capturePayment(
         context: Context,

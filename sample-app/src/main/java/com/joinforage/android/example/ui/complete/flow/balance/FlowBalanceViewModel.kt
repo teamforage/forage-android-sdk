@@ -5,16 +5,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.joinforage.android.example.network.model.balance.BalanceResponse
 import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.network.model.Response
-import com.joinforage.forage.android.network.model.ResponseListener
+import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.json.JSONObject
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FlowBalanceViewModel @Inject constructor(
+    private val moshi: Moshi,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -54,41 +58,39 @@ class FlowBalanceViewModel @Inject constructor(
 
     val isNextVisible: LiveData<Boolean> = _isNextVisible
 
-    fun checkBalance(context: Context, cardNumberField: ForagePINEditText) {
-        _isLoading.value = true
+    fun checkBalance(context: Context, pinForageEditText: ForagePINEditText) =
+        viewModelScope.launch {
+            _isLoading.value = true
 
-        ForageSDK.checkBalance(
-            context = context,
-            pinForageEditText = cardNumberField,
-            merchantAccount = merchantAccount,
-            bearerToken = bearer,
-            paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken,
-            onResponseListener = object : ResponseListener {
-                override fun onResponse(response: Response?) {
-                    when (response) {
-                        is Response.SuccessResponse -> {
-                            println("Check Balance Response Code: \n ${response.successCode}")
-                            println("Check Balance Response: \n $response")
+            val response = ForageSDK.checkBalance(
+                context = context,
+                pinForageEditText = pinForageEditText,
+                merchantAccount = merchantAccount,
+                bearerToken = bearer,
+                paymentMethodRef = paymentMethodRef,
+                cardToken = cardToken
+            )
 
-                            val resp = response.body?.let { JSONObject(it) }
-                            if (resp != null) {
-                                _snap.postValue("SNAP: ${resp.getString("snap")}")
-                                _nonSnap.postValue("NON SNAP: ${resp.getString("non_snap")}")
-                                _isLoading.postValue(false)
-                                _isNextVisible.postValue(true)
-                            }
-                        }
-                        is Response.ErrorResponse -> {
-                            _isLoading.postValue(false)
-                            _error.postValue(response.toString())
-                        }
-                        null -> {
-                            TODO("Understand why would VGS return null here")
-                        }
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    println(response.data)
+
+                    val adapter: JsonAdapter<BalanceResponse> =
+                        moshi.adapter(BalanceResponse::class.java)
+
+                    val result = adapter.fromJson(response.data)
+
+                    if (result != null) {
+                        _snap.value = "SNAP: ${result.snap}"
+                        _nonSnap.value = "NON SNAP: ${result.nonSnap}"
+                        _isLoading.value = false
+                        _isNextVisible.value = true
                     }
                 }
+                is ForageApiResponse.Failure -> {
+                    _isLoading.value = false
+                    _error.value = response.message
+                }
             }
-        )
-    }
+        }
 }
