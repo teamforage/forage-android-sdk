@@ -2,12 +2,15 @@ package com.joinforage.forage.android
 
 import android.content.Context
 import android.util.Log
+import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber
+import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.TokenizeCardService
+import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.getEncryptionKey
 import com.joinforage.forage.android.network.mapper.toResponse
 import com.joinforage.forage.android.network.model.EncryptionKey
@@ -61,60 +64,27 @@ object ForageSDK : ForageSDKApi {
         return panEntry is PanEntry.Valid || BuildConfig.DEBUG
     }
 
-    override fun checkBalance(
+    override suspend fun checkBalance(
         context: Context,
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
         paymentMethodRef: String,
-        cardToken: String,
-        onResponseListener: ResponseListener
-    ) {
-        val vgsCollect = buildVGSCollect(context)
-
-        vgsCollect.bindView(pinForageEditText.getTextInputEditText())
-
-        vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
-            override fun onResponse(response: VGSResponse?) {
-                onResponseListener.onResponse(response?.toResponse())
-                vgsCollect.onDestroy()
-            }
-        })
-
-        getEncryptionKey(
-            bearer = bearerToken,
-            responseCallback = object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onResponse(call: Call, response: OkHttpResponse) {
-                    when {
-                        response.isSuccessful -> {
-                            val jsonData = response.body?.string()
-                            Log.d(TAG, "Get Encryption Key Response:")
-                            Log.d(TAG, "$jsonData")
-
-                            val encryptionKey = EncryptionKey.ModelMapper.from(jsonData!!)
-
-                            val request: VGSRequest = VGSRequest.VGSRequestBuilder()
-                                .setMethod(HTTPMethod.POST)
-                                .setPath(balancePath(paymentMethodRef))
-                                .setCustomHeader(
-                                    checkBalanceHeaders(
-                                        merchantAccount,
-                                        encryptionKey
-                                    )
-                                )
-                                .setCustomData(checkBalanceBody(cardToken))
-                                .build()
-
-                            vgsCollect.asyncSubmit(request)
-                        }
-                        else -> {}
-                    }
-                }
-            }
+        cardToken: String
+    ): ForageApiResponse<String> {
+        return CheckBalanceRepository(
+            pinCollector = VGSPinCollector(
+                context = context,
+                pinForageEditText = pinForageEditText,
+                merchantAccount = merchantAccount
+            ),
+            encryptionKeyService = EncryptionKeyService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken),
+                httpUrl = ForageConstants.provideHttpUrl()
+            )
+        ).checkBalance(
+            paymentMethodRef = paymentMethodRef,
+            cardToken = cardToken
         )
     }
 
