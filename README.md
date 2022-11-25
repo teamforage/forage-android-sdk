@@ -215,25 +215,38 @@ And finally, here are the assigned styles:
 ForageSDK will expose the following function to collect the EBT card number:
 
 ```kotlin
-    fun tokenizeEBTCard(
+    suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        bearerToken: String,
-        responseCallback: PaymentMethodResponseListener
-    )
+        bearerToken: String
+    ): ForageApiResponse<String>
 ```
 
 This is an example of usage inside an ACC ViewModel:
 
 ```kotlin
-fun onSubmit() {
-    _isLoading.value = true
-
-    ForageSDK.tokenizeEBTCard(
-        merchantAccount = merchantAccount,
-        bearerToken = bearerToken,
-        this@YourViewModel
-    )
-}
+    fun onSubmit() = viewModelScope.launch {
+        _isLoading.value = true
+    
+        val response = ForageSDK.tokenizeEBTCard(
+            merchantAccount = merchantAccount,
+            bearerToken = bearer
+        )
+    
+        when (response) {
+            is ForageApiResponse.Success -> {
+                val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
+    
+                val result = adapter.fromJson(response.data)
+    
+                _paymentMethod.value = result
+            }
+            is ForageApiResponse.Failure -> {
+                _error.value = response.message
+            }
+        }
+    
+        _isLoading.value = false
+    }
 ```
 
 ## Performing a balance check
@@ -347,6 +360,7 @@ interface ResponseListener {
 
 ## Dependencies
 - Minimum API Level Android 5.0 (API level 21)
+- [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) v1.6.4
 - 3rd party libraries:
     - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
       - [OkHttp](https://github.com/square/okhttp) v4.10.0

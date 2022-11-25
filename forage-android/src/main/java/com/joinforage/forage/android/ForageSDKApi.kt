@@ -1,15 +1,15 @@
 package com.joinforage.forage.android
 
 import android.content.Context
+import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ResponseListener
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 internal interface ForageSDKApi {
-    fun tokenizeEBTCard(
+    suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        bearerToken: String,
-        responseCallback: ResponseListener
-    )
+        bearerToken: String
+    ): ForageApiResponse<String>
 
     fun checkBalance(
         context: Context,
