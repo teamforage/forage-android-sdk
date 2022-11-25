@@ -253,15 +253,14 @@ This is an example of usage inside an ACC ViewModel:
 ForageSDK will expose the following function to check the EBT card balance:
 
 ```kotlin
-fun checkBalance(
-    context: Context,
-    pinForageEditText: ForagePINEditText,
-    merchantAccount: String,
-    bearerToken: String,
-    paymentMethodRef: String,
-    cardToken: String,
-    onResponseListener: ResponseListener
-)
+    suspend fun checkBalance(
+        context: Context,
+        pinForageEditText: ForagePINEditText,
+        merchantAccount: String,
+        bearerToken: String,
+        paymentMethodRef: String,
+        cardToken: String
+    ): ForageApiResponse<String>
 ```
 
 To help maintain the sensitive information PCI compliant, this function needs the `ForagePINEditText` reference and the Context so we can cancel ongoing requests properly.
@@ -269,34 +268,41 @@ To help maintain the sensitive information PCI compliant, this function needs th
 This is an example of usage inside an ACC ViewModel:
 
 ```kotlin
-fun onSubmit() {
-    fun checkBalance(context: Context, cardNumberField: ForagePINEditText) {
+    fun checkBalance(context: Context, pinForageEditText: ForagePINEditText) =
+    viewModelScope.launch {
         _isLoading.value = true
 
-        ForageSDK.checkBalance(
+        val response = ForageSDK.checkBalance(
             context = context,
-            pinForageEditText = cardNumberField,
+            pinForageEditText = pinForageEditText,
             merchantAccount = merchantAccount,
             bearerToken = bearer,
             paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken,
-            onResponseListener = object : ResponseListener {
-                override fun onResponse(response: Response?) {
-                    when (response) {
-                        is Response.SuccessResponse -> {
-                            val resp = response.body?.let { JSONObject(it) }
-                            _isLoading.postValue(false)
-                        }
-                        is Response.ErrorResponse -> {
-                            _isLoading.postValue(false)
-                            _error.postValue(response.toString())
-                        }
-                    }
+            cardToken = cardToken
+        )
+
+        when (response) {
+            is ForageApiResponse.Success -> {
+                println(response.data)
+
+                val adapter: JsonAdapter<BalanceResponse> =
+                    moshi.adapter(BalanceResponse::class.java)
+
+                val result = adapter.fromJson(response.data)
+
+                if (result != null) {
+                    _snap.value = "SNAP: ${result.snap}"
+                    _nonSnap.value = "NON SNAP: ${result.nonSnap}"
+                    _isLoading.value = false
+                    _isNextVisible.value = true
                 }
             }
-        )
+            is ForageApiResponse.Failure -> {
+                _isLoading.value = false
+                _error.value = response.message
+            }
+        }
     }
-}
 ```
 
 ## Capturing a payment
