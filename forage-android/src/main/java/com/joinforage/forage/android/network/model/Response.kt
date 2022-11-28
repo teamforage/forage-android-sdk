@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.network.model
 
-sealed class Response(
+internal sealed class Response(
     val code: Int = -1,
     val body: String? = null
 ) {
