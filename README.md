@@ -309,60 +309,65 @@ This is an example of usage inside an ACC ViewModel:
 ForageSDK will expose the following function to capture a payment:
 
 ```kotlin
-fun capturePayment(
-    context: Context,
-    pinForageEditText: ForagePINEditText,
-    merchantAccount: String,
-    bearerToken: String,
-    paymentRef: String,
-    cardToken: String,
-    onResponseListener: ResponseListener
-)
+    suspend fun capturePayment(
+        context: Context,
+        pinForageEditText: ForagePINEditText,
+        merchantAccount: String,
+        bearerToken: String,
+        paymentRef: String,
+        cardToken: String
+    ): ForageApiResponse<String>
 ```
 
-This is an example of usage inside a Fragment:
+This is an example of usage inside an ACC ViewModel:
 
 ```kotlin
-binding.captureNonSnapAmount.setOnClickListener {
-    binding.progressBar.visibility = View.VISIBLE
 
-    ForageSDK.capturePayment(
-        context = it.context,
-        pinForageEditText = cashPinEditText,
-        merchantAccount = merchantAccount,
-        bearerToken = bearer,
-        paymentRef = cashPaymentRef,
-        cardToken = cardToken,
-        onResponseListener = object : ResponseListener {
-            override fun onResponse(response: Response?) {
-                binding.progressBar.visibility = View.GONE
-                when (response) {
-                    is Response.SuccessResponse -> {
-                        val resp = response.body?.let { JSONObject(it) }
-                    }
-                    is Response.ErrorResponse -> {
-                        val resp = response.body.toString()
-                    }
+    fun captureSnapAmount(context: Context, pinForageEditText: ForagePINEditText) =
+        viewModelScope.launch {
+            _uiState.value = _uiState.value!!.copy(isLoading = true)
+    
+            val response = ForageSDK.capturePayment(
+                context = context,
+                pinForageEditText = pinForageEditText,
+                merchantAccount = merchantAccount,
+                bearerToken = bearer,
+                paymentRef = snapPaymentRef,
+                cardToken = cardToken
+            )
+    
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        snapResponse = response.data
+                    )
+                }
+                is ForageApiResponse.Failure -> {
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        snapResponse = response.message
+                    )
                 }
             }
         }
-    )
-}
 ```
 
 The `paymentRef` will be used to determine if it's a capture from EBT Cash or EBT SNAP. You'll need to handle a single or two payments in your implementation.
 
-## The ResponseListener interface
+## The ForageApiResponse sealed class
 
-Currently, the SDK is not supporting coroutines. To handle the responses, you must implement the interface ResponseListener on your ACC ViewModel or inside your Fragment.
+The SDK provide suspending functions to interact with the Forage API.
+`ForageApiResponse` is a sealed class that could be either a `Success` or a `Failure`
 
 ```kotlin
-interface ResponseListener {
-    fun onResponse(response: Response?)
-}
-```
+sealed class ForageApiResponse<out T> {
+    data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-`Response` is a sealed class that could be either a `SuccessResponse` or a `ErrorResponse`
+    data class Failure(val message: String) : ForageApiResponse<Nothing>()
+}
+
+```
 
 ## Dependencies
 - Minimum API Level Android 5.0 (API level 21)
