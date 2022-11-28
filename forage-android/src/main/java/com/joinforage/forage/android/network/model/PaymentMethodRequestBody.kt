@@ -2,7 +2,7 @@ package com.joinforage.forage.android.network.model
 
 import org.json.JSONObject
 
-data class PaymentMethodRequestBody(
+internal data class PaymentMethodRequestBody(
     val cardNumber: String,
     val type: String = "ebt",
     val reusable: Boolean = true
