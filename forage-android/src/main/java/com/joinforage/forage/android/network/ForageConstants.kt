@@ -5,7 +5,6 @@ import okhttp3.Request
 
 internal object ForageConstants {
     private const val BASE_URL = BuildConfig.BASE_URL
-    const val TOKENIZE_URL = "${BASE_URL}api/payment_methods/"
 
     fun provideHttpUrl() = Request.Builder().url(BASE_URL).build().url
 
@@ -26,7 +25,5 @@ internal object ForageConstants {
         const val ENCRYPTION_ALIAS = "encryption_alias"
         const val API = "api"
         const val PAYMENT_METHODS = "payment_methods"
-        const val MESSAGE = "message"
-        const val PAYMENTS = "payments"
     }
 }
