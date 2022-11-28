@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="my_string">1234 5678</string>
+    <string name="ebt_card_validation_error">"Invalid PAN"</string>
 </resources>

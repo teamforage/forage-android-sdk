@@ -40,5 +40,12 @@
         <item name="catalogThirdForageTextInputLayoutStyle">
             @style/CatalogThirdForageTextInputLayoutStyle
         </item>
+
+        <!-- The foruth ForagePanEditText shown in catalog Fragment -->
+        <item name="catalogFourthForagePanEditTextStyle">@style/CatalogFourthForagePanEditTextStyle
+        </item>
+        <item name="catalogFourthForageTextInputLayoutStyle">
+            @style/CatalogFourthForageTextInputLayoutStyle
+        </item>
     </style>
 </resources>
