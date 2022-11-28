@@ -14,10 +14,12 @@ Table of contents
      * [How to provide styles](/docs/styles.md) 
    * [Tokenizing an EBT Card](#tokenize-ebt-card-number) 
    * [Performing a balance check](#performing-a-balance-check) 
-   * [The ResponseListener interface](#the-responselistener-interface)
+   * [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
    * [Dependencies](#dependencies)
    * [Development](#development)
      * [Android Studio](#android-studio)
+     * [How to run the unit tests](#how-to-run-the-unit-tests)
+     * [How to check code coverage](#code-coverage)
      * [Code Formatting](#code-formatting)
 <!--te-->
 
@@ -380,13 +382,13 @@ sealed class ForageApiResponse<out T> {
 ### Android Studio
 This project was developed using Android Studio Electric Eel, but you can also use Android Studio Dolphin since it's currently using Android Gradle Plugin version 7.3.1.
 
-### Code formatting
-This project uses [Spotless](https://github.com/diffplug/spotless) to format the code. Before pushing the code, you may need to run the following:
-
+### How to run the unit tests
+Run the test task for dev debug build variant:
 ```shell
- ./gradlew spotlessCheck # Checks that sourcecode satisfies formatting steps 
- ./gradlew spotlessApply  # Applies code formatting steps to sourcecode in-place
+./gradlew testDevDebugUnitTest  
 ```
+
+Currently, our build variants are only changing env vars, so any `test<dev/staging/cert/sandbox/prod><debug/release>UnitTest` variants should run the same tests producing the same result.
 
 ### Code coverage
 We use [Kover](https://github.com/Kotlin/kotlinx-kover) to extract our code coverage.
@@ -403,3 +405,11 @@ Kover will provide the report link when it finishes running:
 Kover: HTML report for ':forage-android' file:///<project_path>/forage-android/forage-android/build/reports/kover/html/index.html
 ```
 - We are not filtering out classes/files that unit tests will not cover.
+
+### Code formatting
+This project uses [Spotless](https://github.com/diffplug/spotless) to format the code. Before pushing the code, you may need to run the following:
+
+```shell
+ ./gradlew spotlessCheck # Checks that sourcecode satisfies formatting steps 
+ ./gradlew spotlessApply  # Applies code formatting steps to sourcecode in-place
+```

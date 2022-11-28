@@ -4,7 +4,7 @@ import com.joinforage.forage.android.model.Balance
 import com.joinforage.forage.android.model.Card
 import org.json.JSONObject
 
-data class PaymentMethod(
+internal data class PaymentMethod(
     val ref: String,
     val type: String,
     val balance: Balance?,

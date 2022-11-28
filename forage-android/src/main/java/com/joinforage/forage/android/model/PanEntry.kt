@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.model
 
-sealed class PanEntry {
+internal sealed class PanEntry {
     data class Invalid(
         val panNumber: String
     ) : PanEntry()
@@ -10,7 +10,7 @@ sealed class PanEntry {
     ) : PanEntry()
 }
 
-fun PanEntry.getPanNumber() = when (this) {
+internal fun PanEntry.getPanNumber() = when (this) {
     is PanEntry.Valid -> panNumber
     is PanEntry.Invalid -> panNumber
 }

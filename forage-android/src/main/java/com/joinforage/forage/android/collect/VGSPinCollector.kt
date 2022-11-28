@@ -15,7 +15,7 @@ import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
 import java.util.UUID
 import kotlin.coroutines.suspendCoroutine
 
-class VGSPinCollector(
+internal class VGSPinCollector(
     private val context: Context,
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String

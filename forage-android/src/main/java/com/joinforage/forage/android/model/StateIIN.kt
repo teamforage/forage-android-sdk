@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.model
 
-enum class StateIIN(
+internal enum class StateIIN(
     val iin: String,
     val panLength: Int
 ) {
