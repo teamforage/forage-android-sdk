@@ -1,5 +1,6 @@
 package com.joinforage.android.example.ui.complete.flow.tokenize
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -19,6 +20,8 @@ class FlowTokenizeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val moshi: Moshi
 ) : ViewModel() {
+
+    private val TAG = FlowTokenizeViewModel::class.java.simpleName
 
     private val args = FlowTokenizeFragmentArgs.fromSavedStateHandle(savedStateHandle)
     val merchantAccount = args.merchantAccount
@@ -52,6 +55,7 @@ class FlowTokenizeViewModel @Inject constructor(
 
         when (response) {
             is ForageApiResponse.Success -> {
+                Log.d(TAG, "Tokenize EBT card Response: ${response.data}")
                 val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
 
                 val result = adapter.fromJson(response.data)
