@@ -1,6 +1,7 @@
 package com.joinforage.android.example.ui.complete.flow.balance
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -21,6 +22,8 @@ class FlowBalanceViewModel @Inject constructor(
     private val moshi: Moshi,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val TAG = FlowBalanceViewModel::class.java.simpleName
 
     private val args = FlowBalanceFragmentArgs.fromSavedStateHandle(savedStateHandle)
     val merchantAccount = args.merchantAccount
@@ -73,7 +76,7 @@ class FlowBalanceViewModel @Inject constructor(
 
             when (response) {
                 is ForageApiResponse.Success -> {
-                    println(response.data)
+                    Log.d(TAG, "Check Balance Response: ${response.data}")
 
                     val adapter: JsonAdapter<BalanceResponse> =
                         moshi.adapter(BalanceResponse::class.java)
@@ -88,6 +91,8 @@ class FlowBalanceViewModel @Inject constructor(
                     }
                 }
                 is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Check Balance Response: ${response.message}")
+
                     _isLoading.value = false
                     _error.value = response.message
                 }
