@@ -54,7 +54,7 @@ dependencies {
     ...
 
     // Forage Android SDK
-    implementation '<package_name>:forage-android:<sem_ver>'
+    implementation 'com.joinforage:forage-android:<sem_ver>'
 
     ...
 }
