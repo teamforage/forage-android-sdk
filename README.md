@@ -415,3 +415,6 @@ This project uses [Spotless](https://github.com/diffplug/spotless) to format the
  ./gradlew spotlessCheck # Checks that sourcecode satisfies formatting steps 
  ./gradlew spotlessApply  # Applies code formatting steps to sourcecode in-place
 ```
+
+### Optimizing SVGs
+We can run [avocado](https://github.com/alexjlockwood/avocado) command line tool to optimize the SVGs before importing them to the project.
