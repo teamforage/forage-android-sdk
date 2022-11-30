@@ -1,0 +1,13 @@
+{
+  "path": "/api/message/1c53e9e0-92e9-4568-a128-deecf4c2194a/",
+  "errors": [
+    {
+      "code": "missing_merchant_account",
+      "message": "No merchant account FNS number was provided.",
+      "source": {
+        "resource": "Merchant_Account_Header",
+        "ref": ""
+      }
+    }
+  ]
+}

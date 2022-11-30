@@ -6,18 +6,18 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
-internal class EncryptionKeyService(
+internal class MessageStatusService(
     private val httpUrl: HttpUrl,
     okHttpClient: OkHttpClient
 ) : NetworkService(okHttpClient) {
-    suspend fun getEncryptionKey(): ForageApiResponse<String> = try {
-        getEncryptionToCoroutine()
+    suspend fun getStatus(contentId: String): ForageApiResponse<String> = try {
+        getStatusToCoroutine(contentId)
     } catch (ex: IOException) {
         ForageApiResponse.Failure(message = ex.message.orEmpty())
     }
 
-    private suspend fun getEncryptionToCoroutine(): ForageApiResponse<String> {
-        val url = getEncryptionKeyUrl()
+    private suspend fun getStatusToCoroutine(contentId: String): ForageApiResponse<String> {
+        val url = getMessageStatusUrl(contentId)
 
         val request: Request = Request.Builder()
             .url(url)
@@ -27,11 +27,12 @@ internal class EncryptionKeyService(
         return convertCallbackToCoroutine(request)
     }
 
-    private fun getEncryptionKeyUrl(): HttpUrl {
+    private fun getMessageStatusUrl(contentId: String): HttpUrl {
         return httpUrl
             .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
-            .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
+            .addPathSegment(ForageConstants.PathSegment.API)
+            .addPathSegment(ForageConstants.PathSegment.MESSAGE)
+            .addPathSegment(contentId)
             .build()
     }
 }

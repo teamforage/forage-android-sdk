@@ -87,10 +87,7 @@ class TestPinCollector : PinCollector {
     )
 
     companion object {
-        fun checkBalanceResponse(): String =
-            "{\"snap\":\"100.00\",\"non_snap\":\"100.00\",\"updated\":\"2022-11-29T06:26:57.127792-08:00\"}"
-
-        fun checkBalanceInvalidCardNumberResponse(): String =
-            "{\"path\":\"/api/payment_methods/52caa546d2/balance/\",\"errors\":[{\"code\":\"ebt_error_14\",\"message\":\"Invalid card number - Re-enter Transaction\",\"source\":{\"resource\":\"Payment_Methods\",\"ref\":\"52caa546d2\"}}]}"
+        fun sendToProxyResponse(contentId: String): String =
+            "{\"content_id\":\"$contentId\",\"message_type\":\"0200\",\"status\":\"sent_to_proxy\",\"failed\":false,\"errors\":[]}"
     }
 }
