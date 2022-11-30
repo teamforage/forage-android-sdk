@@ -6,18 +6,21 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
-internal class EncryptionKeyService(
+internal class CheckBalanceResponseService(
     private val httpUrl: HttpUrl,
     okHttpClient: OkHttpClient
 ) : NetworkService(okHttpClient) {
-    suspend fun getEncryptionKey(): ForageApiResponse<String> = try {
-        getEncryptionToCoroutine()
+
+    suspend fun retrieveBalanceResponse(paymentMethodRef: String): ForageApiResponse<String> = try {
+        getBalanceResponseToCoroutine(paymentMethodRef)
     } catch (ex: IOException) {
         ForageApiResponse.Failure(message = ex.message.orEmpty())
     }
 
-    private suspend fun getEncryptionToCoroutine(): ForageApiResponse<String> {
-        val url = getEncryptionKeyUrl()
+    private suspend fun getBalanceResponseToCoroutine(
+        paymentMethodRef: String
+    ): ForageApiResponse<String> {
+        val url = getBalanceUrl(paymentMethodRef)
 
         val request: Request = Request.Builder()
             .url(url)
@@ -27,11 +30,12 @@ internal class EncryptionKeyService(
         return convertCallbackToCoroutine(request)
     }
 
-    private fun getEncryptionKeyUrl(): HttpUrl {
+    private fun getBalanceUrl(paymentMethodRef: String): HttpUrl {
         return httpUrl
             .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
-            .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
+            .addPathSegment(ForageConstants.PathSegment.API)
+            .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
+            .addPathSegment(paymentMethodRef)
             .build()
     }
 }
