@@ -357,7 +357,39 @@ This is an example of usage inside an ACC ViewModel:
 ```
 
 The `paymentRef` will be used to determine if it's a capture from EBT Cash or EBT SNAP. You'll need to handle a single or two payments in your implementation.
-You can also make two calls two ForageSDK.capturePayment to capture both payments with a single action and then process the two responses to determine what will be shown to the user.
+
+You can also make two calls two `ForageSDK.capturePayment` to capture both payments with a single action and then process the two responses to determine what will be shown to the user.
+
+This is an example of usage inside an ACC ViewModel:
+```kotlin
+    fun captureBothAmounts(
+        context: Context,
+        cashPinForageEditText: ForagePINEditText,
+        snapPinForageEditText: ForagePINEditText
+    ) = viewModelScope.launch {
+        _uiState.value = _uiState.value!!.copy(isLoading = true)
+
+        val cashResponse = ForageSDK.capturePayment(
+            context = context,
+            pinForageEditText = cashPinForageEditText,
+            merchantAccount = merchantAccount,
+            bearerToken = bearer,
+            paymentRef = cashPaymentRef,
+            cardToken = cardToken
+        )
+
+        val snapResponse = ForageSDK.capturePayment(
+            context = context,
+            pinForageEditText = snapPinForageEditText,
+            merchantAccount = merchantAccount,
+            bearerToken = bearer,
+            paymentRef = snapPaymentRef,
+            cardToken = cardToken
+        )
+    }
+```
+
+By doing this both requests will be executed sequentially. To run them in parallel, you could use `async`/`await` to launch the `capturePayment` call.
 
 ## The ForageApiResponse sealed class
 
