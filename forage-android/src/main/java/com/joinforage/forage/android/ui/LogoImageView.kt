@@ -7,6 +7,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.joinforage.forage.android.R
 
+/**
+ * ImageView containing the Forage logo
+ */
 fun getLogoImageViewLayout(context: Context): LinearLayout {
     val forageLogoHeight = context.resources.getDimensionPixelSize(R.dimen.forage_logo_height)
 

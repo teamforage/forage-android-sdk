@@ -26,4 +26,8 @@ internal object ForageConstants {
         const val API = "api"
         const val PAYMENT_METHODS = "payment_methods"
     }
+
+    object VGS {
+        const val PIN_FIELD_NAME = "pin"
+    }
 }
