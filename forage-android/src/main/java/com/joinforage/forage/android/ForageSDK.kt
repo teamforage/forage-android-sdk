@@ -15,6 +15,9 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
 import java.util.UUID
 
+/**
+ * Singleton responsible for implementing the SDK API
+ */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
     private val logger = Logger.getInstance(BuildConfig.DEBUG)

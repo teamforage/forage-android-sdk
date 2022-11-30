@@ -13,6 +13,9 @@ import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import com.verygoodsecurity.vgscollect.widget.VGSTextInputLayout
 
+/**
+ * Material component using VGSTextInputLayout and VGSEditText to collect the PIN
+ */
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

@@ -19,6 +19,9 @@ import com.joinforage.forage.android.R
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.StateIIN
 
+/**
+ * Material Design component with a TextInputEditText to collect the EBT card number
+ */
 class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
