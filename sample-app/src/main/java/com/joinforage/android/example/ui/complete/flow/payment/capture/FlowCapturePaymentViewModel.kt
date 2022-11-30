@@ -1,6 +1,7 @@
 package com.joinforage.android.example.ui.complete.flow.payment.capture
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -18,12 +19,13 @@ import javax.inject.Inject
 class FlowCapturePaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
+    private val TAG = FlowCapturePaymentViewModel::class.java.simpleName
+
     private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val snapAmount = args.snapAmount
     private val cashAmount = args.cashAmount
     private val merchantAccount = args.merchantAccount
     private val bearer = args.bearer
-    private val paymentMethodRef = args.paymentMethodRef
     private val cardToken = args.cardToken
     private val snapPaymentRef = args.snapPaymentRef
     private val cashPaymentRef = args.cashPaymentRef
@@ -54,12 +56,16 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
             when (response) {
                 is ForageApiResponse.Success -> {
+                    Log.d(TAG, "Capture Snap Payment Response: ${response.data}")
+
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
                         snapResponse = response.data
                     )
                 }
                 is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Capture Snap Payment Response: ${response.message}")
+
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
                         snapResponse = response.message
@@ -83,12 +89,16 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
             when (response) {
                 is ForageApiResponse.Success -> {
+                    Log.d(TAG, "Capture Cash Payment Response: ${response.data}")
+
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
                         cashResponse = response.data
                     )
                 }
                 is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Capture Cash Payment Response: ${response.message}")
+
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
                         cashResponse = response.message
