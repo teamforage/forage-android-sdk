@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import com.verygoodsecurity.vgscollect.widget.VGSTextInputLayout
 
@@ -81,7 +82,7 @@ class ForagePINEditText @JvmOverloads constructor(
                         setPadding(20, 20, 0, 20)
 
                         setSingleLine(true)
-                        setFieldName("pin")
+                        setFieldName(ForageConstants.VGS.PIN_FIELD_NAME)
                         setText("")
                         setMaxLength(4)
 
