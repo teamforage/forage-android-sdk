@@ -14,6 +14,7 @@ Table of contents
      * [How to provide styles](/docs/styles.md) 
    * [Tokenizing an EBT Card](#tokenize-ebt-card-number) 
    * [Performing a balance check](#performing-a-balance-check) 
+   * [Capturing a payment](#capturing-a-payment) 
    * [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
    * [Dependencies](#dependencies)
    * [Development](#development)
@@ -356,6 +357,7 @@ This is an example of usage inside an ACC ViewModel:
 ```
 
 The `paymentRef` will be used to determine if it's a capture from EBT Cash or EBT SNAP. You'll need to handle a single or two payments in your implementation.
+You can also make two calls two ForageSDK.capturePayment to capture both payments with a single action and then process the two responses to determine what will be shown to the user.
 
 ## The ForageApiResponse sealed class
 
