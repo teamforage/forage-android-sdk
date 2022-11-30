@@ -1,0 +1,12 @@
+{
+  "content_id": "c2bf2b14-415f-4cb3-8687-7eea06f75369",
+  "message_type": "0200",
+  "status": "received_on_django",
+  "failed": true,
+  "errors": [
+    {
+      "code": "ebt_error_54",
+      "message": "Received failure response from EBT network"
+    }
+  ]
+}

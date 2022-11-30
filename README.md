@@ -60,7 +60,7 @@ dependencies {
 }
 ```
 
-## UI Components 
+## UI Components
 
 ### ForagePANEditText
 ```xml
