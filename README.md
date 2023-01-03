@@ -266,7 +266,7 @@ ForageSDK will expose the following function to check the EBT card balance:
     ): ForageApiResponse<String>
 ```
 
-To help maintain the sensitive information PCI compliant, this function needs the `ForagePINEditText` reference and the Context so we can cancel ongoing requests properly.
+To keep the sensitive information PCI compliant, this function needs the `ForagePINEditText` reference and the Context so we can cancel ongoing requests properly.
 
 This is an example of usage inside an ACC ViewModel:
 
@@ -356,7 +356,7 @@ This is an example of usage inside an ACC ViewModel:
         }
 ```
 
-The `paymentRef` will be used to determine if it's a capture from EBT Cash or EBT SNAP. You'll need to handle a single or two payments in your implementation.
+The `paymentRef` will be used to determine if it's a capture from EBT Cash or EBT SNAP. If you choose to support both SNAP and EBT Cash, you will need to handle two payments in your implementation.
 
 You can also make two calls two `ForageSDK.capturePayment` to capture both payments with a single action and then process the two responses to determine what will be shown to the user.
 
@@ -393,7 +393,7 @@ By doing this both requests will be executed sequentially. To run them in parall
 
 ## The ForageApiResponse sealed class
 
-The SDK provide suspending functions to interact with the Forage API.
+The SDK provides suspending functions to interact with the Forage API.
 `ForageApiResponse` is a sealed class that could be either a `Success` or a `Failure`
 
 ```kotlin
@@ -429,7 +429,7 @@ We use [Kover](https://github.com/Kotlin/kotlinx-kover) to extract our code cove
 To check the SDK coverage, you can run:
 
 ```shell
- ./gradlew forage-android:koverHtmlReport  
+ ./gradlew forage-android:koverHtmlReport
 ```
 
 Kover will provide the report link when it finishes running:
