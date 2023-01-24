@@ -16,6 +16,7 @@ Table of contents
    * [Performing a balance check](#performing-a-balance-check) 
    * [Capturing a payment](#capturing-a-payment) 
    * [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
+   * [Running the Sample App](#running-the-sample-app)
    * [Dependencies](#dependencies)
    * [Development](#development)
      * [Android Studio](#android-studio)
@@ -405,13 +406,29 @@ sealed class ForageApiResponse<out T> {
 
 ```
 
+## Running the Sample App
+
+The sample-app/ folder in this repository contains a very simple integration of the Forage SDK. To get it running,
+
+1. [Download Android Studio](https://developer.android.com/studio)
+   1. The app was developed with Android Studio Electric Eel
+2. Open the forage-android-sdk project folder and wait for dependencies to download
+3. [Create a bearer token](https://docs.joinforage.app/recipes/generate-a-token) with `pinpad_only` scope
+4. Confirm your FNS number on the Forage dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/))
+5. Place your bearer token and FNS number in constants inside sample-app/java/com.joinforage.android.example/network/interceptors/AuthInterceptor.kt
+   1. This token and FNS number is used to make the request to /api/payments/
+   2. The sample-app will prompt you for a bearer token on the first page of the app as well, those values get passed to the SDK
+6. Choose the appropriate build variant (usually sandboxDebug for your first run)
+7. Run the sample-app on your emulated device of choice
+
 ## Dependencies
 - Minimum API Level Android 5.0 (API level 21)
 - [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) v1.6.4
 - 3rd party libraries:
     - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
       - [OkHttp](https://github.com/square/okhttp) v4.10.0
-  
+      
+
 ## Development
 ### Android Studio
 This project was developed using Android Studio Electric Eel, but you can also use Android Studio Dolphin since it's currently using Android Gradle Plugin version 7.3.1.
