@@ -24,19 +24,24 @@ class AuthInterceptor @Inject constructor() : Interceptor {
 
     companion object {
         private fun getBearerToken() = when (BuildConfig.FLAVOR) {
-            "dev" -> DEV_BEARER_TOKEN
+            "prod" -> PROD_BEARER_TOKEN
+            "cert" -> CERT_BEARER_TOKEN
             else -> SANDBOX_BEARER_TOKEN
         }
 
         private fun getMerchantAccount() = when (BuildConfig.FLAVOR) {
-            "dev" -> DEV_MERCHANT_ACCOUNT
+            "prod" -> PROD_MERCHANT_ACCOUNT
+            "cert" -> CERT_MERCHANT_ACCOUNT
             else -> SANDBOX_MERCHANT_ACCOUNT
         }
 
-        private const val SANDBOX_BEARER_TOKEN = "IP0oRQBc16nFG5xsHP5ViyIdajyb7Z"
-        private const val SANDBOX_MERCHANT_ACCOUNT = "8000009"
+        private const val SANDBOX_BEARER_TOKEN = "<INSERT_OAUTH_TOKEN>"
+        private const val SANDBOX_MERCHANT_ACCOUNT = "<INSERT_MERCHANT_ACCOUNT>"
 
-        private const val DEV_BEARER_TOKEN = "yzXZvJxXXF19L7bIRXDeISsMj7YLNK"
-        private const val DEV_MERCHANT_ACCOUNT = "9876545"
+        private const val CERT_BEARER_TOKEN = "<INSERT_OAUTH_TOKEN>"
+        private const val CERT_MERCHANT_ACCOUNT = "<INSERT_MERCHANT_ACCOUNT>"
+
+        private const val PROD_BEARER_TOKEN = "<INSERT_OAUTH_TOKEN>"
+        private const val PROD_MERCHANT_ACCOUNT = "<INSERT_MERCHANT_ACCOUNT>"
     }
 }
