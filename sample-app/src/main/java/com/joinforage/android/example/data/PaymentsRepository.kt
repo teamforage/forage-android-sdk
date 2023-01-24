@@ -13,6 +13,8 @@ class PaymentsRepository @Inject constructor(
     private val forageApi: ForageApi
 ) {
     suspend fun createPayment(
+        bearerToken: String,
+        fnsNumber: String,
         amount: Long,
         fundingType: String,
         paymentMethod: String,
@@ -21,7 +23,10 @@ class PaymentsRepository @Inject constructor(
         deliveryAddress: Address,
         isDelivery: Boolean
     ): ApiResponse<PaymentResponse> {
+        var bearerString = "Bearer $bearerToken"
         return forageApi.createPayment(
+            bearerString,
+            fnsNumber,
             PaymentRequest(
                 amount = amount,
                 fundingType = fundingType,

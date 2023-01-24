@@ -62,16 +62,20 @@ internal class CapturePaymentRepository(
             val response = messageStatusService.getStatus(contentId)
             when (response) {
                 is ForageApiResponse.Success -> {
-                    val balanceMessage = Message.ModelMapper.from(response.data)
+                    val paymentMessage = Message.ModelMapper.from(response.data)
 
-                    if (balanceMessage.status == "completed") {
+                    if (paymentMessage.status == "completed") {
                         logger.debug("Status is completed.")
+                        if (paymentMessage.failed) {
+                            logger.debug("Failed is true.")
+                            return ForageApiResponse.Failure(response.data)
+                        }
                         break
                     } else {
-                        logger.debug("Status is ${balanceMessage.status}.")
+                        logger.debug("Status is ${paymentMessage.status}.")
                     }
 
-                    if (balanceMessage.failed) {
+                    if (paymentMessage.failed) {
                         logger.debug("Failed is true.")
                         return ForageApiResponse.Failure(response.data)
                     }

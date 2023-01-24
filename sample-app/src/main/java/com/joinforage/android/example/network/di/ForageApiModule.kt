@@ -22,7 +22,10 @@ import javax.inject.Singleton
 object ForageApiModule {
     private fun provideBaseUrl() = when (BuildConfig.FLAVOR) {
         "dev" -> "https://api.dev.joinforage.app/"
-        else -> "https://api.sandbox.joinforage.app/"
+        "staging" -> "https://api.staging.joinforage.app/"
+        "sandbox" -> "https://api.sandbox.joinforage.app/"
+        "cert" -> "https://api.cert.joinforage.app/"
+        else -> "https://api.joinforage.app/"
     }
 
     @Provides

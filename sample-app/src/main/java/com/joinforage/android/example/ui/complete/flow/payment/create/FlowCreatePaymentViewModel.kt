@@ -47,6 +47,8 @@ class FlowCreatePaymentViewModel @Inject constructor(
         _isLoading.value = true
 
         repository.createPayment(
+            bearer,
+            merchantAccount,
             amount = amount,
             fundingType = "ebt_snap",
             paymentMethod = args.paymentMethodRef,
@@ -65,6 +67,8 @@ class FlowCreatePaymentViewModel @Inject constructor(
         _isLoading.value = true
 
         repository.createPayment(
+            bearer,
+            merchantAccount,
             amount = amount,
             fundingType = "ebt_cash",
             paymentMethod = args.paymentMethodRef,

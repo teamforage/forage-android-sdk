@@ -67,6 +67,10 @@ internal class CheckBalanceRepository(
 
                     if (balanceMessage.status == "completed") {
                         logger.debug("Status is completed.")
+                        if (balanceMessage.failed) {
+                            logger.debug("Failed is true.")
+                            return ForageApiResponse.Failure(response.data)
+                        }
                         break
                     } else {
                         logger.debug("Status is ${balanceMessage.status}.")
