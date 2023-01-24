@@ -25,6 +25,8 @@ internal object ForageConstants {
         const val ENCRYPTION_ALIAS = "encryption_alias"
         const val API = "api"
         const val PAYMENT_METHODS = "payment_methods"
+        const val MESSAGE = "message"
+        const val PAYMENTS = "payments"
     }
 
     object VGS {
