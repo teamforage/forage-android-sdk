@@ -1,6 +1,5 @@
 package com.joinforage.android.example.network.interceptors
 
-import com.joinforage.android.example.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.Response
