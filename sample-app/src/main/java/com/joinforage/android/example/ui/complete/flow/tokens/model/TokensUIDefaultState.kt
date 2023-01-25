@@ -6,12 +6,14 @@ class TokensUIDefaultState(
     val isLoading: Boolean = false
 ) {
     val bearer = when (BuildConfig.FLAVOR) {
-        "dev" -> "AbCaccesstokenXyz"
+        "sandbox" -> "AbCaccesstokenXyz"
+        "prod" -> "AbCaccesstokenXyz"
         else -> "AbCaccesstokenXyz"
     }
 
     val merchantAccount = when (BuildConfig.FLAVOR) {
-        "dev" -> "9876545"
-        else -> "8000009"
+        "sandbox" -> "9876545"
+        "prod" -> "9876545"
+        else -> "9876545"
     }
 }
