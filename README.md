@@ -415,11 +415,13 @@ The sample-app/ folder in this repository contains a very simple integration of 
 2. Open the forage-android-sdk project folder and wait for dependencies to download
 3. [Create a bearer token](https://docs.joinforage.app/recipes/generate-a-token) with `pinpad_only` scope
 4. Confirm your FNS number on the Forage dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/))
-5. Place your bearer token and FNS number in constants inside sample-app/java/com.joinforage.android.example/network/interceptors/AuthInterceptor.kt
-   1. This token and FNS number is used to make the request to /api/payments/
-   2. The sample-app will prompt you for a bearer token on the first page of the app as well, those values get passed to the SDK
+5. Place your bearer token and FNS number in constants inside sample-app/java/com.joinforage.android.example/ui/complete.flow/tokens/model/TokensUIDefaultState.kt
+   1. The sample-app will prompt you for a bearer token and FNS number on the first page of the app, but takes defaults from this file location
 6. Choose the appropriate build variant (usually sandboxDebug for your first run)
 7. Run the sample-app on your emulated device of choice
+8. Use any 16 digit card number to complete the payment flow
+   1. Invalid cards will still be accepted by the Forage Sandbox API
+   2. Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/how-to-trigger-exceptions)
 
 ## Dependencies
 - Minimum API Level Android 5.0 (API level 21)
