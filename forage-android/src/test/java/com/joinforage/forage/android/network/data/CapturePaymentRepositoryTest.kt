@@ -11,6 +11,7 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -61,14 +62,14 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.message).contains("Authentication credentials were not provided.")
+        assertThat(clientError.errors[0].message).contains("Authentication credentials were not provided.")
     }
 
     @Test
     fun `it should return a failure when the VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
-        val failureResponse = ForageApiResponse.Failure(500, "server_error", "Some error message from VGS")
+        val failureResponse = ForageApiResponse.Failure(500, listOf<ForageError>(ForageError(500, "server_error", "Some error message from VGS")))
 
         pinCollector.setCollectPinForCapturePaymentResponse(
             paymentRef = testData.paymentRef,
@@ -109,9 +110,9 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         val expectedForageCode = "ebt_error_54"
         val expectedStatusCode = 400
 
-        assertThat(failureResponse.message).isEqualTo(expectedMessage)
-        assertThat(failureResponse.code).isEqualTo(expectedForageCode)
-        assertThat(failureResponse.status).isEqualTo(expectedStatusCode)
+        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
     private data class ExpectedData(

@@ -5,21 +5,31 @@ import org.json.JSONObject
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val status: Int, val code: String, val message: String) : ForageApiResponse<Nothing>()
+    data class Failure(val httpStatusCode: Int, val errors: List<ForageError>) : ForageApiResponse<Nothing>()
 }
 
 data class ForageError(
+    val httpStatusCode: Int,
     val code: String,
     val message: String
 ) {
-    object ForageErrorMapper {
-        fun from(string: String): ForageError {
+    override fun toString(): String {
+        return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode"
+    }
+}
+
+data class ForageErrorObj(
+    val code: String,
+    val message: String
+) {
+    object ForageErrorObjMapper {
+        fun from(string: String): ForageErrorObj {
             val jsonObject = JSONObject(string)
 
             val code = jsonObject.getString("code")
             val message = jsonObject.getString("message")
 
-            return ForageError(
+            return ForageErrorObj(
                 code = code,
                 message = message
             )
@@ -33,7 +43,7 @@ data class ForageError(
 
 data class ForageApiError(
     val path: String,
-    val errors: List<ForageError>
+    val errors: List<ForageErrorObj>
 ) {
     object ForageApiErrorMapper {
         fun from(string: String): ForageApiError {
@@ -42,7 +52,7 @@ data class ForageApiError(
             val path = jsonObject.getString("path")
             val errors = jsonObject.optJSONArray("errors")
                 ?.let { 0.until(it.length()).map { i -> it.optJSONObject(i) } } // returns an array of JSONObject
-                ?.map { ForageError.ForageErrorMapper.from(it.toString()) } // transforms each JSONObject of the array into ForageError
+                ?.map { ForageErrorObj.ForageErrorObjMapper.from(it.toString()) } // transforms each JSONObject of the array into ForageError
                 ?: return ForageApiError(
                     path = path,
                     errors = emptyList()

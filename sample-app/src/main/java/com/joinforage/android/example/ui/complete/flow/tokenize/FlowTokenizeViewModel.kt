@@ -63,7 +63,7 @@ class FlowTokenizeViewModel @Inject constructor(
                 _paymentMethod.value = result
             }
             is ForageApiResponse.Failure -> {
-                _error.value = response.message
+                _error.value = response.errors[0].message
             }
         }
 

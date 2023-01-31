@@ -70,6 +70,6 @@ class EncryptionKeyServiceTest : MockServerSuite() {
         val clientError = response as ForageApiResponse.Failure
         val expectedDetail = "Authentication credentials were not provided."
 
-        assertThat(clientError.message).isEqualTo(expectedDetail)
+        assertThat(clientError.errors[0].message).isEqualTo(expectedDetail)
     }
 }

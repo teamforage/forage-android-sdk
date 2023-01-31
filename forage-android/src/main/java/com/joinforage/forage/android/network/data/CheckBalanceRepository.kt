@@ -7,6 +7,7 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
 import kotlinx.coroutines.delay
 
@@ -70,7 +71,7 @@ internal class CheckBalanceRepository(
                         if (balanceMessage.failed) {
                             logger.debug("Failed is true.")
                             val error = balanceMessage.errors[0]
-                            return ForageApiResponse.Failure(error.statusCode, error.forageCode, error.message)
+                            return ForageApiResponse.Failure(error.statusCode, listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                         }
                         break
                     } else {
@@ -80,7 +81,7 @@ internal class CheckBalanceRepository(
                     if (balanceMessage.failed) {
                         logger.debug("Failed is true.")
                         val error = balanceMessage.errors[0]
-                        return ForageApiResponse.Failure(error.statusCode, error.forageCode, error.message)
+                        return ForageApiResponse.Failure(error.statusCode, listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                     }
                 }
                 else -> {
@@ -90,7 +91,7 @@ internal class CheckBalanceRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.debug("Max attempts reached. Returning last response")
-                return ForageApiResponse.Failure(500, "server_error", "Unknown Server Error")
+                return ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
             }
 
             attempt += 1
@@ -105,7 +106,7 @@ internal class CheckBalanceRepository(
         private const val MAX_ATTEMPTS = 10
 
         private fun ForageApiResponse<String>.getStringResponse() = when (this) {
-            is ForageApiResponse.Failure -> this.message
+            is ForageApiResponse.Failure -> this.errors[0].message
             is ForageApiResponse.Success -> this.data
         }
     }

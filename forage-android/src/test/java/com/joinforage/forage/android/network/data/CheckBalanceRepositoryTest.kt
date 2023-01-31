@@ -14,6 +14,7 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -69,14 +70,14 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.message).contains("Authentication credentials were not provided.")
+        assertThat(clientError.errors[0].message).contains("Authentication credentials were not provided.")
     }
 
     @Test
     fun `it should return a failure when the VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
-        val failureResponse = ForageApiResponse.Failure(500, "server_error", "Some error message from VGS")
+        val failureResponse = ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Some error message from VGS")))
 
         pinCollector.setCollectPinForBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
@@ -112,7 +113,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.message).contains("No merchant account FNS number was provided.")
+        assertThat(clientError.errors[0].message).contains("No merchant account FNS number was provided.")
     }
 
     @Test
@@ -137,7 +138,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.message).contains("Received failure response from EBT network")
+        assertThat(clientError.errors[0].message).contains("Received failure response from EBT network")
     }
 
     @Test
@@ -169,9 +170,9 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         val expectedForageCode = "server_error"
         val expectedStatusCode = 500
 
-        assertThat(clientError.message).isEqualTo(expectedMessage)
-        assertThat(clientError.code).isEqualTo(expectedForageCode)
-        assertThat(clientError.status).isEqualTo(expectedStatusCode)
+        assertThat(clientError.errors[0].message).isEqualTo(expectedMessage)
+        assertThat(clientError.errors[0].code).isEqualTo(expectedForageCode)
+        assertThat(clientError.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
         server.verify("api/message/$contentId")
             .called(
                 times = times(MAX_ATTEMPTS)
