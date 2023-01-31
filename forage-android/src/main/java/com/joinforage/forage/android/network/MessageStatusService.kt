@@ -13,7 +13,7 @@ internal class MessageStatusService(
     suspend fun getStatus(contentId: String): ForageApiResponse<String> = try {
         getStatusToCoroutine(contentId)
     } catch (ex: IOException) {
-        ForageApiResponse.Failure(message = ex.message.orEmpty())
+        ForageApiResponse.Failure(500, "server_error", ex.message.orEmpty())
     }
 
     private suspend fun getStatusToCoroutine(contentId: String): ForageApiResponse<String> {

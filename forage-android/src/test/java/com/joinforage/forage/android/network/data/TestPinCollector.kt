@@ -23,7 +23,7 @@ class TestPinCollector : PinCollector {
                 cardToken,
                 encryptionKey
             ),
-            ForageApiResponse.Failure("")
+            ForageApiResponse.Failure(500, "server_error", "Unknown Server Error")
         )
     }
 
@@ -38,7 +38,7 @@ class TestPinCollector : PinCollector {
                 cardToken = cardToken,
                 encryptionKey = encryptionKey
             ),
-            ForageApiResponse.Failure("")
+            ForageApiResponse.Failure(500, "server_error", "Unknown Server Error")
         )
     }
 

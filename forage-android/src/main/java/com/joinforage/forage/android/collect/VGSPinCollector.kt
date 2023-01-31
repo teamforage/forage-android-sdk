@@ -41,12 +41,12 @@ internal class VGSPinCollector(
                     )
                     is VGSResponse.ErrorResponse -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(response.body.orEmpty())
+                            ForageApiResponse.Failure(response.errorCode, "user_error", "Invalid Data")
                         )
                     )
                     null -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure("Null response received from VGS collect")
+                            ForageApiResponse.Failure(500, "server_error", "Unknown Server Error")
                         )
                     )
                 }
@@ -89,10 +89,14 @@ internal class VGSPinCollector(
                     )
                     is VGSResponse.ErrorResponse -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(response.body.orEmpty())
+                            ForageApiResponse.Failure(response.errorCode, "user_error", "Invalid Data")
                         )
                     )
-                    null -> continuation.resumeWith(Result.success((ForageApiResponse.Failure(""))))
+                    null -> continuation.resumeWith(
+                        Result.success(
+                            ForageApiResponse.Failure(500, "server_error", "Unknown Server Error")
+                        )
+                    )
                 }
             }
         })

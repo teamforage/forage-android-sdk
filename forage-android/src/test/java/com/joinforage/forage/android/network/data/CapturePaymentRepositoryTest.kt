@@ -72,7 +72,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
-        val failureResponse = ForageApiResponse.Failure("Some error message from VGS")
+        val failureResponse = ForageApiResponse.Failure(500, "server_error", "Some error message from VGS")
 
         pinCollector.setCollectPinForCapturePaymentResponse(
             paymentRef = testData.paymentRef,

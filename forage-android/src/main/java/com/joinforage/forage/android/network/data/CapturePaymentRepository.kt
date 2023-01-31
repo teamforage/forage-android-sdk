@@ -68,7 +68,8 @@ internal class CapturePaymentRepository(
                         logger.debug("Status is completed.")
                         if (paymentMessage.failed) {
                             logger.debug("Failed is true.")
-                            return ForageApiResponse.Failure(response.data)
+                            val error = paymentMessage.errors[0]
+                            return ForageApiResponse.Failure(error.statusCode, error.forageCode, error.message)
                         }
                         break
                     } else {
@@ -77,8 +78,8 @@ internal class CapturePaymentRepository(
 
                     if (paymentMessage.failed) {
                         logger.debug("Failed is true.")
-                        return ForageApiResponse.Failure(response.data)
-                    }
+                        val error = paymentMessage.errors[0]
+                        return ForageApiResponse.Failure(error.statusCode, error.forageCode, error.message)                    }
                 }
                 else -> {
                     return response
@@ -87,7 +88,7 @@ internal class CapturePaymentRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.debug("Max attempts reached. Returning last response")
-                return ForageApiResponse.Failure(response.getStringResponse())
+                return ForageApiResponse.Failure(500, "server_error", "Unknown Server Error")
             }
 
             attempt += 1

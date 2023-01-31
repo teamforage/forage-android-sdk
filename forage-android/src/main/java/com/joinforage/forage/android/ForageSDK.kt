@@ -43,7 +43,7 @@ object ForageSDK : ForageSDKApi {
             ).tokenizeCard(
                 cardNumber = currentEntry.getPanNumber()
             )
-            else -> ForageApiResponse.Failure("Invalid PAN entry")
+            else -> ForageApiResponse.Failure(400, "bad_request", "Invalid PAN entry")
         }
     }
 
