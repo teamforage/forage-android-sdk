@@ -79,7 +79,8 @@ internal class CapturePaymentRepository(
                     if (paymentMessage.failed) {
                         logger.debug("Failed is true.")
                         val error = paymentMessage.errors[0]
-                        return ForageApiResponse.Failure(error.statusCode, error.forageCode, error.message)                    }
+                        return ForageApiResponse.Failure(error.statusCode, error.forageCode, error.message)
+                    }
                 }
                 else -> {
                     return response
