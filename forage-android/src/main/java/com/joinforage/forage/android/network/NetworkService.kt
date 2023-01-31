@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import okhttp3.Call
 import okhttp3.Callback
@@ -8,7 +9,6 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import kotlin.coroutines.suspendCoroutine
-import com.joinforage.forage.android.network.model.ForageApiError
 
 abstract class NetworkService(
     private val okHttpClient: OkHttpClient

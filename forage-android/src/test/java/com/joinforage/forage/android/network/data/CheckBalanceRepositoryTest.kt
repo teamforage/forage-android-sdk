@@ -14,7 +14,6 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
