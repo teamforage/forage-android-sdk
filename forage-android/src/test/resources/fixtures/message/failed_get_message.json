@@ -5,7 +5,8 @@
   "failed": true,
   "errors": [
     {
-      "code": "ebt_error_54",
+      "status_code": 400,
+      "forage_code": "ebt_error_51",
       "message": "Received failure response from EBT network"
     }
   ]

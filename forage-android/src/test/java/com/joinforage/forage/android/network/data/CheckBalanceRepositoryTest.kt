@@ -166,11 +166,13 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
+        val expectedMessage = "Unknown Server Error"
+        val expectedForageCode = "server_error"
+        val expectedStatusCode = 500
 
-        val jsonAdapter: JsonAdapter<Message> = moshi.adapter(Message::class.java)
-        val messageResponse = jsonAdapter.fromJson(clientError.message)
-
-        assertThat(messageResponse).isEqualTo(getSendToProxyResponse(contentId))
+        assertThat(clientError.message).isEqualTo(expectedMessage)
+        assertThat(clientError.code).isEqualTo(expectedForageCode)
+        assertThat(clientError.status).isEqualTo(expectedStatusCode)
         server.verify("api/message/$contentId")
             .called(
                 times = times(MAX_ATTEMPTS)

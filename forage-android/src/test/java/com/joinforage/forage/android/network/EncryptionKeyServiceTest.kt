@@ -73,14 +73,6 @@ class EncryptionKeyServiceTest : MockServerSuite() {
         val clientError = response as ForageApiResponse.Failure
         val expectedDetail = "Authentication credentials were not provided."
 
-        assertThat(clientError.message.toErrorResponse()?.detail).isEqualTo(expectedDetail)
-    }
-
-    companion object {
-        private val moshi: Moshi = Moshi.Builder().build()
-        fun String.toErrorResponse(): ErrorResponse? {
-            val jsonAdapter: JsonAdapter<ErrorResponse> = moshi.adapter(ErrorResponse::class.java)
-            return jsonAdapter.fromJson(this)
-        }
+        assertThat(clientError.message).isEqualTo(expectedDetail)
     }
 }

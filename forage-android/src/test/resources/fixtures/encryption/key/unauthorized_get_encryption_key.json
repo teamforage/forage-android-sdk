@@ -1,3 +1,11 @@
 {
-  "detail": "Authentication credentials were not provided."
+  "path": "iso_server/encryption_alias",
+  "errors": [{
+    "code": "unauthorized",
+    "message": "Authentication credentials were not provided.",
+    "source": {
+      "resource": "Access Token",
+      "ref": ""
+    }
+  }]
 }

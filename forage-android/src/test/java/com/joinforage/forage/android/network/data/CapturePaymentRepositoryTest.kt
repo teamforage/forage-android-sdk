@@ -13,6 +13,7 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.SQSError
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -109,36 +110,13 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
+        val expectedMessage = "Expired card - Expired Card"
+        val expectedForageCode = "ebt_error_54"
+        val expectedStatusCode = 400
 
-        val expectedMessage = Message(
-            contentId = contentId,
-            messageType = "0200",
-            status = "received_on_django",
-            failed = true,
-            errors = listOf(
-                Error(
-                    code = "ebt_error_54",
-                    message = "Expired card - Expired Card"
-                )
-            )
-        )
-
-        assertThat(failureResponse.message.toMessage()).isEqualTo(expectedMessage)
-    }
-
-    companion object {
-        private const val MAX_ATTEMPTS = 10
-        private val moshi: Moshi = Moshi.Builder().build()
-
-        fun Message.toJson(): String? {
-            val jsonAdapter: JsonAdapter<Message> = moshi.adapter(Message::class.java)
-            return jsonAdapter.toJson(this)
-        }
-
-        fun String.toMessage(): Message? {
-            val jsonAdapter: JsonAdapter<Message> = moshi.adapter(Message::class.java)
-            return jsonAdapter.fromJson(this)
-        }
+        assertThat(failureResponse.message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.status).isEqualTo(expectedStatusCode)
     }
 
     private data class ExpectedData(
