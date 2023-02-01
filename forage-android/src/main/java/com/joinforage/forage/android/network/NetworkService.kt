@@ -37,7 +37,7 @@ abstract class NetworkService(
                                 } else {
                                     continuation.resumeWith(
                                         Result.success(
-                                            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
+                                            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
                                         )
                                     )
                                 }

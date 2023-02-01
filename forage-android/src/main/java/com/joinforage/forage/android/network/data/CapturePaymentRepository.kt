@@ -90,7 +90,7 @@ internal class CapturePaymentRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.debug("Max attempts reached. Returning last response")
-                return ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
+                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
             attempt += 1

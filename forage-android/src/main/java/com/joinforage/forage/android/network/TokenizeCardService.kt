@@ -19,7 +19,7 @@ internal class TokenizeCardService(
     suspend fun tokenizeCard(cardNumber: String): ForageApiResponse<String> = try {
         tokenizeCardCoroutine(cardNumber)
     } catch (ex: IOException) {
-        ForageApiResponse.Failure(listOf(ForageError(500, "server_error", ex.message.orEmpty())))
+        ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
     private suspend fun tokenizeCardCoroutine(cardNumber: String): ForageApiResponse<String> {

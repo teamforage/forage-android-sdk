@@ -77,7 +77,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
-        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Some error message from VGS")))
+        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
         pinCollector.setCollectPinForBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
@@ -167,7 +167,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
         val expectedMessage = "Unknown Server Error"
-        val expectedForageCode = "server_error"
+        val expectedForageCode = "unknown_server_error"
         val expectedStatusCode = 500
 
         assertThat(clientError.errors[0].message).isEqualTo(expectedMessage)

@@ -15,7 +15,7 @@ internal class CheckBalanceResponseService(
     suspend fun retrieveBalanceResponse(paymentMethodRef: String): ForageApiResponse<String> = try {
         getBalanceResponseToCoroutine(paymentMethodRef)
     } catch (ex: IOException) {
-        ForageApiResponse.Failure(listOf(ForageError(500, "server_error", ex.message.orEmpty())))
+        ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
     private suspend fun getBalanceResponseToCoroutine(
