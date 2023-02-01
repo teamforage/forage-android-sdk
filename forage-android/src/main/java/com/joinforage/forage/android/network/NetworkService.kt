@@ -31,13 +31,13 @@ abstract class NetworkService(
                                     val error = parsedError.errors[0]
                                     continuation.resumeWith(
                                         Result.success(
-                                            ForageApiResponse.Failure(response.code, listOf(ForageError(response.code, error.code, error.message)))
+                                            ForageApiResponse.Failure(listOf(ForageError(response.code, error.code, error.message)))
                                         )
                                     )
                                 } else {
                                     continuation.resumeWith(
                                         Result.success(
-                                            ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
+                                            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
                                         )
                                     )
                                 }

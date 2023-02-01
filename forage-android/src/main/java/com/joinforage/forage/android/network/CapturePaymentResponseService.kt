@@ -15,7 +15,7 @@ internal class CapturePaymentResponseService(
         try {
             getPaymentResponseToCoroutine(paymentRef)
         } catch (ex: IOException) {
-            ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", ex.message.orEmpty())))
+            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", ex.message.orEmpty())))
         }
 
     private suspend fun getPaymentResponseToCoroutine(

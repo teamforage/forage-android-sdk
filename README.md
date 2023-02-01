@@ -401,7 +401,7 @@ The SDK provides suspending functions to interact with the Forage API.
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val httpStatusCode: Int, val errors: List<ForageError>) : ForageApiResponse<Nothing>()
+    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>()
 }
 ```
 

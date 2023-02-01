@@ -77,7 +77,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
-        val failureResponse = ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Some error message from VGS")))
+        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Some error message from VGS")))
 
         pinCollector.setCollectPinForBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,

@@ -71,7 +71,7 @@ internal class CheckBalanceRepository(
                         if (balanceMessage.failed) {
                             logger.debug("Failed is true.")
                             val error = balanceMessage.errors[0]
-                            return ForageApiResponse.Failure(error.statusCode, listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+                            return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                         }
                         break
                     } else {
@@ -81,7 +81,7 @@ internal class CheckBalanceRepository(
                     if (balanceMessage.failed) {
                         logger.debug("Failed is true.")
                         val error = balanceMessage.errors[0]
-                        return ForageApiResponse.Failure(error.statusCode, listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+                        return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                     }
                 }
                 else -> {
@@ -91,7 +91,7 @@ internal class CheckBalanceRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.debug("Max attempts reached. Returning last response")
-                return ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
+                return ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
             }
 
             attempt += 1

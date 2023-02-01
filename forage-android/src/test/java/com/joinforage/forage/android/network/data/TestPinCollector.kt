@@ -24,7 +24,7 @@ class TestPinCollector : PinCollector {
                 cardToken,
                 encryptionKey
             ),
-            ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
+            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
         )
     }
 
@@ -39,7 +39,7 @@ class TestPinCollector : PinCollector {
                 cardToken = cardToken,
                 encryptionKey = encryptionKey
             ),
-            ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
+            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
         )
     }
 

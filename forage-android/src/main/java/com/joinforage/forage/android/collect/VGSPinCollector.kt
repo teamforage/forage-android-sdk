@@ -42,12 +42,12 @@ internal class VGSPinCollector(
                     )
                     is VGSResponse.ErrorResponse -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(response.errorCode, listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                            ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
                         )
                     )
                     null -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
+                            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
                         )
                     )
                 }
@@ -90,12 +90,12 @@ internal class VGSPinCollector(
                     )
                     is VGSResponse.ErrorResponse -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(response.errorCode, listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                            ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
                         )
                     )
                     null -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(500, listOf(ForageError(500, "server_error", "Unknown Server Error")))
+                            ForageApiResponse.Failure(listOf(ForageError(500, "server_error", "Unknown Server Error")))
                         )
                     )
                 }
