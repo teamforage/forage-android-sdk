@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.model
 
+import com.joinforage.forage.android.network.model.SQSError
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -11,5 +12,5 @@ data class Message(
     val messageType: String,
     val status: String,
     val failed: Boolean,
-    val errors: List<Error>
+    val errors: List<SQSError>
 )

@@ -4,6 +4,7 @@ import android.content.Context
 import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.Environment
@@ -41,12 +42,12 @@ internal class VGSPinCollector(
                     )
                     is VGSResponse.ErrorResponse -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(response.body.orEmpty())
+                            ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
                         )
                     )
                     null -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure("Null response received from VGS collect")
+                            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
                         )
                     )
                 }
@@ -89,10 +90,14 @@ internal class VGSPinCollector(
                     )
                     is VGSResponse.ErrorResponse -> continuation.resumeWith(
                         Result.success(
-                            ForageApiResponse.Failure(response.body.orEmpty())
+                            ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
                         )
                     )
-                    null -> continuation.resumeWith(Result.success((ForageApiResponse.Failure(""))))
+                    null -> continuation.resumeWith(
+                        Result.success(
+                            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                        )
+                    )
                 }
             }
         })

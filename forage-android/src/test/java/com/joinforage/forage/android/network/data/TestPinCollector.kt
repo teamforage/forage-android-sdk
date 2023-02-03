@@ -2,6 +2,7 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 
 /**
  * Fake test implementation of PinCollector that could be used to replace VGS on tests
@@ -23,7 +24,7 @@ class TestPinCollector : PinCollector {
                 cardToken,
                 encryptionKey
             ),
-            ForageApiResponse.Failure("")
+            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
         )
     }
 
@@ -38,7 +39,7 @@ class TestPinCollector : PinCollector {
                 cardToken = cardToken,
                 encryptionKey = encryptionKey
             ),
-            ForageApiResponse.Failure("")
+            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
         )
     }
 

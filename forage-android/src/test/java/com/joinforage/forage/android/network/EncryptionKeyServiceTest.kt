@@ -3,11 +3,8 @@ package com.joinforage.forage.android.network
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.model.encryption.ErrorResponse
 import com.joinforage.forage.android.network.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.Method
@@ -73,14 +70,6 @@ class EncryptionKeyServiceTest : MockServerSuite() {
         val clientError = response as ForageApiResponse.Failure
         val expectedDetail = "Authentication credentials were not provided."
 
-        assertThat(clientError.message.toErrorResponse()?.detail).isEqualTo(expectedDetail)
-    }
-
-    companion object {
-        private val moshi: Moshi = Moshi.Builder().build()
-        fun String.toErrorResponse(): ErrorResponse? {
-            val jsonAdapter: JsonAdapter<ErrorResponse> = moshi.adapter(ErrorResponse::class.java)
-            return jsonAdapter.fromJson(this)
-        }
+        assertThat(clientError.errors[0].message).isEqualTo(expectedDetail)
     }
 }

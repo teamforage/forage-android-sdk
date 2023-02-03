@@ -18,11 +18,6 @@ Table of contents
    * [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
    * [Running the Sample App](#running-the-sample-app)
    * [Dependencies](#dependencies)
-   * [Development](#development)
-     * [Android Studio](#android-studio)
-     * [How to run the unit tests](#how-to-run-the-unit-tests)
-     * [How to check code coverage](#code-coverage)
-     * [Code Formatting](#code-formatting)
 <!--te-->
 
 ## Overview
@@ -401,9 +396,8 @@ The SDK provides suspending functions to interact with the Forage API.
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val message: String) : ForageApiResponse<Nothing>()
+    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>()
 }
-
 ```
 
 ## Running the Sample App

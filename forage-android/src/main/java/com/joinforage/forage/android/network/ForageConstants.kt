@@ -14,6 +14,7 @@ internal object ForageConstants {
         const val IDEMPOTENCY_KEY = "IDEMPOTENCY-KEY"
         const val AUTHORIZATION = "Authorization"
         const val BEARER = "Bearer"
+        const val API_VERSION = "API-VERSION"
     }
 
     object RequestBody {

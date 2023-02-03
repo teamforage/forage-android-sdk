@@ -7,6 +7,7 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
 import kotlinx.coroutines.delay
 
@@ -68,7 +69,8 @@ internal class CapturePaymentRepository(
                         logger.debug("Status is completed.")
                         if (paymentMessage.failed) {
                             logger.debug("Failed is true.")
-                            return ForageApiResponse.Failure(response.data)
+                            val error = paymentMessage.errors[0]
+                            return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                         }
                         break
                     } else {
@@ -77,7 +79,8 @@ internal class CapturePaymentRepository(
 
                     if (paymentMessage.failed) {
                         logger.debug("Failed is true.")
-                        return ForageApiResponse.Failure(response.data)
+                        val error = paymentMessage.errors[0]
+                        return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                     }
                 }
                 else -> {
@@ -87,7 +90,7 @@ internal class CapturePaymentRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.debug("Max attempts reached. Returning last response")
-                return ForageApiResponse.Failure(response.getStringResponse())
+                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
             attempt += 1
@@ -102,7 +105,7 @@ internal class CapturePaymentRepository(
         private const val MAX_ATTEMPTS = 10
 
         private fun ForageApiResponse<String>.getStringResponse() = when (this) {
-            is ForageApiResponse.Failure -> this.message
+            is ForageApiResponse.Failure -> this.errors[0].message
             is ForageApiResponse.Success -> this.data
         }
     }

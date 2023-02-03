@@ -15,6 +15,7 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
 import java.util.UUID
 
@@ -43,7 +44,7 @@ object ForageSDK : ForageSDKApi {
             ).tokenizeCard(
                 cardNumber = currentEntry.getPanNumber()
             )
-            else -> ForageApiResponse.Failure("Invalid PAN entry")
+            else -> ForageApiResponse.Failure(listOf(ForageError(400, "invalid_input_data", "Invalid PAN entry")))
         }
     }
 

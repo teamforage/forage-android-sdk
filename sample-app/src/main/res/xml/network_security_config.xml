@@ -2,7 +2,7 @@
 <network-security-config>
     <domain-config>
         <!-- Make sure your URL Server here -->
-        <domain includeSubdomains="true">https://api.dev.joinforage.app</domain>
+        <domain includeSubdomains="true">https://api.sandbox.joinforage.app</domain>
         <trust-anchors>
             <certificates src="user" />
             <certificates src="system" />

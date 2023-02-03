@@ -6,15 +6,12 @@ import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsExpiredCard
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.model.Error
-import com.joinforage.forage.android.model.Message
 import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
+import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -65,14 +62,14 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.message).contains("Authentication credentials were not provided.")
+        assertThat(clientError.errors[0].message).contains("Authentication credentials were not provided.")
     }
 
     @Test
     fun `it should return a failure when the VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
-        val failureResponse = ForageApiResponse.Failure("Some error message from VGS")
+        val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
         pinCollector.setCollectPinForCapturePaymentResponse(
             paymentRef = testData.paymentRef,
@@ -109,36 +106,13 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
+        val expectedMessage = "Expired card - Expired Card"
+        val expectedForageCode = "ebt_error_54"
+        val expectedStatusCode = 400
 
-        val expectedMessage = Message(
-            contentId = contentId,
-            messageType = "0200",
-            status = "received_on_django",
-            failed = true,
-            errors = listOf(
-                Error(
-                    code = "ebt_error_54",
-                    message = "Expired card - Expired Card"
-                )
-            )
-        )
-
-        assertThat(failureResponse.message.toMessage()).isEqualTo(expectedMessage)
-    }
-
-    companion object {
-        private const val MAX_ATTEMPTS = 10
-        private val moshi: Moshi = Moshi.Builder().build()
-
-        fun Message.toJson(): String? {
-            val jsonAdapter: JsonAdapter<Message> = moshi.adapter(Message::class.java)
-            return jsonAdapter.toJson(this)
-        }
-
-        fun String.toMessage(): Message? {
-            val jsonAdapter: JsonAdapter<Message> = moshi.adapter(Message::class.java)
-            return jsonAdapter.fromJson(this)
-        }
+        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
     private data class ExpectedData(

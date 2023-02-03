@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network
 
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import com.joinforage.forage.android.network.model.toJSONObject
 import okhttp3.HttpUrl
@@ -18,7 +19,7 @@ internal class TokenizeCardService(
     suspend fun tokenizeCard(cardNumber: String): ForageApiResponse<String> = try {
         tokenizeCardCoroutine(cardNumber)
     } catch (ex: IOException) {
-        ForageApiResponse.Failure(message = ex.message.orEmpty())
+        ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
     private suspend fun tokenizeCardCoroutine(cardNumber: String): ForageApiResponse<String> {
