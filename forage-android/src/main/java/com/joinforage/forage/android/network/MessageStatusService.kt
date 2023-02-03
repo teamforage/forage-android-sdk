@@ -22,6 +22,7 @@ internal class MessageStatusService(
 
         val request: Request = Request.Builder()
             .url(url)
+            .header(ForageConstants.Headers.API_VERSION, "2023-02-01")
             .get()
             .build()
 

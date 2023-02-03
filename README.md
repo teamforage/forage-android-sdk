@@ -18,11 +18,6 @@ Table of contents
    * [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
    * [Running the Sample App](#running-the-sample-app)
    * [Dependencies](#dependencies)
-   * [Development](#development)
-     * [Android Studio](#android-studio)
-     * [How to run the unit tests](#how-to-run-the-unit-tests)
-     * [How to check code coverage](#code-coverage)
-     * [Code Formatting](#code-formatting)
 <!--te-->
 
 ## Overview
