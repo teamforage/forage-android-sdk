@@ -23,6 +23,7 @@ fun PotentialRequestChain.returnsMessageCompletedSuccessfully() = thenRespond(
 
 fun PotentialRequestChain.returnsUnauthorized() = thenRespond(
     error(
+        401,
         jsonBody = fileBody(
             "fixtures/message/unauthorized_get_message.json"
         )

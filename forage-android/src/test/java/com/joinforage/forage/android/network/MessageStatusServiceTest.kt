@@ -2,7 +2,9 @@ package com.joinforage.forage.android.network
 
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
+import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -47,7 +49,7 @@ class MessageStatusServiceTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should receive successful response`() = runTest {
+    fun `it should respond with a message when successful`() = runTest {
         val contentId = "d789c086-9c4f-41c3-854a-1c436eee1d63"
         server.givenContentId(contentId).returnsMessageCompletedSuccessfully()
 
@@ -66,6 +68,20 @@ class MessageStatusServiceTest : MockServerSuite() {
 
         val balanceMessage = Message.ModelMapper.from(successResponse.data)
         assertThat(balanceMessage).isEqualTo(expectedResponse)
+    }
+
+    @Test
+    fun `it should respond with an error when unable to get a Message`() = runTest {
+        val contentId = "d789c086-9c4f-41c3-854a-1c436eee1d63"
+        server.givenContentId(contentId).returnsUnauthorized()
+
+        val messageResponse = messageStatusService.getStatus(contentId)
+
+        assertThat(messageResponse).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+
+        val response = messageResponse as ForageApiResponse.Failure
+
+        assertThat(response.errors[0]).isEqualTo(ForageError(401, "missing_merchant_account", "No merchant account FNS number was provided."))
     }
 
     companion object {

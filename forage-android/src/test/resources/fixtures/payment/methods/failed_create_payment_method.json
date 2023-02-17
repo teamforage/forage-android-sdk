@@ -1,0 +1,11 @@
+{
+  "path": "/api/payment_methods/",
+  "errors": [{
+    "code": "cannot_parse_request_body",
+    "message": "EBT Cards must be 16-19 digits long!",
+    "source": {
+      "resource": "Payment_Methods",
+      "ref": ""
+    }
+  }]
+}
