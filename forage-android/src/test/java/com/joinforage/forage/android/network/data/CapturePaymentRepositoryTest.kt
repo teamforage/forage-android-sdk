@@ -1,7 +1,13 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.fixtures.*
+import com.joinforage.forage.android.fixtures.givenContentId
+import com.joinforage.forage.android.fixtures.givenEncryptionKey
+import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
+import com.joinforage.forage.android.fixtures.returnsExpiredCard
+import com.joinforage.forage.android.fixtures.returnsSendToProxy
+import com.joinforage.forage.android.fixtures.returnsUnauthorized
+import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
