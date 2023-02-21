@@ -5,6 +5,8 @@ import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsExpiredCard
+import com.joinforage.forage.android.fixtures.returnsSendToProxy
+import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -15,6 +17,8 @@ import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
+import me.jorgecastillo.hiroaki.matchers.times
+import me.jorgecastillo.hiroaki.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -66,7 +70,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should return a failure when the VGS returns a failure`() = runTest {
+    fun `it should return a failure when VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
         val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
@@ -100,6 +104,38 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         )
 
         server.givenContentId(contentId)
+            .returnsUnauthorized()
+
+        val response = repository.capturePayment(paymentRef, cardToken)
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+        val failureResponse = response as ForageApiResponse.Failure
+        val expectedMessage = "No merchant account FNS number was provided."
+        val expectedForageCode = "missing_merchant_account"
+        val expectedStatusCode = 401
+
+        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+    }
+
+    @Test
+    fun `it should return a failure when sqs message is failed`() = runTest {
+        val paymentRef = "a57f07506c"
+        val cardToken = "tok_sandbox_nctiHzM8Nx8xygpvLeaaBT"
+        val contentId = "36058ff7-0e9d-4025-94cd-80ef04a3bb1c"
+
+        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+        pinCollector.setCollectPinForCapturePaymentResponse(
+            paymentRef = paymentRef,
+            cardToken = cardToken,
+            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
+            response = ForageApiResponse.Success(
+                TestPinCollector.sendToProxyResponse(contentId)
+            )
+        )
+
+        server.givenContentId(contentId)
             .returnsExpiredCard()
 
         val response = repository.capturePayment(paymentRef, cardToken)
@@ -113,6 +149,48 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
         assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
         assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+    }
+
+    @Test
+    fun `it should return a failure when max attempts are tried`() = runTest {
+        val paymentRef = "a57f07506c"
+        val cardToken = "tok_sandbox_nctiHzM8Nx8xygpvLeaaBT"
+        val contentId = "36058ff7-0e9d-4025-94cd-80ef04a3bb1c"
+
+        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+        pinCollector.setCollectPinForCapturePaymentResponse(
+            paymentRef = paymentRef,
+            cardToken = cardToken,
+            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
+            response = ForageApiResponse.Success(
+                TestPinCollector.sendToProxyResponse(contentId)
+            )
+        )
+
+        repeat(MAX_ATTEMPTS) {
+            server.givenContentId(contentId)
+                .returnsSendToProxy()
+        }
+
+        val response = repository.capturePayment(paymentRef, cardToken)
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+        val failureResponse = response as ForageApiResponse.Failure
+        val expectedMessage = "Unknown Server Error"
+        val expectedForageCode = "unknown_server_error"
+        val expectedStatusCode = 500
+
+        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+        server.verify("api/message/$contentId")
+            .called(
+                times = times(MAX_ATTEMPTS)
+            )
+    }
+
+    companion object {
+        private const val MAX_ATTEMPTS = 10
     }
 
     private data class ExpectedData(

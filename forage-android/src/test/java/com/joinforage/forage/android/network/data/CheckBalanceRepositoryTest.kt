@@ -74,7 +74,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should return a failure when the VGS returns a failure`() = runTest {
+    fun `it should return a failure when VGS returns a failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
 
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
@@ -142,7 +142,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should return the last message when it reaches the max attempts`() = runTest {
+    fun `it should return an error when it reaches the max attempts`() = runTest {
         val paymentMethodRef = "a9fd8105c9"
         val cardToken = "tok_sandbox_nctiHzM8Nx8xygpvLeaaBT"
         val contentId = "45639248-03f2-498d-8aa8-9ebd1c60ee65"

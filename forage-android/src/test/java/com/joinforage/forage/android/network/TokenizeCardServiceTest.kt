@@ -1,9 +1,11 @@
 package com.joinforage.forage.android.network
 
 import com.joinforage.forage.android.fixtures.givenCardToken
+import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,7 +43,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should send the correct headers to get the message status`() = runTest {
+    fun `it should send the correct headers to tokenize the card`() = runTest {
         server.givenCardToken(testData.cardNumber).returnsPaymentMethodSuccessfully()
 
         tokenizeCardService.tokenizeCard(testData.cardNumber)
@@ -58,7 +60,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should send the correct body to create a payment method`() = runTest {
+    fun `it should respond with the payment method on success`() = runTest {
         server.givenCardToken(testData.cardNumber).returnsPaymentMethodSuccessfully()
 
         val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber)
@@ -76,6 +78,19 @@ class TokenizeCardServiceTest : MockServerSuite() {
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
                 )
             )
+        )
+    }
+
+    @Test
+    fun `it should respond with an error on failure to create Payment Method`() = runTest {
+        server.givenCardToken(testData.cardNumber).returnsPaymentMethodFailed()
+
+        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber)
+        assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+
+        val response = paymentMethodResponse as ForageApiResponse.Failure
+        assertThat(response.errors[0]).isEqualTo(
+            ForageError(400, "cannot_parse_request_body", "EBT Cards must be 16-19 digits long!")
         )
     }
 
