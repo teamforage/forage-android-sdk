@@ -46,7 +46,7 @@ jobs:
       #       forage-android/build/outputs/
 
       - name: Upload App to BrowserStack
-        uses: fjogeleit/http-request/action@master
+        uses: fjogeleit/http-request-action@v1
         with:
           url: https://api-cloud.browserstack.com/app-automate/upload
           method: POST
