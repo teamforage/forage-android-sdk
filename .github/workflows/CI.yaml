@@ -54,6 +54,7 @@ jobs:
           password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           data: '{ "custom_id"="AndroidApp" }'
           files: '{ "file": "${{ github.workspace }}/sample-app/build/outputs/apk/staging/debug/sample-app-staging-debug.apk" }'
+          timeout: 30000
 
       - name: Checkout Integration Test Repo
         uses: actions/checkout@v3
