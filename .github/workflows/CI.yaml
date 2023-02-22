@@ -52,7 +52,8 @@ jobs:
           method: POST
           username: ${{ secrets.BROWSERSTACK_USERNAME }}
           password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          files: '{ "file": "${{ github.workspace }}/sample-app/build/intermediates/apk/staging/debug/sample-app-staging-debug.apk", "custom_id": "AndroidApp" }'
+          data: '{ "custom_id"="AndroidApp" }'
+          files: '{ "file": "${{ github.workspace }}/sample-app/build/outputs/apk/staging/debug/sample-app-staging-debug.apk" }'
 
       - name: Checkout Integration Test Repo
         uses: actions/checkout@v3
