@@ -46,6 +46,7 @@ jobs:
       #       forage-android/build/outputs/
 
       - name: Upload App to BrowserStack
+        id: uploadApp
         uses: fjogeleit/http-request-action@v1
         with:
           url: https://api-cloud.browserstack.com/app-automate/upload
@@ -55,6 +56,10 @@ jobs:
           data: '{ "custom_id"="AndroidApp" }'
           files: '{ "file": "${{ github.workspace }}/sample-app/build/outputs/apk/staging/debug/sample-app-staging-debug.apk" }'
           timeout: 30000
+
+      - name: Print Output of BrowserStack
+        run: |
+          echo ${{ steps.uploadApp.outputs.response }}
 
       - name: Checkout Integration Test Repo
         uses: actions/checkout@v3
