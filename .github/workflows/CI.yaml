@@ -53,7 +53,7 @@ jobs:
           method: POST
           username: ${{ secrets.BROWSERSTACK_USERNAME }}
           password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          data: '{ "custom_id"="AndroidApp" }'
+          data: '{ "custom_id": "AndroidApp" }'
           files: '{ "file": "${{ github.workspace }}/sample-app/build/outputs/apk/staging/debug/sample-app-staging-debug.apk" }'
           timeout: 30000
 
