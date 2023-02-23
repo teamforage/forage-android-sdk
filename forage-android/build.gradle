@@ -35,7 +35,6 @@ android {
         dataBinding true
     }
 
-    // TODO: Improve this
     flavorDimensions "version"
     productFlavors {
         dev {

@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -27,23 +27,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      # - name: Run unit tests for the sandboxDebug build
-      #   run: ./gradlew testSandboxDebugUnitTest --stacktrace
-
-      # - name: Check spotless
-      #   run: ./gradlew spotlessCheck
+      - name: Run unit tests for the sandboxDebug build
+        run: ./gradlew testSandboxDebugUnitTest --stacktrace
 
       - name: Build all build variants
         run: ./gradlew assemble --stacktrace
-
-      # OPTIONS ARE: to upload then download or to just reference the build
-      # - name: Upload build outputs (APKs and SDK AARs)
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: build-outputs
-      #     path: |
-      #       sample-app/build/outputs/
-      #       forage-android/build/outputs/
 
       - name: Upload App to BrowserStack
         id: uploadApp
@@ -74,3 +62,11 @@ jobs:
           cd integration_tests
           pip install -r requirements.txt
           pytest --reruns 2 --only-rerun AssertionError --only-rerun ValueError
+
+      - name: Upload build outputs (APKs and SDK AARs)
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-outputs
+          path: |
+            sample-app/build/outputs/
+            forage-android/build/outputs/
