@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: teamforage/forage-android-sdk-QA-automation
-          ref: danny/for-1539-add-integration-tests-to-android
+          ref: main
           ssh-key: ${{ secrets.ANDROID_QA_CHECKOUT_KEY }}
           path: 'integration_tests/'
 
