@@ -67,7 +67,7 @@ object ForageSDK : ForageSDKApi {
                 merchantAccount = merchantAccount
             ),
             encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken),
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
@@ -106,7 +106,7 @@ object ForageSDK : ForageSDKApi {
                 merchantAccount = merchantAccount
             ),
             encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken),
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
