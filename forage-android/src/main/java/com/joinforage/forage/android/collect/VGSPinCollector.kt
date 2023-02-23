@@ -120,7 +120,7 @@ internal class VGSPinCollector(
 
     companion object {
         private const val VAULT_ID = BuildConfig.VAULT_ID
-        private val VGS_ENVIRONMENT = Environment.SANDBOX
+        private val VGS_ENVIRONMENT = BuildConfig.VGS_VAULT_TYPE
 
         private fun buildVGSCollect(context: Context): VGSCollect {
             VGSCollectLogger.isEnabled = false

@@ -40,22 +40,27 @@ android {
     productFlavors {
         dev {
             buildConfigField "String", "VAULT_ID", '"tntlqkidhc6"'
+            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.dev.joinforage.app/"'
         }
         staging {
             buildConfigField "String", "VAULT_ID", '"tnteykuh975"'
+            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.staging.joinforage.app/"'
         }
         sandbox {
             buildConfigField "String", "VAULT_ID", '"tntagcot4b1"'
+            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.sandbox.joinforage.app/"'
         }
         cert {
             buildConfigField "String", "VAULT_ID", '"tntpnht7psv"'
+            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.cert.joinforage.app/"'
         }
         prod {
             buildConfigField "String", "VAULT_ID", '"tntbcrncmgi"'
+            buildConfigField "String", "VGS_VAULT_TYPE", '"live"'
             buildConfigField "String", "BASE_URL", '"https://api.joinforage.app/"'
         }
     }
