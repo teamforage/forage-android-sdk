@@ -61,7 +61,7 @@ jobs:
         run: |
           cd integration_tests
           pip install -r requirements.txt
-          pytest --reruns 2 --only-rerun AssertionError --only-rerun ValueError
+          pytest --reruns 2 --only-rerun AssertionError --only-rerun ValueError --only-rerun JSONDecodeError
 
       - name: Upload build outputs (APKs and SDK AARs)
         uses: actions/upload-artifact@v3
