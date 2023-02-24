@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -53,7 +53,7 @@ jobs:
           cd integration_tests
           pip install -r requirements.txt
           pytest
-          pytest --lf --last-failed-no-failures none
+          pytest --lf --last-failed-no-failures none  --suppress-no-test-exit-code
 
       - name: Upload build outputs (APKs and SDK AARs)
         uses: actions/upload-artifact@v3
