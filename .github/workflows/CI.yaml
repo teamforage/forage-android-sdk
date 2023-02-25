@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Run unit tests for the sandboxDebug build
+        run: ./gradlew testSandboxDebugUnitTest --stacktrace
+
+      - name: Build all build variants
+        run: ./gradlew assemble --stacktrace
+
+      - name: Upload App to BrowserStack
+        run: |
+          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" -X POST \
+          https://api-cloud.browserstack.com/app-automate/upload \
+          -F "file=@${{ github.workspace }}/sample-app/build/outputs/apk/staging/debug/sample-app-staging-debug.apk" \
+          -F "custom_id=AndroidApp"
+
+      - name: Checkout Integration Test Repo
+        uses: actions/checkout@v3
+        with:
+          repository: teamforage/forage-android-sdk-QA-automation
+          ref: main
+          ssh-key: ${{ secrets.ANDROID_QA_CHECKOUT_KEY }}
+          path: 'integration_tests/'
+
+      - name: Run Integration tests
+        run: |
+          cd integration_tests
+          pip install -r requirements.txt
+          pytest
+          pytest --lf --last-failed-no-failures none  --suppress-no-test-exit-code
+
+      - name: Upload build outputs (APKs and SDK AARs)
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-outputs
+          path: |
+            sample-app/build/outputs/
+            forage-android/build/outputs/

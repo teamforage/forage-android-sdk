@@ -7,7 +7,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
-import com.verygoodsecurity.vgscollect.core.Environment
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
 import com.verygoodsecurity.vgscollect.core.VGSCollect
 import com.verygoodsecurity.vgscollect.core.VgsCollectResponseListener
@@ -120,7 +119,7 @@ internal class VGSPinCollector(
 
     companion object {
         private const val VAULT_ID = BuildConfig.VAULT_ID
-        private val VGS_ENVIRONMENT = Environment.SANDBOX
+        private val VGS_ENVIRONMENT = BuildConfig.VGS_VAULT_TYPE
 
         private fun buildVGSCollect(context: Context): VGSCollect {
             VGSCollectLogger.isEnabled = false
