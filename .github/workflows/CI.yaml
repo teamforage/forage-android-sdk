@@ -48,7 +48,7 @@ jobs:
           ssh-key: ${{ secrets.MOBILE_QA_DEPLOY_KEY }}
           path: 'mobile-qa-tests/'
 
-      - name: Run Integration tests
+      - name: Run Integration Tests
         run: |
           cd mobile-qa-tests
           pip install -r requirements.txt
