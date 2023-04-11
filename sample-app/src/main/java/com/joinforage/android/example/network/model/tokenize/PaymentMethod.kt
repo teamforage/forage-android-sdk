@@ -7,5 +7,6 @@ data class PaymentMethod(
     val ref: String,
     val type: String,
     val balance: Balance?,
-    val card: Card?
+    val card: Card?,
+    val user_id: String?
 )

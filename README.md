@@ -216,7 +216,8 @@ ForageSDK will expose the following function to collect the EBT card number:
 ```kotlin
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        bearerToken: String
+        bearerToken: String,
+        userId: String?
     ): ForageApiResponse<String>
 ```
 
@@ -228,7 +229,8 @@ This is an example of usage inside an ACC ViewModel:
     
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
-            bearerToken = bearer
+            bearerToken = bearer,
+            userId = userId
         )
     
         when (response) {

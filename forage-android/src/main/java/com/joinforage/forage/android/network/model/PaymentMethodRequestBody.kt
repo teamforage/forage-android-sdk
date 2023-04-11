@@ -5,7 +5,8 @@ import org.json.JSONObject
 internal data class PaymentMethodRequestBody(
     val cardNumber: String,
     val type: String = "ebt",
-    val reusable: Boolean = true
+    val reusable: Boolean = true,
+    val userId: String? = null
 )
 
 internal fun PaymentMethodRequestBody.toJSONObject(): JSONObject {
@@ -17,6 +18,9 @@ internal fun PaymentMethodRequestBody.toJSONObject(): JSONObject {
     rootObject.put("card", cardObject)
     rootObject.put("type", type)
     rootObject.put("reusable", reusable)
+    if (userId != null) {
+        rootObject.put("user_id", userId)
+    }
 
     return rootObject
 }

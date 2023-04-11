@@ -50,7 +50,8 @@ class FlowTokenizeViewModel @Inject constructor(
 
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
-            bearerToken = bearer
+            bearerToken = bearer,
+            userId = "test-user-id"
         )
 
         when (response) {
