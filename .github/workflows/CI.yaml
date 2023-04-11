@@ -43,17 +43,16 @@ jobs:
       - name: Checkout Integration Test Repo
         uses: actions/checkout@v3
         with:
-          repository: teamforage/forage-android-sdk-QA-automation
+          repository: teamforage/mobile-qa-tests
           ref: main
-          ssh-key: ${{ secrets.ANDROID_QA_CHECKOUT_KEY }}
-          path: 'integration_tests/'
+          ssh-key: ${{ secrets.MOBILE_QA_DEPLOY_KEY }}
+          path: 'mobile-qa-tests/'
 
       - name: Run Integration tests
         run: |
-          cd integration_tests
+          cd mobile-qa-tests
           pip install -r requirements.txt
-          pytest
-          pytest --lf --last-failed-no-failures none  --suppress-no-test-exit-code
+          pytest android/tests/test_basic_flow.py
 
       - name: Upload build outputs (APKs and SDK AARs)
         uses: actions/upload-artifact@v3
