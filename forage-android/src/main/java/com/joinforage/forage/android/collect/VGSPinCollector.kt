@@ -27,11 +27,13 @@ internal class VGSPinCollector(
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val vgsCollect = buildVGSCollect(context)
 
-        vgsCollect.bindView(pinForageEditText.getTextInputEditText())
+        val inputField = pinForageEditText.getTextInputEditText()
+        vgsCollect.bindView(inputField)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
                 vgsCollect.onDestroy()
+                inputField.setText("")
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> continuation.resumeWith(
@@ -76,10 +78,12 @@ internal class VGSPinCollector(
         val vgsCollect = buildVGSCollect(context)
 
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
+        val inputField = pinForageEditText.getTextInputEditText()
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
                 vgsCollect.onDestroy()
+                inputField.setText("")
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> continuation.resumeWith(
