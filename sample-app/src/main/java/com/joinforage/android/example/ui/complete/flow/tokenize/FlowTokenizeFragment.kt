@@ -39,20 +39,17 @@ class FlowTokenizeFragment : Fragment() {
 
         val paymentRef: TextView = binding.paymentRef
         val cardLast4: TextView = binding.cardLast4
-        val token: TextView = binding.cardToken
 
         viewModel.paymentMethod.observe(viewLifecycleOwner) {
             when (it == null) {
                 true -> {
                     paymentRef.text = "ref:"
                     cardLast4.text = "last_4:"
-                    token.text = "token:"
                     binding.nextButton.visibility = View.GONE
                 }
                 else -> {
                     paymentRef.text = "ref: ${it.ref}"
                     cardLast4.text = "last_4: ${it.card?.last4}"
-                    token.text = "token: ${it.card?.token}"
                     binding.nextButton.visibility = View.VISIBLE
                 }
             }
@@ -79,8 +76,7 @@ class FlowTokenizeFragment : Fragment() {
                     FlowTokenizeFragmentDirections.actionNavigationFlowTokenizeToFlowBalanceFragment(
                         bearer = viewModel.bearer,
                         merchantAccount = viewModel.merchantAccount,
-                        paymentMethodRef = viewModel.paymentMethod.value?.ref.orEmpty(),
-                        cardToken = viewModel.paymentMethod.value?.card?.token.orEmpty()
+                        paymentMethodRef = viewModel.paymentMethod.value?.ref.orEmpty()
                     )
                 )
             }

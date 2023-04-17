@@ -5,28 +5,41 @@ import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
+import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.network.model.*
 import com.joinforage.forage.android.network.model.EncryptionKey
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.network.model.PaymentMethod
 import kotlinx.coroutines.delay
 
 internal class CheckBalanceRepository(
     private val pinCollector: PinCollector,
     private val encryptionKeyService: EncryptionKeyService,
+    private val paymentMethodService: PaymentMethodService,
     private val messageStatusService: MessageStatusService,
     private val checkBalanceResponseService: CheckBalanceResponseService,
     private val logger: Logger
 ) {
     suspend fun checkBalance(
-        paymentMethodRef: String,
-        cardToken: String
+        paymentMethodRef: String
     ): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
+            is ForageApiResponse.Success -> getTokenFromPaymentMethod(
+                paymentMethodRef = paymentMethodRef,
+                EncryptionKey.ModelMapper.from(response.data).alias
+            )
+            else -> response
+        }
+    }
+
+    private suspend fun getTokenFromPaymentMethod(
+        paymentMethodRef: String,
+        encryptionKey: String
+    ): ForageApiResponse<String> {
+        return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCheckBalance(
                 paymentMethodRef = paymentMethodRef,
-                cardToken = cardToken,
-                EncryptionKey.ModelMapper.from(response.data).alias
+                cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
+                encryptionKey = encryptionKey
             )
             else -> response
         }

@@ -1,0 +1,11 @@
+{
+  "path": "/api/payments/",
+  "errors": [{
+    "code": "not_found",
+    "message": "Cannot find payment.",
+    "source": {
+      "resource": "Payments",
+      "ref": ""
+    }
+  }]
+}

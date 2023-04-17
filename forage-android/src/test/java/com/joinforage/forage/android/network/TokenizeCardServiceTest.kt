@@ -70,7 +70,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
             PaymentMethod.ModelMapper.from((paymentMethodResponse as ForageApiResponse.Success).data)
         assertThat(response).isEqualTo(
             PaymentMethod(
-                ref = "e4fdc7b865",
+                ref = "1f148fe399",
                 type = "ebt",
                 balance = null,
                 card = Card(

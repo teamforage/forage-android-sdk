@@ -29,7 +29,6 @@ class FlowBalanceViewModel @Inject constructor(
     val merchantAccount = args.merchantAccount
     val bearer = args.bearer
     val paymentMethodRef = args.paymentMethodRef
-    val cardToken = args.cardToken
 
     private val _snap = MutableLiveData<String>().apply {
         value = ""
@@ -70,8 +69,7 @@ class FlowBalanceViewModel @Inject constructor(
                 pinForageEditText = pinForageEditText,
                 merchantAccount = merchantAccount,
                 bearerToken = bearer,
-                paymentMethodRef = paymentMethodRef,
-                cardToken = cardToken
+                paymentMethodRef = paymentMethodRef
             )
 
             when (response) {

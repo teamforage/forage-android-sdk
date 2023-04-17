@@ -5,12 +5,14 @@ import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber
+import com.joinforage.forage.android.network.*
 import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
+import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
@@ -57,8 +59,7 @@ object ForageSDK : ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentMethodRef: String,
-        cardToken: String
+        paymentMethodRef: String
     ): ForageApiResponse<String> {
         return CheckBalanceRepository(
             pinCollector = VGSPinCollector(
@@ -68,6 +69,13 @@ object ForageSDK : ForageSDKApi {
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
+                httpUrl = ForageConstants.provideHttpUrl()
+            ),
+            paymentMethodService = PaymentMethodService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
@@ -86,8 +94,7 @@ object ForageSDK : ForageSDKApi {
             ),
             logger = Logger.getInstance(BuildConfig.DEBUG)
         ).checkBalance(
-            paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken
+            paymentMethodRef = paymentMethodRef
         )
     }
 
@@ -96,8 +103,7 @@ object ForageSDK : ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentRef: String,
-        cardToken: String
+        paymentRef: String
     ): ForageApiResponse<String> {
         return CapturePaymentRepository(
             pinCollector = VGSPinCollector(
@@ -107,6 +113,20 @@ object ForageSDK : ForageSDKApi {
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
+                httpUrl = ForageConstants.provideHttpUrl()
+            ),
+            paymentService = PaymentService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
+                httpUrl = ForageConstants.provideHttpUrl()
+            ),
+            paymentMethodService = PaymentMethodService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
@@ -125,8 +145,7 @@ object ForageSDK : ForageSDKApi {
             ),
             logger = Logger.getInstance(BuildConfig.DEBUG)
         ).capturePayment(
-            paymentRef = paymentRef,
-            cardToken = cardToken
+            paymentRef = paymentRef
         )
     }
 

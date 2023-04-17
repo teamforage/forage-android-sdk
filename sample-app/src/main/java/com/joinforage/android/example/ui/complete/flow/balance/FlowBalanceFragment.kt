@@ -69,7 +69,6 @@ class FlowBalanceFragment : Fragment() {
                     viewModel.bearer,
                     viewModel.merchantAccount,
                     viewModel.paymentMethodRef,
-                    viewModel.cardToken
                 )
             )
         }

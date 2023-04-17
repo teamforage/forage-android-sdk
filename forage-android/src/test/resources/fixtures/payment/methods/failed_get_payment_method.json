@@ -1,0 +1,11 @@
+{
+  "path": "/api/payment_methods/1f148fe399/",
+  "errors": [{
+    "code": "not_found",
+    "message": "EBT Card could not be found",
+    "source": {
+      "resource": "Payment_Methods",
+      "ref": ""
+    }
+  }]
+}

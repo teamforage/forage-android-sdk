@@ -23,7 +23,6 @@ class FlowCreatePaymentViewModel @Inject constructor(
     val merchantAccount = args.merchantAccount
     val bearer = args.bearer
     val paymentMethodRef = args.paymentMethodRef
-    val cardToken = args.cardToken
 
     private val _isLoading = MutableLiveData<Boolean>().apply {
         value = false
