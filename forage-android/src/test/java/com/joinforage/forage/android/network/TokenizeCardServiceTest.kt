@@ -94,7 +94,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
                 "card" / json {
                     "number" / testData.cardNumber
                 }
-                "user_id" / "test-user-id" // includes user_id
+                "user_id" / "android-test-user-id" // includes user_id
             }
         )
     }
@@ -116,7 +116,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
         val merchantAccount: String = "12345678",
         val bearerToken: String = "AbCaccesstokenXyz",
         val cardNumber: String = "5076801234567845",
-        val userId: String = "test-user-id",
+        val userId: String = "android-test-user-id",
         val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber, userId)
     )
 }
