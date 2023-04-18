@@ -5,7 +5,6 @@ import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber
-import com.joinforage.forage.android.network.*
 import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -13,6 +12,7 @@ import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository

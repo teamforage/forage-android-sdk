@@ -26,6 +26,6 @@ internal interface ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentRef: String,
+        paymentRef: String
     ): ForageApiResponse<String>
 }

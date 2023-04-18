@@ -6,11 +6,11 @@ import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsFailed
+import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
+import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.fixtures.returnsPaymentMethod
-import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.model.Message
 import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService

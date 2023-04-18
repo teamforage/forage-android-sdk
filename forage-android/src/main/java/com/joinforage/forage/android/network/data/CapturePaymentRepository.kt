@@ -7,12 +7,12 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
-import com.joinforage.forage.android.network.model.Payment
 import com.joinforage.forage.android.network.model.EncryptionKey
-import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.network.model.Payment
+import com.joinforage.forage.android.network.model.PaymentMethod
 import kotlinx.coroutines.delay
 
 internal class CapturePaymentRepository(

@@ -1,12 +1,10 @@
 package com.joinforage.forage.android.network.model
 
-import com.joinforage.forage.android.model.Balance
-import com.joinforage.forage.android.model.Card
 import org.json.JSONObject
 
 internal data class Payment(
     val ref: String,
-    val paymentMethod: String,
+    val paymentMethod: String
 ) {
     object ModelMapper {
         fun from(string: String): Payment {
