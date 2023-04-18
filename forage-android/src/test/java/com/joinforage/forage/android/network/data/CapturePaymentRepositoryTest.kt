@@ -23,6 +23,7 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.Payment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -266,6 +267,15 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         val response = repository.capturePayment(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
+        when (response) {
+            is ForageApiResponse.Success -> {
+                val paymentMethod = Payment.ModelMapper.from(response.data).paymentMethod
+                assertThat(paymentMethod).isEqualTo(testData.paymentMethod)
+            }
+            else -> {
+                assertThat(false)
+            }
+        }
     }
 
     companion object {
@@ -278,6 +288,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
         val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
         val merchantAccount: String = "1234567",
-        val contentId: String = "36058ff7-0e9d-4025-94cd-80ef04a3bb1c"
+        val contentId: String = "36058ff7-0e9d-4025-94cd-80ef04a3bb1c",
+        val paymentMethod: String = "1f148fe399"
     )
 }

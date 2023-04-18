@@ -19,6 +19,7 @@ import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -170,6 +171,15 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
+        when (response) {
+            is ForageApiResponse.Success -> {
+                val paymentMethodRef = PaymentMethod.ModelMapper.from(response.data).ref
+                assertThat(paymentMethodRef).isEqualTo(testData.paymentMethodRef)
+            }
+            else -> {
+                assertThat(false)
+            }
+        }
     }
 
     @Test
