@@ -41,26 +41,31 @@ android {
             buildConfigField "String", "VAULT_ID", '"tntlqkidhc6"'
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.dev.joinforage.app/"'
+            buildConfigField "String", "LD_MOBILE_KEY", '"mob-03e025cb-5b4e-4d97-8685-39a22316d601"'
         }
         staging {
             buildConfigField "String", "VAULT_ID", '"tnteykuh975"'
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.staging.joinforage.app/"'
+            buildConfigField "String", "LD_MOBILE_KEY", '"mob-a9903698-759b-48e2-86e1-c551e2b69118"'
         }
         sandbox {
             buildConfigField "String", "VAULT_ID", '"tntagcot4b1"'
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.sandbox.joinforage.app/"'
+            buildConfigField "String", "LD_MOBILE_KEY", '"mob-22024b85-05b7-4e24-b290-a071310dfc3d"'
         }
         cert {
             buildConfigField "String", "VAULT_ID", '"tntpnht7psv"'
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.cert.joinforage.app/"'
+            buildConfigField "String", "LD_MOBILE_KEY", '"mob-d2261a08-784b-4300-a45f-ce0e46324d66"'
         }
         prod {
             buildConfigField "String", "VAULT_ID", '"tntbcrncmgi"'
             buildConfigField "String", "VGS_VAULT_TYPE", '"live"'
             buildConfigField "String", "BASE_URL", '"https://api.joinforage.app/"'
+            buildConfigField "String", "LD_MOBILE_KEY", '"mob-5c3dfa7a-fa6d-4cdf-93e8-d28ef8080696"'
         }
     }
 

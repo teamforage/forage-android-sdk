@@ -9,12 +9,12 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputLayout
+import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.VaultConstants
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import com.verygoodsecurity.vgscollect.widget.VGSTextInputLayout
-import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.VaultConstants
 
 /**
  * Material component using VGSTextInputLayout and VGSEditText to collect the PIN

@@ -20,14 +20,19 @@ import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
-import java.util.UUID
-import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.LDContext
+import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
+import java.util.UUID
 
 internal object VaultConstants {
     const val VGS_VAULT_TYPE = "vgs_vault_type"
     const val BT_VAULT_TYPE = "bt_vault_type"
+}
+
+internal object LDConstants {
+    const val VAULT_TYPE_FLAG = "vault-primary-traffic-percentage"
+    const val USER = "anonymous-user"
 }
 
 /**
@@ -36,6 +41,7 @@ internal object VaultConstants {
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
     private var vaultType: String? = null
+    private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
 
     // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
     // want to overwrite it! We must take in the application as a parameter, which means that a
@@ -45,11 +51,11 @@ object ForageSDK : ForageSDKApi {
             return vaultType as String
         }
         val ldConfig: LDConfig = LDConfig.Builder()
-            .mobileKey("mob-a9903698-759b-48e2-86e1-c551e2b69118")
+            .mobileKey(LD_MOBILE_KEY)
             .build()
-        val context = LDContext.create("anonymous-user")
+        val context = LDContext.create(LDConstants.USER)
         val client = LDClient.init(app, ldConfig, context, 0)
-        val vaultPercent = client.doubleVariation("vault-primary-traffic-percentage", 0.0)
+        val vaultPercent = client.doubleVariation(LDConstants.VAULT_TYPE_FLAG, 0.0)
         val randomNum = Math.random() * 100
         vaultType = VaultConstants.BT_VAULT_TYPE
         if (randomNum < vaultPercent) {
