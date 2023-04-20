@@ -46,7 +46,7 @@ object ForageSDK : ForageSDKApi {
     // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
     // want to overwrite it! We must take in the application as a parameter, which means that a
     // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
-    fun getVaultProvider(app: Application): String {
+    internal fun getVaultProvider(app: Application): String {
         if (vaultType != null) {
             return vaultType as String
         }
