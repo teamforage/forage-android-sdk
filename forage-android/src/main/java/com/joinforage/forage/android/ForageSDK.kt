@@ -1,5 +1,6 @@
 package com.joinforage.forage.android
 
+import android.app.Application
 import android.content.Context
 import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
@@ -20,20 +21,48 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
 import java.util.UUID
+import com.launchdarkly.sdk.android.LDClient
+import com.launchdarkly.sdk.LDContext
+import com.launchdarkly.sdk.android.LDConfig
+
+internal object VaultConstants {
+    const val VGS_VAULT_TYPE = "vgs_vault_type"
+    const val BT_VAULT_TYPE = "bt_vault_type"
+}
 
 /**
  * Singleton responsible for implementing the SDK API
  */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
-    private val logger = Logger.getInstance(BuildConfig.DEBUG)
+    private var vaultType: String? = null
+
+    // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
+    // want to overwrite it! We must take in the application as a parameter, which means that a
+    // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
+    fun getVaultProvider(app: Application): String {
+        if (vaultType != null) {
+            return vaultType as String
+        }
+        val ldConfig: LDConfig = LDConfig.Builder()
+            .mobileKey("mob-a9903698-759b-48e2-86e1-c551e2b69118")
+            .build()
+        val context = LDContext.create("anonymous-user")
+        val client = LDClient.init(app, ldConfig, context, 0)
+        val vaultPercent = client.doubleVariation("vault-primary-traffic-percentage", 0.0)
+        val randomNum = Math.random() * 100
+        vaultType = VaultConstants.BT_VAULT_TYPE
+        if (randomNum < vaultPercent) {
+            vaultType = VaultConstants.VGS_VAULT_TYPE
+        }
+        return vaultType as String
+    }
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
-        logger.info("Tokenize $currentEntry")
 
         return when {
             shouldTokenize(currentEntry) -> TokenizeCardService(
