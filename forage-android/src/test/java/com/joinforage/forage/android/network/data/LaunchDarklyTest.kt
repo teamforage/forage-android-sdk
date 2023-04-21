@@ -46,8 +46,7 @@ class LaunchDarklyTest() {
 
         // Update the test data to send all traffic to VGS
         // Since ForageSDK is a singleton, we should still return BT in this instance
-        val secondTd = TestData.dataSource()
-        secondTd.update(secondTd.flag(LDConstants.VAULT_TYPE_FLAG).variations(LDValue.of(alwaysVGS)))
+        td.update(td.flag(LDConstants.VAULT_TYPE_FLAG).variations(LDValue.of(alwaysVGS)))
         val secondVaultType = ForageSDK.getVaultProvider(app, td)
         assertThat(secondVaultType).isEqualTo(VaultConstants.BT_VAULT_TYPE)
     }
@@ -62,8 +61,7 @@ class LaunchDarklyTest() {
 
         // Update the test data to send all traffic to BT
         // Since ForageSDK is a singleton, we should still return VGS in this instance
-        val secondTd = TestData.dataSource()
-        secondTd.update(secondTd.flag(LDConstants.VAULT_TYPE_FLAG).variations(LDValue.of(alwaysBT)))
+        td.update(td.flag(LDConstants.VAULT_TYPE_FLAG).variations(LDValue.of(alwaysBT)))
         val secondVaultType = ForageSDK.getVaultProvider(app, td)
         assertThat(secondVaultType).isEqualTo(VaultConstants.VGS_VAULT_TYPE)
     }
