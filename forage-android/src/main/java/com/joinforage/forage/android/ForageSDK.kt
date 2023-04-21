@@ -23,6 +23,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
+import com.launchdarkly.sdk.android.integrations.TestData
 import java.util.UUID
 
 internal object VaultConstants {
@@ -46,13 +47,21 @@ object ForageSDK : ForageSDKApi {
     // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
     // want to overwrite it! We must take in the application as a parameter, which means that a
     // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
-    internal fun getVaultProvider(app: Application): String {
+    internal fun getVaultProvider(app: Application, dataSource: TestData? = null): String {
         if (vaultType != null) {
             return vaultType as String
         }
-        val ldConfig: LDConfig = LDConfig.Builder()
-            .mobileKey(LD_MOBILE_KEY)
-            .build()
+        // Datasource is required for testing purposes!
+        val ldConfig = if (dataSource != null) {
+            LDConfig.Builder()
+                .mobileKey(LD_MOBILE_KEY)
+                .dataSource(dataSource)
+                .build()
+        } else {
+            LDConfig.Builder()
+                .mobileKey(LD_MOBILE_KEY)
+                .build()
+        }
         val context = LDContext.create(LDConstants.USER)
         val client = LDClient.init(app, ldConfig, context, 0)
         val vaultPercent = client.doubleVariation(LDConstants.VAULT_TYPE_FLAG, 0.0)
@@ -62,6 +71,12 @@ object ForageSDK : ForageSDKApi {
             vaultType = VaultConstants.VGS_VAULT_TYPE
         }
         return vaultType as String
+    }
+
+    // IMPORTANT: This function is only used for unit testing. Do not use it in
+    // production code!
+    internal fun reset() {
+        vaultType = null
     }
 
     override suspend fun tokenizeEBTCard(
