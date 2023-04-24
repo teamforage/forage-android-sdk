@@ -1,6 +1,5 @@
 package com.joinforage.forage.android
 
-import android.app.Application
 import android.content.Context
 import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
@@ -20,64 +19,13 @@ import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
-import com.launchdarkly.sdk.LDContext
-import com.launchdarkly.sdk.android.LDClient
-import com.launchdarkly.sdk.android.LDConfig
-import com.launchdarkly.sdk.android.integrations.TestData
 import java.util.UUID
-
-internal object VaultConstants {
-    const val VGS_VAULT_TYPE = "vgs_vault_type"
-    const val BT_VAULT_TYPE = "bt_vault_type"
-}
-
-internal object LDConstants {
-    const val VAULT_TYPE_FLAG = "vault-primary-traffic-percentage"
-    const val USER = "anonymous-user"
-}
 
 /**
  * Singleton responsible for implementing the SDK API
  */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
-    private var vaultType: String? = null
-    private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
-
-    // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
-    // want to overwrite it! We must take in the application as a parameter, which means that a
-    // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
-    internal fun getVaultProvider(app: Application, dataSource: TestData? = null): String {
-        if (vaultType != null) {
-            return vaultType as String
-        }
-        // Datasource is required for testing purposes!
-        val ldConfig = if (dataSource != null) {
-            LDConfig.Builder()
-                .mobileKey(LD_MOBILE_KEY)
-                .dataSource(dataSource)
-                .build()
-        } else {
-            LDConfig.Builder()
-                .mobileKey(LD_MOBILE_KEY)
-                .build()
-        }
-        val context = LDContext.create(LDConstants.USER)
-        val client = LDClient.init(app, ldConfig, context, 0)
-        val vaultPercent = client.doubleVariation(LDConstants.VAULT_TYPE_FLAG, 0.0)
-        val randomNum = Math.random() * 100
-        vaultType = VaultConstants.BT_VAULT_TYPE
-        if (randomNum < vaultPercent) {
-            vaultType = VaultConstants.VGS_VAULT_TYPE
-        }
-        return vaultType as String
-    }
-
-    // IMPORTANT: This function is only used for unit testing. Do not use it in
-    // production code!
-    internal fun reset() {
-        vaultType = null
-    }
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,

@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputLayout
-import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants
 import com.joinforage.forage.android.network.ForageConstants
@@ -33,7 +33,7 @@ class ForagePINEditText @JvmOverloads constructor(
 
         orientation = VERTICAL
 
-        vaultType = ForageSDK.getVaultProvider(context.applicationContext as Application)
+        vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
         if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             // TODO: Do BT stuff!
         } else if (vaultType == VaultConstants.VGS_VAULT_TYPE) {

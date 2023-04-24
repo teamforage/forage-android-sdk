@@ -84,7 +84,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
-    implementation 'com.launchdarkly:launchdarkly-android-client-sdk:4.0.0'
+    implementation 'com.launchdarkly:launchdarkly-android-client-sdk:4.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
     // VGS Collect SDK
