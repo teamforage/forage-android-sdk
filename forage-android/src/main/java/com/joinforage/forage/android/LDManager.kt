@@ -19,7 +19,7 @@ internal object LDContexts {
     const val USER = "anonymous-user"
 }
 
-object LDManager {
+internal object LDManager {
     private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
     private var internalVaultType: String? = null
     private var logger = Logger.getInstance(BuildConfig.DEBUG)
