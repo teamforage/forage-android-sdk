@@ -26,14 +26,12 @@ import java.util.UUID
  */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
-    private val logger = Logger.getInstance(BuildConfig.DEBUG)
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
-        logger.info("Tokenize $currentEntry")
 
         return when {
             shouldTokenize(currentEntry) -> TokenizeCardService(
