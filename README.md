@@ -230,7 +230,9 @@ This is an example of usage inside an ACC ViewModel:
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
             bearerToken = bearer,
-            userId = userId
+            // NOTE: The following line is for testing purposes only and should not be used in production.
+            // Please replace this line with a real hashed customer ID value.
+            userId = UUID.randomUUID().toString()
         )
     
         when (response) {
