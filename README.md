@@ -217,7 +217,7 @@ ForageSDK will expose the following function to collect the EBT card number:
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String,
-        userId: String?
+        userId: String
     ): ForageApiResponse<String>
 ```
 

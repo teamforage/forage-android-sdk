@@ -5,7 +5,8 @@
   "card": {
     "last_4": "7845",
     "created": "2022-11-01T12:21:03.801119-07:00",
-    "token": "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
+    "token": "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+    "state": "PA"
   },
-  "user_id": "android-test-user-id"
+  "user_id": "test-android-user-id"
 }

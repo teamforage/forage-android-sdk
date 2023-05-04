@@ -29,7 +29,7 @@ object ForageSDK : ForageSDKApi {
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String,
-        userId: String?
+        userId: String
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
         logger.info("Tokenize $currentEntry")
