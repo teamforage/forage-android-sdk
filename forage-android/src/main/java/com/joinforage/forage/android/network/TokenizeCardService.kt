@@ -16,17 +16,17 @@ internal class TokenizeCardService(
     private val httpUrl: HttpUrl,
     okHttpClient: OkHttpClient
 ) : NetworkService(okHttpClient) {
-    suspend fun tokenizeCard(cardNumber: String, userId: String): ForageApiResponse<String> = try {
-        tokenizeCardCoroutine(cardNumber, userId)
+    suspend fun tokenizeCard(cardNumber: String, customerId: String): ForageApiResponse<String> = try {
+        tokenizeCardCoroutine(cardNumber, customerId)
     } catch (ex: IOException) {
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
-    private suspend fun tokenizeCardCoroutine(cardNumber: String, userId: String): ForageApiResponse<String> {
+    private suspend fun tokenizeCardCoroutine(cardNumber: String, customerId: String): ForageApiResponse<String> {
         val url = getTokenizeCardUrl()
 
         val requestBody =
-            PaymentMethodRequestBody(cardNumber = cardNumber, userId = userId).toJSONObject().toString()
+            PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId).toJSONObject().toString()
 
         val body: RequestBody =
             requestBody.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())

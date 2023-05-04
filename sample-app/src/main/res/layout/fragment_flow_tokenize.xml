@@ -73,7 +73,7 @@
         tools:text="token: tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7" />
 
     <TextView
-        android:id="@+id/userId"
+        android:id="@+id/customerId"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -85,7 +85,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardToken"
         app:layout_constraintVertical_bias="0.0"
-        tools:text="user_id: android-test-user-id" />
+        tools:text="user_id: android-test-customer-id" />
 
     <ProgressBar
         android:id="@+id/progressBar"

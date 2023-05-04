@@ -7,7 +7,7 @@ import org.json.JSONObject
 internal data class PaymentMethod(
     val ref: String,
     val type: String,
-    val userId: String,
+    val customerId: String,
     val balance: Balance?,
     val card: Card?,
 ) {
@@ -17,7 +17,7 @@ internal data class PaymentMethod(
 
             val ref = jsonObject.getString("ref")
             val type = jsonObject.getString("type")
-            val userId = jsonObject.getString("user_id")
+            val customerId = jsonObject.getString("user_id")
 
             val card = jsonObject.getJSONObject("card")
             val last4 = card.getString("last_4")
@@ -32,7 +32,7 @@ internal data class PaymentMethod(
                     type = "",
                     token = token
                 ),
-                userId = userId
+                customerId = customerId
             )
         }
     }

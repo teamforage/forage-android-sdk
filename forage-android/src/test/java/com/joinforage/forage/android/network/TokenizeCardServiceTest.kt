@@ -44,10 +44,10 @@ class TokenizeCardServiceTest : MockServerSuite() {
 
     @Test
     fun `it should send the correct headers to tokenize the card`() = runTest {
-        val testUserId = UUID.randomUUID().toString()
-        server.givenCardToken(testData.cardNumber, testUserId).returnsPaymentMethodSuccessfully()
+        val testCustomerId = UUID.randomUUID().toString()
+        server.givenCardToken(testData.cardNumber, testCustomerId).returnsPaymentMethodSuccessfully()
 
-        tokenizeCardService.tokenizeCard(testData.cardNumber, userId = testUserId)
+        tokenizeCardService.tokenizeCard(testData.cardNumber, customerId = testCustomerId)
 
         server.verify("api/payment_methods/").called(
             times = times(1),
@@ -62,9 +62,9 @@ class TokenizeCardServiceTest : MockServerSuite() {
 
     @Test
     fun `it should respond with the payment method on success`() = runTest {
-        server.givenCardToken(testData.cardNumber, testData.userId).returnsPaymentMethodSuccessfully()
+        server.givenCardToken(testData.cardNumber, testData.customerId).returnsPaymentMethodSuccessfully()
 
-        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber, testData.userId)
+        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber, testData.customerId)
         assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
 
         val response =
@@ -78,16 +78,16 @@ class TokenizeCardServiceTest : MockServerSuite() {
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
                 ),
-                userId = "test-android-user-id"
+                customerId = "test-android-customer-id"
             )
         )
     }
 
     @Test
     fun `it should respond with an error on failure to create Payment Method`() = runTest {
-        server.givenCardToken(testData.cardNumber, testData.userId).returnsPaymentMethodFailed()
+        server.givenCardToken(testData.cardNumber, testData.customerId).returnsPaymentMethodFailed()
 
-        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber, testData.userId)
+        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber, testData.customerId)
         assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
 
         val response = paymentMethodResponse as ForageApiResponse.Failure
@@ -100,7 +100,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
         val merchantAccount: String = "12345678",
         val bearerToken: String = "AbCaccesstokenXyz",
         val cardNumber: String = "5076801234567845",
-        val userId: String = "test-android-user-id",
-        val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber=cardNumber, userId=userId)
+        val customerId: String = "test-android-customer-id",
+        val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber=cardNumber, customerId=customerId)
     )
 }

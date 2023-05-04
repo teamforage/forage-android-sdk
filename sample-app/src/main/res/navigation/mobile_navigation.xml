@@ -61,7 +61,7 @@
             app:argType="string" />
 
         <argument
-            android:name="userId"
+            android:name="customerId"
             app:argType="string" />
 
         <action
