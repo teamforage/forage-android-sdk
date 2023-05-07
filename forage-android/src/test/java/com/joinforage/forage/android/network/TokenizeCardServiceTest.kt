@@ -101,6 +101,6 @@ class TokenizeCardServiceTest : MockServerSuite() {
         val bearerToken: String = "AbCaccesstokenXyz",
         val cardNumber: String = "5076801234567845",
         val customerId: String = "test-android-customer-id",
-        val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber=cardNumber, customerId=customerId)
+        val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId)
     )
 }
