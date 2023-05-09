@@ -11,7 +11,7 @@ internal interface ForageSDKApi {
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String,
-        userId: String? = null
+        userId: String
     ): ForageApiResponse<String>
 
     suspend fun checkBalance(

@@ -6,7 +6,7 @@ internal data class PaymentMethodRequestBody(
     val cardNumber: String,
     val type: String = "ebt",
     val reusable: Boolean = true,
-    val userId: String? = null
+    val userId: String
 )
 
 internal fun PaymentMethodRequestBody.toJSONObject(): JSONObject {
