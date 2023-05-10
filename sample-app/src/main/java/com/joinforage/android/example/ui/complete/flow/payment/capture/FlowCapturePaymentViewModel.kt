@@ -26,7 +26,6 @@ class FlowCapturePaymentViewModel @Inject constructor(
     private val cashAmount = args.cashAmount
     private val merchantAccount = args.merchantAccount
     private val bearer = args.bearer
-    private val cardToken = args.cardToken
     private val snapPaymentRef = args.snapPaymentRef
     private val cashPaymentRef = args.cashPaymentRef
 
@@ -50,8 +49,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
                 pinForageEditText = pinForageEditText,
                 merchantAccount = merchantAccount,
                 bearerToken = bearer,
-                paymentRef = snapPaymentRef,
-                cardToken = cardToken
+                paymentRef = snapPaymentRef
             )
 
             when (response) {
@@ -83,8 +81,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
                 pinForageEditText = pinForageEditText,
                 merchantAccount = merchantAccount,
                 bearerToken = bearer,
-                paymentRef = cashPaymentRef,
-                cardToken = cardToken
+                paymentRef = cashPaymentRef
             )
 
             when (response) {
