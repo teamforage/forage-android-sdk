@@ -17,5 +17,5 @@ data class PaymentRequest(
     @Json(name = "is_delivery")
     val isDelivery: Boolean,
     @Json(name = "user_id")
-    val userId: String
+    val customerId: String
 )

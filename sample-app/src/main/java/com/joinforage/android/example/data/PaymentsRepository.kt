@@ -35,7 +35,7 @@ class PaymentsRepository @Inject constructor(
                 metadata = metadata,
                 deliveryAddress = deliveryAddress,
                 isDelivery = isDelivery,
-                userId = "android-test-user-id"
+                customerId = "android-test-customer-id"
             )
         )
     }
