@@ -261,8 +261,7 @@ ForageSDK will expose the following function to check the EBT card balance:
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentMethodRef: String,
-        cardToken: String
+        paymentMethodRef: String
     ): ForageApiResponse<String>
 ```
 
@@ -280,8 +279,7 @@ This is an example of usage inside an ACC ViewModel:
             pinForageEditText = pinForageEditText,
             merchantAccount = merchantAccount,
             bearerToken = bearer,
-            paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken
+            paymentMethodRef = paymentMethodRef
         )
 
         when (response) {
@@ -317,8 +315,7 @@ ForageSDK will expose the following function to capture a payment:
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentRef: String,
-        cardToken: String
+        paymentRef: String
     ): ForageApiResponse<String>
 ```
 
@@ -335,8 +332,7 @@ This is an example of usage inside an ACC ViewModel:
                 pinForageEditText = pinForageEditText,
                 merchantAccount = merchantAccount,
                 bearerToken = bearer,
-                paymentRef = snapPaymentRef,
-                cardToken = cardToken
+                paymentRef = snapPaymentRef
             )
     
             when (response) {
@@ -374,8 +370,7 @@ This is an example of usage inside an ACC ViewModel:
             pinForageEditText = cashPinForageEditText,
             merchantAccount = merchantAccount,
             bearerToken = bearer,
-            paymentRef = cashPaymentRef,
-            cardToken = cardToken
+            paymentRef = cashPaymentRef
         )
 
         val snapResponse = ForageSDK.capturePayment(
@@ -383,8 +378,7 @@ This is an example of usage inside an ACC ViewModel:
             pinForageEditText = snapPinForageEditText,
             merchantAccount = merchantAccount,
             bearerToken = bearer,
-            paymentRef = snapPaymentRef,
-            cardToken = cardToken
+            paymentRef = snapPaymentRef
         )
     }
 ```

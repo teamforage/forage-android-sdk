@@ -83,7 +83,6 @@ class FlowCreatePaymentFragment : Fragment() {
                     bearer = viewModel.bearer,
                     merchantAccount = viewModel.merchantAccount,
                     paymentMethodRef = viewModel.paymentMethodRef,
-                    cardToken = viewModel.cardToken,
                     snapAmount = getSnapAmount(),
                     cashAmount = getNonSnapAmount(),
                     snapPaymentRef = viewModel.snapPaymentResult.value?.ref.orEmpty(),

@@ -11,6 +11,8 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
+import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
@@ -24,7 +26,6 @@ import java.util.UUID
  */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
-    private val logger = Logger.getInstance(BuildConfig.DEBUG)
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
@@ -32,7 +33,6 @@ object ForageSDK : ForageSDKApi {
         customerId: String
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
-        logger.info("Tokenize $currentEntry")
 
         return when {
             shouldTokenize(currentEntry) -> TokenizeCardService(
@@ -59,8 +59,7 @@ object ForageSDK : ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentMethodRef: String,
-        cardToken: String
+        paymentMethodRef: String
     ): ForageApiResponse<String> {
         return CheckBalanceRepository(
             pinCollector = VGSPinCollector(
@@ -70,6 +69,13 @@ object ForageSDK : ForageSDKApi {
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
+                httpUrl = ForageConstants.provideHttpUrl()
+            ),
+            paymentMethodService = PaymentMethodService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
@@ -88,8 +94,7 @@ object ForageSDK : ForageSDKApi {
             ),
             logger = Logger.getInstance(BuildConfig.DEBUG)
         ).checkBalance(
-            paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken
+            paymentMethodRef = paymentMethodRef
         )
     }
 
@@ -98,8 +103,7 @@ object ForageSDK : ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentRef: String,
-        cardToken: String
+        paymentRef: String
     ): ForageApiResponse<String> {
         return CapturePaymentRepository(
             pinCollector = VGSPinCollector(
@@ -109,6 +113,20 @@ object ForageSDK : ForageSDKApi {
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
+                httpUrl = ForageConstants.provideHttpUrl()
+            ),
+            paymentService = PaymentService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
+                httpUrl = ForageConstants.provideHttpUrl()
+            ),
+            paymentMethodService = PaymentMethodService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
@@ -127,8 +145,7 @@ object ForageSDK : ForageSDKApi {
             ),
             logger = Logger.getInstance(BuildConfig.DEBUG)
         ).capturePayment(
-            paymentRef = paymentRef,
-            cardToken = cardToken
+            paymentRef = paymentRef
         )
     }
 

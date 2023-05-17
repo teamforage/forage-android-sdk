@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.ui
 
+import android.app.Application
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
@@ -8,7 +9,9 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputLayout
+import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.VaultConstants
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import com.verygoodsecurity.vgscollect.widget.VGSTextInputLayout
@@ -23,11 +26,21 @@ class ForagePINEditText @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val textInputLayout: VGSTextInputLayout
     private val textInputEditText: VGSEditText
+    private var vaultType: String
 
     init {
         setWillNotDraw(false)
 
         orientation = VERTICAL
+
+        vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
+        if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+            // TODO: Do BT stuff!
+        } else if (vaultType == VaultConstants.VGS_VAULT_TYPE) {
+            // TODO: Do VGS stuff!
+        } else {
+            throw Error("This shouldn't be possible!!")
+        }
 
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
             .apply {
@@ -104,6 +117,10 @@ class ForagePINEditText @JvmOverloads constructor(
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
+    }
+
+    internal fun getVaultType(): String {
+        return vaultType
     }
 
     private fun TypedArray.getBoxCornerRadiusBottomStart(boxCornerRadius: Float): Float {

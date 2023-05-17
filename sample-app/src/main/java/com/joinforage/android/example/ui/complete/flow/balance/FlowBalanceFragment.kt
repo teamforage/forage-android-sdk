@@ -68,8 +68,7 @@ class FlowBalanceFragment : Fragment() {
                 FlowBalanceFragmentDirections.actionFlowBalanceFragmentToFlowCreatePaymentFragment(
                     viewModel.bearer,
                     viewModel.merchantAccount,
-                    viewModel.paymentMethodRef,
-                    viewModel.cardToken
+                    viewModel.paymentMethodRef
                 )
             )
         }

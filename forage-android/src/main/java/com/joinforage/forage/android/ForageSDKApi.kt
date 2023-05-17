@@ -19,8 +19,7 @@ internal interface ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentMethodRef: String,
-        cardToken: String
+        paymentMethodRef: String
     ): ForageApiResponse<String>
 
     suspend fun capturePayment(
@@ -28,7 +27,6 @@ internal interface ForageSDKApi {
         pinForageEditText: ForagePINEditText,
         merchantAccount: String,
         bearerToken: String,
-        paymentRef: String,
-        cardToken: String
+        paymentRef: String
     ): ForageApiResponse<String>
 }

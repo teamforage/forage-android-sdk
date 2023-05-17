@@ -1,0 +1,15 @@
+{
+  "ref": "6ae6a45ff1",
+  "funding_type": "ebt_snap",
+  "amount": "5.00",
+  "description": "Testing EBT Payments from Postman",
+  "metadata": {},
+  "payment_method": "1f148fe399",
+  "created": "2023-04-17T12:14:26.741690-07:00",
+  "updated": "2023-04-17T12:14:26.741706-07:00",
+  "status": "requires_confirmation",
+  "last_processing_error": null,
+  "success_date": null,
+  "tpp_lookup_id": null,
+  "refunds": []
+}
