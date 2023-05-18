@@ -2,7 +2,6 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -21,7 +20,6 @@ internal class CapturePaymentRepository(
     private val messageStatusService: MessageStatusService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
-    private val capturePaymentResponseService: CapturePaymentResponseService,
     private val logger: Logger
 ) {
     suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
@@ -131,7 +129,7 @@ internal class CapturePaymentRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
-        return capturePaymentResponseService.retrieveCapturePaymentResponse(paymentRef = paymentRef)
+        return paymentService.getPayment(paymentRef = paymentRef)
     }
 
     companion object {

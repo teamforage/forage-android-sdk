@@ -18,7 +18,7 @@ internal fun PaymentMethodRequestBody.toJSONObject(): JSONObject {
     rootObject.put("card", cardObject)
     rootObject.put("type", type)
     rootObject.put("reusable", reusable)
-    rootObject.put("user_id", customerId)
+    rootObject.put("customer_id", customerId)
 
     return rootObject
 }

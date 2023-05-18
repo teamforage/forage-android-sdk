@@ -18,7 +18,7 @@ fun MockWebServer.givenCardToken(cardNumber: String, customerId: String) = whene
         "card" / json {
             "number" / cardNumber
         }
-        "user_id" / customerId
+        "customer_id" / customerId
     }
 )
 

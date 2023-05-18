@@ -46,13 +46,13 @@ class FlowTokenizeFragment : Fragment() {
                 true -> {
                     paymentRef.text = "ref:"
                     cardLast4.text = "last_4:"
-                    customerId.text = "user_id:"
+                    customerId.text = "customer_id:"
                     binding.nextButton.visibility = View.GONE
                 }
                 else -> {
                     paymentRef.text = "ref: ${it.ref}"
                     cardLast4.text = "last_4: ${it.card?.last4}"
-                    customerId.text = "user_id: ${it?.user_id}"
+                    customerId.text = "customer_id: ${it?.customerId}"
                     binding.nextButton.visibility = View.VISIBLE
                 }
             }
@@ -80,7 +80,7 @@ class FlowTokenizeFragment : Fragment() {
                         bearer = viewModel.bearer,
                         merchantAccount = viewModel.merchantAccount,
                         paymentMethodRef = viewModel.paymentMethod.value?.ref.orEmpty(),
-                        customerId = viewModel.paymentMethod.value?.user_id.orEmpty()
+                        customerId = viewModel.paymentMethod.value?.customerId.orEmpty()
                     )
                 )
             }

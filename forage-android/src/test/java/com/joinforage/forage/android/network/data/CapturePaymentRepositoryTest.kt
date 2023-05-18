@@ -15,7 +15,6 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.network.CapturePaymentResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
@@ -64,13 +63,6 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                 httpUrl = server.url("")
             ),
             paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
-                ),
-                httpUrl = server.url("")
-            ),
-            capturePaymentResponseService = CapturePaymentResponseService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount

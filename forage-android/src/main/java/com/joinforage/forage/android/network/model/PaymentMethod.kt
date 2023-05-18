@@ -17,7 +17,7 @@ internal data class PaymentMethod(
 
             val ref = jsonObject.getString("ref")
             val type = jsonObject.getString("type")
-            val customerId = jsonObject.getString("user_id")
+            val customerId = jsonObject.getString("customer_id")
 
             val card = jsonObject.getJSONObject("card")
             val last4 = card.getString("last_4")

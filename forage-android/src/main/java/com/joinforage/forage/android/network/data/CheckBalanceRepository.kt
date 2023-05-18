@@ -2,7 +2,6 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -18,7 +17,6 @@ internal class CheckBalanceRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val messageStatusService: MessageStatusService,
-    private val checkBalanceResponseService: CheckBalanceResponseService,
     private val logger: Logger
 ) {
     suspend fun checkBalance(
@@ -113,7 +111,7 @@ internal class CheckBalanceRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
-        return checkBalanceResponseService.retrieveBalanceResponse(paymentMethodRef = paymentMethodRef)
+        return paymentMethodService.getPaymentMethod(paymentMethodRef = paymentMethodRef)
     }
 
     companion object {
