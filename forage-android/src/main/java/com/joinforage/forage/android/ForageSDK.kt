@@ -5,8 +5,6 @@ import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber
-import com.joinforage.forage.android.network.CapturePaymentResponseService
-import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
@@ -29,7 +27,8 @@ object ForageSDK : ForageSDKApi {
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        bearerToken: String
+        bearerToken: String,
+        customerId: String
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
 
@@ -42,7 +41,8 @@ object ForageSDK : ForageSDKApi {
                 ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ).tokenizeCard(
-                cardNumber = currentEntry.getPanNumber()
+                cardNumber = currentEntry.getPanNumber(),
+                customerId = customerId
             )
             else -> ForageApiResponse.Failure(listOf(ForageError(400, "invalid_input_data", "Invalid PAN entry")))
         }
@@ -77,13 +77,6 @@ object ForageSDK : ForageSDKApi {
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount
-                ),
-                httpUrl = ForageConstants.provideHttpUrl()
-            ),
-            checkBalanceResponseService = CheckBalanceResponseService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount
@@ -128,13 +121,6 @@ object ForageSDK : ForageSDKApi {
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount
-                ),
-                httpUrl = ForageConstants.provideHttpUrl()
-            ),
-            capturePaymentResponseService = CapturePaymentResponseService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount

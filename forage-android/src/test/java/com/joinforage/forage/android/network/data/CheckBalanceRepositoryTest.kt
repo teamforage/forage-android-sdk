@@ -12,7 +12,6 @@ import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.model.Message
-import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
@@ -56,13 +55,6 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                 httpUrl = server.url("")
             ),
             messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
-                ),
-                httpUrl = server.url("")
-            ),
-            checkBalanceResponseService = CheckBalanceResponseService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount

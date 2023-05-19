@@ -9,7 +9,7 @@ import me.jorgecastillo.hiroaki.models.success
 import me.jorgecastillo.hiroaki.whenever
 import okhttp3.mockwebserver.MockWebServer
 
-fun MockWebServer.givenCardToken(cardNumber: String) = whenever(
+fun MockWebServer.givenCardToken(cardNumber: String, customerId: String) = whenever(
     method = Method.POST,
     sentToPath = "api/payment_methods/",
     jsonBody = json {
@@ -18,6 +18,7 @@ fun MockWebServer.givenCardToken(cardNumber: String) = whenever(
         "card" / json {
             "number" / cardNumber
         }
+        "customer_id" / customerId
     }
 )
 
