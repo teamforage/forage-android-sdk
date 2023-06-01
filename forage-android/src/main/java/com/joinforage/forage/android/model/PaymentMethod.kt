@@ -33,6 +33,7 @@ internal data class Balance(
 internal data class PaymentMethod(
     val ref: String,
     val type: String,
+    val customerId: String,
     val balance: Balance?,
     val card: Card?
 ) {
@@ -42,6 +43,7 @@ internal data class PaymentMethod(
 
             val ref = jsonObject.getString("ref")
             val type = jsonObject.getString("type")
+            val customerId = jsonObject.getString("customer_id")
             var balance: Balance? = null
             if (!jsonObject.isNull("balance")) {
                 val parsedBalance = jsonObject.getJSONObject("balance")
@@ -65,7 +67,8 @@ internal data class PaymentMethod(
                     last4 = last4,
                     type = "",
                     token = token
-                )
+                ),
+                customerId = customerId
             )
         }
     }

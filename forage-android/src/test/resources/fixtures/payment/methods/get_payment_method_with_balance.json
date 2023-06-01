@@ -10,5 +10,6 @@
     "created": "2022-11-01T12:21:03.801119-07:00",
     "token": "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
     "state": "PA"
-  }
+  },
+  "customer_id": "test-android-customer-id"
 }

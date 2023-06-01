@@ -33,7 +33,7 @@ internal class TokenizeCardService(
 
         val request: Request = Request.Builder()
             .url(url)
-            .header(ForageConstants.Headers.API_VERSION, "2023-03-31")
+            .header(ForageConstants.Headers.API_VERSION, "2023-05-15")
             .post(body)
             .build()
 
