@@ -2,10 +2,10 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
+import com.joinforage.forage.android.model.EncryptionKey
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
-import com.joinforage.forage.android.network.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
@@ -111,7 +111,13 @@ internal class CheckBalanceRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
-        return paymentMethodService.getPaymentMethod(paymentMethodRef = paymentMethodRef)
+        return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
+            is ForageApiResponse.Success -> {
+                val paymentMethod = PaymentMethod.ModelMapper.from(response.data)
+                return ForageApiResponse.Success(paymentMethod.balance.toString())
+            }
+            else -> response
+        }
     }
 
     companion object {

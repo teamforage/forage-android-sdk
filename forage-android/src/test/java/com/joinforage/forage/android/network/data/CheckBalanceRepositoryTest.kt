@@ -8,6 +8,7 @@ import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsFailed
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
+import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
@@ -16,10 +17,9 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.network.model.Balance
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.PaymentMethod
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -35,7 +35,6 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     private lateinit var repository: CheckBalanceRepository
     private val pinCollector = TestPinCollector()
     private val testData = ExpectedData()
-    private val moshi: Moshi = Moshi.Builder().build()
 
     @Before
     override fun setup() {
@@ -148,7 +147,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         // Get Payment Method is called twice!
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        server.givenPaymentMethodRef().returnsPaymentMethod()
+        server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
         pinCollector.setCollectPinForBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
@@ -165,8 +164,8 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
-                val paymentMethodRef = PaymentMethod.ModelMapper.from(response.data).ref
-                assertThat(paymentMethodRef).isEqualTo(testData.paymentMethodRef)
+                assertThat(response.data).contains(testData.balance.cash)
+                assertThat(response.data).contains(testData.balance.snap)
             }
             else -> {
                 assertThat(false)
@@ -237,6 +236,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
         val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
         val merchantAccount: String = "1234567",
-        val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65"
+        val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65",
+        val balance: Balance = Balance(
+            snap = "100.00",
+            cash = "100.00"
+        )
     )
 }

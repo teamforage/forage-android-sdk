@@ -3,7 +3,7 @@ package com.joinforage.forage.android.network
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.network.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
