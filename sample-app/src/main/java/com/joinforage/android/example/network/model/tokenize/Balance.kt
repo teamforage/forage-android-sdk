@@ -6,5 +6,4 @@ import com.squareup.moshi.JsonClass
 data class Balance(
     val snap: String,
     val non_snap: String
-//    val updated: Date
 )

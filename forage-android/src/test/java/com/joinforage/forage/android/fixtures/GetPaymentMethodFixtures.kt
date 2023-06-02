@@ -21,6 +21,14 @@ fun PotentialRequestChain.returnsPaymentMethod() = thenRespond(
     )
 )
 
+fun PotentialRequestChain.returnsPaymentMethodWithBalance() = thenRespond(
+    success(
+        jsonBody = fileBody(
+            "fixtures/payment/methods/get_payment_method_with_balance.json"
+        )
+    )
+)
+
 fun PotentialRequestChain.returnsFailedPaymentMethod() = thenRespond(
     error(
         404,

@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.network.model
+package com.joinforage.forage.android.model
 
 import org.json.JSONObject
 

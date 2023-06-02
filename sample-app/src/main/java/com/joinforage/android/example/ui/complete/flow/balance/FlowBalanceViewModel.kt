@@ -82,8 +82,8 @@ class FlowBalanceViewModel @Inject constructor(
                     val result = adapter.fromJson(response.data)
 
                     if (result != null) {
-                        _snap.value = "SNAP: ${result.balance?.snap}"
-                        _nonSnap.value = "NON SNAP: ${result.balance?.nonSnap}"
+                        _snap.value = "SNAP: ${result.snap}"
+                        _nonSnap.value = "NON SNAP: ${result.cash}"
                         _isLoading.value = false
                         _isNextVisible.value = true
                     }

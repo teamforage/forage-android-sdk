@@ -10,6 +10,6 @@ import retrofit2.http.POST
 
 interface ForageApi {
     @POST("api/payments/")
-    @Headers("API-VERSION: 2023-03-31")
+    @Headers("API-VERSION: 2023-05-15")
     suspend fun createPayment(@Header("Authorization") bearerToken: String, @Header("Merchant-Account") fnsNumber: String, @Body paymentRequest: PaymentRequest): ApiResponse<PaymentResponse>
 }
