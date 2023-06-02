@@ -293,7 +293,7 @@ This is an example of usage inside an ACC ViewModel:
 
                 if (result != null) {
                     _snap.value = "SNAP: ${result.snap}"
-                    _nonSnap.value = "NON SNAP: ${result.nonSnap}"
+                    _cash.value = "CASH: ${result.cash}"
                     _isLoading.value = false
                     _isNextVisible.value = true
                 }
