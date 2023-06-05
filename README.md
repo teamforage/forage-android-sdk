@@ -56,6 +56,34 @@ dependencies {
 }
 ```
 
+The Forage Android SDK comes with a flavor dimension `version` with values of `prod` and `sandbox`. Your flavor of choice can be specified in the `defaultConfig` block:
+
+```groovy
+android {
+    defaultConfig {
+        missingDimensionStrategy("version", "sandbox")
+    }
+}
+```
+
+Or, you can specify the flavor you would like to use in each of your own productFlavors:
+
+```groovy
+android {
+    flavorDimensions "exampleDimension"
+    productFlavors {
+        "production" {
+            missingDimensionStrategy("version", "prod", "sandbox")
+        }
+        "staging" {
+            missingDimensionStrategy("version", "sandbox", "prod")
+        }
+    }
+}
+```
+
+More information on using variant-aware dependencies can be found [here](https://developer.android.com/build/build-variants#variant_aware)
+
 ## UI Components
 
 ### ForagePANEditText
