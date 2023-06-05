@@ -17,6 +17,13 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    publishing {
+        multipleVariants("full") {
+            includeBuildTypeValues("release", "debug")
+            includeFlavorDimensionAndValues("version", "prod", "sandbox")
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
