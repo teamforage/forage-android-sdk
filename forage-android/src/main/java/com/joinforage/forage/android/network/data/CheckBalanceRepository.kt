@@ -22,12 +22,14 @@ internal class CheckBalanceRepository(
     private val logger: Logger
 ) {
     suspend fun checkBalance(
-        paymentMethodRef: String
+        paymentMethodRef: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentMethodRef = paymentMethodRef,
-                EncryptionKey.ModelMapper.from(response.data).alias
+                encryptionKey = EncryptionKey.ModelMapper.from(response.data).alias,
+                merchantAccount = merchantAccount
             )
             else -> response
         }
@@ -35,13 +37,15 @@ internal class CheckBalanceRepository(
 
     private suspend fun getTokenFromPaymentMethod(
         paymentMethodRef: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCheckBalance(
                 paymentMethodRef = paymentMethodRef,
                 cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
-                encryptionKey = encryptionKey
+                encryptionKey = encryptionKey,
+                merchantAccount = merchantAccount
             )
             else -> response
         }
@@ -50,20 +54,22 @@ internal class CheckBalanceRepository(
     private suspend fun collectPinToCheckBalance(
         paymentMethodRef: String,
         cardToken: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
-        val vgsResponse = pinCollector.collectPinForBalanceCheck(
+        val response = pinCollector.collectPinForBalanceCheck(
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
-            encryptionKey = encryptionKey
+            encryptionKey = encryptionKey,
+            merchantAccount = merchantAccount
         )
 
-        return when (vgsResponse) {
+        return when (response) {
             is ForageApiResponse.Success -> pollingBalanceMessageStatus(
-                contentId = Message.ModelMapper.from(vgsResponse.data).contentId,
+                contentId = Message.ModelMapper.from(response.data).contentId,
                 paymentMethodRef = paymentMethodRef
             )
-            else -> vgsResponse
+            else -> response
         }
     }
 

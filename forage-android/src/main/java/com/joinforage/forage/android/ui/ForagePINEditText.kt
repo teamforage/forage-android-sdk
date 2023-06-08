@@ -5,13 +5,19 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
+import com.basistheory.android.service.BasisTheoryElements
+import com.basistheory.android.view.TextElement
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants
+import com.joinforage.forage.android.collect.BTPinCollector
+import com.joinforage.forage.android.collect.PinCollector
+import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import com.verygoodsecurity.vgscollect.widget.VGSTextInputLayout
@@ -24,8 +30,11 @@ class ForagePINEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : LinearLayout(context, attrs, defStyleAttr) {
-    private val textInputLayout: VGSTextInputLayout
-    private val textInputEditText: VGSEditText
+    private var textInputLayout: VGSTextInputLayout? = null
+    private var textInputEditText: VGSEditText? = null
+
+    private var btTextInput: TextElement? = null
+
     private var vaultType: String
 
     init {
@@ -34,14 +43,50 @@ class ForagePINEditText @JvmOverloads constructor(
         orientation = VERTICAL
 
         vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
+
         if (vaultType == VaultConstants.BT_VAULT_TYPE) {
-            // TODO: Do BT stuff!
+            renderBt(context, attrs, defStyleAttr)
         } else if (vaultType == VaultConstants.VGS_VAULT_TYPE) {
-            // TODO: Do VGS stuff!
+            renderVgs(context, attrs, defStyleAttr)
         } else {
             throw Error("This shouldn't be possible!!")
         }
+    }
 
+    private fun renderBt(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = R.attr.foragePanEditTextStyle
+    ) {
+        context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
+            .apply {
+                try {
+                    val textInputLayoutStyleAttribute =
+                        getResourceId(R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
+
+                    btTextInput = TextElement(context, null, textInputLayoutStyleAttribute).apply {
+                        layoutParams =
+                            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                        inputType = com.basistheory.android.model.InputType.NUMBER_PASSWORD
+                    }
+                } finally {
+                    recycle()
+                }
+            }
+
+        addView(btTextInput)
+        addView(getLogoImageViewLayout(context))
+    }
+
+    internal fun getVaultType(): String {
+        return vaultType
+    }
+
+    private fun renderVgs(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = R.attr.foragePanEditTextStyle
+    ) {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
             .apply {
                 try {
@@ -105,22 +150,18 @@ class ForagePINEditText @JvmOverloads constructor(
                         setTextColor(textColor)
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
 
-                        setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+//                        setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
                     }
                 } finally {
                     recycle()
                 }
             }
 
-        textInputLayout.addView(textInputEditText)
+        textInputLayout?.addView(textInputEditText)
 
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
-    }
-
-    internal fun getVaultType(): String {
-        return vaultType
     }
 
     private fun TypedArray.getBoxCornerRadiusBottomStart(boxCornerRadius: Float): Float {
@@ -147,8 +188,25 @@ class ForagePINEditText @JvmOverloads constructor(
         return if (boxCornerRadiusTopStart == 0f) boxCornerRadius else boxCornerRadiusTopStart
     }
 
+    internal fun getCollector(): PinCollector {
+        if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+            return BTPinCollector(
+                context,
+                this
+            )
+        }
+        return VGSPinCollector(
+            context,
+            this
+        )
+    }
+
     internal fun getTextInputEditText(): VGSEditText {
-        return textInputEditText
+        return textInputEditText as VGSEditText
+    }
+
+    internal fun getTextElement(): TextElement {
+        return btTextInput as TextElement
     }
 
     private fun getThemeAccentColor(context: Context): Int {

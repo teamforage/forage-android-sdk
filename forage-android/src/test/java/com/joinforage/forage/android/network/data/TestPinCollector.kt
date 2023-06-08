@@ -16,7 +16,8 @@ class TestPinCollector : PinCollector {
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         return collectPinForBalanceCheckResponses.getOrDefault(
             CheckBalanceWrapper(
@@ -31,7 +32,8 @@ class TestPinCollector : PinCollector {
     override suspend fun collectPinForCapturePayment(
         paymentRef: String,
         cardToken: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         return collectPinForCapturePaymentResponses.getOrDefault(
             CapturePaymentWrapper(

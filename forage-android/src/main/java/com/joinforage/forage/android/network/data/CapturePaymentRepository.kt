@@ -24,11 +24,12 @@ internal class CapturePaymentRepository(
     private val capturePaymentResponseService: CapturePaymentResponseService,
     private val logger: Logger
 ) {
-    suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
+    suspend fun capturePayment(paymentRef: String, merchantAccount: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
-                EncryptionKey.ModelMapper.from(response.data).alias
+                encryptionKey = EncryptionKey.ModelMapper.from(response.data).alias,
+                merchantAccount = merchantAccount
             )
             else -> response
         }
@@ -36,13 +37,15 @@ internal class CapturePaymentRepository(
 
     private suspend fun getPaymentMethodFromPayment(
         paymentRef: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         return when (val response = paymentService.getPayment(paymentRef)) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentRef = paymentRef,
                 paymentMethodRef = Payment.ModelMapper.from(response.data).paymentMethod,
-                encryptionKey = encryptionKey
+                encryptionKey = encryptionKey,
+                merchantAccount = merchantAccount
             )
             else -> response
         }
@@ -51,13 +54,15 @@ internal class CapturePaymentRepository(
     private suspend fun getTokenFromPaymentMethod(
         paymentRef: String,
         paymentMethodRef: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCapturePayment(
                 paymentRef = paymentRef,
                 cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
-                encryptionKey = encryptionKey
+                encryptionKey = encryptionKey,
+                merchantAccount = merchantAccount
             )
             else -> response
         }
@@ -66,12 +71,14 @@ internal class CapturePaymentRepository(
     private suspend fun collectPinToCapturePayment(
         paymentRef: String,
         cardToken: String,
-        encryptionKey: String
+        encryptionKey: String,
+        merchantAccount: String
     ): ForageApiResponse<String> {
         val vgsResponse = pinCollector.collectPinForCapturePayment(
             paymentRef = paymentRef,
             cardToken = cardToken,
-            encryptionKey = encryptionKey
+            encryptionKey = encryptionKey,
+            merchantAccount = merchantAccount
         )
 
         return when (vgsResponse) {

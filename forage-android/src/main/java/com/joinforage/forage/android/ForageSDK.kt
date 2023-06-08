@@ -60,11 +60,7 @@ object ForageSDK : ForageSDKApi {
         paymentMethodRef: String
     ): ForageApiResponse<String> {
         return CheckBalanceRepository(
-            pinCollector = VGSPinCollector(
-                context = context,
-                pinForageEditText = pinForageEditText,
-                merchantAccount = merchantAccount
-            ),
+            pinCollector = pinForageEditText.getCollector(),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
                 httpUrl = ForageConstants.provideHttpUrl()
@@ -92,7 +88,8 @@ object ForageSDK : ForageSDKApi {
             ),
             logger = Logger.getInstance(BuildConfig.DEBUG)
         ).checkBalance(
-            paymentMethodRef = paymentMethodRef
+            paymentMethodRef = paymentMethodRef,
+            merchantAccount = merchantAccount
         )
     }
 
@@ -104,11 +101,7 @@ object ForageSDK : ForageSDKApi {
         paymentRef: String
     ): ForageApiResponse<String> {
         return CapturePaymentRepository(
-            pinCollector = VGSPinCollector(
-                context = context,
-                pinForageEditText = pinForageEditText,
-                merchantAccount = merchantAccount
-            ),
+            pinCollector = pinForageEditText.getCollector(),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
                 httpUrl = ForageConstants.provideHttpUrl()
@@ -143,7 +136,8 @@ object ForageSDK : ForageSDKApi {
             ),
             logger = Logger.getInstance(BuildConfig.DEBUG)
         ).capturePayment(
-            paymentRef = paymentRef
+            paymentRef = paymentRef,
+            merchantAccount = merchantAccount
         )
     }
 

@@ -77,7 +77,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -99,7 +99,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
             response = failureResponse
         )
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -120,7 +120,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         server.givenContentId(testData.contentId).returnsUnauthorized()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -143,7 +143,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenContentId(testData.contentId)
             .returnsFailed()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -168,7 +168,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenContentId(testData.contentId)
             .returnsMessageCompletedSuccessfully()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
@@ -200,7 +200,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                 .returnsSendToProxy()
         }
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure

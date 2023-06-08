@@ -85,7 +85,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -108,7 +108,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             response = failureResponse
         )
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -130,7 +130,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenContentId(ExpectedData().contentId)
             .returnsUnauthorized()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -148,7 +148,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsFailedPayment()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -167,7 +167,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsFailedPaymentMethod()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -197,7 +197,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenContentId(ExpectedData().contentId)
             .returnsExpiredCard()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -229,7 +229,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                 .returnsSendToProxy()
         }
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -264,7 +264,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             )
         )
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = repository.capturePayment(testData.paymentRef, testData.merchantAccount)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
