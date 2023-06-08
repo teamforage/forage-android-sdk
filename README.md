@@ -258,7 +258,7 @@ The ForageSDK exposes the following function to collect the EBT card number:
 #### Parameter definitions
 
 - `merchantAccount`: A unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants.
-- `bearerToken`: A [session token](https://docs.joinforage.app/reference/create-session-token).
+- `bearerToken`: A [session token](https://docs.joinforage.app/reference/create-session-token) that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the `/session_token/` endpoint.
 - `customerId`: A unique ID for the end customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
 
 #### Example
@@ -355,13 +355,21 @@ This is an example of usage inside an ACC ViewModel:
     }
 ```
 
+### (Optional) Step 3: Persist the PaymentMethod ref in your wallet
+
+If you offer customers a wallet to save their payment methods for future use, then you need to link the EBT PaymentMethod ref to that wallet.
+
 ## Capturing a payment
 
 ### Step 1: Add the `ForagePINEditText` UI component
 
 You need to use the `ForagePINEditText` component to your app to check a card's balance. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
 
-### Step 2: Capture the EBT payment
+## Step 2: Send a server-side POST to the Forage `/payments/` endpoint to create a `Payment` object
+
+Your backend needs to create the object. You'll need the `ref` from the response for Step 3.
+
+### Step 3: Capture the EBT payment
 
 The ForageSDK exposes the following function to capture an EBT payment:
 
