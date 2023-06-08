@@ -140,7 +140,7 @@ A UI component for a customer to enter their EBT card PIN.
 
 ### Step 1: Add the `ForagePANEditText` UI component
 
-First, you need to add `ForagePanEditText` to your layout file:
+First, you need to add `ForagePANEditText` to your layout file:
 
 ```xml
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -298,7 +298,7 @@ This is an example of usage inside an ACC ViewModel:
 
 ### Step 1: Add the `ForagePINEditText` UI component
 
-You need to use the `ForagePINEditText` component to your app to check a card's balance. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
+You need to add the `ForagePINEditText` component to your app to check a card's balance. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
 
 ### Step 2: Check the balance of the EBT Card
 
@@ -363,7 +363,7 @@ If you offer customers a wallet to save their payment methods for future use, th
 
 ### Step 1: Add the `ForagePINEditText` UI component
 
-You need to use the `ForagePINEditText` component to your app to check a card's balance. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
+You need to add the `ForagePINEditText` component to your app to authorize a payment capture. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
 
 ## Step 2: Send a server-side POST to the Forage `/payments/` endpoint to create a `Payment` object
 
@@ -416,7 +416,7 @@ This is an example of usage inside an ACC ViewModel:
         }
 ```
 
-The `paymentRef` is used to determine if it's a capture from SNAP or EBT Cash.
+The `paymentRef` can be used to determine what type of tender is being captured (SNAP or EBT Cash).
 
 #### Capture both SNAP and EBT Cash payments
 
