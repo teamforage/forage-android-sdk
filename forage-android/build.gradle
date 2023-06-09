@@ -108,7 +108,12 @@ dependencies {
     api 'com.verygoodsecurity:vgscollect:1.7.3'
 
     // Basis Theory SDK
-    implementation 'com.github.basis-theory:basistheory-android:2.1.1'
+    implementation ('com.github.basis-theory:basistheory-android:2.1.1') {
+        // Unable to build without excluding this dependency
+        // based on advice from this thread: https://github.com/gradle/gradle/issues/3065#issuecomment-341418873
+        exclude group: 'javax.ws.rs'
+    }
+    implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.3'
