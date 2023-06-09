@@ -11,6 +11,8 @@ import android.util.TypedValue
 import android.widget.LinearLayout
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.view.TextElement
+import com.basistheory.android.view.mask.ElementMask
+import com.basistheory.android.view.validation.RegexValidator
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
@@ -53,6 +55,7 @@ class ForagePINEditText @JvmOverloads constructor(
         }
     }
 
+    // TODO: Ask BT to add other styling values or use the subset of styling here.
     private fun renderBt(
         context: Context,
         attrs: AttributeSet? = null,
@@ -68,6 +71,11 @@ class ForagePINEditText @JvmOverloads constructor(
                         layoutParams =
                             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                         inputType = com.basistheory.android.model.InputType.NUMBER_PASSWORD
+                        val digit = Regex("""\d""")
+                        mask = ElementMask(listOf(digit, digit, digit, digit))
+                        hint = getString(R.styleable.ForagePINEditText_hint)
+                        textSize = getDimension(R.styleable.ForagePINEditText_textSize, -1f)
+                        textColor = getColor(R.styleable.ForagePINEditText_textColor, Color.BLACK)
                     }
                 } finally {
                     recycle()
@@ -76,10 +84,6 @@ class ForagePINEditText @JvmOverloads constructor(
 
         addView(btTextInput)
         addView(getLogoImageViewLayout(context))
-    }
-
-    internal fun getVaultType(): String {
-        return vaultType
     }
 
     private fun renderVgs(
@@ -150,7 +154,7 @@ class ForagePINEditText @JvmOverloads constructor(
                         setTextColor(textColor)
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
 
-//                        setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+                        setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
                     }
                 } finally {
                     recycle()
@@ -191,7 +195,6 @@ class ForagePINEditText @JvmOverloads constructor(
     internal fun getCollector(): PinCollector {
         if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             return BTPinCollector(
-                context,
                 this
             )
         }

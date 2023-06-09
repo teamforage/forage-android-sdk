@@ -43,6 +43,7 @@ internal class CheckBalanceRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCheckBalance(
                 paymentMethodRef = paymentMethodRef,
+                // TODO: Parse the token to get BT or VGS
                 cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
                 encryptionKey = encryptionKey,
                 merchantAccount = merchantAccount
@@ -57,6 +58,7 @@ internal class CheckBalanceRepository(
         encryptionKey: String,
         merchantAccount: String
     ): ForageApiResponse<String> {
+//        val parsedToken = cardToken.split(",")[1]
         val response = pinCollector.collectPinForBalanceCheck(
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
