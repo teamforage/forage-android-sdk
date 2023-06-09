@@ -27,5 +27,7 @@ data class PaymentResponse(
     var lastProcessingError: String?,
     @Json(name = "success_date")
     var successDate: String?,
-    var refunds: List<String>
+    var refunds: List<String>,
+    @Json(name = "customer_id")
+    var customerId: String?
 )

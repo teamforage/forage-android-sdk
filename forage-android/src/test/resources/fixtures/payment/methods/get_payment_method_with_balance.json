@@ -1,7 +1,10 @@
 {
   "ref": "1f148fe399",
   "type": "ebt",
-  "balance": null,
+  "balance": {
+    "snap": "100.00",
+    "non_snap": "100.00"
+  },
   "card": {
     "last_4": "7845",
     "created": "2022-11-01T12:21:03.801119-07:00",

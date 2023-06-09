@@ -10,7 +10,8 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 internal interface ForageSDKApi {
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        bearerToken: String
+        bearerToken: String,
+        customerId: String
     ): ForageApiResponse<String>
 
     suspend fun checkBalance(

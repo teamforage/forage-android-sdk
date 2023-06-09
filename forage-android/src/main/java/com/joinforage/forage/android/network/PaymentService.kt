@@ -22,6 +22,7 @@ internal class PaymentService(
 
         val request: Request = Request.Builder()
             .url(url)
+            .header(ForageConstants.Headers.API_VERSION, "2023-05-15")
             .get()
             .build()
 

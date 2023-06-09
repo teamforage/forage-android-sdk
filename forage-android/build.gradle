@@ -17,6 +17,13 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    publishing {
+        multipleVariants("full") {
+            includeBuildTypeValues("release", "debug")
+            includeFlavorDimensionAndValues("version", "prod", "sandbox")
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -108,7 +115,7 @@ dependencies {
     testImplementation 'me.jorgecastillo:hiroaki-core:0.2.3'
     testImplementation 'org.assertj:assertj-core:3.18.0'
     testImplementation 'org.json:json:20220924'
-    testImplementation 'org.robolectric:robolectric:4.8.2'
+    testImplementation 'org.robolectric:robolectric:4.10.3'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testImplementation 'com.squareup.moshi:moshi:1.14.0'
     testImplementation 'com.squareup.moshi:moshi-adapters:1.14.0'
@@ -120,7 +127,7 @@ dependencies {
 
 ext {
     PUBLISH_GROUP_ID = 'com.joinforage'
-    PUBLISH_VERSION = '0.1.1'
+    PUBLISH_VERSION = '1.1.1'
     PUBLISH_ARTIFACT_ID = 'forage-android'
     PUBLISH_DESCRIPTION = 'Forage Android SDK'
     PUBLISH_URL = 'https://github.com/teamforage/forage-android-sdk'

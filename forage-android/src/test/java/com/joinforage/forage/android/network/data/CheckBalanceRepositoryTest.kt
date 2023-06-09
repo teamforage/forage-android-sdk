@@ -8,19 +8,19 @@ import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsFailed
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
+import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.model.Message
-import com.joinforage.forage.android.network.CheckBalanceResponseService
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
+import com.squareup.moshi.Moshi
+import com.joinforage.forage.android.network.model.Balance
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.PaymentMethod
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -36,7 +36,6 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     private lateinit var repository: CheckBalanceRepository
     private val pinCollector = TestPinCollector()
     private val testData = ExpectedData()
-    private val moshi: Moshi = Moshi.Builder().build()
 
     @Before
     override fun setup() {
@@ -62,13 +61,6 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                 ),
                 httpUrl = server.url("")
             ),
-            checkBalanceResponseService = CheckBalanceResponseService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
-                ),
-                httpUrl = server.url("")
-            ),
             logger = Logger.getInstance(enableLogging = false)
         )
     }
@@ -77,7 +69,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
+        val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -99,7 +91,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
             response = failureResponse
         )
 
-        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
+        val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -120,7 +112,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         server.givenContentId(testData.contentId).returnsUnauthorized()
 
-        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
+        val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -143,7 +135,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenContentId(testData.contentId)
             .returnsFailed()
 
-        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
+        val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -156,7 +148,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         // Get Payment Method is called twice!
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        server.givenPaymentMethodRef().returnsPaymentMethod()
+        server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
         pinCollector.setCollectPinForBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
@@ -168,13 +160,13 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenContentId(testData.contentId)
             .returnsMessageCompletedSuccessfully()
 
-        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
+        val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
-                val paymentMethodRef = PaymentMethod.ModelMapper.from(response.data).ref
-                assertThat(paymentMethodRef).isEqualTo(testData.paymentMethodRef)
+                assertThat(response.data).contains(testData.balance.cash)
+                assertThat(response.data).contains(testData.balance.snap)
             }
             else -> {
                 assertThat(false)
@@ -200,7 +192,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                 .returnsSendToProxy()
         }
 
-        val response = repository.checkBalance(testData.paymentMethodRef, testData.merchantAccount)
+        val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -245,6 +237,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
         val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
         val merchantAccount: String = "1234567",
-        val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65"
+        val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65",
+        val balance: Balance = Balance(
+            snap = "100.00",
+            cash = "100.00"
+        )
     )
 }

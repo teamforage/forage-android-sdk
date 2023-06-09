@@ -2,16 +2,15 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.network.CapturePaymentResponseService
+import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
-import com.joinforage.forage.android.network.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.network.model.Payment
 import com.joinforage.forage.android.network.model.PaymentMethod
 import kotlinx.coroutines.delay
 
@@ -21,15 +20,13 @@ internal class CapturePaymentRepository(
     private val messageStatusService: MessageStatusService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
-    private val capturePaymentResponseService: CapturePaymentResponseService,
     private val logger: Logger
 ) {
-    suspend fun capturePayment(paymentRef: String, merchantAccount: String): ForageApiResponse<String> {
+    suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
-                encryptionKey = EncryptionKey.ModelMapper.from(response.data).alias,
-                merchantAccount = merchantAccount
+                EncryptionKey.ModelMapper.from(response.data).alias
             )
             else -> response
         }
@@ -37,15 +34,14 @@ internal class CapturePaymentRepository(
 
     private suspend fun getPaymentMethodFromPayment(
         paymentRef: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentService.getPayment(paymentRef)) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentRef = paymentRef,
+                // TODO: Parse the token to get BT or VGS
                 paymentMethodRef = Payment.ModelMapper.from(response.data).paymentMethod,
-                encryptionKey = encryptionKey,
-                merchantAccount = merchantAccount
+                encryptionKey = encryptionKey
             )
             else -> response
         }
@@ -54,16 +50,13 @@ internal class CapturePaymentRepository(
     private suspend fun getTokenFromPaymentMethod(
         paymentRef: String,
         paymentMethodRef: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCapturePayment(
                 paymentRef = paymentRef,
-                // TODO: Parse the token to get BT or VGS
                 cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
-                encryptionKey = encryptionKey,
-                merchantAccount = merchantAccount
+                encryptionKey = encryptionKey
             )
             else -> response
         }
@@ -139,7 +132,7 @@ internal class CapturePaymentRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
-        return capturePaymentResponseService.retrieveCapturePaymentResponse(paymentRef = paymentRef)
+        return paymentService.getPayment(paymentRef = paymentRef)
     }
 
     companion object {

@@ -36,7 +36,6 @@ class ForagePINEditText @JvmOverloads constructor(
     private var textInputEditText: VGSEditText? = null
 
     private var btTextInput: TextElement? = null
-
     private var vaultType: String
 
     init {
@@ -45,7 +44,6 @@ class ForagePINEditText @JvmOverloads constructor(
         orientation = VERTICAL
 
         vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
-
         if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             renderBt(context, attrs, defStyleAttr)
         } else if (vaultType == VaultConstants.VGS_VAULT_TYPE) {
@@ -166,6 +164,10 @@ class ForagePINEditText @JvmOverloads constructor(
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
+    }
+
+    internal fun getVaultType(): String {
+        return vaultType
     }
 
     private fun TypedArray.getBoxCornerRadiusBottomStart(boxCornerRadius: Float): Float {

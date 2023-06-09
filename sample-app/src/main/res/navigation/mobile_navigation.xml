@@ -56,6 +56,10 @@
             android:name="paymentMethodRef"
             app:argType="string" />
 
+        <argument
+            android:name="customerId"
+            app:argType="string" />
+
         <action
             android:id="@+id/action_flowBalanceFragment_to_flowCreatePaymentFragment"
             app:destination="@id/flowCreatePaymentFragment" />
