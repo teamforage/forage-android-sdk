@@ -60,9 +60,14 @@ object ForageSDK : ForageSDKApi {
         paymentMethodRef: String
     ): ForageApiResponse<String> {
         return CheckBalanceRepository(
-            pinCollector = pinForageEditText.getCollector(),
+            pinCollector = pinForageEditText.getCollector(
+                merchantAccount
+            ),
             encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             paymentMethodService = PaymentMethodService(
@@ -93,9 +98,14 @@ object ForageSDK : ForageSDKApi {
         paymentRef: String
     ): ForageApiResponse<String> {
         return CapturePaymentRepository(
-            pinCollector = pinForageEditText.getCollector(),
+            pinCollector = pinForageEditText.getCollector(
+                merchantAccount
+            ),
             encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken, merchantAccount),
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    bearerToken,
+                    merchantAccount
+                ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
             paymentService = PaymentService(

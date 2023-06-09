@@ -49,15 +49,13 @@ internal class CheckBalanceRepository(
     private suspend fun collectPinToCheckBalance(
         paymentMethodRef: String,
         cardToken: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> {
 //        val parsedToken = cardToken.split(",")[1]
         val response = pinCollector.collectPinForBalanceCheck(
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
-            encryptionKey = encryptionKey,
-            merchantAccount = merchantAccount
+            encryptionKey = encryptionKey
         )
 
         return when (response) {

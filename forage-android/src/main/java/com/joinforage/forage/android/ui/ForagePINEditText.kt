@@ -194,15 +194,19 @@ class ForagePINEditText @JvmOverloads constructor(
         return if (boxCornerRadiusTopStart == 0f) boxCornerRadius else boxCornerRadiusTopStart
     }
 
-    internal fun getCollector(): PinCollector {
+    internal fun getCollector(
+        merchantAccount: String
+    ): PinCollector {
         if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             return BTPinCollector(
-                this
+                this,
+                merchantAccount
             )
         }
         return VGSPinCollector(
             context,
-            this
+            this,
+            merchantAccount
         )
     }
 

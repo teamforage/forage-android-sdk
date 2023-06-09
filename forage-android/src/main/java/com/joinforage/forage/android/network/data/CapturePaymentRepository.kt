@@ -66,13 +66,12 @@ internal class CapturePaymentRepository(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String,
-        merchantAccount: String
+
     ): ForageApiResponse<String> {
         val response = pinCollector.collectPinForCapturePayment(
             paymentRef = paymentRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey,
-            merchantAccount = merchantAccount
         )
 
         return when (response) {

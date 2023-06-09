@@ -13,13 +13,13 @@ import org.json.JSONException
 import kotlin.coroutines.suspendCoroutine
 
 internal class BTPinCollector(
-    private val pinForageEditText: ForagePINEditText
+    private val pinForageEditText: ForagePINEditText,
+    private val merchantAccount: String
 ) : PinCollector {
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val bt = buildBt()
 
@@ -62,8 +62,7 @@ internal class BTPinCollector(
     override suspend fun collectPinForCapturePayment(
         paymentRef: String,
         cardToken: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val bt = buildBt()
 

@@ -18,13 +18,13 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class VGSPinCollector(
     private val context: Context,
-    private val pinForageEditText: ForagePINEditText
+    private val pinForageEditText: ForagePINEditText,
+    private val merchantAccount: String
 ) : PinCollector {
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val vgsCollect = buildVGSCollect(context)
 
@@ -74,8 +74,7 @@ internal class VGSPinCollector(
     override suspend fun collectPinForCapturePayment(
         paymentRef: String,
         cardToken: String,
-        encryptionKey: String,
-        merchantAccount: String
+        encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val vgsCollect = buildVGSCollect(context)
 
