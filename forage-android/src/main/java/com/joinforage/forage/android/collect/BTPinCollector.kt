@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.collect
 
-import android.content.Context
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
@@ -57,7 +56,6 @@ internal class BTPinCollector(
             )
         }
     }
-
 
     override suspend fun collectPinForCapturePayment(
         paymentRef: String,

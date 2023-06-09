@@ -5,14 +5,11 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.text.InputType
-import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
-import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
-import com.basistheory.android.view.validation.RegexValidator
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R

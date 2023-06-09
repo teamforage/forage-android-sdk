@@ -1,7 +1,6 @@
 package com.joinforage.forage.android
 
 import android.content.Context
-import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber

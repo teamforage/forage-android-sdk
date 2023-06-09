@@ -65,13 +65,13 @@ internal class CapturePaymentRepository(
     private suspend fun collectPinToCapturePayment(
         paymentRef: String,
         cardToken: String,
-        encryptionKey: String,
+        encryptionKey: String
 
     ): ForageApiResponse<String> {
         val response = pinCollector.collectPinForCapturePayment(
             paymentRef = paymentRef,
             cardToken = cardToken,
-            encryptionKey = encryptionKey,
+            encryptionKey = encryptionKey
         )
 
         return when (response) {
