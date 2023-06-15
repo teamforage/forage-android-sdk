@@ -2,14 +2,10 @@ package com.joinforage.forage.android.ui
 
 import android.app.Application
 import android.content.Context
-import android.content.res.TypedArray
-import android.graphics.Color
 import android.graphics.Typeface
-import android.text.InputType
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
-import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants
@@ -33,14 +29,13 @@ class ForagePINEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : PINEditText, LinearLayout(context, attrs, defStyleAttr) {
-    private var vaultType: String
     private var vault: VaultWrapper?
 
     init {
         setWillNotDraw(false)
         orientation = VERTICAL
 
-        vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
+        var vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
         vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             BTVaultWrapper(context, attrs, defStyleAttr)
         } else {
@@ -53,7 +48,7 @@ class ForagePINEditText @JvmOverloads constructor(
     internal fun getCollector(
         merchantAccount: String
     ): PinCollector {
-        if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+        if (vault is BTVaultWrapper) {
             return BTPinCollector(
                 this,
                 merchantAccount

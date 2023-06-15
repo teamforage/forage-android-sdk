@@ -31,7 +31,7 @@ interface VaultWrapper {
 internal class VGSVaultWrapper @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
+    defStyleAttr: Int = 0
 ) : VaultWrapper, FrameLayout(context, attrs, defStyleAttr) {
     private var _internalEditText: VGSEditText
 
@@ -190,7 +190,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                     recycle()
                 }
             }
-
     }
 
     override fun getVGSEditText(): VGSEditText {
