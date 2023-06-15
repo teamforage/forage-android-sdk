@@ -5,7 +5,7 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
- * The Forage SKD public API
+ * The Forage SDK public API
  */
 internal interface ForageSDKApi {
     suspend fun tokenizeEBTCard(

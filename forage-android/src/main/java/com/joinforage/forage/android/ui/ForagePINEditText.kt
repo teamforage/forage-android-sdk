@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
+import android.graphics.Typeface
 import android.text.InputType
 import android.util.AttributeSet
 import android.widget.LinearLayout
@@ -17,27 +18,33 @@ import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
+interface PINEditText {
+    var isValid: Boolean
+    var isEmpty: Boolean
+    fun setTextColor(textColor: Int)
+    fun setTextSize(textSize: Float)
+    var typeface: Typeface?
+    fun setHint(hint: String)
+    fun setHintTextColor(hintTextColor: Int)
+}
+
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : PINEditText, LinearLayout(context, attrs, defStyleAttr) {
     private var vaultType: String
-    private var vault: PINVaultTextField?
+    private var vault: VaultWrapper?
 
     init {
         setWillNotDraw(false)
         orientation = VERTICAL
 
-//        vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
-        vaultType = VaultConstants.VGS_VAULT_TYPE
-        if (vaultType == VaultConstants.BT_VAULT_TYPE) {
-            vault = BTVaultWrapper(context, attrs, defStyleAttr)
-        } else if (vaultType == VaultConstants.VGS_VAULT_TYPE) {
-            vault = VGSVaultWrapper(context, attrs, defStyleAttr)
+        vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
+        vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+            BTVaultWrapper(context, attrs, defStyleAttr)
         } else {
-            vault = VGSVaultWrapper(context, attrs, defStyleAttr)
-//            throw Error("This shouldn't be possible!!")
+            VGSVaultWrapper(context, attrs, defStyleAttr)
         }
         addView(vault!!.getUnderlying())
         addView(getLogoImageViewLayout(context))
@@ -66,5 +73,22 @@ class ForagePINEditText @JvmOverloads constructor(
 
     internal fun getTextElement(): TextElement {
         return vault?.getTextElement()!!
+    }
+
+    override var isValid: Boolean = vault?.isValid ?: false
+    override var isEmpty: Boolean = vault?.isEmpty ?: true
+    override fun setTextColor(textColor: Int) {
+        vault?.setTextColor(textColor)
+    }
+    override fun setTextSize(textSize: Float) {
+        vault?.setTextSize(textSize)
+    }
+
+    override var typeface: Typeface? = vault?.typeface
+    override fun setHint(hint: String) {
+        vault?.setHint(hint)
+    }
+    override fun setHintTextColor(hintTextColor: Int) {
+        vault?.setHintTextColor(hintTextColor)
     }
 }

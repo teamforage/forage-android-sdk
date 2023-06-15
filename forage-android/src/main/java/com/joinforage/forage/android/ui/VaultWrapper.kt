@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -13,12 +12,10 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
-import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
-import com.verygoodsecurity.vgscollect.widget.VGSTextInputLayout
 
-interface PINVaultTextField {
+interface VaultWrapper {
     var isValid: Boolean
     var isEmpty: Boolean
     fun setTextColor(textColor: Int)
@@ -31,11 +28,11 @@ interface PINVaultTextField {
     fun getTextElement(): TextElement
 }
 
-open class VGSVaultWrapper @JvmOverloads constructor(
+internal class VGSVaultWrapper @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : PINVaultTextField, FrameLayout(context, attrs, defStyleAttr) {
+) : VaultWrapper, FrameLayout(context, attrs, defStyleAttr) {
     private var _internalEditText: VGSEditText
 
     init {
@@ -43,32 +40,25 @@ open class VGSVaultWrapper @JvmOverloads constructor(
             .apply {
                 try {
                     val hint = getString(com.joinforage.forage.android.R.styleable.ForagePINEditText_hint)
-
                     val textInputLayoutStyleAttribute =
                         getResourceId(com.joinforage.forage.android.R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
-
                     val boxStrokeColor = getColor(
                         com.joinforage.forage.android.R.styleable.ForagePINEditText_boxStrokeColor,
                         getThemeAccentColor(context)
                     )
-
                     val defRadius = resources.getDimension(com.joinforage.forage.android.R.dimen.default_horizontal_field)
-
                     val boxCornerRadius =
                         getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadius, defRadius)
-
                     val boxCornerRadiusTopStart = getBoxCornerRadiusTopStart(boxCornerRadius)
                     val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(boxCornerRadius)
                     val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(boxCornerRadius)
                     val boxCornerRadiusBottomEnd = getBoxCornerRadiusBottomEnd(boxCornerRadius)
-
                     val hintTextColor =
                         getColorStateList(com.joinforage.forage.android.R.styleable.ForagePINEditText_hintTextColor)
-
                     val textSize = getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_textSize, -1f)
                     val textColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_textColor, Color.BLACK)
 
-                    _internalEditText = VGSEditText(context, null, defStyleAttr).apply {
+                    _internalEditText = VGSEditText(context, null, textInputLayoutStyleAttribute).apply {
                         layoutParams =
                             LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -148,11 +138,11 @@ open class VGSVaultWrapper @JvmOverloads constructor(
     }
 }
 
-open class BTVaultWrapper @JvmOverloads constructor(
+internal class BTVaultWrapper @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : PINVaultTextField, FrameLayout(context, attrs, defStyleAttr) {
+) : VaultWrapper, FrameLayout(context, attrs, defStyleAttr) {
     private var _internalTextElement: TextElement
 
     init {
@@ -160,17 +150,13 @@ open class BTVaultWrapper @JvmOverloads constructor(
             .apply {
                 val textInputLayoutStyleAttribute =
                     getResourceId(com.joinforage.forage.android.R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
-
                 val boxStrokeColor = getColor(
                     com.joinforage.forage.android.R.styleable.ForagePINEditText_boxStrokeColor,
                     getThemeAccentColor(context)
                 )
-
                 val defRadius = resources.getDimension(com.joinforage.forage.android.R.dimen.default_horizontal_field)
-
                 val boxCornerRadius =
                     getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadius, defRadius)
-
                 val boxCornerRadiusTopStart = getBoxCornerRadiusTopStart(boxCornerRadius)
                 val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(boxCornerRadius)
                 val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(boxCornerRadius)
