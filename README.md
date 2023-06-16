@@ -2,35 +2,35 @@
 
 Forage Android SDK
 
-Table of contents
-=================
+# Table of contents
 
 <!--ts-->
-   * [Overview](#overview)
-   * [Installation](#installation)
-   * [UI Components](#ui-components)
-     * [ForagePANEditText](#foragepanedittext)
-     * [ForagePINEditText](#foragepinedittext)
-     * [How to provide styles](/docs/styles.md) 
-   * [Tokenizing an EBT Card](#tokenize-ebt-card-number) 
-   * [Performing a balance check](#performing-a-balance-check) 
-   * [Capturing a payment](#capturing-a-payment) 
-   * [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
-   * [Running the Sample App](#running-the-sample-app)
-   * [Dependencies](#dependencies)
+
+- [Overview](#overview)
+- [Installation](#installation)
+- [UI Components](#ui-components)
+  - [ForagePANEditText](#foragepanedittext)
+  - [ForagePINEditText](#foragepinedittext)
+  - [How to provide styles](/docs/styles.md)
+- [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
+- [Performing a balance check](#performing-a-balance-check)
+- [Capturing a payment](#capturing-a-payment)
+- [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
+- [Running the Sample App](#running-the-sample-app)
+- [Dependencies](#dependencies)
 <!--te-->
 
 ## Overview
 
-This documentation covers the integration of Forage's Android SDK to process EBT payments.
+This documentation explains how to integrate the Forage Android SDK to process EBT payments.
 
-Currently, our SDK provides APIs for
+In addition to [UI components](#ui-components), the SDK provides APIs for:
 
-1. Tokenizing an EBT Card
-2. Performing a balance check
-3. Capturing a payment
+1. [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
+2. [Performing a balance check](#performing-a-balance-check)
+3. [Capturing a payment](#capturing-a-payment)
 
-which we'll cover in great detail in the following sections.
+Read on for installation instructions and details about the APIs.
 
 ## Installation
 
@@ -66,7 +66,7 @@ android {
 }
 ```
 
-Or, you can specify the flavor you would like to use in each of your own productFlavors:
+Or, you can specify the flavor in each of your own `productFlavors`:
 
 ```groovy
 android {
@@ -82,11 +82,14 @@ android {
 }
 ```
 
-More information on using variant-aware dependencies can be found [here](https://developer.android.com/build/build-variants#variant_aware)
+More information on using variant-aware dependencies can be found in the [Android developer docs](https://developer.android.com/build/build-variants#variant_aware).
 
 ## UI Components
 
 ### ForagePANEditText
+
+A UI component for a customer to enter their EBT card number.
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -108,6 +111,9 @@ More information on using variant-aware dependencies can be found [here](https:/
 ```
 
 ### ForagePINEditText
+
+A UI component for a customer to enter their EBT card PIN.
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -132,7 +138,9 @@ More information on using variant-aware dependencies can be found [here](https:/
 
 ## Tokenizing an EBT Card
 
-First you need to add `ForagePanEditText` to your layout file:
+### Step 1: Add the `ForagePANEditText` UI component
+
+First, you need to add `ForagePANEditText` to your layout file:
 
 ```xml
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -154,16 +162,13 @@ First you need to add `ForagePanEditText` to your layout file:
 
 ```
 
-Since ForagePANEditText is currently not receiving any style from your theme, it should look like
-this:
+Since `ForagePANEditText` is currently not receiving any style from your theme, it should look like this:
 
 <img src="screenshots/forage_pan_edit_text_no_style.png" width="300" height="500">
 
-## Customizing ForagePANEditText
+#### Customizing `ForagePANEditText`
 
-To provide a style to your `ForagePANEditText` you need to include these two themes attributes on
-your
-`attrs.xml` file:
+To provide a style to your `ForagePANEditText`, you need to include these two themes attributes on your `attrs.xml` file:
 
 ```xml
 <resources>
@@ -175,7 +180,7 @@ your
 </resources>
 ```
 
-and now you can add it to your `ForagePANEditText`:
+Now you can add the style to your `ForagePANEditText`:
 
 ```xml
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -213,7 +218,7 @@ Here is the relevant part from the application theme that shows the styles that 
 </resources>
 ```
 
-And finally, here are the assigned styles:
+Finally, here are the assigned styles:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -238,8 +243,9 @@ And finally, here are the assigned styles:
 
 <img src="screenshots/forage_pan_some_examples.png" width="300" height="500">
 
-## Tokenize EBT card number
-ForageSDK will expose the following function to collect the EBT card number:
+### Step 2: Tokenize the EBT card number
+
+The ForageSDK exposes the following function to collect the EBT card number:
 
 ```kotlin
     suspend fun tokenizeEBTCard(
@@ -249,12 +255,20 @@ ForageSDK will expose the following function to collect the EBT card number:
     ): ForageApiResponse<String>
 ```
 
+#### Parameter definitions
+
+- `merchantAccount`: A unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants.
+- `bearerToken`: A [session token](https://docs.joinforage.app/reference/create-session-token) that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the `/session_token/` endpoint.
+- `customerId`: A unique ID for the end customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
+
+#### Example
+
 This is an example of usage inside an ACC ViewModel:
 
 ```kotlin
     fun onSubmit() = viewModelScope.launch {
         _isLoading.value = true
-    
+
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
             bearerToken = bearer,
@@ -262,26 +276,33 @@ This is an example of usage inside an ACC ViewModel:
             // Please replace this line with a real hashed customer ID value.
             customerId = UUID.randomUUID().toString()
         )
-    
+
         when (response) {
             is ForageApiResponse.Success -> {
                 val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
-    
+
                 val result = adapter.fromJson(response.data)
-    
+
                 _paymentMethod.value = result
             }
             is ForageApiResponse.Failure -> {
                 _error.value = response.message
             }
         }
-    
+
         _isLoading.value = false
     }
 ```
 
 ## Performing a balance check
-ForageSDK will expose the following function to check the EBT card balance:
+
+### Step 1: Add the `ForagePINEditText` UI component
+
+You need to add the `ForagePINEditText` component to your app to check a card's balance. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
+
+### Step 2: Check the balance of the EBT Card
+
+The ForageSDK exposes the following function to check the balance of an EBT card:
 
 ```kotlin
     suspend fun checkBalance(
@@ -293,7 +314,7 @@ ForageSDK will expose the following function to check the EBT card balance:
     ): ForageApiResponse<String>
 ```
 
-To keep the sensitive information PCI compliant, this function needs the `ForagePINEditText` reference and the Context so we can cancel ongoing requests properly.
+To keep the sensitive information PCI compliant, this function needs the `ForagePINEditText` reference and the `Context` so that Forage can cancel ongoing requests properly. The `paymentMethodRef` parameter is a string identifier that refers to an instance in Forage's database of a [`PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method), a tokenized representation of an EBT Card.
 
 This is an example of usage inside an ACC ViewModel:
 
@@ -334,8 +355,23 @@ This is an example of usage inside an ACC ViewModel:
     }
 ```
 
+### (Optional) Step 3: Persist the PaymentMethod ref in your wallet
+
+If you offer customers a wallet to save their payment methods for future use, then you need to link the EBT PaymentMethod ref to that wallet.
+
 ## Capturing a payment
-ForageSDK will expose the following function to capture a payment:
+
+### Step 1: Add the `ForagePINEditText` UI component
+
+You need to add the `ForagePINEditText` component to your app to authorize a payment capture. If you need help, refer to the instructions for [adding the UI component](#step-1-add-the-foragepanedittext-ui-component) in the method above. Just change the component name!
+
+## Step 2: Send a server-side POST to the Forage `/payments/` endpoint to create a `Payment` object
+
+Your backend needs to create the object. You'll need the `ref` from the response for Step 3.
+
+### Step 3: Capture the EBT payment
+
+The ForageSDK exposes the following function to capture an EBT payment:
 
 ```kotlin
     suspend fun capturePayment(
@@ -354,7 +390,7 @@ This is an example of usage inside an ACC ViewModel:
     fun captureSnapAmount(context: Context, pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
-    
+
             val response = ForageSDK.capturePayment(
                 context = context,
                 pinForageEditText = pinForageEditText,
@@ -362,7 +398,7 @@ This is an example of usage inside an ACC ViewModel:
                 bearerToken = bearer,
                 paymentRef = snapPaymentRef
             )
-    
+
             when (response) {
                 is ForageApiResponse.Success -> {
                     _uiState.value = _uiState.value!!.copy(
@@ -380,11 +416,14 @@ This is an example of usage inside an ACC ViewModel:
         }
 ```
 
-The `paymentRef` will be used to determine if it's a capture from EBT Cash or EBT SNAP. If you choose to support both SNAP and EBT Cash, you will need to handle two payments in your implementation.
+The `paymentRef` can be used to determine what type of tender is being captured (SNAP or EBT Cash).
 
-You can also make two calls two `ForageSDK.capturePayment` to capture both payments with a single action and then process the two responses to determine what will be shown to the user.
+#### Capture both SNAP and EBT Cash payments
 
-This is an example of usage inside an ACC ViewModel:
+If you choose to support both SNAP and EBT Cash, then your implementation needs to handle two payments.
+
+You can also make two calls to `ForageSDK.capturePayment` to capture both payments with a single action, and then process the two responses to determine what is shown to the user, as in the following example inside an ACC ViewModel:
+
 ```kotlin
     fun captureBothAmounts(
         context: Context,
@@ -411,7 +450,7 @@ This is an example of usage inside an ACC ViewModel:
     }
 ```
 
-By doing this both requests will be executed sequentially. To run them in parallel, you could use `async`/`await` to launch the `capturePayment` call.
+In this example, both requests are executed sequentially. To run them in parallel, you could use `async`/`await` to launch the `capturePayment` call.
 
 ## The ForageApiResponse sealed class
 
@@ -444,8 +483,9 @@ The sample-app/ folder in this repository contains a very simple integration of 
    2. Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/how-to-trigger-exceptions)
 
 ## Dependencies
+
 - Minimum API Level Android 5.0 (API level 21)
 - [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) v1.6.4
 - 3rd party libraries:
-    - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
-      - [OkHttp](https://github.com/square/okhttp) v4.10.0
+  - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
+    - [OkHttp](https://github.com/square/okhttp) v4.10.0
