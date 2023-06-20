@@ -19,7 +19,7 @@ internal class BTPinCollector(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String
-    ): ForageApiResponse<String> = suspendCoroutine { continuation ->
+    ): ForageApiResponse<String> {
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
@@ -36,32 +36,24 @@ internal class BTPinCollector(
             path = balancePath(paymentMethodRef)
         }
 
-        runBlocking {
-            val response = bt.proxy.post(proxyRequest)
-            pinForageEditText.getTextElement().setText("")
-            // Try to parse the response as an error first
-            try {
-                val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
-                val error = forageApiError.errors[0]
-                continuation.resumeWith(
-                    Result.success(
-                        ForageApiResponse.Failure(listOf(ForageError(400, error.code, error.message)))
-                    )
-                )
-            } catch (e: JSONException) {}
-            continuation.resumeWith(
-                Result.success(
-                    ForageApiResponse.Success(response.toString())
-                )
-            )
-        }
+        val response = bt.proxy.post(proxyRequest)
+        pinForageEditText.getTextElement().setText("")
+        // Try to parse the response as an error first
+        try {
+            val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
+            val error = forageApiError.errors[0]
+            // TODO: What status code should be returned???
+            return ForageApiResponse.Failure(listOf(ForageError(400, error.code, error.message)))
+        } catch (e: JSONException) {}
+
+        return ForageApiResponse.Success(response.toString())
     }
 
     override suspend fun collectPinForCapturePayment(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
-    ): ForageApiResponse<String> = suspendCoroutine { continuation ->
+    ): ForageApiResponse<String> {
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
@@ -79,25 +71,16 @@ internal class BTPinCollector(
             path = capturePaymentPath(paymentRef)
         }
 
-        runBlocking {
-            val response = bt.proxy.post(proxyRequest)
-            pinForageEditText.getTextElement().setText("")
-            // Try to parse the response as an error first
-            try {
-                val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
-                val error = forageApiError.errors[0]
-                continuation.resumeWith(
-                    Result.success(
-                        ForageApiResponse.Failure(listOf(ForageError(400, error.code, error.message)))
-                    )
-                )
-            } catch (e: JSONException) {}
-            continuation.resumeWith(
-                Result.success(
-                    ForageApiResponse.Success(response.toString())
-                )
-            )
-        }
+        val response = bt.proxy.post(proxyRequest)
+        pinForageEditText.getTextElement().setText("")
+        // Try to parse the response as an error first
+        try {
+            val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
+            val error = forageApiError.errors[0]
+            // TODO: What status code should be returned???
+            return ForageApiResponse.Failure(listOf(ForageError(400, error.code, error.message)))
+        } catch (e: JSONException) {}
+        return ForageApiResponse.Success(response.toString())
     }
 
     companion object {
