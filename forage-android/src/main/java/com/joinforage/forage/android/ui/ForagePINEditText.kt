@@ -14,21 +14,11 @@ import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
-interface PINEditText {
-    var isValid: Boolean
-    var isEmpty: Boolean
-    fun setTextColor(textColor: Int)
-    fun setTextSize(textSize: Float)
-    var typeface: Typeface?
-    fun setHint(hint: String)
-    fun setHintTextColor(hintTextColor: Int)
-}
-
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : PINEditText, LinearLayout(context, attrs, defStyleAttr) {
+) : ForageUI, LinearLayout(context, attrs, defStyleAttr) {
     private var vault: VaultWrapper?
 
     init {
