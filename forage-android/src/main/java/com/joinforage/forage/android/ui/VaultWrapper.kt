@@ -14,7 +14,7 @@ abstract class VaultWrapper @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-): FrameLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
     abstract var isValid: Boolean
     abstract var isEmpty: Boolean
     abstract var typeface: Typeface?
@@ -56,5 +56,3 @@ abstract class VaultWrapper @JvmOverloads constructor(
         return if (boxCornerRadiusTopStart == 0f) boxCornerRadius else boxCornerRadiusTopStart
     }
 }
-
-

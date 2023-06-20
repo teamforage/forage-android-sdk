@@ -7,9 +7,7 @@ import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
-import kotlinx.coroutines.runBlocking
 import org.json.JSONException
-import kotlin.coroutines.suspendCoroutine
 
 internal class BTPinCollector(
     private val pinForageEditText: ForagePINEditText,
