@@ -34,17 +34,40 @@ internal class BTPinCollector(
             path = balancePath(paymentMethodRef)
         }
 
-        val response = bt.proxy.post(proxyRequest)
-        pinForageEditText.getTextElement().setText("")
-        // Try to parse the response as an error first
-        try {
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
-            val error = forageApiError.errors[0]
-            // TODO: What status code should be returned???
-            return ForageApiResponse.Failure(listOf(ForageError(400, error.code, error.message)))
-        } catch (e: JSONException) {}
+        val response = runCatching {
+            bt.proxy.post(proxyRequest)
+        }
 
-        return ForageApiResponse.Success(response.toString())
+        // MUST reset the PIN value after submitting
+        pinForageEditText.getTextElement().setText("")
+
+        if (response.isSuccess) {
+            val forageResponse = response.getOrNull()
+            try {
+                val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
+                val error = forageApiError.errors[0]
+                return ForageApiResponse.Failure(
+                    listOf(
+                        ForageError(
+                            // Error code hardcoded as 400 because of lack of information
+                            400,
+                            error.code,
+                            error.message
+                        )
+                    )
+                )
+            } catch (e: JSONException) { }
+            return ForageApiResponse.Success(forageResponse.toString())
+        }
+
+        // This should return the BT ApiException, which is a string value of the API response
+        // TODO: Log this value to Datadog.
+//        val btErrorResponse = response.exceptionOrNull()
+        return ForageApiResponse.Failure(
+            listOf(
+                ForageError(500, "unknown_server_error", "Unknown Server Error")
+            )
+        )
     }
 
     override suspend fun collectPinForCapturePayment(
@@ -69,16 +92,40 @@ internal class BTPinCollector(
             path = capturePaymentPath(paymentRef)
         }
 
-        val response = bt.proxy.post(proxyRequest)
+        val response = runCatching {
+            bt.proxy.post(proxyRequest)
+        }
+
+        // MUST reset the PIN value after submitting
         pinForageEditText.getTextElement().setText("")
-        // Try to parse the response as an error first
-        try {
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
-            val error = forageApiError.errors[0]
-            // TODO: What status code should be returned???
-            return ForageApiResponse.Failure(listOf(ForageError(400, error.code, error.message)))
-        } catch (e: JSONException) {}
-        return ForageApiResponse.Success(response.toString())
+
+        if (response.isSuccess) {
+            val forageResponse = response.getOrNull()
+            try {
+                val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
+                val error = forageApiError.errors[0]
+                return ForageApiResponse.Failure(
+                    listOf(
+                        ForageError(
+                            // Error code hardcoded as 400 because of lack of information
+                            400,
+                            error.code,
+                            error.message
+                        )
+                    )
+                )
+            } catch (e: JSONException) { }
+            return ForageApiResponse.Success(forageResponse.toString())
+        }
+        // This should return the BT ApiException, which is a string value of the API response
+        // TODO: Log this value to Datadog.
+//        val btErrorResponse = response.exceptionOrNull()
+
+        return ForageApiResponse.Failure(
+            listOf(
+                ForageError(500, "unknown_server_error", "Unknown Server Error")
+            )
+        )
     }
 
     companion object {
