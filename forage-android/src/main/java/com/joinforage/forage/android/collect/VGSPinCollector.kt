@@ -3,10 +3,10 @@ package com.joinforage.forage.android.collect
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.HTTPMethod

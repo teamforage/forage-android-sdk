@@ -4,10 +4,10 @@ import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.ui.ForagePINEditText
 import org.json.JSONException
 import java.util.*

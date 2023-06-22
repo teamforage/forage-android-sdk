@@ -4,6 +4,7 @@ import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.EncryptionKey
 import com.joinforage.forage.android.model.Payment
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -11,7 +12,6 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.model.PaymentMethod
 import kotlinx.coroutines.delay
 
 internal class CapturePaymentRepository(

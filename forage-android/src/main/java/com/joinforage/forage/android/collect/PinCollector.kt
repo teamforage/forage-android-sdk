@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.collect
 
 import com.joinforage.forage.android.model.EncryptionKey
-import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.model.ForageApiResponse
 
 internal object CollectorConstants {
     const val TOKEN_DELIMITER = ","
