@@ -24,13 +24,7 @@ internal class BTPinCollector(
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = mapOf(
-                "X-KEY" to encryptionKey,
-                "Merchant-Account" to merchantAccount,
-                "BT-PROXY-KEY" to PROXY_ID,
-                "IDEMPOTENCY-KEY" to UUID.randomUUID().toString(),
-                "Content-Type" to "application/json"
-            )
+            headers = buildHeaders(encryptionKey, merchantAccount)
             body = object {
                 val pin = pinForageEditText.getTextElement()
                 val card_number_token = cardToken
@@ -82,13 +76,7 @@ internal class BTPinCollector(
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = mapOf(
-                "X-KEY" to encryptionKey,
-                "Merchant-Account" to merchantAccount,
-                "BT-PROXY-KEY" to PROXY_ID,
-                "IDEMPOTENCY-KEY" to paymentRef,
-                "Content-Type" to "application/json"
-            )
+            headers = buildHeaders(encryptionKey, merchantAccount, paymentRef)
             body = object {
                 val pin = pinForageEditText.getTextElement()
                 val card_number_token = cardToken
@@ -152,6 +140,20 @@ internal class BTPinCollector(
             return BasisTheoryElements.builder()
                 .apiKey(API_KEY)
                 .build()
+        }
+
+        private fun buildHeaders(
+            encryptionKey: String,
+            merchantAccount: String,
+            idempotencyKey: String = UUID.randomUUID().toString()
+        ): Map<String, String> {
+            return mapOf(
+                "X-KEY" to encryptionKey,
+                "Merchant-Account" to merchantAccount,
+                "BT-PROXY-KEY" to PROXY_ID,
+                "IDEMPOTENCY-KEY" to idempotencyKey,
+                "Content-Type" to "application/json"
+            )
         }
 
         private fun balancePath(paymentMethodRef: String) =
