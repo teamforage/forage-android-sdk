@@ -3,11 +3,14 @@ package com.joinforage.forage.android.collect
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.model.EncryptionKey
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.ui.ForagePINEditText
 import org.json.JSONException
+import java.util.*
 
 internal class BTPinCollector(
     private val pinForageEditText: ForagePINEditText,
@@ -25,6 +28,7 @@ internal class BTPinCollector(
                 "X-KEY" to encryptionKey,
                 "Merchant-Account" to merchantAccount,
                 "BT-PROXY-KEY" to PROXY_ID,
+                "IDEMPOTENCY-KEY" to UUID.randomUUID().toString(),
                 "Content-Type" to "application/json"
             )
             body = object {
@@ -126,6 +130,18 @@ internal class BTPinCollector(
                 ForageError(500, "unknown_server_error", "Unknown Server Error")
             )
         )
+    }
+
+    override fun parseEncryptionKey(encryptionKeys: EncryptionKey): String {
+        return encryptionKeys.btAlias
+    }
+
+    override fun parseVaultToken(paymentMethod: PaymentMethod): String {
+        val token = paymentMethod.card.token
+        if (token.contains(CollectorConstants.TOKEN_DELIMITER)) {
+            return token.split(CollectorConstants.TOKEN_DELIMITER)[1]
+        }
+        throw RuntimeException("BT token not found on card!")
     }
 
     companion object {

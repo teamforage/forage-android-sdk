@@ -9,7 +9,7 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.network.model.PaymentMethod
+import com.joinforage.forage.android.model.PaymentMethod
 import kotlinx.coroutines.delay
 
 internal class CheckBalanceRepository(
@@ -25,7 +25,9 @@ internal class CheckBalanceRepository(
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentMethodRef = paymentMethodRef,
-                EncryptionKey.ModelMapper.from(response.data).alias
+                pinCollector.parseEncryptionKey(
+                    EncryptionKey.ModelMapper.from(response.data)
+                )
             )
             else -> response
         }
@@ -38,8 +40,7 @@ internal class CheckBalanceRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCheckBalance(
                 paymentMethodRef = paymentMethodRef,
-                // TODO: Parse the token to get BT or VGS
-                cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
+                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                 encryptionKey = encryptionKey
             )
             else -> response

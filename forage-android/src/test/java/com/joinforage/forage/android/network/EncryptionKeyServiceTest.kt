@@ -57,7 +57,7 @@ class EncryptionKeyServiceTest : MockServerSuite() {
             val successResponse = response as ForageApiResponse.Success
 
             val encryptionKey = EncryptionKey.ModelMapper.from(successResponse.data)
-            assertThat(encryptionKey).isEqualTo(EncryptionKey(alias = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"))
+            assertThat(encryptionKey).isEqualTo(EncryptionKey(vgsAlias = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE", btAlias = "fake-bt-alias"))
         }
 
     @Test
