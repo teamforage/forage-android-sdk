@@ -1,5 +1,7 @@
 package com.joinforage.forage.android
+
 import android.app.Application
+import android.util.Log
 import com.joinforage.forage.android.core.Logger
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
@@ -58,7 +60,7 @@ internal object LDManager {
         val context = LDContext.create(LDContexts.USER)
         val client = LDClient.init(app, ldConfig, context, 0)
         // default to 100% BT usage in case LD flag retrieval fails
-        val vaultPercent = client.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 100.0)
+        val vaultPercent = client.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 0.0)
         val randomNum = Math.random() * 100
         vaultType = if (randomNum < vaultPercent) {
             VaultConstants.BT_VAULT_TYPE
