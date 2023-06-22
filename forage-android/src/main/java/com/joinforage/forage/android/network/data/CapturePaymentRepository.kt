@@ -2,7 +2,7 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -27,7 +27,7 @@ internal class CapturePaymentRepository(
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
                 pinCollector.parseEncryptionKey(
-                    EncryptionKey.ModelMapper.from(response.data)
+                    EncryptionKeys.ModelMapper.from(response.data)
                 )
             )
             else -> response

@@ -3,7 +3,7 @@ package com.joinforage.forage.android.collect
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -132,7 +132,7 @@ internal class BTPinCollector(
         )
     }
 
-    override fun parseEncryptionKey(encryptionKeys: EncryptionKey): String {
+    override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return encryptionKeys.btAlias
     }
 

@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.collect
 
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
 
@@ -22,7 +22,7 @@ internal interface PinCollector {
     ): ForageApiResponse<String>
 
     fun parseEncryptionKey(
-        encryptionKeys: EncryptionKey
+        encryptionKeys: EncryptionKeys
     ): String
 
     fun parseVaultToken(

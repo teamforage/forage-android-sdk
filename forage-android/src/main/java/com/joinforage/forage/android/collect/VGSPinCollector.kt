@@ -2,7 +2,7 @@ package com.joinforage.forage.android.collect
 
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -123,7 +123,7 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override fun parseEncryptionKey(encryptionKeys: EncryptionKey): String {
+    override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return encryptionKeys.vgsAlias
     }
 
