@@ -2,6 +2,8 @@ package com.joinforage.forage.android.collect
 
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.model.EncryptionKeys
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -119,6 +121,18 @@ internal class VGSPinCollector(
             .build()
 
         vgsCollect.asyncSubmit(request)
+    }
+
+    override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
+        return encryptionKeys.vgsAlias
+    }
+
+    override fun parseVaultToken(paymentMethod: PaymentMethod): String {
+        val token = paymentMethod.card.token
+        if (token.contains(CollectorConstants.TOKEN_DELIMITER)) {
+            return token.split(CollectorConstants.TOKEN_DELIMITER)[0]
+        }
+        return token
     }
 
     companion object {
