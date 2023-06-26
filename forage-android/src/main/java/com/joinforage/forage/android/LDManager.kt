@@ -1,7 +1,6 @@
 package com.joinforage.forage.android
 
 import android.app.Application
-import android.util.Log
 import com.joinforage.forage.android.core.Logger
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
@@ -18,7 +17,7 @@ internal object LDFlags {
 }
 
 internal object LDContexts {
-    const val USER = "anonymous-user"
+    const val USER = "android-sdk-service"
 }
 
 internal object LDManager {
