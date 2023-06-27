@@ -95,8 +95,7 @@ internal class CapturePaymentRepository(
         while (true) {
             logger.debug("Polling capture payment message status. Attempt: $attempt.")
 
-            val response = messageStatusService.getStatus(contentId)
-            when (response) {
+            when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
                     val paymentMessage = Message.ModelMapper.from(response.data)
 

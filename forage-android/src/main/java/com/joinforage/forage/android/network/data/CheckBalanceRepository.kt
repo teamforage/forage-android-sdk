@@ -52,7 +52,6 @@ internal class CheckBalanceRepository(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-//        val parsedToken = cardToken.split(",")[1]
         val response = pinCollector.collectPinForBalanceCheck(
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
@@ -77,8 +76,7 @@ internal class CheckBalanceRepository(
         while (true) {
             logger.debug("Polling check balance message status. Attempt: $attempt.")
 
-            val response = messageStatusService.getStatus(contentId)
-            when (response) {
+            when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
                     val balanceMessage = Message.ModelMapper.from(response.data)
 

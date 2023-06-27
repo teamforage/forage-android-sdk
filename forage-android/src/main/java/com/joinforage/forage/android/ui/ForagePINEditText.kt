@@ -51,7 +51,6 @@ class ForagePINEditText @JvmOverloads constructor(
         )
     }
 
-    // TODO: These should probably be nullable
     internal fun getTextInputEditText(): VGSEditText {
         return vault?.getVGSEditText()!!
     }
