@@ -1,6 +1,8 @@
 package com.joinforage.forage.android
+
 import android.app.Application
 import com.joinforage.forage.android.core.Logger
+import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
@@ -16,7 +18,11 @@ internal object LDFlags {
 }
 
 internal object LDContexts {
-    const val USER = "anonymous-user"
+    const val ANDROID_CONTEXT = "android-sdk-service"
+}
+
+internal object LDContextKind {
+    const val SERVICE = "service"
 }
 
 internal object LDManager {
@@ -55,10 +61,11 @@ internal object LDManager {
                 .mobileKey(LD_MOBILE_KEY)
                 .build()
         }
-        val context = LDContext.create(LDContexts.USER)
+        val contextKind = ContextKind.of(LDContextKind.SERVICE)
+        val context = LDContext.create(contextKind, LDContexts.ANDROID_CONTEXT)
         val client = LDClient.init(app, ldConfig, context, 0)
         // default to 100% BT usage in case LD flag retrieval fails
-        val vaultPercent = client.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 100.0)
+        val vaultPercent = client.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 0.0)
         val randomNum = Math.random() * 100
         vaultType = if (randomNum < vaultPercent) {
             VaultConstants.BT_VAULT_TYPE

@@ -147,7 +147,6 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         val expectedMessage = "Cannot find payment."
         val expectedForageCode = "not_found"
         val expectedStatusCode = 404
-
         assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
         assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
         assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)

@@ -2,8 +2,9 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -11,7 +12,6 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.network.model.PaymentMethod
 import kotlinx.coroutines.delay
 
 internal class CapturePaymentRepository(
@@ -26,7 +26,9 @@ internal class CapturePaymentRepository(
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
-                EncryptionKey.ModelMapper.from(response.data).alias
+                pinCollector.parseEncryptionKey(
+                    EncryptionKeys.ModelMapper.from(response.data)
+                )
             )
             else -> response
         }
@@ -54,7 +56,7 @@ internal class CapturePaymentRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCapturePayment(
                 paymentRef = paymentRef,
-                cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
+                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                 encryptionKey = encryptionKey
             )
             else -> response
@@ -65,21 +67,22 @@ internal class CapturePaymentRepository(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
+
     ): ForageApiResponse<String> {
-        val vgsResponse = pinCollector.collectPinForCapturePayment(
+        val response = pinCollector.collectPinForCapturePayment(
             paymentRef = paymentRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey
         )
 
-        return when (vgsResponse) {
+        return when (response) {
             is ForageApiResponse.Success -> {
                 pollingCapturePaymentMessageStatus(
-                    Message.ModelMapper.from(vgsResponse.data).contentId,
+                    Message.ModelMapper.from(response.data).contentId,
                     paymentRef
                 )
             }
-            else -> vgsResponse
+            else -> response
         }
     }
 
@@ -92,8 +95,7 @@ internal class CapturePaymentRepository(
         while (true) {
             logger.debug("Polling capture payment message status. Attempt: $attempt.")
 
-            val response = messageStatusService.getStatus(contentId)
-            when (response) {
+            when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
                     val paymentMessage = Message.ModelMapper.from(response.data)
 

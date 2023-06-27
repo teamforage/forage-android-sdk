@@ -3,7 +3,7 @@ package com.joinforage.forage.android.network
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -56,8 +56,8 @@ class EncryptionKeyServiceTest : MockServerSuite() {
             assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
             val successResponse = response as ForageApiResponse.Success
 
-            val encryptionKey = EncryptionKey.ModelMapper.from(successResponse.data)
-            assertThat(encryptionKey).isEqualTo(EncryptionKey(alias = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"))
+            val encryptionKey = EncryptionKeys.ModelMapper.from(successResponse.data)
+            assertThat(encryptionKey).isEqualTo(EncryptionKeys(vgsAlias = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE", btAlias = "fake-bt-alias"))
         }
 
     @Test

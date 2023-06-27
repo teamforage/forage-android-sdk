@@ -2,14 +2,14 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Logger
-import com.joinforage.forage.android.model.EncryptionKey
+import com.joinforage.forage.android.model.EncryptionKeys
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.network.model.PaymentMethod
 import kotlinx.coroutines.delay
 
 internal class CheckBalanceRepository(
@@ -25,7 +25,9 @@ internal class CheckBalanceRepository(
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentMethodRef = paymentMethodRef,
-                EncryptionKey.ModelMapper.from(response.data).alias
+                pinCollector.parseEncryptionKey(
+                    EncryptionKeys.ModelMapper.from(response.data)
+                )
             )
             else -> response
         }
@@ -38,7 +40,7 @@ internal class CheckBalanceRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCheckBalance(
                 paymentMethodRef = paymentMethodRef,
-                cardToken = PaymentMethod.ModelMapper.from(response.data).card?.token ?: "",
+                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                 encryptionKey = encryptionKey
             )
             else -> response
@@ -50,18 +52,18 @@ internal class CheckBalanceRepository(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        val vgsResponse = pinCollector.collectPinForBalanceCheck(
+        val response = pinCollector.collectPinForBalanceCheck(
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey
         )
 
-        return when (vgsResponse) {
+        return when (response) {
             is ForageApiResponse.Success -> pollingBalanceMessageStatus(
-                contentId = Message.ModelMapper.from(vgsResponse.data).contentId,
+                contentId = Message.ModelMapper.from(response.data).contentId,
                 paymentMethodRef = paymentMethodRef
             )
-            else -> vgsResponse
+            else -> response
         }
     }
 
@@ -74,8 +76,7 @@ internal class CheckBalanceRepository(
         while (true) {
             logger.debug("Polling check balance message status. Attempt: $attempt.")
 
-            val response = messageStatusService.getStatus(contentId)
-            when (response) {
+            when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
                     val balanceMessage = Message.ModelMapper.from(response.data)
 

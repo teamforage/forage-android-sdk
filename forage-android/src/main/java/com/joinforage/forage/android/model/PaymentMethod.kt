@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.network.model
+package com.joinforage.forage.android.model
 import org.json.JSONObject
 
 internal data class Card(
@@ -35,7 +35,7 @@ internal data class PaymentMethod(
     val type: String,
     val customerId: String,
     val balance: Balance?,
-    val card: Card?
+    val card: Card
 ) {
     object ModelMapper {
         fun from(string: String): PaymentMethod {
