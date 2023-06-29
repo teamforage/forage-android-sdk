@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.network.data
 
-import com.datadog.android.log.Logger
 import com.joinforage.forage.android.collect.PinCollector
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
@@ -20,7 +20,7 @@ internal class CapturePaymentRepository(
     private val messageStatusService: MessageStatusService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
-    private val logger: Logger
+    private val logger: Log
 ) {
     suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {

@@ -1,7 +1,6 @@
 package com.joinforage.forage.android
 
 import android.app.Application
-import com.joinforage.forage.android.core.Log
 import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
@@ -28,19 +27,17 @@ internal object LDContextKind {
 internal object LDManager {
     private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
     private var internalVaultType: String? = null
-    private var logger = Log.getInstance(BuildConfig.DEBUG)
 
     internal var vaultType: String?
         get() = internalVaultType
         set(value) {
             if (value == null) {
-                logger.warning("vaultType is being reset to null. This should only happen while unit testing!")
+                // vaultType is being reset to null. This should only happen while unit testing!
                 internalVaultType = null
             } else if (internalVaultType == null) {
                 internalVaultType = value
-            } else {
-                logger.warning("vaultType can only be set once!")
             }
+            // vaultType can only be set once!
         }
 
     // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't

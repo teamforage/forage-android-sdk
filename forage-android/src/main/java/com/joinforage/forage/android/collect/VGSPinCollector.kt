@@ -2,7 +2,7 @@ package com.joinforage.forage.android.collect
 
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -23,7 +23,7 @@ internal class VGSPinCollector(
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
 ) : PinCollector {
-    private val logger = DDManager.getLogger()
+    private val logger = Log.getInstance(!BuildConfig.DEBUG)
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
@@ -43,11 +43,11 @@ internal class VGSPinCollector(
                     is VGSResponse.SuccessResponse -> {
                         logger.i("Received successful response from VGS")
                         continuation.resumeWith(
-                                Result.success(
-                                    ForageApiResponse.Success(response.body!!)
-                                )
+                            Result.success(
+                                ForageApiResponse.Success(response.body!!)
                             )
-                        }
+                        )
+                    }
                     is VGSResponse.ErrorResponse -> {
                         logger.e("Received an error while submitting balance request to VGS: ${response.body}")
                         continuation.resumeWith(

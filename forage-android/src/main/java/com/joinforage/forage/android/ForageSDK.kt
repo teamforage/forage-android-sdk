@@ -1,7 +1,6 @@
 package com.joinforage.forage.android
 
 import android.content.Context
-import com.joinforage.forage.android.core.DDManager
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber
@@ -24,6 +23,7 @@ import java.util.UUID
  */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
+    private val logger = Log.getInstance(true)
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
@@ -32,7 +32,6 @@ object ForageSDK : ForageSDKApi {
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
 
-        val logger = DDManager.getLogger()
         logger.i(
             "Tokenizing Payment Method",
             attributes = mapOf(
@@ -71,7 +70,6 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentMethodRef: String
     ): ForageApiResponse<String> {
-        val logger = DDManager.getLogger()
         logger.i(
             "Submitting balance check for Payment Method $paymentMethodRef",
             attributes = mapOf(
@@ -116,7 +114,6 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentRef: String
     ): ForageApiResponse<String> {
-        val logger = DDManager.getLogger()
         logger.i(
             "Submitting capture request for Payment $paymentRef",
             attributes = mapOf(

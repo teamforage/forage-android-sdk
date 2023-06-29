@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
@@ -17,11 +18,12 @@ internal class TokenizeCardService(
     private val httpUrl: HttpUrl,
     okHttpClient: OkHttpClient
 ) : NetworkService(okHttpClient) {
+    private val internalLogger = Log.getInstance(!BuildConfig.DEBUG)
     suspend fun tokenizeCard(cardNumber: String, customerId: String): ForageApiResponse<String> = try {
+        internalLogger.i("POST request for Payment Method")
         tokenizeCardCoroutine(cardNumber, customerId)
     } catch (ex: IOException) {
-        val logger = DDManager.getLogger()
-        logger.e("Failed while tokenizing PaymentMethod", ex)
+        internalLogger.e("Failed while tokenizing PaymentMethod", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

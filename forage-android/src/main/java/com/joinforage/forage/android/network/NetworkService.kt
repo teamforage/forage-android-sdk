@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -15,7 +16,7 @@ import kotlin.coroutines.suspendCoroutine
 abstract class NetworkService(
     private val okHttpClient: OkHttpClient
 ) {
-    val logger = DDManager.getLogger()
+    private val logger = Log.getInstance(!BuildConfig.DEBUG)
     suspend fun convertCallbackToCoroutine(request: Request) =
         suspendCoroutine { continuation ->
             okHttpClient.newCall(request).enqueue(

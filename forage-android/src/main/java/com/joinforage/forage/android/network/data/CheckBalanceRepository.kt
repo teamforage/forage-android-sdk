@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.network.data
 
-import com.datadog.android.log.Logger
 import com.joinforage.forage.android.collect.PinCollector
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -17,8 +17,9 @@ internal class CheckBalanceRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val messageStatusService: MessageStatusService,
-    private val logger: Logger
+    private val logger: Log
 ) {
+
     suspend fun checkBalance(
         paymentMethodRef: String
     ): ForageApiResponse<String> {

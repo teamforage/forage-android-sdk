@@ -37,7 +37,6 @@ internal object DDManager {
             .setBundleWithTraceEnabled(true)
             .setLoggerName(LOGGER_NAME)
             .build()
-//        logger = Log.getInstance(true)
         return logger as Logger
     }
 

@@ -1,0 +1,88 @@
+package com.joinforage.forage.android.core
+
+import android.content.Context
+import com.datadog.android.Datadog
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.log.Logger
+import com.datadog.android.privacy.TrackingConsent
+import com.joinforage.forage.android.BuildConfig
+
+internal interface Log {
+    fun initializeDD(context: Context)
+    fun d(msg: String, attributes: Map<String, Any?> = emptyMap())
+    fun i(msg: String, attributes: Map<String, Any?> = emptyMap())
+    fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
+    fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap())
+    companion object {
+        private const val LOGGER_NAME = "ForageSDK"
+        fun getInstance(enableLogging: Boolean): Log {
+            return if (enableLogging) {
+                LIVE
+            } else {
+                SILENT
+            }
+        }
+
+        private val LIVE = object : Log {
+            var logger: Logger? = null
+
+            override fun initializeDD(context: Context) {
+                val configuration = Configuration.Builder(
+                    logsEnabled = true,
+                    tracesEnabled = true,
+                    crashReportsEnabled = true,
+                    rumEnabled = false
+                ).build()
+                val credentials = Credentials(
+                    clientToken = BuildConfig.DD_CLIENT_TOKEN,
+                    envName = BuildConfig.FLAVOR,
+                    variant = BuildConfig.FLAVOR,
+                    rumApplicationId = null,
+                    serviceName = "android-sdk"
+                )
+                Datadog.initialize(context, credentials, configuration, TrackingConsent.GRANTED)
+                logger = Logger.Builder()
+                    .setNetworkInfoEnabled(true)
+                    .setLogcatLogsEnabled(true)
+                    .setDatadogLogsEnabled(true)
+                    .setBundleWithTraceEnabled(true)
+                    .setLoggerName(LOGGER_NAME)
+                    .build()
+            }
+
+            override fun d(msg: String, attributes: Map<String, Any?>) {
+                logger?.d(msg, attributes = attributes)
+            }
+
+            override fun i(msg: String, attributes: Map<String, Any?>) {
+                logger?.i(msg, attributes = attributes)
+            }
+
+            override fun w(msg: String, attributes: Map<String, Any?>) {
+                logger?.w(msg, attributes = attributes)
+            }
+
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
+                logger?.e(msg, throwable, attributes)
+            }
+        }
+
+        private val SILENT = object : Log {
+            override fun initializeDD(context: Context) {
+            }
+
+            override fun d(msg: String, attributes: Map<String, Any?>) {
+            }
+
+            override fun i(msg: String, attributes: Map<String, Any?>) {
+            }
+
+            override fun w(msg: String, attributes: Map<String, Any?>) {
+            }
+
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
+            }
+        }
+    }
+}

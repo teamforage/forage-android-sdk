@@ -3,7 +3,7 @@ package com.joinforage.forage.android.collect
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiError
@@ -17,7 +17,7 @@ internal class BTPinCollector(
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
 ) : PinCollector {
-    private val logger = DDManager.getLogger()
+    private val logger = Log.getInstance(!BuildConfig.DEBUG)
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,

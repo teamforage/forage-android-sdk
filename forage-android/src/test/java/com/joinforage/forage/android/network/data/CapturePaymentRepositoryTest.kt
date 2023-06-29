@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.core.Logger
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
@@ -69,7 +69,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                 ),
                 httpUrl = server.url("")
             ),
-            logger = Logger.getInstance(enableLogging = false)
+            logger = Log.getInstance(false)
         )
     }
 

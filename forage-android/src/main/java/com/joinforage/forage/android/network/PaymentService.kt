@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import okhttp3.HttpUrl
@@ -12,7 +13,7 @@ internal class PaymentService(
     private val httpUrl: HttpUrl,
     okHttpClient: OkHttpClient
 ) : NetworkService(okHttpClient) {
-    private val internalLogger = DDManager.getLogger()
+    private val internalLogger = Log.getInstance(!BuildConfig.DEBUG)
     suspend fun getPayment(paymentRef: String): ForageApiResponse<String> = try {
         internalLogger.i("GET request for Payment Method $paymentRef")
         getPaymentToCoroutine(paymentRef)
