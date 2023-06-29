@@ -16,6 +16,7 @@ internal interface Log {
     fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap())
     companion object {
         private const val LOGGER_NAME = "ForageSDK"
+        private const val SERVICE_NAME = "android-sdk"
         fun getInstance(enableLogging: Boolean = true): Log {
             return if (enableLogging) {
                 LIVE
@@ -39,7 +40,7 @@ internal interface Log {
                     envName = BuildConfig.FLAVOR,
                     variant = BuildConfig.FLAVOR,
                     rumApplicationId = null,
-                    serviceName = "android-sdk"
+                    serviceName = SERVICE_NAME
                 )
                 Datadog.initialize(context, credentials, configuration, TrackingConsent.GRANTED)
                 logger = Logger.Builder()

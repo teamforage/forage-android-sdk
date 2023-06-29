@@ -14,7 +14,6 @@ import android.view.MenuItem
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.Log

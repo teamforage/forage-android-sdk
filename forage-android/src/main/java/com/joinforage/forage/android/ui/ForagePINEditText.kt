@@ -6,7 +6,6 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants

@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
