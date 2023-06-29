@@ -5,6 +5,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.joinforage.forage.android.LDFlags
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.VaultConstants
+import com.joinforage.forage.android.core.Log
 import com.launchdarkly.sdk.LDValue
 import com.launchdarkly.sdk.android.integrations.TestData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,13 +42,13 @@ class LaunchDarklyTest() {
         // Set the test data to send all traffic to BT
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysBT)))
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val vaultType = LDManager.getVaultProvider(app, td)
+        val vaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
         assertThat(vaultType).isEqualTo(VaultConstants.BT_VAULT_TYPE)
 
         // Update the test data to send all traffic to VGS
         // Since ForageSDK is a singleton, we should still return BT in this instance
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysVGS)))
-        val secondVaultType = LDManager.getVaultProvider(app, td)
+        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
         assertThat(secondVaultType).isEqualTo(VaultConstants.BT_VAULT_TYPE)
     }
 
@@ -56,13 +57,13 @@ class LaunchDarklyTest() {
         // Set the test data to send all traffic to VGS
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysVGS)))
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val vaultType = LDManager.getVaultProvider(app, td)
+        val vaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
         assertThat(vaultType).isEqualTo(VaultConstants.VGS_VAULT_TYPE)
 
         // Update the test data to send all traffic to BT
         // Since ForageSDK is a singleton, we should still return VGS in this instance
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysBT)))
-        val secondVaultType = LDManager.getVaultProvider(app, td)
+        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
         assertThat(secondVaultType).isEqualTo(VaultConstants.VGS_VAULT_TYPE)
     }
 }
