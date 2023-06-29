@@ -6,13 +6,14 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants
 import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
-import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.core.Log
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
@@ -26,7 +27,8 @@ class ForagePINEditText @JvmOverloads constructor(
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
-        val logger = DDManager.initializeLogger(context)
+        val logger = Log.getInstance()
+        logger.initializeDD(context)
 
         setWillNotDraw(false)
         orientation = VERTICAL

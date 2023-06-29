@@ -13,10 +13,10 @@ import okhttp3.Response
 import java.io.IOException
 import kotlin.coroutines.suspendCoroutine
 
-abstract class NetworkService(
-    private val okHttpClient: OkHttpClient
+internal abstract class NetworkService(
+    private val okHttpClient: OkHttpClient,
+    private val logger: Log
 ) {
-    private val logger = Log.getInstance(!BuildConfig.DEBUG)
     suspend fun convertCallbackToCoroutine(request: Request) =
         suspendCoroutine { continuation ->
             okHttpClient.newCall(request).enqueue(

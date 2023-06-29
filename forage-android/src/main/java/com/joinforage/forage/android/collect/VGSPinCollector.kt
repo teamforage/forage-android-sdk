@@ -23,7 +23,7 @@ internal class VGSPinCollector(
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
 ) : PinCollector {
-    private val logger = Log.getInstance(!BuildConfig.DEBUG)
+    private val logger = Log.getInstance()
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,

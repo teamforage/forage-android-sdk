@@ -40,27 +40,31 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     override fun setup() {
         super.setup()
 
+        val logger = Log.getInstance(false)
         repository = CheckBalanceRepository(
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
-            logger = Log.getInstance(false)
+            logger = logger
         )
     }
 

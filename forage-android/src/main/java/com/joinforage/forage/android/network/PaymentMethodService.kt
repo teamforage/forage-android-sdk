@@ -11,14 +11,14 @@ import java.io.IOException
 
 internal class PaymentMethodService(
     private val httpUrl: HttpUrl,
-    okHttpClient: OkHttpClient
-) : NetworkService(okHttpClient) {
-    private val internalLogger = Log.getInstance(!BuildConfig.DEBUG)
+    okHttpClient: OkHttpClient,
+    private val logger: Log
+) : NetworkService(okHttpClient, logger) {
     suspend fun getPaymentMethod(paymentMethodRef: String): ForageApiResponse<String> = try {
-        internalLogger.i("GET request for Payment Method $paymentMethodRef")
+        logger.i("GET request for Payment Method $paymentMethodRef")
         getPaymentMethodToCoroutine(paymentMethodRef)
     } catch (ex: IOException) {
-        internalLogger.e("Failed while trying to GET Payment Method $paymentMethodRef", ex)
+        logger.e("Failed while trying to GET Payment Method $paymentMethodRef", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

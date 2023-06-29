@@ -23,7 +23,7 @@ import java.util.UUID
  */
 object ForageSDK : ForageSDKApi {
     private var panEntry: PanEntry = PanEntry.Invalid("")
-    private val logger = Log.getInstance(true)
+    private val logger = Log.getInstance()
 
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
@@ -47,7 +47,8 @@ object ForageSDK : ForageSDKApi {
                     merchantAccount,
                     idempotencyKey = UUID.randomUUID().toString()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ).tokenizeCard(
                 cardNumber = currentEntry.getPanNumber(),
                 customerId = customerId
@@ -85,21 +86,24 @@ object ForageSDK : ForageSDKApi {
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             logger = logger
         ).checkBalance(
@@ -129,28 +133,32 @@ object ForageSDK : ForageSDKApi {
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount
                 ),
-                httpUrl = ForageConstants.provideHttpUrl()
+                httpUrl = ForageConstants.provideHttpUrl(),
+                logger = logger
             ),
             logger = logger
         ).capturePayment(

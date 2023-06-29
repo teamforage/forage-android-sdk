@@ -16,7 +16,7 @@ internal interface Log {
     fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap())
     companion object {
         private const val LOGGER_NAME = "ForageSDK"
-        fun getInstance(enableLogging: Boolean): Log {
+        fun getInstance(enableLogging: Boolean = true): Log {
             return if (enableLogging) {
                 LIVE
             } else {

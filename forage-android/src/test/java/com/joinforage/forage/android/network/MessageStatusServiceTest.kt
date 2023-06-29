@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
@@ -27,7 +28,8 @@ class MessageStatusServiceTest : MockServerSuite() {
 
         messageStatusService = MessageStatusService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(BEARER_TOKEN, MERCHANT_ACCOUNT),
-            httpUrl = server.url("")
+            httpUrl = server.url(""),
+            logger = Log.getInstance(false)
         )
     }
 

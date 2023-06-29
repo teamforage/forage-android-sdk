@@ -11,14 +11,14 @@ import java.io.IOException
 
 internal class MessageStatusService(
     private val httpUrl: HttpUrl,
-    okHttpClient: OkHttpClient
-) : NetworkService(okHttpClient) {
-    private val internalLogger = Log.getInstance(!BuildConfig.DEBUG)
+    okHttpClient: OkHttpClient,
+    private val logger: Log
+) : NetworkService(okHttpClient, logger) {
     suspend fun getStatus(contentId: String): ForageApiResponse<String> = try {
-        internalLogger.i("GET request for Encryption Key")
+        logger.i("GET request for Encryption Key")
         getStatusToCoroutine(contentId)
     } catch (ex: IOException) {
-        internalLogger.e("Failed while trying to GET Encryption Key", ex)
+        logger.e("Failed while trying to GET Encryption Key", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
