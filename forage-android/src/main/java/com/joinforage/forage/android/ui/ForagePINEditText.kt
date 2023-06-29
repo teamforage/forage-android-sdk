@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.core.DDManager
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants
@@ -22,6 +23,8 @@ class ForagePINEditText @JvmOverloads constructor(
     private var vault: VaultWrapper?
 
     init {
+        val logger = DDManager.initializeLogger(context)
+
         setWillNotDraw(false)
         orientation = VERTICAL
 

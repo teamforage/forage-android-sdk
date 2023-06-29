@@ -1,7 +1,7 @@
 package com.joinforage.forage.android
 
 import android.app.Application
-import com.joinforage.forage.android.core.Logger
+import com.joinforage.forage.android.core.Log
 import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
@@ -28,7 +28,7 @@ internal object LDContextKind {
 internal object LDManager {
     private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
     private var internalVaultType: String? = null
-    private var logger = Logger.getInstance(BuildConfig.DEBUG)
+    private var logger = Log.getInstance(BuildConfig.DEBUG)
 
     internal var vaultType: String?
         get() = internalVaultType

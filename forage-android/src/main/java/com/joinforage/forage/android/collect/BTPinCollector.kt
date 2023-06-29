@@ -3,6 +3,7 @@ package com.joinforage.forage.android.collect
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.DDManager
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiError
@@ -16,6 +17,7 @@ internal class BTPinCollector(
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
 ) : PinCollector {
+    private val logger = DDManager.getLogger()
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
@@ -32,6 +34,7 @@ internal class BTPinCollector(
             path = balancePath(paymentMethodRef)
         }
 
+        logger.i("Sending balance check to BasisTheory")
         val response = runCatching {
             bt.proxy.post(proxyRequest)
         }
@@ -44,6 +47,7 @@ internal class BTPinCollector(
             try {
                 val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
                 val error = forageApiError.errors[0]
+                logger.e("Received an error while submitting balance request to BasisTheory: $error.message")
                 return ForageApiResponse.Failure(
                     listOf(
                         ForageError(
@@ -55,12 +59,12 @@ internal class BTPinCollector(
                     )
                 )
             } catch (e: JSONException) { }
+            logger.i("Received successful response from BasisTheory")
             return ForageApiResponse.Success(forageResponse.toString())
         }
 
-        // This should return the BT ApiException, which is a string value of the API response
-        // TODO: Log this value to Datadog.
-//        val btErrorResponse = response.exceptionOrNull()
+        val btErrorResponse = response.exceptionOrNull()
+        logger.e("Received BasisTheory API exception on balance check: $btErrorResponse")
         return ForageApiResponse.Failure(
             listOf(
                 ForageError(500, "unknown_server_error", "Unknown Server Error")
@@ -84,6 +88,7 @@ internal class BTPinCollector(
             path = capturePaymentPath(paymentRef)
         }
 
+        logger.i("Sending payment capture to BasisTheory")
         val response = runCatching {
             bt.proxy.post(proxyRequest)
         }
@@ -96,6 +101,7 @@ internal class BTPinCollector(
             try {
                 val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
                 val error = forageApiError.errors[0]
+                logger.e("Received an error while submitting capture request to BasisTheory: $error.message")
                 return ForageApiResponse.Failure(
                     listOf(
                         ForageError(
@@ -107,11 +113,11 @@ internal class BTPinCollector(
                     )
                 )
             } catch (e: JSONException) { }
+            logger.i("Received successful response from BasisTheory")
             return ForageApiResponse.Success(forageResponse.toString())
         }
-        // This should return the BT ApiException, which is a string value of the API response
-        // TODO: Log this value to Datadog.
-//        val btErrorResponse = response.exceptionOrNull()
+        val btErrorResponse = response.exceptionOrNull()
+        logger.e("Received BasisTheory API exception on payment capture: $btErrorResponse")
 
         return ForageApiResponse.Failure(
             listOf(
@@ -129,6 +135,7 @@ internal class BTPinCollector(
         if (token.contains(CollectorConstants.TOKEN_DELIMITER)) {
             return token.split(CollectorConstants.TOKEN_DELIMITER)[1]
         }
+        logger.e("BT Token wasn't found on card")
         throw RuntimeException("BT token not found on card!")
     }
 

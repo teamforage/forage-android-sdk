@@ -2,6 +2,7 @@ package com.joinforage.forage.android.collect
 
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.DDManager
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -22,6 +23,7 @@ internal class VGSPinCollector(
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
 ) : PinCollector {
+    private val logger = DDManager.getLogger()
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
@@ -38,21 +40,30 @@ internal class VGSPinCollector(
                 inputField.setText("")
 
                 when (response) {
-                    is VGSResponse.SuccessResponse -> continuation.resumeWith(
-                        Result.success(
-                            ForageApiResponse.Success(response.body!!)
+                    is VGSResponse.SuccessResponse -> {
+                        logger.i("Received successful response from VGS")
+                        continuation.resumeWith(
+                                Result.success(
+                                    ForageApiResponse.Success(response.body!!)
+                                )
+                            )
+                        }
+                    is VGSResponse.ErrorResponse -> {
+                        logger.e("Received an error while submitting balance request to VGS: ${response.body}")
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                            )
                         )
-                    )
-                    is VGSResponse.ErrorResponse -> continuation.resumeWith(
-                        Result.success(
-                            ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                    }
+                    null -> {
+                        logger.e("Received an unknown error while submitting balance request to VGS")
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                            )
                         )
-                    )
-                    null -> continuation.resumeWith(
-                        Result.success(
-                            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
-                        )
-                    )
+                    }
                 }
             }
         })
@@ -68,6 +79,8 @@ internal class VGSPinCollector(
             )
             .setCustomData(buildRequestBody(cardToken))
             .build()
+
+        logger.i("Sending balance check to VGS")
 
         vgsCollect.asyncSubmit(request)
     }
@@ -88,21 +101,30 @@ internal class VGSPinCollector(
                 inputField.setText("")
 
                 when (response) {
-                    is VGSResponse.SuccessResponse -> continuation.resumeWith(
-                        Result.success(
-                            ForageApiResponse.Success(response.body!!)
+                    is VGSResponse.SuccessResponse -> {
+                        logger.i("Received successful response from VGS")
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Success(response.body!!)
+                            )
                         )
-                    )
-                    is VGSResponse.ErrorResponse -> continuation.resumeWith(
-                        Result.success(
-                            ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                    }
+                    is VGSResponse.ErrorResponse -> {
+                        logger.e("Received an error while submitting capture request to VGS: ${response.body}")
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                            )
                         )
-                    )
-                    null -> continuation.resumeWith(
-                        Result.success(
-                            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                    }
+                    null -> {
+                        logger.e("Received an unknown error while submitting capture request to VGS")
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                            )
                         )
-                    )
+                    }
                 }
             }
         })
@@ -119,6 +141,8 @@ internal class VGSPinCollector(
             )
             .setCustomData(buildRequestBody(cardToken))
             .build()
+
+        logger.i("Sending payment capture to VGS")
 
         vgsCollect.asyncSubmit(request)
     }

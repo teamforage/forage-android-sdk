@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.core.DDManager
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import okhttp3.HttpUrl
@@ -11,9 +12,12 @@ internal class PaymentService(
     private val httpUrl: HttpUrl,
     okHttpClient: OkHttpClient
 ) : NetworkService(okHttpClient) {
+    private val internalLogger = DDManager.getLogger()
     suspend fun getPayment(paymentRef: String): ForageApiResponse<String> = try {
+        internalLogger.i("GET request for Payment Method $paymentRef")
         getPaymentToCoroutine(paymentRef)
     } catch (ex: IOException) {
+        internalLogger.e("Failed while trying to GET Payment $paymentRef", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

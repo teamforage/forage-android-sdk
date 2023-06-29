@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.core
 
-import android.util.Log
+import com.datadog.android.log.Logger
 
-internal interface Logger {
+internal interface Log {
     fun debug(msg: String)
 
     fun info(msg: String)
@@ -12,9 +12,9 @@ internal interface Logger {
     fun error(msg: String, t: Throwable? = null)
 
     companion object {
-        private const val TAG = "ForageSDK"
+        private const val LOGGER_NAME = "ForageSDK"
 
-        fun getInstance(enableLogging: Boolean): Logger {
+        fun getInstance(enableLogging: Boolean): Log {
             return if (enableLogging) {
                 LOGCAT
             } else {
@@ -22,25 +22,36 @@ internal interface Logger {
             }
         }
 
-        private val LOGCAT = object : Logger {
+        private val LOGCAT = object : Log {
+            val logger: Logger?
+            init {
+                logger = Logger.Builder()
+                    .setNetworkInfoEnabled(true)
+                    .setLogcatLogsEnabled(true)
+                    .setDatadogLogsEnabled(true)
+                    .setBundleWithTraceEnabled(true)
+                    .setLoggerName(LOGGER_NAME)
+                    .build()
+            }
+
             override fun debug(msg: String) {
-                Log.d(TAG, msg)
+                logger?.d(msg)
             }
 
             override fun info(msg: String) {
-                Log.i(TAG, msg)
+                logger?.i(msg)
             }
 
             override fun warning(msg: String) {
-                Log.w(TAG, msg)
+                logger?.w(msg)
             }
 
             override fun error(msg: String, t: Throwable?) {
-                Log.e(TAG, msg, t)
+                logger?.e(msg, throwable = t)
             }
         }
 
-        private val SILENT = object : Logger {
+        private val SILENT = object : Log {
             override fun debug(msg: String) {
             }
 

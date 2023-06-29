@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.network.data
 
+import com.datadog.android.log.Logger
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.Logger
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -74,27 +74,24 @@ internal class CheckBalanceRepository(
         var attempt = 1
 
         while (true) {
-            logger.debug("Polling check balance message status. Attempt: $attempt.")
+            logger.i("Polling for balance check response for Payment Method $paymentMethodRef")
 
             when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
                     val balanceMessage = Message.ModelMapper.from(response.data)
 
                     if (balanceMessage.status == "completed") {
-                        logger.debug("Status is completed.")
                         if (balanceMessage.failed) {
-                            logger.debug("Failed is true.")
                             val error = balanceMessage.errors[0]
+                            logger.e("Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}")
                             return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                         }
                         break
-                    } else {
-                        logger.debug("Status is ${balanceMessage.status}.")
                     }
 
                     if (balanceMessage.failed) {
-                        logger.debug("Failed is true.")
                         val error = balanceMessage.errors[0]
+                        logger.e("Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}")
                         return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                     }
                 }
@@ -104,7 +101,7 @@ internal class CheckBalanceRepository(
             }
 
             if (attempt == MAX_ATTEMPTS) {
-                logger.debug("Max attempts reached. Returning last response")
+                logger.e("Max polling attempts reached for balance check of Payment Method $paymentMethodRef")
                 return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
@@ -112,8 +109,11 @@ internal class CheckBalanceRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
+        logger.i("Polling for balance check response succeeded for Payment Method $paymentMethodRef")
+
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> {
+                logger.i("Received updated balance information for Payment Method $paymentMethodRef")
                 val paymentMethod = PaymentMethod.ModelMapper.from(response.data)
                 return ForageApiResponse.Success(paymentMethod.balance.toString())
             }

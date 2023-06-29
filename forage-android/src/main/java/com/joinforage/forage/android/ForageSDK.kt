@@ -1,7 +1,8 @@
 package com.joinforage.forage.android
 
 import android.content.Context
-import com.joinforage.forage.android.core.Logger
+import com.joinforage.forage.android.core.DDManager
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.getPanNumber
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -31,6 +32,15 @@ object ForageSDK : ForageSDKApi {
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
 
+        val logger = DDManager.getLogger()
+        logger.i(
+            "Tokenizing Payment Method",
+            attributes = mapOf(
+                "Merchant" to merchantAccount,
+                "Customer ID" to customerId
+            )
+        )
+
         return when {
             shouldTokenize(currentEntry) -> TokenizeCardService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
@@ -43,7 +53,10 @@ object ForageSDK : ForageSDKApi {
                 cardNumber = currentEntry.getPanNumber(),
                 customerId = customerId
             )
-            else -> ForageApiResponse.Failure(listOf(ForageError(400, "invalid_input_data", "Invalid PAN entry")))
+            else -> {
+                logger.e("PAN entry was invalid", attributes = mapOf("Merchant" to merchantAccount))
+                ForageApiResponse.Failure(listOf(ForageError(400, "invalid_input_data", "Invalid PAN entry")))
+            }
         }
     }
 
@@ -58,6 +71,13 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentMethodRef: String
     ): ForageApiResponse<String> {
+        val logger = DDManager.getLogger()
+        logger.i(
+            "Submitting balance check for Payment Method $paymentMethodRef",
+            attributes = mapOf(
+                "Merchant" to merchantAccount
+            )
+        )
         return CheckBalanceRepository(
             pinCollector = pinForageEditText.getCollector(
                 merchantAccount
@@ -83,7 +103,7 @@ object ForageSDK : ForageSDKApi {
                 ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
-            logger = Logger.getInstance(BuildConfig.DEBUG)
+            logger = logger
         ).checkBalance(
             paymentMethodRef = paymentMethodRef
         )
@@ -96,6 +116,13 @@ object ForageSDK : ForageSDKApi {
         bearerToken: String,
         paymentRef: String
     ): ForageApiResponse<String> {
+        val logger = DDManager.getLogger()
+        logger.i(
+            "Submitting capture request for Payment $paymentRef",
+            attributes = mapOf(
+                "Merchant" to merchantAccount
+            )
+        )
         return CapturePaymentRepository(
             pinCollector = pinForageEditText.getCollector(
                 merchantAccount
@@ -128,7 +155,7 @@ object ForageSDK : ForageSDKApi {
                 ),
                 httpUrl = ForageConstants.provideHttpUrl()
             ),
-            logger = Logger.getInstance(BuildConfig.DEBUG)
+            logger = logger
         ).capturePayment(
             paymentRef = paymentRef
         )
