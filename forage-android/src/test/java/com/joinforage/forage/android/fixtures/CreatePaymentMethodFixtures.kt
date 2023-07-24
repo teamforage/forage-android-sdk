@@ -9,12 +9,12 @@ import me.jorgecastillo.hiroaki.models.success
 import me.jorgecastillo.hiroaki.whenever
 import okhttp3.mockwebserver.MockWebServer
 
-fun MockWebServer.givenCardToken(cardNumber: String, customerId: String) = whenever(
+fun MockWebServer.givenCardToken(cardNumber: String, customerId: String, reusable: Boolean = true) = whenever(
     method = Method.POST,
     sentToPath = "api/payment_methods/",
     jsonBody = json {
         "type" / "ebt"
-        "reusable" / true
+        "reusable" / reusable
         "card" / json {
             "number" / cardNumber
         }
@@ -26,6 +26,14 @@ fun PotentialRequestChain.returnsPaymentMethodSuccessfully() = thenRespond(
     success(
         jsonBody = fileBody(
             "fixtures/payment/methods/successful_create_payment_method.json"
+        )
+    )
+)
+
+fun PotentialRequestChain.returnsNonReusablePaymentMethodSuccessfully() = thenRespond(
+    success(
+        jsonBody = fileBody(
+            "fixtures/payment/methods/successful_create_nonreusable_payment_method.json"
         )
     )
 )

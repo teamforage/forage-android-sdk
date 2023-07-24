@@ -27,7 +27,8 @@ object ForageSDK : ForageSDKApi {
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String,
-        customerId: String
+        customerId: String,
+        reusable: Boolean
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
 
@@ -41,7 +42,8 @@ object ForageSDK : ForageSDKApi {
                 httpUrl = ForageConstants.provideHttpUrl()
             ).tokenizeCard(
                 cardNumber = currentEntry.getPanNumber(),
-                customerId = customerId
+                customerId = customerId,
+                reusable = reusable
             )
             else -> ForageApiResponse.Failure(listOf(ForageError(400, "invalid_input_data", "Invalid PAN entry")))
         }

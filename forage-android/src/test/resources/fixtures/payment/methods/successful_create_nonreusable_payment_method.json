@@ -9,5 +9,5 @@
     "state": "PA"
   },
   "customer_id": "test-android-customer-id",
-  "reusable": true
+  "reusable": false
 }
