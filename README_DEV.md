@@ -4,7 +4,7 @@ This project was developed using Android Studio Electric Eel, but you can also u
 
 ## Get up and running locally
 1. You need to install [the Java Developer Kit (JDK)](https://www.oracle.com/java/technologies/downloads/). The JDK is what powers Android Studio ability to build and run Android apps. Technically, our CI/CD builds Forage Android SDK using [JDK 11](https://github.com/teamforage/forage-android-sdk/blob/f2ff61ed27847b28d631f975c9a79e52f9258802/.github/workflows/CI.yaml#L21). However, as of this writing, the latest stable version is [JDK 17](https://www.oracle.com/java/technologies/downloads/#java17).
-    > ⚠️ NOTE: Installing the Java Developer Kit (JDK) is **not** the same thing as “[installing Java on your machine](https://www.oracle.com/ca-en/java/technologies/downloads/)”. The latter refers to installing the Java Runtime Environment (JRE), which is what you would install to run a Java application. As we are developing Java (Android) applications, we the JDK which includes (is a superset of) the JRE.
+    > ⚠️ NOTE: Installing the Java Developer Kit (JDK) is **not** the same thing as “[installing Java on your machine](https://www.oracle.com/ca-en/java/technologies/downloads/)”. The latter refers to installing the Java Runtime Environment (JRE), which is what you would install to run a Java application. As we are developing Java (Android) applications, we need the JDK, which comes bundled with the JRE as well as other software facillities needed for Java development.
 2. Once you have installed the JDK of your choice to your local machine, you will need to make Android Studio aware by setting the `JAVA_HOME` environment variable to the path on your machine that the JDK resides. For example:
    ```bash
     # Windows
