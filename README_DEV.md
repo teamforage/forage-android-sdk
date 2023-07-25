@@ -5,11 +5,28 @@ This project was developed using Android Studio Electric Eel, but you can also u
 ## Get up and running locally
 1. You need to install [the Java Developer Kit (JDK)](https://www.oracle.com/java/technologies/downloads/). The JDK is what powers Android Studio ability to build and run Android apps. Technically, our CI/CD builds Forage Android SDK using [JDK 11](https://github.com/teamforage/forage-android-sdk/blob/f2ff61ed27847b28d631f975c9a79e52f9258802/.github/workflows/CI.yaml#L21). However, as of this writing, the latest stable version is [JDK 17](https://www.oracle.com/java/technologies/downloads/#java17).
     > ⚠️ NOTE: Installing the Java Developer Kit (JDK) is **not** the same thing as “[installing Java on your machine](https://www.oracle.com/ca-en/java/technologies/downloads/)”. The latter refers to installing the Java Runtime Environment (JRE), which is what you would install to run a Java application. As we are developing Java (Android) applications, we need the JDK, which comes bundled with the JRE as well as other software facillities needed for Java development.
+   
+   **Windows**
+
+   Your best bet is installing the JDK directly from [the Oracle website](https://www.oracle.com/java/technologies/downloads/#java17)
+
+   **macOS**
+
+   From the command line you can use `brew` or `sdkman`. See [here](https://stackoverflow.com/questions/69875335/macos-how-to-install-java-17) for more details. Alternatively, you can also install  the JDK directly from [the Oracle website](https://www.oracle.com/java/technologies/downloads/#java17)
 2. Once you have installed the JDK of your choice to your local machine, you will need to make Android Studio aware by setting the `JAVA_HOME` environment variable to the path on your machine that the JDK resides. For example:
+
+   **Windows**
+
+   Since you downloaded the JDK from the oracle website, you need to manually set the `JAVA_HOME` environment variable.
    ```bash
-    # Windows
    JAVA_HOME=C:\Program Files\Java\jdk-17
    ```
+   
+   **macOS**
+
+   If you installed via `brew` or `sdkman`, `JAVA_HOME` was likely set for you. Keep in mind that the `JAVA_HOME` variable is used to specify which version of Java you currently want to run. You will still need to manually set `JAVA_HOME` in the case where you [have multiple version of Java on your machine](https://medium.com/@manvendrapsingh/installing-many-jdk-versions-on-macos-dfc177bc8c2b) or if you opted to install the JDK directly from the Oracle website. 
+
+
 3. Confirm that the JDK and Android Studio are working as expected by running the [unit tests below](#How to run the unit tests). You should not see any errors. This may take a minute or two to run.
 4. Now it's time to run the Sample App via local emulator. The below summarizes the few steps involved but see the [docs](https://developer.android.com/studio/run/managing-avds) for more details
     
