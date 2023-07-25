@@ -27,7 +27,7 @@ This project was developed using Android Studio Electric Eel, but you can also u
    If you installed via `brew` or `sdkman`, `JAVA_HOME` was likely set for you. Keep in mind that the `JAVA_HOME` variable is used to specify which version of Java you currently want to run. You will still need to manually set `JAVA_HOME` in the case where you [have multiple version of Java on your machine](https://medium.com/@manvendrapsingh/installing-many-jdk-versions-on-macos-dfc177bc8c2b) or if you opted to install the JDK directly from the Oracle website. 
 
 
-3. Confirm that the JDK and Android Studio are working as expected by running the [unit tests below](#How to run the unit tests). You should not see any errors. This may take a minute or two to run.
+3. Confirm that the JDK and Android Studio are working as expected by running the [unit tests below](#How-to-run-the-unit-tests). You should not see any errors. This may take a minute or two to run.
 4. Now it's time to run the Sample App via local emulator. The below summarizes the few steps involved but see the [docs](https://developer.android.com/studio/run/managing-avds) for more details
     
    a. Click the Devices Manager Icon. It should be in the top right corner of Android Studio by default 
