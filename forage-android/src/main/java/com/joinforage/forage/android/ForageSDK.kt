@@ -28,7 +28,8 @@ object ForageSDK : ForageSDKApi {
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
         bearerToken: String,
-        customerId: String
+        customerId: String,
+        reusable: Boolean
     ): ForageApiResponse<String> {
         val currentEntry = panEntry
 
@@ -51,7 +52,8 @@ object ForageSDK : ForageSDKApi {
                 logger = logger
             ).tokenizeCard(
                 cardNumber = currentEntry.getPanNumber(),
-                customerId = customerId
+                customerId = customerId,
+                reusable = reusable
             )
             else -> {
                 logger.e(

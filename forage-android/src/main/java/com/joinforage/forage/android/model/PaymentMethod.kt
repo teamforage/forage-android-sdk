@@ -35,7 +35,8 @@ internal data class PaymentMethod(
     val type: String,
     val customerId: String,
     val balance: Balance?,
-    val card: Card
+    val card: Card,
+    val reusable: Boolean?
 ) {
     object ModelMapper {
         fun from(string: String): PaymentMethod {
@@ -59,6 +60,11 @@ internal data class PaymentMethod(
             val last4 = card.getString("last_4")
             val token = card.getString("token")
 
+            var reusable: Boolean? = true
+            if (!jsonObject.isNull("reusable")) {
+                reusable = jsonObject.getBoolean("reusable")
+            }
+
             return PaymentMethod(
                 ref = ref,
                 type = type,
@@ -68,7 +74,8 @@ internal data class PaymentMethod(
                     type = "",
                     token = token
                 ),
-                customerId = customerId
+                customerId = customerId,
+                reusable = reusable
             )
         }
     }

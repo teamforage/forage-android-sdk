@@ -2,6 +2,7 @@ package com.joinforage.forage.android.network
 
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.fixtures.givenCardToken
+import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.model.Card
@@ -80,9 +81,45 @@ class TokenizeCardServiceTest : MockServerSuite() {
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
                 ),
-                customerId = "test-android-customer-id"
+                customerId = "test-android-customer-id",
+                reusable = true
             )
         )
+    }
+
+    @Test
+    fun `it should handle the reusable parameter when provided`() = runTest {
+        val testCustomerId = UUID.randomUUID().toString()
+        val reusable = false
+        server.givenCardToken(testData.cardNumber, testCustomerId, reusable).returnsNonReusablePaymentMethodSuccessfully()
+
+        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber, testCustomerId, reusable)
+        assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
+
+        val response =
+            PaymentMethod.ModelMapper.from((paymentMethodResponse as ForageApiResponse.Success).data)
+        assertThat(response).isEqualTo(
+            PaymentMethod(
+                ref = "1f148fe399",
+                type = "ebt",
+                balance = null,
+                card = Card(
+                    last4 = "7845",
+                    token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
+                ),
+                customerId = "test-android-customer-id",
+                reusable = false
+            )
+        )
+    }
+
+    @Test
+    fun `it should handle the absence of reusable parameter`() = runTest {
+        val testCustomerId = UUID.randomUUID().toString()
+        server.givenCardToken(testData.cardNumber, testCustomerId).returnsPaymentMethodSuccessfully()
+
+        val paymentMethodResponse = tokenizeCardService.tokenizeCard(testData.cardNumber, testCustomerId)
+        assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
     }
 
     @Test
@@ -103,6 +140,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
         val bearerToken: String = "AbCaccesstokenXyz",
         val cardNumber: String = "5076801234567845",
         val customerId: String = "test-android-customer-id",
+        val reusable: Boolean = false,
         val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId)
     )
 }

@@ -18,24 +18,24 @@ internal class TokenizeCardService(
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
-    suspend fun tokenizeCard(cardNumber: String, customerId: String): ForageApiResponse<String> = try {
+    suspend fun tokenizeCard(cardNumber: String, customerId: String, reusable: Boolean = true): ForageApiResponse<String> = try {
         logger.i(
             "POST request for Payment Method",
             attributes = mapOf(
                 "customer_id" to customerId
             )
         )
-        tokenizeCardCoroutine(cardNumber, customerId)
+        tokenizeCardCoroutine(cardNumber, customerId, reusable)
     } catch (ex: IOException) {
         logger.e("Failed while tokenizing PaymentMethod", ex, attributes = mapOf("customer_id" to customerId))
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
-    private suspend fun tokenizeCardCoroutine(cardNumber: String, customerId: String): ForageApiResponse<String> {
+    private suspend fun tokenizeCardCoroutine(cardNumber: String, customerId: String, reusable: Boolean): ForageApiResponse<String> {
         val url = getTokenizeCardUrl()
 
         val requestBody =
-            PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId).toJSONObject().toString()
+            PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId, reusable = reusable).toJSONObject().toString()
 
         val body: RequestBody =
             requestBody.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
