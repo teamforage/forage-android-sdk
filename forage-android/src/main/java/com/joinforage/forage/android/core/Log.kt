@@ -45,7 +45,7 @@ internal interface Log {
                 Datadog.initialize(context, credentials, configuration, TrackingConsent.GRANTED)
                 logger = Logger.Builder()
                     .setNetworkInfoEnabled(true)
-                    .setLogcatLogsEnabled(true)
+                    .setLogcatLogsEnabled(false)
                     .setDatadogLogsEnabled(true)
                     .setBundleWithTraceEnabled(true)
                     .setLoggerName(LOGGER_NAME)
