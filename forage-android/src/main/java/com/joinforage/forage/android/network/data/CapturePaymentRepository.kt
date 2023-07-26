@@ -93,7 +93,13 @@ internal class CapturePaymentRepository(
         var attempt = 1
 
         while (true) {
-            logger.i("Polling for balance check response for Payment $paymentRef")
+            logger.i(
+                "Polling for balance check response for Payment $paymentRef",
+                attributes = mapOf(
+                    "payment_ref" to paymentRef,
+                    "content_id" to contentId
+                )
+            )
 
             when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
@@ -102,7 +108,13 @@ internal class CapturePaymentRepository(
                     if (paymentMessage.status == "completed") {
                         if (paymentMessage.failed) {
                             val error = paymentMessage.errors[0]
-                            logger.e("Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}")
+                            logger.e(
+                                "Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
+                                attributes = mapOf(
+                                    "payment_ref" to paymentRef,
+                                    "content_id" to contentId
+                                )
+                            )
                             return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                         }
                         break
@@ -110,7 +122,13 @@ internal class CapturePaymentRepository(
 
                     if (paymentMessage.failed) {
                         val error = paymentMessage.errors[0]
-                        logger.e("Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}")
+                        logger.e(
+                            "Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
+                            attributes = mapOf(
+                                "payment_ref" to paymentRef,
+                                "content_id" to contentId
+                            )
+                        )
                         return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                     }
                 }
@@ -120,7 +138,13 @@ internal class CapturePaymentRepository(
             }
 
             if (attempt == MAX_ATTEMPTS) {
-                logger.e("Max polling attempts reached for capture request of Payment $paymentRef")
+                logger.e(
+                    "Max polling attempts reached for capture request of Payment $paymentRef",
+                    attributes = mapOf(
+                        "payment_ref" to paymentRef,
+                        "content_id" to contentId
+                    )
+                )
                 return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
@@ -128,7 +152,13 @@ internal class CapturePaymentRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
-        logger.i("Polling for capture request response succeeded for Payment $paymentRef")
+        logger.i(
+            "Polling for capture request response succeeded for Payment $paymentRef",
+            attributes = mapOf(
+                "payment_ref" to paymentRef,
+                "content_id" to contentId
+            )
+        )
 
         return paymentService.getPayment(paymentRef = paymentRef)
     }

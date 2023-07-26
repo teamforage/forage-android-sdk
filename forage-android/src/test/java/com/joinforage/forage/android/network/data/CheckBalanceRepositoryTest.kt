@@ -40,7 +40,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     override fun setup() {
         super.setup()
 
-        val logger = Log.getInstance(false)
+        val logger = Log.getSilentInstance()
         repository = CheckBalanceRepository(
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(

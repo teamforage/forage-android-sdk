@@ -40,7 +40,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
                 idempotencyKey
             ),
             httpUrl = server.url(""),
-            logger = Log.getInstance(false)
+            logger = Log.getSilentInstance()
         )
     }
 

@@ -14,10 +14,14 @@ internal class MessageStatusService(
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
     suspend fun getStatus(contentId: String): ForageApiResponse<String> = try {
-        logger.i("GET request for Encryption Key")
+        logger.i("GET request for SQS Message", attributes = mapOf("content_id" to contentId))
         getStatusToCoroutine(contentId)
     } catch (ex: IOException) {
-        logger.e("Failed while trying to GET Encryption Key", ex)
+        logger.e(
+            "Failed while trying to GET SQS Message",
+            ex,
+            attributes = mapOf("content_id" to contentId)
+        )
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

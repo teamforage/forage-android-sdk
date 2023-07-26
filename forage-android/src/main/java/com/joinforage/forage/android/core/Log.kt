@@ -17,12 +17,12 @@ internal interface Log {
     companion object {
         private const val LOGGER_NAME = "ForageSDK"
         private const val SERVICE_NAME = "android-sdk"
-        fun getInstance(enableLogging: Boolean = true): Log {
-            return if (enableLogging) {
-                LIVE
-            } else {
-                SILENT
-            }
+        fun getInstance(): Log {
+            return LIVE
+        }
+
+        fun getSilentInstance(): Log {
+            return SILENT
         }
 
         private val LIVE = object : Log {

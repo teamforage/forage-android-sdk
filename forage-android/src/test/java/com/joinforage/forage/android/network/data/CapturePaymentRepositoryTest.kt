@@ -42,7 +42,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     override fun setup() {
         super.setup()
 
-        val logger = Log.getInstance(false)
+        val logger = Log.getSilentInstance()
         repository = CapturePaymentRepository(
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(

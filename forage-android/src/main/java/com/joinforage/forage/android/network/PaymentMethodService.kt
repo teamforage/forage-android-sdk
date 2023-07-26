@@ -14,10 +14,19 @@ internal class PaymentMethodService(
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
     suspend fun getPaymentMethod(paymentMethodRef: String): ForageApiResponse<String> = try {
-        logger.i("GET request for Payment Method $paymentMethodRef")
+        logger.i(
+            "GET request for Payment Method $paymentMethodRef",
+            attributes = mapOf(
+                "payment_method_ref" to paymentMethodRef
+            )
+        )
         getPaymentMethodToCoroutine(paymentMethodRef)
     } catch (ex: IOException) {
-        logger.e("Failed while trying to GET Payment Method $paymentMethodRef", ex)
+        logger.e(
+            "Failed while trying to GET Payment Method $paymentMethodRef",
+            ex,
+            attributes = mapOf("payment_method_ref" to paymentMethodRef)
+        )
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

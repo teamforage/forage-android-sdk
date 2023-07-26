@@ -42,13 +42,13 @@ class LaunchDarklyTest() {
         // Set the test data to send all traffic to BT
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysBT)))
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val vaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
+        val vaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
         assertThat(vaultType).isEqualTo(VaultConstants.BT_VAULT_TYPE)
 
         // Update the test data to send all traffic to VGS
         // Since ForageSDK is a singleton, we should still return BT in this instance
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysVGS)))
-        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
+        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
         assertThat(secondVaultType).isEqualTo(VaultConstants.BT_VAULT_TYPE)
     }
 
@@ -57,13 +57,13 @@ class LaunchDarklyTest() {
         // Set the test data to send all traffic to VGS
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysVGS)))
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val vaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
+        val vaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
         assertThat(vaultType).isEqualTo(VaultConstants.VGS_VAULT_TYPE)
 
         // Update the test data to send all traffic to BT
         // Since ForageSDK is a singleton, we should still return VGS in this instance
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysBT)))
-        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getInstance(false), dataSource = td)
+        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
         assertThat(secondVaultType).isEqualTo(VaultConstants.VGS_VAULT_TYPE)
     }
 }

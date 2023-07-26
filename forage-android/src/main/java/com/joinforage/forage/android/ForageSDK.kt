@@ -35,8 +35,8 @@ object ForageSDK : ForageSDKApi {
         logger.i(
             "Tokenizing Payment Method",
             attributes = mapOf(
-                "Merchant" to merchantAccount,
-                "Customer ID" to customerId
+                "merchant" to merchantAccount,
+                "customer_id" to customerId
             )
         )
 
@@ -54,7 +54,13 @@ object ForageSDK : ForageSDKApi {
                 customerId = customerId
             )
             else -> {
-                logger.e("PAN entry was invalid", attributes = mapOf("Merchant" to merchantAccount))
+                logger.e(
+                    "PAN entry was invalid",
+                    attributes = mapOf(
+                        "merchant" to merchantAccount,
+                        "customer_id" to customerId
+                    )
+                )
                 ForageApiResponse.Failure(listOf(ForageError(400, "invalid_input_data", "Invalid PAN entry")))
             }
         }
@@ -74,7 +80,8 @@ object ForageSDK : ForageSDKApi {
         logger.i(
             "Submitting balance check for Payment Method $paymentMethodRef",
             attributes = mapOf(
-                "Merchant" to merchantAccount
+                "merchant" to merchantAccount,
+                "payment_method_ref" to paymentMethodRef
             )
         )
         return CheckBalanceRepository(
@@ -121,7 +128,8 @@ object ForageSDK : ForageSDKApi {
         logger.i(
             "Submitting capture request for Payment $paymentRef",
             attributes = mapOf(
-                "Merchant" to merchantAccount
+                "merchant" to merchantAccount,
+                "payment_ref" to paymentRef
             )
         )
         return CapturePaymentRepository(

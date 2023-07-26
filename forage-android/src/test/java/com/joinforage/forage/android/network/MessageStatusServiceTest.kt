@@ -29,7 +29,7 @@ class MessageStatusServiceTest : MockServerSuite() {
         messageStatusService = MessageStatusService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(BEARER_TOKEN, MERCHANT_ACCOUNT),
             httpUrl = server.url(""),
-            logger = Log.getInstance(false)
+            logger = Log.getSilentInstance()
         )
     }
 

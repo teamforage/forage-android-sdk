@@ -28,24 +28,28 @@ internal object LDContextKind {
 internal object LDManager {
     private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
     private var internalVaultType: String? = null
-    private var internalLogger: Log? = null
+    private var internalLogger: Log = Log.getSilentInstance()
 
     internal var vaultType: String?
         get() = internalVaultType
+
+        // The setter is only exposed for testing purposes. Otherwise, it is entirely internal and
+        // shouldn't be used directly.
         set(value) {
             if (value == null) {
-                internalLogger?.w("vaultType is being reset to null. This should only happen while unit testing!")
+                internalLogger.w("[LaunchDarkly] vaultType is being reset to null. This should only happen while unit testing!")
                 internalVaultType = null
             } else if (internalVaultType == null) {
                 internalVaultType = value
+            } else {
+                throw Error("vaultType can only be set once!")
             }
-            internalLogger?.e("vaultType can only be set once!")
         }
 
     // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
     // want to overwrite it! We must take in the application as a parameter, which means that a
     // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
-    internal fun getVaultProvider(app: Application, logger: Log? = null, dataSource: TestData? = null): String {
+    internal fun getVaultProvider(app: Application, logger: Log, dataSource: TestData? = null): String {
         if (vaultType != null) {
             return vaultType as String
         }
@@ -66,12 +70,14 @@ internal object LDManager {
         val client = LDClient.init(app, ldConfig, context, 0)
         // default to 100% VGS usage in case LD flag retrieval fails
         val vaultPercent = client.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 0.0)
+        internalLogger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
         val randomNum = Math.random() * 100
         vaultType = if (randomNum < vaultPercent) {
             VaultConstants.BT_VAULT_TYPE
         } else {
             VaultConstants.VGS_VAULT_TYPE
         }
+        internalLogger.i("[LaunchDarkly] Vault type set to $vaultType")
         return vaultType as String
     }
 }

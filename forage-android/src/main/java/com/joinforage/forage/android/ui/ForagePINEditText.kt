@@ -32,7 +32,7 @@ class ForagePINEditText @JvmOverloads constructor(
         setWillNotDraw(false)
         orientation = VERTICAL
 
-        var vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
+        var vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
         vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             BTVaultWrapper(context, attrs, defStyleAttr)
         } else {

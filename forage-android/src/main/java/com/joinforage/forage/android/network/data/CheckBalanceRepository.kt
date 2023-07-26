@@ -75,7 +75,13 @@ internal class CheckBalanceRepository(
         var attempt = 1
 
         while (true) {
-            logger.i("Polling for balance check response for Payment Method $paymentMethodRef")
+            logger.i(
+                "Polling for balance check response for Payment Method $paymentMethodRef",
+                attributes = mapOf(
+                    "payment_method_ref" to paymentMethodRef,
+                    "content_id" to contentId
+                )
+            )
 
             when (val response = messageStatusService.getStatus(contentId)) {
                 is ForageApiResponse.Success -> {
@@ -84,7 +90,13 @@ internal class CheckBalanceRepository(
                     if (balanceMessage.status == "completed") {
                         if (balanceMessage.failed) {
                             val error = balanceMessage.errors[0]
-                            logger.e("Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}")
+                            logger.e(
+                                "Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
+                                attributes = mapOf(
+                                    "payment_method_ref" to paymentMethodRef,
+                                    "content_id" to contentId
+                                )
+                            )
                             return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                         }
                         break
@@ -92,7 +104,13 @@ internal class CheckBalanceRepository(
 
                     if (balanceMessage.failed) {
                         val error = balanceMessage.errors[0]
-                        logger.e("Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}")
+                        logger.e(
+                            "Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
+                            attributes = mapOf(
+                                "payment_method_ref" to paymentMethodRef,
+                                "content_id" to contentId
+                            )
+                        )
                         return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
                     }
                 }
@@ -102,7 +120,13 @@ internal class CheckBalanceRepository(
             }
 
             if (attempt == MAX_ATTEMPTS) {
-                logger.e("Max polling attempts reached for balance check of Payment Method $paymentMethodRef")
+                logger.e(
+                    "Max polling attempts reached for balance check of Payment Method $paymentMethodRef",
+                    attributes = mapOf(
+                        "payment_method_ref" to paymentMethodRef,
+                        "content_id" to contentId
+                    )
+                )
                 return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
@@ -110,11 +134,23 @@ internal class CheckBalanceRepository(
             delay(POLLING_INTERVAL_IN_MILLIS)
         }
 
-        logger.i("Polling for balance check response succeeded for Payment Method $paymentMethodRef")
+        logger.i(
+            "Polling for balance check response succeeded for Payment Method $paymentMethodRef",
+            attributes = mapOf(
+                "payment_method_ref" to paymentMethodRef,
+                "content_id" to contentId
+            )
+        )
 
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> {
-                logger.i("Received updated balance information for Payment Method $paymentMethodRef")
+                logger.i(
+                    "Received updated balance information for Payment Method $paymentMethodRef",
+                    attributes = mapOf(
+                        "payment_method_ref" to paymentMethodRef,
+                        "content_id" to contentId
+                    )
+                )
                 val paymentMethod = PaymentMethod.ModelMapper.from(response.data)
                 return ForageApiResponse.Success(paymentMethod.balance.toString())
             }
