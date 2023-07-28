@@ -35,7 +35,7 @@ internal class BTPinCollector(
         }
 
         logger.i(
-            "Sending balance check to BasisTheory",
+            "[BT] Sending balance check to BasisTheory",
             attributes = mapOf(
                 "merchant" to merchantAccount,
                 "payment_method_ref" to paymentMethodRef
@@ -54,7 +54,7 @@ internal class BTPinCollector(
                 val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
                 val error = forageApiError.errors[0]
                 logger.e(
-                    "Received an error while submitting balance request to BasisTheory: $error.message",
+                    "[BT] Received an error while submitting balance request to BasisTheory: $error.message",
                     attributes = mapOf(
                         "merchant" to merchantAccount,
                         "payment_method_ref" to paymentMethodRef
@@ -72,7 +72,7 @@ internal class BTPinCollector(
                 )
             } catch (e: JSONException) { }
             logger.i(
-                "Received successful response from BasisTheory",
+                "[BT] Received successful response from BasisTheory",
                 attributes = mapOf(
                     "merchant" to merchantAccount,
                     "payment_method_ref" to paymentMethodRef
@@ -83,7 +83,7 @@ internal class BTPinCollector(
 
         val btErrorResponse = response.exceptionOrNull()
         logger.e(
-            "Received BasisTheory API exception on balance check: $btErrorResponse",
+            "[BT] Received BasisTheory API exception on balance check: $btErrorResponse",
             attributes = mapOf(
                 "merchant" to merchantAccount,
                 "payment_method_ref" to paymentMethodRef
@@ -113,7 +113,7 @@ internal class BTPinCollector(
         }
 
         logger.i(
-            "Sending payment capture to BasisTheory",
+            "[BT] Sending payment capture to BasisTheory",
             attributes = mapOf(
                 "merchant" to merchantAccount,
                 "payment_ref" to paymentRef
@@ -132,7 +132,7 @@ internal class BTPinCollector(
                 val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
                 val error = forageApiError.errors[0]
                 logger.e(
-                    "Received an error while submitting capture request to BasisTheory: $error.message",
+                    "[BT] Received an error while submitting capture request to BasisTheory: $error.message",
                     attributes = mapOf(
                         "merchant" to merchantAccount,
                         "payment_ref" to paymentRef
@@ -150,7 +150,7 @@ internal class BTPinCollector(
                 )
             } catch (e: JSONException) { }
             logger.i(
-                "Received successful response from BasisTheory",
+                "[BT] Received successful response from BasisTheory",
                 attributes = mapOf(
                     "merchant" to merchantAccount,
                     "payment_ref" to paymentRef
@@ -160,7 +160,7 @@ internal class BTPinCollector(
         }
         val btErrorResponse = response.exceptionOrNull()
         logger.e(
-            "Received BasisTheory API exception on payment capture: $btErrorResponse",
+            "[BT] Received BasisTheory API exception on payment capture: $btErrorResponse",
             attributes = mapOf(
                 "merchant" to merchantAccount,
                 "payment_ref" to paymentRef
@@ -184,7 +184,7 @@ internal class BTPinCollector(
             return token.split(CollectorConstants.TOKEN_DELIMITER)[1]
         }
         logger.e(
-            "BT Token wasn't found on card",
+            "[BT] BT Token wasn't found on card",
             attributes = mapOf(
                 "merchant" to merchantAccount,
                 "payment_method_ref" to paymentMethod.ref
