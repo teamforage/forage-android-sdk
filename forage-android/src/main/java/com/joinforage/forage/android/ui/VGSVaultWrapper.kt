@@ -117,4 +117,8 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     override fun setHintTextColor(hintTextColor: Int) {
         _internalEditText.setHintTextColor(hintTextColor)
     }
+
+    override fun focus() {
+        _internalEditText.requestFocus()
+    }
 }
