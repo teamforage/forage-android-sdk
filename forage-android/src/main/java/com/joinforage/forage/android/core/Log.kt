@@ -29,6 +29,9 @@ internal interface Log {
             var logger: Logger? = null
 
             override fun initializeDD(context: Context) {
+                if (logger != null) {
+                    return
+                }
                 val configuration = Configuration.Builder(
                     logsEnabled = true,
                     tracesEnabled = true,
