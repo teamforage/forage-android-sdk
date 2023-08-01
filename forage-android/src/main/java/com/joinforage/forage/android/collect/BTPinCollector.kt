@@ -37,7 +37,7 @@ internal class BTPinCollector(
         logger.i(
             "[BT] Sending balance check to BasisTheory",
             attributes = mapOf(
-                "merchant" to merchantAccount,
+                "merchant_ref" to merchantAccount,
                 "payment_method_ref" to paymentMethodRef
             )
         )
@@ -56,7 +56,7 @@ internal class BTPinCollector(
                 logger.e(
                     "[BT] Received an error while submitting balance request to BasisTheory: $error.message",
                     attributes = mapOf(
-                        "merchant" to merchantAccount,
+                        "merchant_ref" to merchantAccount,
                         "payment_method_ref" to paymentMethodRef
                     )
                 )
@@ -74,7 +74,7 @@ internal class BTPinCollector(
             logger.i(
                 "[BT] Received successful response from BasisTheory",
                 attributes = mapOf(
-                    "merchant" to merchantAccount,
+                    "merchant_ref" to merchantAccount,
                     "payment_method_ref" to paymentMethodRef
                 )
             )
@@ -85,7 +85,7 @@ internal class BTPinCollector(
         logger.e(
             "[BT] Received BasisTheory API exception on balance check: $btErrorResponse",
             attributes = mapOf(
-                "merchant" to merchantAccount,
+                "merchant_ref" to merchantAccount,
                 "payment_method_ref" to paymentMethodRef
             )
         )
@@ -115,7 +115,7 @@ internal class BTPinCollector(
         logger.i(
             "[BT] Sending payment capture to BasisTheory",
             attributes = mapOf(
-                "merchant" to merchantAccount,
+                "merchant_ref" to merchantAccount,
                 "payment_ref" to paymentRef
             )
         )
@@ -134,7 +134,7 @@ internal class BTPinCollector(
                 logger.e(
                     "[BT] Received an error while submitting capture request to BasisTheory: $error.message",
                     attributes = mapOf(
-                        "merchant" to merchantAccount,
+                        "merchant_ref" to merchantAccount,
                         "payment_ref" to paymentRef
                     )
                 )
@@ -152,7 +152,7 @@ internal class BTPinCollector(
             logger.i(
                 "[BT] Received successful response from BasisTheory",
                 attributes = mapOf(
-                    "merchant" to merchantAccount,
+                    "merchant_ref" to merchantAccount,
                     "payment_ref" to paymentRef
                 )
             )
@@ -162,7 +162,7 @@ internal class BTPinCollector(
         logger.e(
             "[BT] Received BasisTheory API exception on payment capture: $btErrorResponse",
             attributes = mapOf(
-                "merchant" to merchantAccount,
+                "merchant_ref" to merchantAccount,
                 "payment_ref" to paymentRef
             )
         )
@@ -186,7 +186,7 @@ internal class BTPinCollector(
         logger.e(
             "[BT] BT Token wasn't found on card",
             attributes = mapOf(
-                "merchant" to merchantAccount,
+                "merchant_ref" to merchantAccount,
                 "payment_method_ref" to paymentMethod.ref
             )
         )
