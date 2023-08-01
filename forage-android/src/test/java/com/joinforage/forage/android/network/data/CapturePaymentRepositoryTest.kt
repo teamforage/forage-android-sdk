@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.core.Logger
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
@@ -42,34 +42,39 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     override fun setup() {
         super.setup()
 
+        val logger = Log.getSilentInstance()
         repository = CapturePaymentRepository(
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url("")
+                httpUrl = server.url(""),
+                logger = logger
             ),
-            logger = Logger.getInstance(enableLogging = false)
+            logger = logger
         )
     }
 

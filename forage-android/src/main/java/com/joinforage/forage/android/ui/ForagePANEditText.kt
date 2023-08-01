@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.StateIIN
 
@@ -31,6 +32,11 @@ class ForagePANEditText @JvmOverloads constructor(
     private val textInputLayout: TextInputLayout
 
     init {
+        // Must initialize DD at the beginning of each render function. DD requires the context,
+        // so we need to wait until a context is present to run initialization code. However,
+        // we have logging all over the SDK that relies on the render happening first.
+        val logger = Log.getInstance()
+        logger.initializeDD(context)
         setWillNotDraw(false)
 
         orientation = VERTICAL
@@ -81,6 +87,7 @@ class ForagePANEditText @JvmOverloads constructor(
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
+        logger.i("ForagePANEditText successfully rendered")
     }
 
     private fun disableCopyCardNumber() {

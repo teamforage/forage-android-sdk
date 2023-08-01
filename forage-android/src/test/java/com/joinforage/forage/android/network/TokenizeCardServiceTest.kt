@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.fixtures.givenCardToken
 import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
@@ -39,7 +40,8 @@ class TokenizeCardServiceTest : MockServerSuite() {
                 testData.merchantAccount,
                 idempotencyKey
             ),
-            httpUrl = server.url("")
+            httpUrl = server.url(""),
+            logger = Log.getSilentInstance()
         )
     }
 

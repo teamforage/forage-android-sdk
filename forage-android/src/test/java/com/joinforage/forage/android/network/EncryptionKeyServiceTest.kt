@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
@@ -27,7 +28,8 @@ class EncryptionKeyServiceTest : MockServerSuite() {
 
         encryptionKeyService = EncryptionKeyService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken),
-            httpUrl = server.url("")
+            httpUrl = server.url(""),
+            logger = Log.getSilentInstance()
         )
     }
 

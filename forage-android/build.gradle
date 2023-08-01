@@ -51,6 +51,7 @@ android {
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.dev.joinforage.app/"'
             buildConfigField "String", "LD_MOBILE_KEY", '"mob-03e025cb-5b4e-4d97-8685-39a22316d601"'
+            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
         }
         staging {
             buildConfigField "String", "BT_PROXY_ID", '"ScWvAUkp53xz7muae7fW5p"'
@@ -59,6 +60,7 @@ android {
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.staging.joinforage.app/"'
             buildConfigField "String", "LD_MOBILE_KEY", '"mob-a9903698-759b-48e2-86e1-c551e2b69118"'
+            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
         }
         sandbox {
             buildConfigField "String", "BT_PROXY_ID", '"R1CNiogSdhnHeNq6ZFWrG1"'
@@ -67,6 +69,7 @@ android {
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.sandbox.joinforage.app/"'
             buildConfigField "String", "LD_MOBILE_KEY", '"mob-22024b85-05b7-4e24-b290-a071310dfc3d"'
+            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
         }
         cert {
             buildConfigField "String", "BT_PROXY_ID", '"AFSMtyyTGLKgmdWwrLCENX"'
@@ -75,6 +78,7 @@ android {
             buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
             buildConfigField "String", "BASE_URL", '"https://api.cert.joinforage.app/"'
             buildConfigField "String", "LD_MOBILE_KEY", '"mob-d2261a08-784b-4300-a45f-ce0e46324d66"'
+            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
         }
         prod {
             buildConfigField "String", "BT_PROXY_ID", '"UxbU4Jn2RmvCovABjwCwsa"'
@@ -83,6 +87,7 @@ android {
             buildConfigField "String", "VGS_VAULT_TYPE", '"live"'
             buildConfigField "String", "BASE_URL", '"https://api.joinforage.app/"'
             buildConfigField "String", "LD_MOBILE_KEY", '"mob-5c3dfa7a-fa6d-4cdf-93e8-d28ef8080696"'
+            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
         }
     }
 
@@ -114,6 +119,8 @@ dependencies {
         exclude group: 'javax.ws.rs'
     }
     implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
+
+    implementation "com.datadoghq:dd-sdk-android:1.19.2"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.3'

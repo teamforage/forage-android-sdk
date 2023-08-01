@@ -12,6 +12,7 @@ import com.joinforage.forage.android.VaultConstants
 import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
+import com.joinforage.forage.android.core.Log
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
@@ -22,10 +23,16 @@ class ForagePINEditText @JvmOverloads constructor(
     private var vault: VaultWrapper?
 
     init {
+        // Must initialize DD at the beginning of each render function. DD requires the context,
+        // so we need to wait until a context is present to run initialization code. However,
+        // we have logging all over the SDK that relies on the render happening first.
+        val logger = Log.getInstance()
+        logger.initializeDD(context)
+
         setWillNotDraw(false)
         orientation = VERTICAL
 
-        var vaultType = LDManager.getVaultProvider(context.applicationContext as Application)
+        var vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
         vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             BTVaultWrapper(context, attrs, defStyleAttr)
         } else {
@@ -33,6 +40,7 @@ class ForagePINEditText @JvmOverloads constructor(
         }
         addView(vault!!.getUnderlying())
         addView(getLogoImageViewLayout(context))
+        logger.i("ForagePINEditText successfully rendered")
     }
 
     internal fun getCollector(
