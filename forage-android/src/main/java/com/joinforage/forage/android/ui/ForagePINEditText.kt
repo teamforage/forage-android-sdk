@@ -61,6 +61,8 @@ class ForagePINEditText @JvmOverloads constructor(
 
     override var isValid: Boolean = vault?.isValid ?: false
     override var isEmpty: Boolean = vault?.isEmpty ?: true
+    override val isFocused: Boolean = vault?.hasFocus ?: false
+
     override fun setTextColor(textColor: Int) {
         vault?.setTextColor(textColor)
     }

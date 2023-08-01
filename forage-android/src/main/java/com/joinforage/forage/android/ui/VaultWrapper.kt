@@ -26,6 +26,8 @@ abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun getVGSEditText(): VGSEditText
     abstract fun getTextElement(): TextElement
 
+    abstract val hasFocus: Boolean
+
     fun getThemeAccentColor(context: Context): Int {
         val outValue = TypedValue()
         context.theme.resolveAttribute(android.R.attr.colorAccent, outValue, true)

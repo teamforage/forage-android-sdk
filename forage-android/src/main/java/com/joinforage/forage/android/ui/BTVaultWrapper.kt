@@ -104,4 +104,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
     override fun setHintTextColor(hintTextColor: Int) {
         _internalTextElement.hintTextColor = hintTextColor
     }
+
+    override val hasFocus: Boolean = _internalTextElement.hasFocus()
 }

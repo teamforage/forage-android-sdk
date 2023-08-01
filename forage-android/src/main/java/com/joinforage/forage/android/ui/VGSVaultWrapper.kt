@@ -117,4 +117,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     override fun setHintTextColor(hintTextColor: Int) {
         _internalEditText.setHintTextColor(hintTextColor)
     }
+
+    override val hasFocus: Boolean = _internalEditText.hasFocus()
 }
