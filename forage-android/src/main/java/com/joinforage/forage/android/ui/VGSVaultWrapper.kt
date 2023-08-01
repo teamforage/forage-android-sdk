@@ -119,4 +119,8 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     }
 
     override val hasFocus: Boolean = _internalEditText.hasFocus()
+
+    override fun focus() {
+        _internalEditText.requestFocus()
+    }
 }

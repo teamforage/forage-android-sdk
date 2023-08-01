@@ -106,4 +106,8 @@ internal class BTVaultWrapper @JvmOverloads constructor(
     }
 
     override val hasFocus: Boolean = _internalTextElement.hasFocus()
+
+    override fun focus() {
+        _internalTextElement.requestFocus()
+    }
 }

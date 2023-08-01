@@ -28,6 +28,8 @@ abstract class VaultWrapper @JvmOverloads constructor(
 
     abstract val hasFocus: Boolean
 
+    abstract fun focus()
+
     fun getThemeAccentColor(context: Context): Int {
         val outValue = TypedValue()
         context.theme.resolveAttribute(android.R.attr.colorAccent, outValue, true)
