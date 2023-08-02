@@ -4,7 +4,7 @@ import android.graphics.Typeface
 
 // an interface that represents that abstract state of
 // a ForageElement.
-data class ElementState (val isFocused: Boolean)
+data class ElementState(val isFocused: Boolean)
 
 // Minimalist event signatures where the only information
 // conveyed is whether or not a specific event has occurred

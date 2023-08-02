@@ -81,10 +81,13 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     // that we pass a single listener to VGS on init that uses
                     // mutable references to listeners so that setting the focus
                     // would not remove the blur listener and vice versea
-                    _internalEditText.setOnFocusChangeListener{ _, hasFocus ->
+                    _internalEditText.setOnFocusChangeListener { _, hasFocus ->
                         _elementHasFocus = hasFocus
-                        if (hasFocus) onFocusEventListener.current?.invoke()
-                        else onBlurEventListener.current?.invoke()
+                        if (hasFocus) {
+                            onFocusEventListener.current?.invoke()
+                        } else {
+                            onBlurEventListener.current?.invoke()
+                        }
                     }
                 } finally {
                     recycle()

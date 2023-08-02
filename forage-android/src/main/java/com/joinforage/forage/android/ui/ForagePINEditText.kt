@@ -58,7 +58,7 @@ class ForagePINEditText @JvmOverloads constructor(
     }
 
     fun getElementState(): ElementState {
-        return ElementState(isFocused=vault?.elementHasFocus ?: false)
+        return ElementState(isFocused = vault?.elementHasFocus ?: false)
     }
 
     internal fun getCollector(
