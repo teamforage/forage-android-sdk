@@ -18,6 +18,17 @@ abstract class VaultWrapper @JvmOverloads constructor(
     abstract var isValid: Boolean
     abstract var isEmpty: Boolean
     abstract var typeface: Typeface?
+    abstract val elementHasFocus: Boolean
+
+    // mutable references to event listeners. We use mutable
+    // references because the implementations of our vaults
+    // require that we are only able to ever pass a single
+    // monolithic event within init call. This is mutability
+    // allows us simulate setting and overwriting a listener
+    // with every set call
+    internal var onFocusEventListener: MutableRef<ForageElementFocusListener> = MutableRef()
+    internal var onBlurEventListener: MutableRef<ForageElementBlurListener> = MutableRef()
+
     abstract fun setTextColor(textColor: Int)
     abstract fun setTextSize(textSize: Float)
     abstract fun setHint(hint: String)
@@ -54,5 +65,13 @@ abstract class VaultWrapper @JvmOverloads constructor(
         val boxCornerRadiusTopStart =
             getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadiusTopStart, 0f)
         return if (boxCornerRadiusTopStart == 0f) boxCornerRadius else boxCornerRadiusTopStart
+    }
+
+    fun setOnFocusEventListener(l: ForageElementFocusListener) {
+        onFocusEventListener?.current = l
+    }
+
+    fun setOnBlurEventListener(l: ForageElementFocusListener) {
+        onBlurEventListener?.current = l
     }
 }

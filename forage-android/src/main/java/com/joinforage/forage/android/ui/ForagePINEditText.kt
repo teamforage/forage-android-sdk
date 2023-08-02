@@ -43,6 +43,24 @@ class ForagePINEditText @JvmOverloads constructor(
         logger.i("ForagePINEditText successfully rendered")
     }
 
+    // While the events that ForageElements expose mirrors the
+    // blur, focus, change etc events of an Android view,
+    // they represent different abstractions. Our users need to
+    // interact with the ForageElement abstraction and not the
+    // implementation details of which Android view we use.
+    // Therefore we expose novel set listener methods instead of
+    // overriding the convention setOn*Listener
+    fun setOnFocusEventListener(l: ForageElementFocusListener) {
+        vault?.setOnFocusEventListener(l)
+    }
+    fun setOnBlurEventListener(l: ForageElementBlurListener) {
+        vault?.setOnBlurEventListener(l)
+    }
+
+    fun getElementState(): ElementState {
+        return ElementState(isFocused=vault?.elementHasFocus ?: false)
+    }
+
     internal fun getCollector(
         merchantAccount: String
     ): PinCollector {

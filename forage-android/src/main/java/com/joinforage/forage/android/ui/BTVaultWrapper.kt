@@ -17,6 +17,9 @@ internal class BTVaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalTextElement: TextElement
+    private var _elementHasFocus: Boolean = false
+    override val elementHasFocus: Boolean
+        get() = _elementHasFocus
 
     init {
         context.obtainStyledAttributes(attrs, com.joinforage.forage.android.R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -58,6 +61,23 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                             setStroke(5, boxStrokeColor)
                         }
                         background = customBackground
+                    }
+
+                    // Basis Theory keeps a list of as many listeners as you want
+                    // for a given event see here: https://tinyurl.com/yc6wzt8v
+                    // We only support attaching a single listener
+                    // to any event for simplicity. In order work with BT's
+                    // append-only subscribe protocol, we will only ever subscribe
+                    // a single listener to Basis Theory during initialization
+                    // and we will use a mutating reference that only points
+                    // the most recent event listener
+                    _internalTextElement.addFocusEventListener {
+                        _elementHasFocus = true
+                        onFocusEventListener.current?.invoke()
+                    }
+                    _internalTextElement.addBlurEventListener {
+                        _elementHasFocus = false
+                        onBlurEventListener.current?.invoke()
                     }
                 } finally {
                     recycle()

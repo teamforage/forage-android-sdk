@@ -17,6 +17,9 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalEditText: VGSEditText
+    private var _elementHasFocus: Boolean = false
+    override val elementHasFocus: Boolean
+        get() = _elementHasFocus
 
     init {
         context.obtainStyledAttributes(attrs, com.joinforage.forage.android.R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -69,6 +72,19 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                         setMaxLength(4)
                         setInputType(android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD)
                         setPadding(20, 20, 20, 20)
+                    }
+
+                    // VGS works with the conventional setOnFocusChangeListener
+                    // see https://tinyurl.com/2urct5er, which means a single
+                    // listener handles the focus and blur logic. We split this
+                    // up into separate focus and blur listeners. This requires
+                    // that we pass a single listener to VGS on init that uses
+                    // mutable references to listeners so that setting the focus
+                    // would not remove the blur listener and vice versea
+                    _internalEditText.setOnFocusChangeListener{ _, hasFocus ->
+                        _elementHasFocus = hasFocus
+                        if (hasFocus) onFocusEventListener.current?.invoke()
+                        else onBlurEventListener.current?.invoke()
                     }
                 } finally {
                     recycle()
