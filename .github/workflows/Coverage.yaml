@@ -1,0 +1,48 @@
+name: Coverage
+
+on:
+  pull_request:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Generate XML coverage report (JaCoCo)
+        run: ./gradlew forage-android:koverXmlReport
+
+      - name: Verify coverage
+        run: |
+          diff-cover \
+            forage-android/build/reports/kover/xml/report.xml \
+            --src-roots "forage-android/src/main/java" \
+            --compare-branch origin/${{ github.event.pull_request.base.ref }} \
+            --fail-under 80
