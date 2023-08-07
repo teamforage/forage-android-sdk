@@ -36,10 +36,6 @@ class ForagePANEditText @JvmOverloads constructor(
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
     private val manager: PanElementStateManager = PanElementStateManager.forEmptyInput()
-    override var isValid: Boolean = manager.getState().isValid
-        get() = manager.getState().isValid
-    override var isEmpty: Boolean = manager.getState().isEmpty
-        get() = manager.getState().isEmpty
 
     override var typeface: Typeface? = null
 

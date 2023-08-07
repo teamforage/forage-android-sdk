@@ -97,12 +97,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
         return _internalTextElement
     }
 
-    override var isValid: Boolean = false
-        get() = _internalTextElement.isValid
-
-    override var isEmpty: Boolean = false
-        get() = _internalTextElement.isEmpty
-
     override var typeface: Typeface?
         get() = _internalTextElement.typeface
         set(value) {
