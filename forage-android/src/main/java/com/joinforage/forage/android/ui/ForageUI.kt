@@ -5,16 +5,12 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 
-
 // an interface that represents that abstract state of
 // a ForageElement.
 // NOTE: isValid is true when validationError = null
 
-
-
 // Minimalist event signatures where the only information
 // conveyed is whether or not a specific event has occurred
-
 
 interface ForageUI {
     var isValid: Boolean
