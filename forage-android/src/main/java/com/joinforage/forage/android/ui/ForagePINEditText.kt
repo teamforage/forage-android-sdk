@@ -24,6 +24,10 @@ class ForagePINEditText @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForageUI, LinearLayout(context, attrs, defStyleAttr) {
     private var vault: VaultWrapper
+    override var isValid: Boolean = false
+        get() = vault.manager.getState().isEmpty
+    override var isEmpty: Boolean = true
+        get() = vault.manager.getState().isEmpty
 
     init {
         // Must initialize DD at the beginning of each render function. DD requires the context,
@@ -91,8 +95,6 @@ class ForagePINEditText @JvmOverloads constructor(
         return vault.getTextElement()
     }
 
-    override var isValid: Boolean = vault?.isValid ?: false
-    override var isEmpty: Boolean = vault?.isEmpty ?: true
     override fun setTextColor(textColor: Int) {
         vault.setTextColor(textColor)
     }
