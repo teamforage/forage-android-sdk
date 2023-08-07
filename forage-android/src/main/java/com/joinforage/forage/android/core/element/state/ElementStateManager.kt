@@ -10,7 +10,7 @@ abstract class ElementStateManager(
     internal var isEmpty: Boolean,
     internal var isValid: Boolean,
     internal var isComplete: Boolean,
-    internal var validationError: ElementValidationError?,
+    internal var validationError: ElementValidationError?
 ) {
     private var onFocusEventListener: SimpleElementListener? = null
     private var onBlurEventListener: SimpleElementListener? = null
@@ -22,7 +22,7 @@ abstract class ElementStateManager(
         isEmpty = state.isEmpty,
         isValid = state.isValid,
         isComplete = state.isComplete,
-        validationError = state.validationError,
+        validationError = state.validationError
     )
 
     fun getState(): ElementState {
@@ -32,7 +32,7 @@ abstract class ElementStateManager(
             isEmpty = isEmpty,
             isValid = isValid,
             isComplete = isComplete,
-            validationError = validationError,
+            validationError = validationError
         )
     }
 
@@ -51,8 +51,11 @@ abstract class ElementStateManager(
     fun changeFocus(hasFocus: Boolean) {
         isFocused = hasFocus
         isBlurred = !hasFocus
-        if (hasFocus) onFocusEventListener?.invoke()
-        else onBlurEventListener?.invoke()
+        if (hasFocus) {
+            onFocusEventListener?.invoke()
+        } else {
+            onBlurEventListener?.invoke()
+        }
     }
 
     fun focus() {

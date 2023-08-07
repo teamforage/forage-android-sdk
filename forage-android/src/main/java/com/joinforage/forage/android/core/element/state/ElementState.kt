@@ -8,7 +8,7 @@ data class ElementState(
     val isEmpty: Boolean,
     val isValid: Boolean,
     val isComplete: Boolean,
-    val validationError: ElementValidationError?,
+    val validationError: ElementValidationError?
 )
 val INITIAL_ELEMENT_STATE = ElementState(
     isFocused = false,

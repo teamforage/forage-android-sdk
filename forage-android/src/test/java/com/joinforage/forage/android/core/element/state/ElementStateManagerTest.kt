@@ -82,4 +82,3 @@ class ElementStateManagerTest {
         assertThat(state.isComplete).isEqualTo(INITIAL_ELEMENT_STATE.isComplete)
     }
 }
-

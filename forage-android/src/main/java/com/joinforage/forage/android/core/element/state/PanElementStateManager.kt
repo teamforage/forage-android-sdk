@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.core.element.state
 
 import com.joinforage.forage.android.core.element.IncompleteEbtPanError
-import com.joinforage.forage.android.core.element.IncompleteEbtPinError
 
 class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
 
@@ -36,7 +35,7 @@ class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
     }
 
     companion object {
-        fun forEmptyInput() : PanElementStateManager {
+        fun forEmptyInput(): PanElementStateManager {
             return PanElementStateManager(INITIAL_ELEMENT_STATE)
         }
     }
