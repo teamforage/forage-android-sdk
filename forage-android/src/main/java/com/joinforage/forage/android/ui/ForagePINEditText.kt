@@ -20,7 +20,7 @@ class ForagePINEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForageUI, LinearLayout(context, attrs, defStyleAttr) {
-    private var vault: VaultWrapper?
+    private var vault: VaultWrapper
 
     init {
         // Must initialize DD at the beginning of each render function. DD requires the context,
@@ -32,13 +32,13 @@ class ForagePINEditText @JvmOverloads constructor(
         setWillNotDraw(false)
         orientation = VERTICAL
 
-        var vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
+        val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
         vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
             BTVaultWrapper(context, attrs, defStyleAttr)
         } else {
             VGSVaultWrapper(context, attrs, defStyleAttr)
         }
-        addView(vault!!.getUnderlying())
+        addView(vault.getUnderlying())
         addView(getLogoImageViewLayout(context))
         logger.i("ForagePINEditText successfully rendered")
     }
@@ -78,27 +78,27 @@ class ForagePINEditText @JvmOverloads constructor(
     }
 
     internal fun getTextInputEditText(): VGSEditText {
-        return vault?.getVGSEditText()!!
+        return vault.getVGSEditText()
     }
 
     internal fun getTextElement(): TextElement {
-        return vault?.getTextElement()!!
+        return vault.getTextElement()
     }
 
     override var isValid: Boolean = vault?.isValid ?: false
     override var isEmpty: Boolean = vault?.isEmpty ?: true
     override fun setTextColor(textColor: Int) {
-        vault?.setTextColor(textColor)
+        vault.setTextColor(textColor)
     }
     override fun setTextSize(textSize: Float) {
-        vault?.setTextSize(textSize)
+        vault.setTextSize(textSize)
     }
 
-    override var typeface: Typeface? = vault?.typeface
+    override var typeface: Typeface? = vault.typeface
     override fun setHint(hint: String) {
-        vault?.setHint(hint)
+        vault.setHint(hint)
     }
     override fun setHintTextColor(hintTextColor: Int) {
-        vault?.setHintTextColor(hintTextColor)
+        vault.setHintTextColor(hintTextColor)
     }
 }
