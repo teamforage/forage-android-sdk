@@ -2,6 +2,7 @@ package com.joinforage.forage.android.ui
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
@@ -17,6 +18,10 @@ import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.element.SimpleElementListener
+import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.core.element.state.ElementState
+import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.model.PanEntry
 import com.joinforage.forage.android.model.StateIIN
 
@@ -27,9 +32,12 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : LinearLayout(context, attrs, defStyleAttr), TextWatcher, ActionMode.Callback {
+) : ForageUI, LinearLayout(context, attrs, defStyleAttr), TextWatcher, ActionMode.Callback {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
+    private val manager: PanElementStateManager = PanElementStateManager.forEmptyInput()
+
+    override var typeface: Typeface? = null
 
     init {
         // Must initialize DD at the beginning of each render function. DD requires the context,
@@ -81,6 +89,9 @@ class ForagePANEditText @JvmOverloads constructor(
         disableCopyCardNumber()
 
         textInputEditText.addTextChangedListener(this)
+        textInputEditText.setOnFocusChangeListener { _, hasFocus ->
+            manager.changeFocus(hasFocus)
+        }
 
         textInputLayout.addView(textInputEditText)
         textInputLayout.isErrorEnabled = true
@@ -88,6 +99,40 @@ class ForagePANEditText @JvmOverloads constructor(
 
         addView(getLogoImageViewLayout(context))
         logger.i("ForagePANEditText successfully rendered")
+    }
+
+    // While the events that ForageElements expose mirrors the
+    // blur, focus, change etc events of an Android view,
+    // they represent different abstractions. Our users need to
+    // interact with the ForageElement abstraction and not the
+    // implementation details of which Android view we use.
+    // Therefore we expose novel set listener methods instead of
+    // overriding the convention setOn*Listener
+    override fun setOnFocusEventListener(l: SimpleElementListener) {
+        manager.setOnFocusEventListener(l)
+    }
+    override fun setOnBlurEventListener(l: SimpleElementListener) {
+        manager.setOnBlurEventListener(l)
+    }
+    override fun setOnChangeEventListener(l: StatefulElementListener) {
+        manager.setOnChangeEventListener(l)
+    }
+
+    override fun getElementState(): ElementState {
+        return manager.getState()
+    }
+
+    override fun setTextColor(textColor: Int) {
+        // no-ops for now
+    }
+    override fun setTextSize(textSize: Float) {
+        // no-ops for now
+    }
+    override fun setHint(hint: String) {
+        // no-ops for now
+    }
+    override fun setHintTextColor(hintTextColor: Int) {
+        // no-ops for now
     }
 
     private fun disableCopyCardNumber() {
@@ -98,7 +143,8 @@ class ForagePANEditText @JvmOverloads constructor(
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
     }
 
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
+        manager.handleChangeEvent(cardNumber.toString())
     }
 
     override fun afterTextChanged(s: Editable?) {
