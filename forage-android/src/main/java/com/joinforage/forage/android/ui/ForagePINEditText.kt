@@ -15,8 +15,8 @@ import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
-import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import com.joinforage.forage.android.core.element.state.ElementState
+import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,

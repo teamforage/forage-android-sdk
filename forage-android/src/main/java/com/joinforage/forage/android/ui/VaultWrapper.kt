@@ -21,6 +21,7 @@ abstract class VaultWrapper @JvmOverloads constructor(
     abstract var isValid: Boolean
     abstract var isEmpty: Boolean
     abstract var typeface: Typeface?
+
     // mutable references to event listeners. We use mutable
     // references because the implementations of our vaults
     // require that we are only able to ever pass a single

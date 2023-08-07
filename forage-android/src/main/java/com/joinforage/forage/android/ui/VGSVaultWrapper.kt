@@ -76,9 +76,10 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                         setPadding(20, 20, 20, 20)
                     }
                     // enforce that PINs must be 4 digits to be vali
-                    _internalEditText.appendRule(VGSInfoRule.ValidationBuilder()
-                        .setRegex("\\d{4}")
-                        .build()
+                    _internalEditText.appendRule(
+                        VGSInfoRule.ValidationBuilder()
+                            .setRegex("\\d{4}")
+                            .build()
                     )
 
                     // VGS works with the conventional setOnFocusChangeListener
@@ -91,7 +92,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     _internalEditText.setOnFocusChangeListener { _, hasFocus ->
                         manager.changeFocus(hasFocus)
                     }
-                    _internalEditText.setOnFieldStateChangeListener(object: OnFieldStateChangeListener {
+                    _internalEditText.setOnFieldStateChangeListener(object : OnFieldStateChangeListener {
                         override fun onStateChange(state: FieldState) {
                             // map VGS's event representation to Forage's
                             manager.handleChangeEvent(
@@ -100,7 +101,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                             )
                         }
                     })
-
                 } finally {
                     recycle()
                 }
