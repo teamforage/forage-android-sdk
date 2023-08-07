@@ -25,7 +25,7 @@ class ForagePINEditText @JvmOverloads constructor(
 ) : ForageUI, LinearLayout(context, attrs, defStyleAttr) {
     private var vault: VaultWrapper
     override var isValid: Boolean = false
-        get() = vault.manager.getState().isEmpty
+        get() = vault.manager.getState().isValid
     override var isEmpty: Boolean = true
         get() = vault.manager.getState().isEmpty
 
