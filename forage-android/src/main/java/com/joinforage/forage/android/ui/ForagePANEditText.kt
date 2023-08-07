@@ -27,7 +27,7 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : LinearLayout(context, attrs, defStyleAttr), TextWatcher, ActionMode.Callback {
+) : ForageUI, LinearLayout(context, attrs, defStyleAttr), TextWatcher, ActionMode.Callback {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
 
