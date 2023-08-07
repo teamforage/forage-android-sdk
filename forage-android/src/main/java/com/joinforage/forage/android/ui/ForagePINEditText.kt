@@ -16,6 +16,7 @@ import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
+import com.joinforage.forage.android.core.element.state.ElementState
 
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
@@ -62,8 +63,8 @@ class ForagePINEditText @JvmOverloads constructor(
         vault.setOnChangeEventListener(l)
     }
 
-    fun getElementState(): ElementState {
-        return ElementState(isFocused = vault?.elementHasFocus ?: false)
+    override fun getElementState(): ElementState {
+        return vault.manager.getState()
     }
 
     internal fun getCollector(
