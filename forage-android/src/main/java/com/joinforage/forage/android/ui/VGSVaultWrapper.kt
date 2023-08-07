@@ -8,7 +8,11 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.joinforage.forage.android.network.ForageConstants
+import com.verygoodsecurity.vgscollect.core.model.state.FieldState
+import com.verygoodsecurity.vgscollect.core.storage.OnFieldStateChangeListener
+import com.verygoodsecurity.vgscollect.view.card.validation.rules.VGSInfoRule
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 internal class VGSVaultWrapper @JvmOverloads constructor(
@@ -17,9 +21,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalEditText: VGSEditText
-    private var _elementHasFocus: Boolean = false
-    override val elementHasFocus: Boolean
-        get() = _elementHasFocus
+    override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
 
     init {
         context.obtainStyledAttributes(attrs, com.joinforage.forage.android.R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -56,7 +58,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                             setHintTextColor(hintTextColor)
                         }
 
-                        var customBackground = GradientDrawable().apply {
+                        val customBackground = GradientDrawable().apply {
                             setPaddingRelative(20, 20, 20, 20)
                             shape = GradientDrawable.RECTANGLE
                             cornerRadii = floatArrayOf(boxCornerRadiusTopStart, boxCornerRadiusTopStart, boxCornerRadiusTopEnd, boxCornerRadiusTopEnd, boxCornerRadiusBottomStart, boxCornerRadiusBottomStart, boxCornerRadiusBottomEnd, boxCornerRadiusBottomEnd)
@@ -73,6 +75,11 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                         setInputType(android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD)
                         setPadding(20, 20, 20, 20)
                     }
+                    // enforce that PINs must be 4 digits to be vali
+                    _internalEditText.appendRule(VGSInfoRule.ValidationBuilder()
+                        .setRegex("\\d{4}")
+                        .build()
+                    )
 
                     // VGS works with the conventional setOnFocusChangeListener
                     // see https://tinyurl.com/2urct5er, which means a single
@@ -82,13 +89,18 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     // mutable references to listeners so that setting the focus
                     // would not remove the blur listener and vice versea
                     _internalEditText.setOnFocusChangeListener { _, hasFocus ->
-                        _elementHasFocus = hasFocus
-                        if (hasFocus) {
-                            onFocusEventListener.current?.invoke()
-                        } else {
-                            onBlurEventListener.current?.invoke()
-                        }
+                        manager.changeFocus(hasFocus)
                     }
+                    _internalEditText.setOnFieldStateChangeListener(object: OnFieldStateChangeListener {
+                        override fun onStateChange(state: FieldState) {
+                            // map VGS's event representation to Forage's
+                            manager.handleChangeEvent(
+                                isComplete = state.isValid,
+                                isEmpty = state.isEmpty
+                            )
+                        }
+                    })
+
                 } finally {
                     recycle()
                 }

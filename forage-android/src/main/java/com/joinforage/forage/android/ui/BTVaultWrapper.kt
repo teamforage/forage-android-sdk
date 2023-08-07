@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
+import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 internal class BTVaultWrapper @JvmOverloads constructor(
@@ -17,9 +18,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalTextElement: TextElement
-    private var _elementHasFocus: Boolean = false
-    override val elementHasFocus: Boolean
-        get() = _elementHasFocus
+    override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
 
     init {
         context.obtainStyledAttributes(attrs, com.joinforage.forage.android.R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -71,13 +70,14 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                     // a single listener to Basis Theory during initialization
                     // and we will use a mutating reference that only points
                     // the most recent event listener
-                    _internalTextElement.addFocusEventListener {
-                        _elementHasFocus = true
-                        onFocusEventListener.current?.invoke()
-                    }
-                    _internalTextElement.addBlurEventListener {
-                        _elementHasFocus = false
-                        onBlurEventListener.current?.invoke()
+                    _internalTextElement.addFocusEventListener { manager.focus() }
+                    _internalTextElement.addBlurEventListener { manager.blur() }
+                    _internalTextElement.addChangeEventListener { state ->
+                        // map Basis Theory's event representation to Forage's
+                        manager.handleChangeEvent(
+                            isComplete = state.isComplete,
+                            isEmpty = state.isEmpty
+                        )
                     }
                 } finally {
                     recycle()

@@ -8,6 +8,9 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.core.element.SimpleElementListener
+import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 abstract class VaultWrapper @JvmOverloads constructor(
@@ -18,16 +21,13 @@ abstract class VaultWrapper @JvmOverloads constructor(
     abstract var isValid: Boolean
     abstract var isEmpty: Boolean
     abstract var typeface: Typeface?
-    abstract val elementHasFocus: Boolean
-
     // mutable references to event listeners. We use mutable
     // references because the implementations of our vaults
     // require that we are only able to ever pass a single
     // monolithic event within init call. This is mutability
     // allows us simulate setting and overwriting a listener
     // with every set call
-    internal var onFocusEventListener: MutableRef<ForageElementFocusListener> = MutableRef()
-    internal var onBlurEventListener: MutableRef<ForageElementBlurListener> = MutableRef()
+    internal abstract val manager: PinElementStateManager
 
     abstract fun setTextColor(textColor: Int)
     abstract fun setTextSize(textSize: Float)
@@ -67,11 +67,15 @@ abstract class VaultWrapper @JvmOverloads constructor(
         return if (boxCornerRadiusTopStart == 0f) boxCornerRadius else boxCornerRadiusTopStart
     }
 
-    fun setOnFocusEventListener(l: ForageElementFocusListener) {
-        onFocusEventListener?.current = l
+    fun setOnFocusEventListener(l: SimpleElementListener) {
+        manager.setOnFocusEventListener(l)
     }
 
-    fun setOnBlurEventListener(l: ForageElementFocusListener) {
-        onBlurEventListener?.current = l
+    fun setOnBlurEventListener(l: SimpleElementListener) {
+        manager.setOnBlurEventListener(l)
+    }
+
+    fun setOnChangeEventListener(l: StatefulElementListener) {
+        manager.setOnChangeEventListener(l)
     }
 }
