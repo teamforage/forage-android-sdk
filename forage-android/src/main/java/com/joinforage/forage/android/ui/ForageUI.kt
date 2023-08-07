@@ -12,8 +12,6 @@ typealias ForageElementFocusListener = () -> Unit
 typealias ForageElementBlurListener = () -> Unit
 
 interface ForageUI {
-    var isValid: Boolean
-    var isEmpty: Boolean
     var typeface: Typeface?
     fun setTextColor(textColor: Int)
     fun setTextSize(textSize: Float)

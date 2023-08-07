@@ -107,12 +107,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
         return _internalEditText
     }
 
-    override var isValid: Boolean = false
-        get() = _internalEditText.getState()?.isValid == true
-
-    override var isEmpty: Boolean = false
-        get() = _internalEditText.getState()?.isEmpty == true
-
     override var typeface: Typeface?
         get() = _internalEditText.getTypeface()
         set(value) {

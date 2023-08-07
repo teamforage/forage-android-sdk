@@ -15,8 +15,6 @@ abstract class VaultWrapper @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    abstract var isValid: Boolean
-    abstract var isEmpty: Boolean
     abstract var typeface: Typeface?
     abstract val elementHasFocus: Boolean
 
