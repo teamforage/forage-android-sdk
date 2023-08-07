@@ -13,6 +13,8 @@ import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.element.SimpleElementListener
+import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
@@ -50,11 +52,14 @@ class ForagePINEditText @JvmOverloads constructor(
     // implementation details of which Android view we use.
     // Therefore we expose novel set listener methods instead of
     // overriding the convention setOn*Listener
-    fun setOnFocusEventListener(l: ForageElementFocusListener) {
-        vault?.setOnFocusEventListener(l)
+    override fun setOnFocusEventListener(l: SimpleElementListener) {
+        vault.setOnFocusEventListener(l)
     }
-    fun setOnBlurEventListener(l: ForageElementBlurListener) {
-        vault?.setOnBlurEventListener(l)
+    override fun setOnBlurEventListener(l: SimpleElementListener) {
+        vault.setOnBlurEventListener(l)
+    }
+    override fun setOnChangeEventListener(l: StatefulElementListener) {
+        vault.setOnChangeEventListener(l)
     }
 
     fun getElementState(): ElementState {
