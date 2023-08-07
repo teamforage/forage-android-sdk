@@ -13,8 +13,6 @@ import com.joinforage.forage.android.core.element.state.ElementState
 // conveyed is whether or not a specific event has occurred
 
 interface ForageUI {
-    var isValid: Boolean
-    var isEmpty: Boolean
     var typeface: Typeface?
     fun setTextColor(textColor: Int)
     fun setTextSize(textSize: Float)
