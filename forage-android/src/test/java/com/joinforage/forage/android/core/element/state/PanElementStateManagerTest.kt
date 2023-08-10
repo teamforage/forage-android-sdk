@@ -139,7 +139,7 @@ class PanSetValidationErrorTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(tooShortNoIIN)
         val state = manager.getState()
-        assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
+        assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
     }
 
     @Test
