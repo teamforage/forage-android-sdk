@@ -6,14 +6,13 @@ import com.joinforage.forage.android.core.element.TooLongEbtPanError
 import com.joinforage.forage.android.model.STATE_INN_LENGTH
 import com.joinforage.forage.android.model.StateIIN
 
-
 private fun missingStateIIN(cardNumber: String): Boolean {
     return cardNumber.length < STATE_INN_LENGTH
 }
-private fun queryForStateIIN(cardNumber: String) : StateIIN? {
+private fun queryForStateIIN(cardNumber: String): StateIIN? {
     return StateIIN.values().find { cardNumber.startsWith(it.iin) }
 }
-private fun hasInvalidStateIIN(cardNumber: String) : Boolean {
+private fun hasInvalidStateIIN(cardNumber: String): Boolean {
     return queryForStateIIN(cardNumber) == null
 }
 private fun iinTooShort(cardNumber: String): Boolean {
@@ -24,13 +23,13 @@ private fun iinTooLong(cardNumber: String): Boolean {
     val iin = queryForStateIIN(cardNumber) ?: return false
     return cardNumber.length > iin.panLength
 }
-private fun failsValidation(cardNumber: String) : Boolean {
+private fun failsValidation(cardNumber: String): Boolean {
     return missingStateIIN(cardNumber) ||
-            hasInvalidStateIIN(cardNumber) ||
-            iinTooShort(cardNumber) ||
-            iinTooLong(cardNumber)
+        hasInvalidStateIIN(cardNumber) ||
+        iinTooShort(cardNumber) ||
+        iinTooLong(cardNumber)
 }
-private fun passesValidation(cardNumber: String) : Boolean {
+private fun passesValidation(cardNumber: String): Boolean {
     return !failsValidation(cardNumber)
 }
 
