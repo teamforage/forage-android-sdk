@@ -65,6 +65,24 @@ Kover: HTML report for ':forage-android' file:///<project_path>/forage-android/f
 ```
 - We are not filtering out classes/files that unit tests will not cover.
 
+If you wish to determine coverage for lines changed in your PR only, as in the GitHub action, run the following:
+
+```shell
+# Create/activate python virtualenv (requires python local setup)
+virtualenv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Generate XML report for consumption by diff-cover
+./gradlew forage-android:koverXmlReport
+
+#  Generate PR line coverage report
+diff-cover \
+   forage-android/build/reports/kover/xml/report.xml \
+   --src-roots "forage-android/src/main/java" \
+   --fail-under 80
+```
+
 ## Code formatting
 This project uses [Spotless](https://github.com/diffplug/spotless) to format the code. Before pushing the code, you may need to run the following:
 
