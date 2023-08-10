@@ -89,9 +89,6 @@ class ForagePANEditText @JvmOverloads constructor(
         disableCopyCardNumber()
 
         textInputEditText.addTextChangedListener(this)
-        textInputEditText.setOnFocusChangeListener { _, hasFocus ->
-            manager.changeFocus(hasFocus)
-        }
 
         textInputLayout.addView(textInputEditText)
         textInputLayout.isErrorEnabled = true
@@ -99,6 +96,22 @@ class ForagePANEditText @JvmOverloads constructor(
 
         addView(getLogoImageViewLayout(context))
         logger.i("ForagePANEditText successfully rendered")
+    }
+
+    // NOTE: do not call this method inside `init {}`
+    // There was a timing bug that caused the focus
+    // callback to not get registered correctly when
+    // called from `init {}`. Calling it afterwards
+    // seems to resolve the issue
+    // https://joinforage.slack.com/archives/C04FQM5F2DA/p1691443021122609
+    private fun restartFocusChangeListener() {
+        // this is an idempotent operation because overwriting
+        // the previous callback with the same callback over and
+        // over will continue to correctly call the developer's
+        // focus/blur events
+        textInputEditText.setOnFocusChangeListener { _, hasFocus ->
+            manager.changeFocus(hasFocus)
+        }
     }
 
     // While the events that ForageElements expose mirrors the
@@ -110,9 +123,11 @@ class ForagePANEditText @JvmOverloads constructor(
     // overriding the convention setOn*Listener
     override fun setOnFocusEventListener(l: SimpleElementListener) {
         manager.setOnFocusEventListener(l)
+        restartFocusChangeListener()
     }
     override fun setOnBlurEventListener(l: SimpleElementListener) {
         manager.setOnBlurEventListener(l)
+        restartFocusChangeListener()
     }
     override fun setOnChangeEventListener(l: StatefulElementListener) {
         manager.setOnChangeEventListener(l)
