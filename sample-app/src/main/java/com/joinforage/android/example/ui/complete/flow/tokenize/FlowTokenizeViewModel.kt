@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.ui.ForagePANEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,13 +46,14 @@ class FlowTokenizeViewModel @Inject constructor(
 
     val error: LiveData<String?> = _error
 
-    fun onSubmit() = viewModelScope.launch {
+    fun onSubmit(panForageEditText: ForagePANEditText) = viewModelScope.launch {
         _isLoading.value = true
 
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
             bearerToken = bearer,
-            customerId = "android-test-customer-id"
+            customerId = "android-test-customer-id",
+            panForageEditText = panForageEditText
         )
 
         when (response) {
