@@ -1,7 +1,9 @@
 package com.joinforage.forage.android.core.element.state
 
 import com.joinforage.forage.android.core.element.IncompleteEbtPanError
+import com.joinforage.forage.android.core.element.InvalidEbtPanError
 import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.core.element.TooLongEbtPanError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -13,43 +15,170 @@ class PanSetIsValidTest {
         manager.handleChangeEvent("")
         val state = manager.getState()
         assertThat(state.isValid).isTrue
-        assertThat(state.validationError).isNull()
     }
 
     @Test
-    fun `cardNumber shorter than min 16 length`() {
+    fun `cardNumber too short to contain  IIN`() {
+        val tooShortNoIIN: String = "420"
         val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent("12345")
+        manager.handleChangeEvent(tooShortNoIIN)
         val state = manager.getState()
         assertThat(state.isValid).isFalse
-        assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
     }
 
     @Test
-    fun `cardNumber is min length 16`() {
+    fun `cardNumber has non-existent IIN`() {
+        val invalidIIN: String = "420420420"
         val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent("1234567890123456")
+        manager.handleChangeEvent(invalidIIN)
+        val state = manager.getState()
+        assertThat(state.isValid).isFalse
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN but is shorter than expected length`() {
+        val tooShortMaineNumber: String = "507703111" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(tooShortMaineNumber)
         val state = manager.getState()
         assertThat(state.isValid).isTrue
-        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN and is correct length`() {
+        val okMaineNumber: String = "5077031111111111111" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(okMaineNumber)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN and is too long`() {
+        // NOTE: we expect the view to enforce max length based on IIN
+        // but for good measure we'll make sure validation knows to handle
+        // this case
+        val longMaineNumber: String = "50770311111111111110" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(longMaineNumber)
+        val state = manager.getState()
+        assertThat(state.isValid).isFalse
     }
 }
 
 class PanSetIsCompleteTest {
     @Test
-    fun `cardNumber is less than min length 16`() {
+    fun `cardNumber as empty string`() {
         val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent("123456789012345")
+        manager.handleChangeEvent("")
         val state = manager.getState()
         assertThat(state.isComplete).isFalse
     }
 
     @Test
-    fun `cardNumber is min length 16`() {
+    fun `cardNumber too short to contain  IIN`() {
+        val tooShortNoIIN: String = "420"
         val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent("1234567890123456")
+        manager.handleChangeEvent(tooShortNoIIN)
+        val state = manager.getState()
+        assertThat(state.isComplete).isFalse
+    }
+
+    @Test
+    fun `cardNumber has non-existent IIN`() {
+        val invalidIIN: String = "420420420"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(invalidIIN)
+        val state = manager.getState()
+        assertThat(state.isComplete).isFalse
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN but is shorter than expected length`() {
+        val tooShortMaineNumber: String = "507703111" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(tooShortMaineNumber)
+        val state = manager.getState()
+        assertThat(state.isComplete).isFalse
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN and is correct length`() {
+        val okMaineNumber: String = "5077031111111111111" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(okMaineNumber)
         val state = manager.getState()
         assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN and is too long`() {
+        // NOTE: we expect the view to enforce max length based on IIN
+        // but for good measure we'll make sure validation knows to handle
+        // this case
+        val longMaineNumber: String = "50770311111111111110" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(longMaineNumber)
+        val state = manager.getState()
+        assertThat(state.isComplete).isFalse
+    }
+}
+
+class PanSetValidationErrorTest {
+    @Test
+    fun `cardNumber as empty string`() {
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent("")
+        val state = manager.getState()
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `cardNumber too short to contain  IIN`() {
+        val tooShortNoIIN: String = "420"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(tooShortNoIIN)
+        val state = manager.getState()
+        assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+    }
+
+    @Test
+    fun `cardNumber has non-existent IIN`() {
+        val invalidIIN: String = "420420420"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(invalidIIN)
+        val state = manager.getState()
+        assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN but is shorter than expected length`() {
+        val tooShortMaineNumber: String = "507703111" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(tooShortMaineNumber)
+        val state = manager.getState()
+        assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN and is correct length`() {
+        val okMaineNumber: String = "5077031111111111111" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(okMaineNumber)
+        val state = manager.getState()
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `cardNumber has valid state IIN and is too long`() {
+        // NOTE: we expect the view to enforce max length based on IIN
+        // but for good measure we'll make sure validation knows to handle
+        // this case
+        val longMaineNumber: String = "50770311111111111110" // Maine is 507703
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(longMaineNumber)
+        val state = manager.getState()
+        assertThat(state.validationError).isEqualTo(TooLongEbtPanError)
     }
 }
 
@@ -78,7 +207,7 @@ class PanHandleChangeEventTest {
         var state: ElementState = manager.getState()
         val callback: StatefulElementListener = { newState -> state = newState }
         manager.setOnChangeEventListener(callback)
-        manager.handleChangeEvent("1234567890123456")
+        manager.handleChangeEvent("5076807890123456")
 
         // TODO: its not clear that we should make any assertions
         //  about the resulting state of isFocus or isBlur. Should

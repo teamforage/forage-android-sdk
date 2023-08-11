@@ -11,6 +11,13 @@ val IncompleteEbtPanError = ElementValidationError(
 val InvalidEbtPanError = ElementValidationError(
     detail = "Your EBT card number is invalid."
 )
+val TooLongEbtPanError = ElementValidationError(
+    // in theory the view layer should prevent this
+    // validation state from occurring by dynamically restricting
+    // the input length based on the IIN.
+    // We include this for completeness
+    detail = "Your EBT card number is too long."
+)
 
 // PIN Input Errors
 val IncompleteEbtPinError = ElementValidationError(
