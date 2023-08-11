@@ -94,7 +94,6 @@ class ForagePANEditText @JvmOverloads constructor(
         }
 
         textInputLayout.addView(textInputEditText)
-        textInputLayout.isErrorEnabled = true
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
@@ -154,14 +153,11 @@ class ForagePANEditText @JvmOverloads constructor(
                 .find { input.startsWith(it.iin) && input.length == it.panLength }
 
             if (stateInnOrNull == null) {
-                textInputLayout.error = context.getString(R.string.ebt_card_validation_error)
                 ForageSDK.storeEntry(PanEntry.Invalid(input))
             } else {
-                textInputLayout.error = null
                 ForageSDK.storeEntry(PanEntry.Valid(input))
             }
         } else {
-            textInputLayout.error = context.getString(R.string.ebt_card_validation_error)
             ForageSDK.storeEntry(PanEntry.Invalid(input))
         }
     }
