@@ -23,10 +23,12 @@ private fun tooLongForStateIIN(cardNumber: String): Boolean {
     val iin = queryForStateIIN(cardNumber) ?: return false
     return cardNumber.length > iin.panLength
 }
+private fun isCorrectLength(cardNumber: String): Boolean {
+    return !tooShortForStateIIN(cardNumber) && !tooLongForStateIIN(cardNumber)
+}
 private fun failsValidation(cardNumber: String): Boolean {
     return missingStateIIN(cardNumber) ||
         hasInvalidStateIIN(cardNumber) ||
-        tooShortForStateIIN(cardNumber) ||
         tooLongForStateIIN(cardNumber)
 }
 private fun passesValidation(cardNumber: String): Boolean {
@@ -56,7 +58,8 @@ class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
     }
 
     private fun setIsComplete(cardNumber: String) {
-        isComplete = cardNumber.isNotEmpty() && passesValidation(cardNumber)
+        isComplete = passesValidation(cardNumber) &&
+            isCorrectLength(cardNumber)
     }
 
     private fun setIsEmpty(cardNumber: String) {

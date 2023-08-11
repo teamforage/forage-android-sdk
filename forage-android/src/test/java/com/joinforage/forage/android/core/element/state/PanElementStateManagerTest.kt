@@ -41,7 +41,7 @@ class PanSetIsValidTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(tooShortMaineNumber)
         val state = manager.getState()
-        assertThat(state.isValid).isFalse
+        assertThat(state.isValid).isTrue
     }
 
     @Test
