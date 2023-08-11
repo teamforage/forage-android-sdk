@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
+import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.ActionMode
@@ -69,9 +70,9 @@ class ForagePANEditText @JvmOverloads constructor(
                         layoutParams =
                             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                         setTextIsSelectable(false)
-                        inputType = InputType.TYPE_CLASS_NUMBER
+//                        inputType = InputType.TYPE_CLASS_NUMBER
                         isSingleLine = true
-                        filters += InputFilter.LengthFilter(19)
+//                        filters += InputFilter.LengthFilter(19)
 
                         if (textColor != Color.BLACK) {
                             setTextColor(textColor)
@@ -92,6 +93,8 @@ class ForagePANEditText @JvmOverloads constructor(
         textInputEditText.setOnFocusChangeListener { _, hasFocus ->
             manager.changeFocus(hasFocus)
         }
+
+        textInputEditText.addTextChangedListener(PanTextWatcher())
 
         textInputLayout.addView(textInputEditText)
         textInputLayout.isErrorEnabled = true
