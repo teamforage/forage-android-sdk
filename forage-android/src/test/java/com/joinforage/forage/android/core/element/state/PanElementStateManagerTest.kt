@@ -236,3 +236,50 @@ class PanHandleChangeEventTest {
         assertThat(callbackBInvoked).isTrue
     }
 }
+
+class CanTokenizePanElementValueTest {
+    @Test
+    fun `alwaysAllow = true trumps complete = false`() {
+        val notCompleteElementState = ElementState(
+            isFocused = false,
+            isEmpty = false,
+            isBlurred = false,
+            isValid = false,
+            validationError = null,
+            isComplete = false
+        )
+        val manager = PanElementStateManager(notCompleteElementState)
+        val canTokenize = manager.canTokenizePanElementValue(alwaysAllow = true)
+        assertThat(canTokenize).isTrue
+    }
+
+    @Test
+    fun `can tokenize when complete = true && alwaysAllow = false`() {
+        val completeElementState = ElementState(
+            isFocused = false,
+            isEmpty = false,
+            isBlurred = false,
+            isValid = false,
+            validationError = null,
+            isComplete = true
+        )
+        val manager = PanElementStateManager(completeElementState)
+        val canTokenize = manager.canTokenizePanElementValue(alwaysAllow = false)
+        assertThat(canTokenize).isTrue
+    }
+
+    @Test
+    fun `canNOT tokenize when complete = false && alwaysAllow = false`() {
+        val notCompleteElementState = ElementState(
+            isFocused = false,
+            isEmpty = false,
+            isBlurred = false,
+            isValid = false,
+            validationError = null,
+            isComplete = false
+        )
+        val manager = PanElementStateManager(notCompleteElementState)
+        val canTokenize = manager.canTokenizePanElementValue(alwaysAllow = false)
+        assertThat(canTokenize).isFalse
+    }
+}
