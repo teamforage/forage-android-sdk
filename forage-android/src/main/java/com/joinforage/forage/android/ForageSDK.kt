@@ -15,6 +15,7 @@ import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 import java.util.UUID
 
@@ -22,17 +23,16 @@ import java.util.UUID
  * Singleton responsible for implementing the SDK API
  */
 object ForageSDK : ForageSDKApi {
-    private var panEntry: PanEntry = PanEntry.Invalid("")
     private val logger = Log.getInstance()
 
+    // TODO: this should be a Config argument that uses the builder pattern
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
+        panForageEditText: ForagePANEditText,
         bearerToken: String,
         customerId: String,
         reusable: Boolean
     ): ForageApiResponse<String> {
-        val currentEntry = panEntry
-
         logger.i(
             "Tokenizing Payment Method",
             attributes = mapOf(
@@ -42,7 +42,7 @@ object ForageSDK : ForageSDKApi {
         )
 
         return when {
-            shouldTokenize(currentEntry) -> TokenizeCardService(
+            panForageEditText.shouldTokenize() -> TokenizeCardService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
                     merchantAccount,
@@ -51,7 +51,7 @@ object ForageSDK : ForageSDKApi {
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
             ).tokenizeCard(
-                cardNumber = currentEntry.getPanNumber(),
+                cardNumber = panForageEditText.getPanNumber(),
                 customerId = customerId,
                 reusable = reusable
             )
@@ -68,9 +68,6 @@ object ForageSDK : ForageSDKApi {
         }
     }
 
-    private fun shouldTokenize(panEntry: PanEntry): Boolean {
-        return panEntry is PanEntry.Valid || BuildConfig.DEBUG
-    }
 
     override suspend fun checkBalance(
         context: Context,
@@ -174,9 +171,5 @@ object ForageSDK : ForageSDKApi {
         ).capturePayment(
             paymentRef = paymentRef
         )
-    }
-
-    internal fun storeEntry(entry: PanEntry) {
-        panEntry = entry
     }
 }
