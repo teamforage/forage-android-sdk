@@ -2,6 +2,7 @@ package com.joinforage.forage.android
 
 import android.content.Context
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
@@ -10,6 +11,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 internal interface ForageSDKApi {
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
+        panForageEditText: ForagePANEditText,
         bearerToken: String,
         customerId: String,
         reusable: Boolean = true

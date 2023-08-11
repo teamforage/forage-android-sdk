@@ -12,6 +12,7 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 import java.util.UUID
 
@@ -19,17 +20,16 @@ import java.util.UUID
  * Singleton responsible for implementing the SDK API
  */
 object ForageSDK : ForageSDKApi {
-    private var panEntry: String = ""
     private val logger = Log.getInstance()
 
+    // TODO: this should be a Config argument that uses the builder pattern
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
+        panForageEditText: ForagePANEditText,
         bearerToken: String,
         customerId: String,
         reusable: Boolean
     ): ForageApiResponse<String> {
-        val currentEntry = panEntry
-
         logger.i(
             "[HTTP] Tokenizing Payment Method",
             attributes = mapOf(
@@ -48,7 +48,7 @@ object ForageSDK : ForageSDKApi {
             httpUrl = ForageConstants.provideHttpUrl(),
             logger = logger
         ).tokenizeCard(
-            cardNumber = currentEntry,
+            cardNumber = panForageEditText.getPanNumber(),
             customerId = customerId,
             reusable = reusable
         )
@@ -163,9 +163,5 @@ object ForageSDK : ForageSDKApi {
         ).capturePayment(
             paymentRef = paymentRef
         )
-    }
-
-    internal fun storeEntry(entry: String) {
-        panEntry = entry
     }
 }

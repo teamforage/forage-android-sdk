@@ -13,7 +13,6 @@ import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.core.element.SimpleElementListener
@@ -230,11 +229,6 @@ class ForagePANEditText @JvmOverloads constructor(
         // no-op
     }
     override fun afterTextChanged(s: Editable?) {
-        // PANs will be formatted to include spaces. We want to strip
-        // those spaces so downstream services only work with the raw
-        // digits
-        val digitsOnly = s.toString().filter { it.isDigit() }
-        ForageSDK.storeEntry(digitsOnly)
     }
 
     private fun isNumeric(input: String) = input.matches("[0-9]+".toRegex())
@@ -243,7 +237,10 @@ class ForagePANEditText @JvmOverloads constructor(
         return manager.canTokenizePanElementValue(BuildConfig.DEBUG)
     }
     internal fun getPanNumber() : String {
-        return textInputEditText.text.toString();
+        val rawText = textInputEditText.text.toString();
+
+        // remove format spacing
+        return rawText.filter { it.isDigit() }
     }
 
 }
