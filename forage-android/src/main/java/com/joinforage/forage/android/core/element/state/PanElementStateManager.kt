@@ -34,6 +34,10 @@ class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
         onChangeEventListener?.invoke(getState())
     }
 
+    fun canTokenizePanElementValue(alwaysAllow: Boolean = false) : Boolean {
+        return getState().isComplete || alwaysAllow;
+    }
+
     companion object {
         fun forEmptyInput(): PanElementStateManager {
             return PanElementStateManager(INITIAL_ELEMENT_STATE)
