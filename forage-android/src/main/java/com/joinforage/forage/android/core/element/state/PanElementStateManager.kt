@@ -106,6 +106,10 @@ class PanElementStateManager(state: ElementState, private val validators: Array<
         onChangeEventListener?.invoke(getState())
     }
 
+    fun canTokenizePanElementValue(alwaysAllow: Boolean = false) : Boolean {
+        return getState().isComplete || alwaysAllow;
+    }
+
     companion object {
         fun forEmptyInput(): PanElementStateManager {
             return PanElementStateManager(
