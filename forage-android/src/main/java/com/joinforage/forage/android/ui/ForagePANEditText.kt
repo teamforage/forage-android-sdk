@@ -236,4 +236,14 @@ class ForagePANEditText @JvmOverloads constructor(
         val digitsOnly = s.toString().filter { it.isDigit() }
         ForageSDK.storeEntry(digitsOnly)
     }
+
+    private fun isNumeric(input: String) = input.matches("[0-9]+".toRegex())
+
+    internal fun shouldTokenize() : Boolean {
+        return manager.canTokenizePanElementValue(BuildConfig.DEBUG)
+    }
+    internal fun getPanNumber() : String {
+        return textInputEditText.text.toString();
+    }
+
 }
