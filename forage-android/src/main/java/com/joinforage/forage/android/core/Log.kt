@@ -53,6 +53,8 @@ internal interface Log {
                     .setBundleWithTraceEnabled(true)
                     .setLoggerName(LOGGER_NAME)
                     .build()
+
+                logger?.addAttribute("version", BuildConfig.VERSION)
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
