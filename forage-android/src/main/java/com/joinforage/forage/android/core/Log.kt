@@ -8,10 +8,11 @@ import com.datadog.android.log.Logger
 import com.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.BuildConfig
 import io.sentry.android.core.SentryAndroid
+import io.sentry.Sentry
 
 internal interface Log {
     fun initializeDD(context: Context)
-    fun initializeSentry()
+    fun initializeSentry(context:Context)
     fun d(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun i(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
@@ -58,18 +59,14 @@ internal interface Log {
             }
 
             override fun initializeSentry(context: Context){
-                SentryAndroid.init(context) { options ->
-                    options.dsn = "https://1f24f0685c867a440eca683770d4666e@o921422.ingest.sentry.io/4505704106688512" 
-                    options.tracesSampleRate = 1.0
-                    options.environment = BuildConfig.FLAVOR
+                val flavor = BuildConfig.FLAVOR
+                if (flavor == "sandbox" || flavor == "prod"){
+                    SentryAndroid.init(context) { options ->
+                        options.dsn = "https://1f24f0685c867a440eca683770d4666e@o921422.ingest.sentry.io/4505704106688512" 
+                        options.tracesSampleRate = 1.0
+                        options.environment = flavor
+                    }
                 }
-                logger = Logger.Builder()
-                    .setNetworkInfoEnabled(true)
-                    .setLogcatLogsEnabled(false)
-                    .setDatadogLogsEnabled(true)
-                    .setBundleWithTraceEnabled(true)
-                    .setLoggerName(LOGGER_NAME)
-                    .build()
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
