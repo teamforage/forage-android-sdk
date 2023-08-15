@@ -63,7 +63,14 @@ internal interface Log {
                     options.tracesSampleRate = 1.0
                     options.isEnableUserInteractionTracing = true
                     options.environment = BuildConfig.FLAVOR
-        }
+                }
+                logger = Logger.Builder()
+                    .setNetworkInfoEnabled(true)
+                    .setLogcatLogsEnabled(false)
+                    .setDatadogLogsEnabled(true)
+                    .setBundleWithTraceEnabled(true)
+                    .setLoggerName(LOGGER_NAME)
+                    .build()
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
