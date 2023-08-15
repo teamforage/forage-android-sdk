@@ -28,7 +28,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Run unit tests for the sandboxDebug build
-        run: ./gradlew testSandboxDebugUnitTest --stacktrace
+        run: ./gradlew testSandboxDebugUnitTest --debug
 
       - name: Build all build variants
         run: ./gradlew assemble --stacktrace
