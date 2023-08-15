@@ -45,7 +45,7 @@ class ForagePANEditText @JvmOverloads constructor(
         // we have logging all over the SDK that relies on the render happening first.
         val logger = Log.getInstance()
         logger.initializeDD(context)
-        logger.initializeSentry()
+        logger.initializeSentry(context)
         setWillNotDraw(false)
 
         orientation = VERTICAL
