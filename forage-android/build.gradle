@@ -108,7 +108,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.launchdarkly:launchdarkly-android-client-sdk:4.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
-    implementation 'io.sentry:sentry-android:{{@inject packages.version('sentry.java.android', '4.2.0') }}'
+    implementation 'io.sentry:sentry-android:4.2.0'
     // VGS Collect SDK
     api 'com.verygoodsecurity:vgscollect:1.7.3'
 
