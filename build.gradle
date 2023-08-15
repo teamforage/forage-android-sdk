@@ -16,9 +16,6 @@ plugins {
     id 'org.jetbrains.kotlinx.kover' version '0.6.1'
 }
 
-dependencies {
-    implementation 'io.sentry:sentry-android:6.25.2'
-}
 
 spotless {
     kotlin {
