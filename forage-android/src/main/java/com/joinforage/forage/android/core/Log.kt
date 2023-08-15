@@ -54,7 +54,8 @@ internal interface Log {
                     .setLoggerName(LOGGER_NAME)
                     .build()
 
-                logger?.addAttribute("version", BuildConfig.VERSION)
+                logger?.addAttribute("version_code", BuildConfig.VERSION)
+                logger?.addTag("version_code", BuildConfig.VERSION)
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
