@@ -60,3 +60,24 @@ internal enum class StateIIN(
     WISCONSIN("507708", 16),
     WYOMING("505349", 16)
 }
+
+internal fun missingStateIIN(cardNumber: String): Boolean {
+    return cardNumber.length < STATE_INN_LENGTH
+}
+internal fun queryForStateIIN(cardNumber: String): StateIIN? {
+    return StateIIN.values().find { cardNumber.startsWith(it.iin) }
+}
+internal fun hasInvalidStateIIN(cardNumber: String): Boolean {
+    return queryForStateIIN(cardNumber) == null
+}
+internal fun tooShortForStateIIN(cardNumber: String): Boolean {
+    val iin = queryForStateIIN(cardNumber) ?: return false
+    return cardNumber.length < iin.panLength
+}
+internal fun tooLongForStateIIN(cardNumber: String): Boolean {
+    val iin = queryForStateIIN(cardNumber) ?: return false
+    return cardNumber.length > iin.panLength
+}
+internal fun isCorrectLength(cardNumber: String): Boolean {
+    return !tooShortForStateIIN(cardNumber) && !tooLongForStateIIN(cardNumber)
+}
