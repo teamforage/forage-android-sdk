@@ -58,10 +58,9 @@ internal interface Log {
             }
 
             override fun initializeSentry(){
-                SentryAndroid.init(context) { options ->
+                SentryAndroid.init() { options ->
                     options.dsn = "https://1f24f0685c867a440eca683770d4666e@o921422.ingest.sentry.io/4505704106688512" 
                     options.tracesSampleRate = 1.0
-                    options.isEnableUserInteractionTracing = true
                     options.environment = BuildConfig.FLAVOR
                 }
                 logger = Logger.Builder()
