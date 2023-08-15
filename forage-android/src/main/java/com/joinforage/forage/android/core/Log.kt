@@ -7,8 +7,6 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.log.Logger
 import com.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.BuildConfig
-import io.sentry.Sentry
-import io.sentry.SentryOptions
 import io.sentry.android.core.SentryAndroid
 
 internal interface Log {
