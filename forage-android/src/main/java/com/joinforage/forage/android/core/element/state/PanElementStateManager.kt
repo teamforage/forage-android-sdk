@@ -45,8 +45,8 @@ class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
 
     private fun overrideNonProdCheck(cardNumber: String): Boolean {
         return cardNumber.matches(errorCardPaymentCapture) ||
-                cardNumber.matches(errorCardBalanceCheck) ||
-                cardNumber.matches(nonProdValidEbtCards)
+            cardNumber.matches(errorCardBalanceCheck) ||
+            cardNumber.matches(nonProdValidEbtCards)
     }
 
     private fun setIsValid(cardNumber: String) {
@@ -80,7 +80,7 @@ class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
             cardNumber.length in 16..19
         } else {
             passesValidation(cardNumber) &&
-                    isCorrectLength(cardNumber)
+                isCorrectLength(cardNumber)
         }
     }
 
