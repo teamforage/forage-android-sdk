@@ -60,12 +60,10 @@ internal interface Log {
 
             override fun initializeSentry(context: Context){
                 val flavor = BuildConfig.FLAVOR
-                if (flavor == "sandbox" || flavor == "prod"){
-                    SentryAndroid.init(context) { options ->
+                SentryAndroid.init(context) { options ->
                         options.dsn = "https://1f24f0685c867a440eca683770d4666e@o921422.ingest.sentry.io/4505704106688512" 
                         options.tracesSampleRate = 1.0
                         options.environment = flavor
-                    }
                 }
             }
 
