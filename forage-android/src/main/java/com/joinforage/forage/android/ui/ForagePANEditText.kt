@@ -74,7 +74,6 @@ class ForagePANEditText @JvmOverloads constructor(
                             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                         setTextIsSelectable(false)
                         isSingleLine = true
-                        filters += InputFilter.LengthFilter(19)
 
                         if (textColor != Color.BLACK) {
                             setTextColor(textColor)
