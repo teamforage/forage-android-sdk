@@ -76,7 +76,7 @@ class PanElementStateManager(state: ElementState) : ElementStateManager(state) {
     }
 
     private fun setIsComplete(cardNumber: String) {
-        isComplete = if (BuildConfig.FLAVOR != "prod" && overrideNonProdCheck(cardNumber)) {
+        isComplete = if (BuildConfig.FLAVOR != PROD && overrideNonProdCheck(cardNumber)) {
             cardNumber.length in 16..19
         } else {
             passesValidation(cardNumber) &&
