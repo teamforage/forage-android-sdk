@@ -16,7 +16,6 @@ plugins {
     id 'org.jetbrains.kotlinx.kover' version '0.6.1'
 }
 
-
 spotless {
     kotlin {
         target '**/src/**/*.kt', '**/src/**/*.kts'
