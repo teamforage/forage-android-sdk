@@ -18,12 +18,12 @@ class PanSetIsValidTest {
     }
 
     @Test
-    fun `cardNumber too short to contain  IIN`() {
+    fun `cardNumber too short to contain IIN`() {
         val tooShortNoIIN: String = "420"
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(tooShortNoIIN)
         val state = manager.getState()
-        assertThat(state.isValid).isFalse
+        assertThat(state.isValid).isTrue
     }
 
     @Test
@@ -63,6 +63,78 @@ class PanSetIsValidTest {
         manager.handleChangeEvent(longMaineNumber)
         val state = manager.getState()
         assertThat(state.isValid).isFalse
+    }
+
+    @Test
+    fun `cardNumber is not special balance card`() {
+        val balanceErrorCard: String = "5555555555"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(balanceErrorCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isFalse
+    }
+
+    @Test
+    fun `cardNumber is special card that causes balance errors short`() {
+        val balanceErrorCard: String = "55555555555555"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(balanceErrorCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special card that causes balance errors with error code`() {
+        val balanceErrorCard: String = "5555555555555551"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(balanceErrorCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
+    }
+
+    @Test
+    fun `cardNumber is not special checkout error yet`() {
+        val paymentErrorCard: String = "4444444444"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(paymentErrorCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isFalse
+    }
+
+    @Test
+    fun `cardNumber is special card that causes checkout errors short`() {
+        val paymentErrorCard: String = "44444444444444"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(paymentErrorCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special card that causes checkout errors with error code`() {
+        val paymentErrorCard: String = "4444444444444451"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(paymentErrorCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special card that passes validation short`() {
+        val specialSuccessCard: String = "9999"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(specialSuccessCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special card that passes validation long`() {
+        val specialSuccessCard: String = "9999123456789012345"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(specialSuccessCard)
+        val state = manager.getState()
+        assertThat(state.isValid).isTrue
     }
 }
 
@@ -122,6 +194,60 @@ class PanSetIsCompleteTest {
         val state = manager.getState()
         assertThat(state.isComplete).isFalse
     }
+
+    @Test
+    fun `cardNumber is special balance card length 16`() {
+        val balanceErrorCard: String = "5555555555555551"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(balanceErrorCard)
+        val state = manager.getState()
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special balance card length 19`() {
+        val balanceErrorCard: String = "5555555555555551123"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(balanceErrorCard)
+        val state = manager.getState()
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special capture card length 16`() {
+        val captureErrorCard: String = "4444444444444451"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(captureErrorCard)
+        val state = manager.getState()
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special capture card length 19`() {
+        val captureErrorCard: String = "4444444444444451123"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(captureErrorCard)
+        val state = manager.getState()
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special success card length 16`() {
+        val successCard: String = "9999123412341234"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(successCard)
+        val state = manager.getState()
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `cardNumber is special success card length 19`() {
+        val successCard: String = "9999123412341234123"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(successCard)
+        val state = manager.getState()
+        assertThat(state.isComplete).isTrue
+    }
 }
 
 class PanSetValidationErrorTest {
@@ -129,6 +255,33 @@ class PanSetValidationErrorTest {
     fun `cardNumber as empty string`() {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent("")
+        val state = manager.getState()
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `cardNumber as special balance card`() {
+        val balanceErrorCard: String = "5555555555555551"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(balanceErrorCard)
+        val state = manager.getState()
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `cardNumber as special capture card`() {
+        val captureErrorCard: String = "4444444444444451"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(captureErrorCard)
+        val state = manager.getState()
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `cardNumber as special success card`() {
+        val captureErrorCard: String = "9999123412341234"
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(captureErrorCard)
         val state = manager.getState()
         assertThat(state.validationError).isNull()
     }
