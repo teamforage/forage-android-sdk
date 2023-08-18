@@ -24,7 +24,6 @@ import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.model.PanEntry
-import com.joinforage.forage.android.model.StateIIN
 
 /**
  * Material Design component with a TextInputEditText to collect the EBT card number
