@@ -71,11 +71,11 @@ internal fun hasInvalidStateIIN(cardNumber: String): Boolean {
     return queryForStateIIN(cardNumber) == null
 }
 internal fun tooShortForStateIIN(cardNumber: String): Boolean {
-    val iin = queryForStateIIN(cardNumber) ?: return false
+    val iin = queryForStateIIN(cardNumber) ?: return true
     return cardNumber.length < iin.panLength
 }
 internal fun tooLongForStateIIN(cardNumber: String): Boolean {
-    val iin = queryForStateIIN(cardNumber) ?: return false
+    val iin = queryForStateIIN(cardNumber) ?: return true
     return cardNumber.length > iin.panLength
 }
 internal fun isCorrectLength(cardNumber: String): Boolean {
