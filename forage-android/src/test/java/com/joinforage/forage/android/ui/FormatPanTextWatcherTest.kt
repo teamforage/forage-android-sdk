@@ -582,5 +582,4 @@ class OnFormattedChangeEventTest {
         assertThat(actualPAN).isEqualTo(expectedFormattedPAN)
         assertThat(callbackCount).isEqualTo(1)
     }
-
 }

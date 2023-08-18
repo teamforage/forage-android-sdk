@@ -104,7 +104,7 @@ class ForagePANEditText @JvmOverloads constructor(
         // for reformatting purposes, we'll let the FormatPanTextWatcher
         // decide when its appropriate to invoke the user-registered callback
         formatTextWatcher = FormatPanTextWatcher(textInputEditText)
-        formatTextWatcher.onFormattedChangeEvent {formattedCardNumber ->
+        formatTextWatcher.onFormattedChangeEvent { formattedCardNumber ->
             manager.handleChangeEvent(formattedCardNumber)
         }
         textInputEditText.addTextChangedListener(formatTextWatcher)

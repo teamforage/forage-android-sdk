@@ -80,7 +80,7 @@ fun getTransformedPosition(pos: Int, oldPrettyText: String, newPrettyText: Strin
 }
 
 class FormatPanTextWatcher(
-    private val editText: EditText,
+    private val editText: EditText
 ) : TextWatcher {
     private var isProgrammaticChange: Boolean = false
     private var onFormattedChangeEvent: ((String) -> Unit)? = null
