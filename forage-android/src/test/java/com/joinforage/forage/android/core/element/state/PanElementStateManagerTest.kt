@@ -173,15 +173,30 @@ class TestWhitelistedCards {
     }
 
     @Test
-    fun `complete requires length 19 card number`() {
+    fun `complete accepts length 16 card number`() {
         val whitelistValidator = WhitelistedCards("hello", 2)
+        val completeStr = "hellohello******"
+        assertThat(whitelistValidator.checkIfComplete(completeStr)).isTrue
+    }
 
-        val incompleteStr = "hellohello"
-        assertThat(whitelistValidator.checkIfValid(incompleteStr)).isTrue
-        assertThat(whitelistValidator.checkIfComplete(incompleteStr)).isFalse
-
+    @Test
+    fun `complete accepts length 19 card number`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
         val completeStr = "hellohello*********"
         assertThat(whitelistValidator.checkIfComplete(completeStr)).isTrue
+    }
+
+    @Test
+    fun `complete rejects too short and too long numbers`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+
+        val tooShort = "hellohello"
+        assertThat(whitelistValidator.checkIfValid(tooShort)).isTrue
+        assertThat(whitelistValidator.checkIfComplete(tooShort)).isFalse
+
+        val tooLong = "hellohello****************"
+        assertThat(whitelistValidator.checkIfValid(tooLong)).isTrue
+        assertThat(whitelistValidator.checkIfComplete(tooLong)).isFalse
     }
 
     @Test

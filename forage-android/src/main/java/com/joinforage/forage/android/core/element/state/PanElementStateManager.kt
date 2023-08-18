@@ -7,6 +7,7 @@ import com.joinforage.forage.android.core.element.TooLongEbtPanError
 import com.joinforage.forage.android.model.STATE_INN_LENGTH
 import com.joinforage.forage.android.model.StateIIN
 
+const val MIN_CARD_LENGTH = 16
 const val MAX_CARD_LENGTH = 19
 
 private fun missingStateIIN(cardNumber: String): Boolean {
@@ -82,7 +83,7 @@ open class WhitelistedCards(
     }
 
     override fun checkIfComplete(cardNumber: String): Boolean {
-        return checkIfValid(cardNumber) && cardNumber.length == MAX_CARD_LENGTH
+        return checkIfValid(cardNumber) && cardNumber.length in MIN_CARD_LENGTH..MAX_CARD_LENGTH
     }
 
     override fun checkForValidationError(cardNumber: String): ElementValidationError? {
