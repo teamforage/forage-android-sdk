@@ -555,3 +555,32 @@ class BackspaceInteractionsTest {
         assertThat(editText.selectionEnd).isEqualTo(8)
     }
 }
+
+@RunWith(RobolectricTestRunner::class)
+class OnFormattedChangeEventTest {
+    @Test
+    fun `correctly passes the formatted text to the callback`() {
+        val editText = EditText(ApplicationProvider.getApplicationContext())
+        val watcher = FormatPanTextWatcher(editText)
+        editText.addTextChangedListener(watcher)
+
+        // mutable state to help us test the callback
+        var callbackCount = 0
+        var actualPAN = ""
+        watcher.onFormattedChangeEvent { formattedCardNumber ->
+            callbackCount++
+            actualPAN = formattedCardNumber
+        }
+
+        // simulate a paste event
+        editText.setText("505349012345")
+
+        // we expect the callback to be passed the correctly
+        // formatted PAN exactly once
+        val expectedFormattedPAN = "5053 4901 2345"
+        assertThat(editText.text.toString()).isEqualTo(expectedFormattedPAN)
+        assertThat(actualPAN).isEqualTo(expectedFormattedPAN)
+        assertThat(callbackCount).isEqualTo(1)
+    }
+
+}

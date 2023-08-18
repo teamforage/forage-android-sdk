@@ -39,6 +39,7 @@ class ForagePANEditText @JvmOverloads constructor(
         // allows whitelist of special Ebt PAN numbers
         PanElementStateManager.NON_PROD_forEmptyInput()
     }
+    private val formatTextWatcher: FormatPanTextWatcher
 
     override var typeface: Typeface? = null
 
@@ -89,8 +90,24 @@ class ForagePANEditText @JvmOverloads constructor(
 
         disableCopyCardNumber()
 
+        // Register the afterTextChanged method on this class
+        // so that we store the updated PAN on each input change
+        // event
+        // NOTE: this is not ideal because it relies on mutating
+        // the state of the ForageSDK singleton
         textInputEditText.addTextChangedListener(this)
-        textInputEditText.addTextChangedListener(FormatPanTextWatcher(textInputEditText))
+
+        // register FormatPanTextWatcher to keep the format up to date
+        // with each user input based on the StateIIN
+        // Since the FormatPanTextWatcher knows which input changes
+        // are actually the users and which ones are programmatic updates
+        // for reformatting purposes, we'll let the FormatPanTextWatcher
+        // decide when its appropriate to invoke the user-registered callback
+        formatTextWatcher = FormatPanTextWatcher(textInputEditText)
+        formatTextWatcher.onFormattedChangeEvent {formattedCardNumber ->
+            manager.handleChangeEvent(formattedCardNumber)
+        }
+        textInputEditText.addTextChangedListener(formatTextWatcher)
 
         textInputLayout.addView(textInputEditText)
         addView(textInputLayout)
@@ -157,10 +174,11 @@ class ForagePANEditText @JvmOverloads constructor(
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        // no-op
     }
 
     override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
-        manager.handleChangeEvent(cardNumber.toString())
+        // no-op
     }
 
     override fun afterTextChanged(s: Editable?) {
