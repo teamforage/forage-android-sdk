@@ -7,9 +7,11 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.log.Logger
 import com.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.BuildConfig
+import io.sentry.android.core.SentryAndroid
 
 internal interface Log {
     fun initializeDD(context: Context)
+    fun initializeSentry(context: Context)
     fun d(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun i(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
@@ -58,6 +60,15 @@ internal interface Log {
                 logger?.addTag("version_code", BuildConfig.VERSION)
             }
 
+            override fun initializeSentry(context: Context) {
+                val flavor = BuildConfig.FLAVOR
+                SentryAndroid.init(context) { options ->
+                    options.dsn = "https://1f24f0685c867a440eca683770d4666e@o921422.ingest.sentry.io/4505704106688512"
+                    options.tracesSampleRate = 1.0
+                    options.environment = flavor
+                }
+            }
+
             override fun d(msg: String, attributes: Map<String, Any?>) {
                 logger?.d(msg, attributes = attributes)
             }
@@ -77,6 +88,9 @@ internal interface Log {
 
         private val SILENT = object : Log {
             override fun initializeDD(context: Context) {
+            }
+
+            override fun initializeSentry(context: Context) {
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
