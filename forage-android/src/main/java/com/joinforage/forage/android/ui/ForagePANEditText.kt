@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.Log
@@ -23,7 +24,6 @@ import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.model.PanEntry
-import com.joinforage.forage.android.model.StateIIN
 
 /**
  * Material Design component with a TextInputEditText to collect the EBT card number
@@ -35,7 +35,13 @@ class ForagePANEditText @JvmOverloads constructor(
 ) : ForageUI, LinearLayout(context, attrs, defStyleAttr), TextWatcher, ActionMode.Callback {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
-    private val manager: PanElementStateManager = PanElementStateManager.forEmptyInput()
+    private val manager: PanElementStateManager = if (BuildConfig.FLAVOR == "prod") {
+        // strictly support only valid Ebt PAN numbers
+        PanElementStateManager.forEmptyInput()
+    } else {
+        // allows whitelist of special Ebt PAN numbers
+        PanElementStateManager.DEV_ONLY_forEmptyInput()
+    }
 
     override var typeface: Typeface? = null
 
@@ -162,18 +168,18 @@ class ForagePANEditText @JvmOverloads constructor(
     }
 
     override fun afterTextChanged(s: Editable?) {
-        val input = s.toString()
-        if (isNumeric(input)) {
-            val stateInnOrNull = StateIIN.values()
-                .find { input.startsWith(it.iin) && input.length == it.panLength }
+        // PANs will be formatted to include spaces. We want to strip
+        // those spaces so downstream services only work with the raw
+        // digits
+        val digitsOnly = s.toString().filter { it.isDigit() }
 
-            if (stateInnOrNull == null) {
-                ForageSDK.storeEntry(PanEntry.Invalid(input))
-            } else {
-                ForageSDK.storeEntry(PanEntry.Valid(input))
-            }
+        // the manager houses the logic of knowing whether an entered
+        // PAN is OK to be submitted so we use this to determine if
+        // we should store as PanEntry.Valid vs PanEntry.Invalid
+        if (manager.getState().isComplete) {
+            ForageSDK.storeEntry(PanEntry.Valid(digitsOnly))
         } else {
-            ForageSDK.storeEntry(PanEntry.Invalid(input))
+            ForageSDK.storeEntry(PanEntry.Invalid(digitsOnly))
         }
     }
 

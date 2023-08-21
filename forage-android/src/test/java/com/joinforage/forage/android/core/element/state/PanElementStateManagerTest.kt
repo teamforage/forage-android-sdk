@@ -7,282 +7,16 @@ import com.joinforage.forage.android.core.element.TooLongEbtPanError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class PanSetIsValidTest {
+class StrictForEmptyInputTest {
 
     @Test
     fun `cardNumber as empty string`() {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent("")
         val state = manager.getState()
+
         assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber too short to contain IIN`() {
-        val tooShortNoIIN: String = "420"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(tooShortNoIIN)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber has non-existent IIN`() {
-        val invalidIIN: String = "420420420"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(invalidIIN)
-        val state = manager.getState()
-        assertThat(state.isValid).isFalse
-    }
-
-    @Test
-    fun `cardNumber has valid state IIN but is shorter than expected length`() {
-        val tooShortMaineNumber: String = "507703111" // Maine is 507703
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(tooShortMaineNumber)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber has valid state IIN and is correct length`() {
-        val okMaineNumber: String = "5077031111111111111" // Maine is 507703
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(okMaineNumber)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber has valid state IIN and is too long`() {
-        // NOTE: we expect the view to enforce max length based on IIN
-        // but for good measure we'll make sure validation knows to handle
-        // this case
-        val longMaineNumber: String = "50770311111111111110" // Maine is 507703
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(longMaineNumber)
-        val state = manager.getState()
-        assertThat(state.isValid).isFalse
-    }
-
-    @Test
-    fun `cardNumber is not special balance card`() {
-        val balanceErrorCard: String = "5555555555"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(balanceErrorCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isFalse
-    }
-
-    @Test
-    fun `cardNumber is special card that causes balance errors short`() {
-        val balanceErrorCard: String = "55555555555555"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(balanceErrorCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special card that causes balance errors with error code`() {
-        val balanceErrorCard: String = "5555555555555551"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(balanceErrorCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber is not special checkout error yet`() {
-        val paymentErrorCard: String = "4444444444"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(paymentErrorCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isFalse
-    }
-
-    @Test
-    fun `cardNumber is special card that causes checkout errors short`() {
-        val paymentErrorCard: String = "44444444444444"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(paymentErrorCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special card that causes checkout errors with error code`() {
-        val paymentErrorCard: String = "4444444444444451"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(paymentErrorCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special card that passes validation short`() {
-        val specialSuccessCard: String = "9999"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(specialSuccessCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special card that passes validation long`() {
-        val specialSuccessCard: String = "9999123456789012345"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(specialSuccessCard)
-        val state = manager.getState()
-        assertThat(state.isValid).isTrue
-    }
-}
-
-class PanSetIsCompleteTest {
-    @Test
-    fun `cardNumber as empty string`() {
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent("")
-        val state = manager.getState()
         assertThat(state.isComplete).isFalse
-    }
-
-    @Test
-    fun `cardNumber too short to contain  IIN`() {
-        val tooShortNoIIN: String = "420"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(tooShortNoIIN)
-        val state = manager.getState()
-        assertThat(state.isComplete).isFalse
-    }
-
-    @Test
-    fun `cardNumber has non-existent IIN`() {
-        val invalidIIN: String = "420420420"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(invalidIIN)
-        val state = manager.getState()
-        assertThat(state.isComplete).isFalse
-    }
-
-    @Test
-    fun `cardNumber has valid state IIN but is shorter than expected length`() {
-        val tooShortMaineNumber: String = "507703111" // Maine is 507703
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(tooShortMaineNumber)
-        val state = manager.getState()
-        assertThat(state.isComplete).isFalse
-    }
-
-    @Test
-    fun `cardNumber has valid state IIN and is correct length`() {
-        val okMaineNumber: String = "5077031111111111111" // Maine is 507703
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(okMaineNumber)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-
-    @Test
-    fun `cardNumber has valid state IIN and is too long`() {
-        // NOTE: we expect the view to enforce max length based on IIN
-        // but for good measure we'll make sure validation knows to handle
-        // this case
-        val longMaineNumber: String = "50770311111111111110" // Maine is 507703
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(longMaineNumber)
-        val state = manager.getState()
-        assertThat(state.isComplete).isFalse
-    }
-
-    @Test
-    fun `cardNumber is special balance card length 16`() {
-        val balanceErrorCard: String = "5555555555555551"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(balanceErrorCard)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special balance card length 19`() {
-        val balanceErrorCard: String = "5555555555555551123"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(balanceErrorCard)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special capture card length 16`() {
-        val captureErrorCard: String = "4444444444444451"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(captureErrorCard)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special capture card length 19`() {
-        val captureErrorCard: String = "4444444444444451123"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(captureErrorCard)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special success card length 16`() {
-        val successCard: String = "9999123412341234"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(successCard)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-
-    @Test
-    fun `cardNumber is special success card length 19`() {
-        val successCard: String = "9999123412341234123"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(successCard)
-        val state = manager.getState()
-        assertThat(state.isComplete).isTrue
-    }
-}
-
-class PanSetValidationErrorTest {
-    @Test
-    fun `cardNumber as empty string`() {
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent("")
-        val state = manager.getState()
-        assertThat(state.validationError).isNull()
-    }
-
-    @Test
-    fun `cardNumber as special balance card`() {
-        val balanceErrorCard: String = "5555555555555551"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(balanceErrorCard)
-        val state = manager.getState()
-        assertThat(state.validationError).isNull()
-    }
-
-    @Test
-    fun `cardNumber as special capture card`() {
-        val captureErrorCard: String = "4444444444444451"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(captureErrorCard)
-        val state = manager.getState()
-        assertThat(state.validationError).isNull()
-    }
-
-    @Test
-    fun `cardNumber as special success card`() {
-        val captureErrorCard: String = "9999123412341234"
-        val manager = PanElementStateManager.forEmptyInput()
-        manager.handleChangeEvent(captureErrorCard)
-        val state = manager.getState()
         assertThat(state.validationError).isNull()
     }
 
@@ -292,6 +26,9 @@ class PanSetValidationErrorTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(tooShortNoIIN)
         val state = manager.getState()
+
+        assertThat(state.isValid).isFalse
+        assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
     }
 
@@ -301,6 +38,9 @@ class PanSetValidationErrorTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(invalidIIN)
         val state = manager.getState()
+
+        assertThat(state.isValid).isFalse
+        assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
     }
 
@@ -310,6 +50,9 @@ class PanSetValidationErrorTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(tooShortMaineNumber)
         val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
     }
 
@@ -319,6 +62,9 @@ class PanSetValidationErrorTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(okMaineNumber)
         val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
     }
 
@@ -331,11 +77,163 @@ class PanSetValidationErrorTest {
         val manager = PanElementStateManager.forEmptyInput()
         manager.handleChangeEvent(longMaineNumber)
         val state = manager.getState()
+
+        assertThat(state.isValid).isFalse
+        assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(TooLongEbtPanError)
     }
 }
 
-class PanSetIsEmptyTest {
+class DEV_ONLY_IntegrationTests {
+    @Test
+    fun `StrictEbtValidator - correctly flags valid`() {
+        val okMaineNumber: String = "5077031111111111111" // Maine is 507703
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent(okMaineNumber)
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `PaymentCaptureErrorCard - correctly flags valid`() {
+        val whitelistedPAN: String = "4444444444444412345"
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent(whitelistedPAN)
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `BalanceCheckErrorCard - correctly flags valid`() {
+        val whitelistedPAN: String = "5555555555555512345"
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent(whitelistedPAN)
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `NonProdValidEbtCard - correctly flags valid`() {
+        val whitelistedPAN: String = "9999420420420420420"
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent(whitelistedPAN)
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `EmptyEbtCashBalanceCard - correctly flags valid`() {
+        val whitelistedPAN: String = "6543210000000000000"
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent(whitelistedPAN)
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+    }
+
+    @Test
+    fun `empty string is valid`() {
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent("")
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isFalse
+        assertThat(state.validationError).isNull()
+    }
+
+    @Test
+    fun `non-whitelisted invalid Ebt Pan should be invalid`() {
+        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        manager.handleChangeEvent("4204204204204204204")
+        val state = manager.getState()
+
+        assertThat(state.isValid).isFalse
+        assertThat(state.isComplete).isFalse
+        assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
+    }
+}
+
+class TestWhitelistedCards {
+    @Test
+    fun `prefix can be repeated arbitrary times`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+        val validStr = "hellohello"
+        assertThat(whitelistValidator.checkIfValid(validStr)).isTrue
+    }
+
+    @Test
+    fun `complete accepts length 16 card number`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+        val completeStr = "hellohello******"
+        assertThat(whitelistValidator.checkIfComplete(completeStr)).isTrue
+    }
+
+    @Test
+    fun `complete accepts length 19 card number`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+        val completeStr = "hellohello*********"
+        assertThat(whitelistValidator.checkIfComplete(completeStr)).isTrue
+    }
+
+    @Test
+    fun `complete rejects too short and too long numbers`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+
+        val tooShort = "hellohello"
+        assertThat(whitelistValidator.checkIfValid(tooShort)).isTrue
+        assertThat(whitelistValidator.checkIfComplete(tooShort)).isFalse
+
+        val tooLong = "hellohello****************"
+        assertThat(whitelistValidator.checkIfValid(tooLong)).isTrue
+        assertThat(whitelistValidator.checkIfComplete(tooLong)).isFalse
+    }
+
+    @Test
+    fun `complete and valid require matching prefix`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+
+        val invalidCompleteStr = "hello12345*********"
+        assertThat(whitelistValidator.checkIfValid(invalidCompleteStr)).isFalse
+        assertThat(whitelistValidator.checkIfComplete(invalidCompleteStr)).isFalse
+
+        val completeStr = "hellohello*********"
+        assertThat(whitelistValidator.checkIfValid(completeStr)).isTrue
+        assertThat(whitelistValidator.checkIfComplete(completeStr)).isTrue
+    }
+
+    @Test
+    fun `validationError is always null`() {
+        val whitelistValidator = WhitelistedCards("hello", 2)
+
+        val emptyStr = ""
+        assertThat(whitelistValidator.checkForValidationError(emptyStr)).isNull()
+
+        val shortAndDoesNotMatchPrefixStr = "hello12345"
+        assertThat(whitelistValidator.checkForValidationError(shortAndDoesNotMatchPrefixStr)).isNull()
+
+        val correctLengthAndDoesNotMatchPrefixStr = "hello12345*********"
+        assertThat(whitelistValidator.checkForValidationError(correctLengthAndDoesNotMatchPrefixStr)).isNull()
+
+        val validIncompleteStr = "hellohello"
+        assertThat(whitelistValidator.checkForValidationError(validIncompleteStr)).isNull()
+
+        val completeStr = "hellohello*********"
+        assertThat(whitelistValidator.checkForValidationError(completeStr)).isNull()
+    }
+}
+
+class PanIsEmptyTest {
     @Test
     fun `cardNumber is length 0`() {
         val manager = PanElementStateManager.forEmptyInput()
@@ -387,5 +285,21 @@ class PanHandleChangeEventTest {
         // only the current callback should be invoked
         assertThat(callbackAInvoked).isFalse
         assertThat(callbackBInvoked).isTrue
+    }
+
+    @Test
+    fun `strips all non-digit characters before processing`() {
+        val manager = PanElementStateManager.forEmptyInput()
+        var state: ElementState = manager.getState()
+        val callback: StatefulElementListener = { newState -> state = newState }
+
+        val validStringContaminatedByOtherChars = "!@# $%^ &*()_+<>? abcd5076807890123456"
+        manager.setOnChangeEventListener(callback)
+        manager.handleChangeEvent(validStringContaminatedByOtherChars)
+
+        assertThat(state.isEmpty).isFalse
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+        assertThat(state.validationError).isNull()
     }
 }
