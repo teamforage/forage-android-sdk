@@ -83,12 +83,17 @@ class FormatPanTextWatcher(
     private val editText: EditText
 ) : TextWatcher {
     private var isProgrammaticChange: Boolean = false
+    private var onFormattedChangeEvent: ((String) -> Unit)? = null
 
     private fun runWithLock(block: () -> Unit) {
         if (isProgrammaticChange) return
         isProgrammaticChange = true
         block()
         isProgrammaticChange = false
+    }
+
+    fun onFormattedChangeEvent(callback: (String) -> Unit) {
+        onFormattedChangeEvent = callback
     }
 
     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -124,6 +129,10 @@ class FormatPanTextWatcher(
             // intuitively for users
             val newEnd = getTransformedPosition(end, rawInput, newText)
             editText.setSelection(newEnd)
+
+            // fire the change event for the merchant now that we've
+            // established the new (formatted) value
+            onFormattedChangeEvent?.invoke(newText)
         }
     }
 }
