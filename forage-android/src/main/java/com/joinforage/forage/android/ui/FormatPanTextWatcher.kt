@@ -35,7 +35,7 @@ const val MAX_PAN_LENGTH = 19
 val space16DigitPAN = expandDigitsToFormat("#### #### #### ####")
 val space18DigitPAN = expandDigitsToFormat("###### #### ##### ## #")
 val space19DigitPAN = expandDigitsToFormat("###### #### #### ### ##")
-val noTransform = expandDigitsToFormat("#".repeat(MAX_PAN_LENGTH))
+val defaultTransform = expandDigitsToFormat("#### #### #### #### ###")
 
 fun stripNonDigits(input: String): String {
     return input.replace(Regex("\\D"), "")
@@ -53,7 +53,7 @@ fun formatDigitsByStateIIN(digits: String): String {
         16 -> space16DigitPAN
         18 -> space18DigitPAN
         19 -> space19DigitPAN
-        else -> noTransform
+        else -> defaultTransform
     }
     return transform(digits)
 }

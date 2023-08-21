@@ -14,7 +14,7 @@ class InputSanitizationTest {
         val editText = EditText(ApplicationProvider.getApplicationContext())
         editText.addTextChangedListener(FormatPanTextWatcher(editText))
         editText.setText("!@#$%^&*()_+1234567890-=")
-        assertThat(editText.text.toString()).isEqualTo("1234567890")
+        assertThat(editText.text.toString()).isEqualTo("1234 5678 90")
     }
 
     @Test
@@ -80,11 +80,11 @@ class StaticPANFormattingTest {
     }
 
     @Test
-    fun `input with invalid StateIIN does not get transformed`() {
+    fun `input with invalid StateIIN get spaced by 4 digits at a time`() {
         val editText = EditText(ApplicationProvider.getApplicationContext())
         editText.addTextChangedListener(FormatPanTextWatcher(editText))
-        editText.setText("420420000000")
-        assertThat(editText.text.toString()).isEqualTo("420420000000")
+        editText.setText("4204200000000000000")
+        assertThat(editText.text.toString()).isEqualTo("4204 2000 0000 0000 000")
     }
 }
 
@@ -136,7 +136,7 @@ class TypingCharactersTest {
 
         // 1 gets inserted and trailing 4 gets dropped.
         // NOTE: that this becomes an invalid StateIIN so the format is lost too
-        assertThat(editText.text.toString()).isEqualTo("1627485420420420420")
+        assertThat(editText.text.toString()).isEqualTo("1627 4854 2042 0420 420")
 
         // a standard insert should move the cursor to the next position
         assertThat(editText.selectionStart).isEqualTo(1)
@@ -226,7 +226,7 @@ class TypingCharactersTest {
 
         // "1" gets inserted. everything else gets pushed
         // NOTE: this breaks the StateIIN so format collapses
-        assertThat(editText.text.toString()).isEqualTo("16274854204")
+        assertThat(editText.text.toString()).isEqualTo("1627 4854 204")
 
         // the cursor should remain at the end of the string
         assertThat(editText.selectionStart).isEqualTo(1)
@@ -430,7 +430,7 @@ class PastingOverSelectionsTest {
 
         // "77" gets inserted and pushes text back
         // NOTE: that format is lost since StateIIN becomes invalid
-        assertThat(editText.text.toString()).isEqualTo("77627485420")
+        assertThat(editText.text.toString()).isEqualTo("7762 7485 420")
 
         // pasting moves the cursor to the end of the pasted text
         assertThat(editText.selectionStart).isEqualTo(2)
