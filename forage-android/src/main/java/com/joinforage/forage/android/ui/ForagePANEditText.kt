@@ -39,7 +39,7 @@ class ForagePANEditText @JvmOverloads constructor(
         PanElementStateManager.forEmptyInput()
     } else {
         // allows whitelist of special Ebt PAN numbers
-        PanElementStateManager.DEV_ONLY_forEmptyInput()
+        PanElementStateManager.NON_PROD_forEmptyInput()
     }
 
     override var typeface: Typeface? = null

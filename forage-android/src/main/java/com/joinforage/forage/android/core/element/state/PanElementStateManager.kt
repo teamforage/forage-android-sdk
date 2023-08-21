@@ -136,7 +136,7 @@ class PanElementStateManager(state: ElementState, private val validators: Array<
             )
         }
 
-        fun DEV_ONLY_forEmptyInput(): PanElementStateManager {
+        fun NON_PROD_forEmptyInput(): PanElementStateManager {
             return PanElementStateManager(
                 INITIAL_ELEMENT_STATE,
                 arrayOf(
