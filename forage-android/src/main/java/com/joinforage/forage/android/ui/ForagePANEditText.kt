@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
-import android.text.InputFilter
-import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -74,9 +72,7 @@ class ForagePANEditText @JvmOverloads constructor(
                         layoutParams =
                             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                         setTextIsSelectable(false)
-                        inputType = InputType.TYPE_CLASS_NUMBER
                         isSingleLine = true
-                        filters += InputFilter.LengthFilter(19)
 
                         if (textColor != Color.BLACK) {
                             setTextColor(textColor)
@@ -94,6 +90,7 @@ class ForagePANEditText @JvmOverloads constructor(
         disableCopyCardNumber()
 
         textInputEditText.addTextChangedListener(this)
+        textInputEditText.addTextChangedListener(FormatPanTextWatcher(textInputEditText))
 
         textInputLayout.addView(textInputEditText)
         addView(textInputLayout)
@@ -188,6 +185,4 @@ class ForagePANEditText @JvmOverloads constructor(
 
     override fun onDestroyActionMode(mode: ActionMode?) {
     }
-
-    private fun isNumeric(input: String) = input.matches("[0-9]+".toRegex())
 }
