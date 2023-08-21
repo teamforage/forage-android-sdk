@@ -13,15 +13,6 @@ import com.joinforage.forage.android.model.tooShortForStateIIN
 const val MIN_CARD_LENGTH = 16
 const val MAX_CARD_LENGTH = 19
 
-private fun failsValidation(cardNumber: String): Boolean {
-    return missingStateIIN(cardNumber) ||
-        hasInvalidStateIIN(cardNumber) ||
-        tooLongForStateIIN(cardNumber)
-}
-private fun passesValidation(cardNumber: String): Boolean {
-    return !failsValidation(cardNumber)
-}
-
 interface PanValidator {
     fun checkIfValid(cardNumber: String): Boolean
     fun checkIfComplete(cardNumber: String): Boolean
@@ -30,11 +21,15 @@ interface PanValidator {
 
 class StrictEbtValidator : PanValidator {
     override fun checkIfValid(cardNumber: String): Boolean {
-        return cardNumber.isEmpty() || passesValidation(cardNumber)
+        // we consider a user's input valid if it is too short to
+        // contain a StateINN or if it contains a legitimate StateIIN
+        // but is not greater than the require length for that StateIIN
+        val definitelyInvalid = hasInvalidStateIIN(cardNumber) || tooLongForStateIIN(cardNumber)
+        return missingStateIIN(cardNumber) || !definitelyInvalid
     }
 
     override fun checkIfComplete(cardNumber: String): Boolean {
-        return passesValidation(cardNumber) && isCorrectLength(cardNumber)
+        return checkIfValid(cardNumber) && isCorrectLength(cardNumber)
     }
 
     override fun checkForValidationError(cardNumber: String): ElementValidationError? {

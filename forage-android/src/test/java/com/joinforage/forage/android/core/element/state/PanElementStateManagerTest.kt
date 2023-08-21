@@ -27,7 +27,11 @@ class StrictForEmptyInputTest {
         manager.handleChangeEvent(tooShortNoIIN)
         val state = manager.getState()
 
-        assertThat(state.isValid).isFalse
+        // we want to consider a card valid as long as we don't have
+        // a definitive reason to think it is invalid. If we don't
+        // have enough digits to know if its a valid StateIIN, then
+        // we'll consider it valid for now.
+        assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
     }
