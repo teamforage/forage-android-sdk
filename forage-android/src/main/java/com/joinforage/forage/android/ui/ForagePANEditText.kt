@@ -23,7 +23,6 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.element.state.PanElementStateManager
-import com.joinforage.forage.android.model.PanEntry
 
 /**
  * Material Design component with a TextInputEditText to collect the EBT card number
@@ -172,15 +171,7 @@ class ForagePANEditText @JvmOverloads constructor(
         // those spaces so downstream services only work with the raw
         // digits
         val digitsOnly = s.toString().filter { it.isDigit() }
-
-        // the manager houses the logic of knowing whether an entered
-        // PAN is OK to be submitted so we use this to determine if
-        // we should store as PanEntry.Valid vs PanEntry.Invalid
-        if (manager.getState().isComplete) {
-            ForageSDK.storeEntry(PanEntry.Valid(digitsOnly))
-        } else {
-            ForageSDK.storeEntry(PanEntry.Invalid(digitsOnly))
-        }
+        ForageSDK.storeEntry(digitsOnly)
     }
 
     override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
