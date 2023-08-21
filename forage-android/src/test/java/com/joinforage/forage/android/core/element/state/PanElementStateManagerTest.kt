@@ -88,7 +88,7 @@ class DEV_ONLY_IntegrationTests {
     @Test
     fun `StrictEbtValidator - correctly flags valid`() {
         val okMaineNumber: String = "5077031111111111111" // Maine is 507703
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent(okMaineNumber)
         val state = manager.getState()
 
@@ -100,7 +100,7 @@ class DEV_ONLY_IntegrationTests {
     @Test
     fun `PaymentCaptureErrorCard - correctly flags valid`() {
         val whitelistedPAN: String = "4444444444444412345"
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent(whitelistedPAN)
         val state = manager.getState()
 
@@ -111,7 +111,7 @@ class DEV_ONLY_IntegrationTests {
     @Test
     fun `BalanceCheckErrorCard - correctly flags valid`() {
         val whitelistedPAN: String = "5555555555555512345"
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent(whitelistedPAN)
         val state = manager.getState()
 
@@ -122,7 +122,7 @@ class DEV_ONLY_IntegrationTests {
     @Test
     fun `NonProdValidEbtCard - correctly flags valid`() {
         val whitelistedPAN: String = "9999420420420420420"
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent(whitelistedPAN)
         val state = manager.getState()
 
@@ -133,7 +133,7 @@ class DEV_ONLY_IntegrationTests {
     @Test
     fun `EmptyEbtCashBalanceCard - correctly flags valid`() {
         val whitelistedPAN: String = "6543210000000000000"
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent(whitelistedPAN)
         val state = manager.getState()
 
@@ -143,7 +143,7 @@ class DEV_ONLY_IntegrationTests {
 
     @Test
     fun `empty string is valid`() {
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent("")
         val state = manager.getState()
 
@@ -154,7 +154,7 @@ class DEV_ONLY_IntegrationTests {
 
     @Test
     fun `non-whitelisted invalid Ebt Pan should be invalid`() {
-        val manager = PanElementStateManager.DEV_ONLY_forEmptyInput()
+        val manager = PanElementStateManager.NON_PROD_forEmptyInput()
         manager.handleChangeEvent("4204204204204204204")
         val state = manager.getState()
 
