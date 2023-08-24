@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
+import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.ActionMode
@@ -83,6 +85,14 @@ class ForagePANEditText @JvmOverloads constructor(
                         if (textSize != -1f) {
                             setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
                         }
+
+                        // make the keyboard digits only instead of QWERTY. It is
+                        // necessary to declare that we accept digits and " " so
+                        // that the app does not crash when the PanFormatTextWatcher
+                        // programmatically inserts spaces. By default it disallows
+                        // whitespace
+                        inputType = InputType.TYPE_CLASS_NUMBER
+                        keyListener = DigitsKeyListener.getInstance("0123456789 ")
                     }
                 } finally {
                     recycle()
