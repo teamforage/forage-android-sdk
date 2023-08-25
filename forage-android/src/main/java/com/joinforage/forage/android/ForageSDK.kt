@@ -25,7 +25,7 @@ object ForageSDK : ForageSDKApi {
     // TODO: this should be a Config argument that uses the builder pattern
     override suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        panForageEditText: ForagePANEditText,
+        foragePanEditText: ForagePANEditText,
         bearerToken: String,
         customerId: String,
         reusable: Boolean
@@ -48,7 +48,7 @@ object ForageSDK : ForageSDKApi {
             httpUrl = ForageConstants.provideHttpUrl(),
             logger = logger
         ).tokenizeCard(
-            cardNumber = panForageEditText.getPanNumber(),
+            cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
             reusable = reusable
         )

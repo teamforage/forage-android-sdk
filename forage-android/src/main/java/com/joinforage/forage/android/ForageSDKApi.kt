@@ -11,7 +11,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 internal interface ForageSDKApi {
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        panForageEditText: ForagePANEditText,
+        foragePanEditText: ForagePANEditText,
         bearerToken: String,
         customerId: String,
         reusable: Boolean = true

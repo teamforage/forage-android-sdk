@@ -46,14 +46,14 @@ class FlowTokenizeViewModel @Inject constructor(
 
     val error: LiveData<String?> = _error
 
-    fun onSubmit(panForageEditText: ForagePANEditText) = viewModelScope.launch {
+    fun onSubmit(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
         _isLoading.value = true
 
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
             bearerToken = bearer,
             customerId = "android-test-customer-id",
-            panForageEditText = panForageEditText
+            foragePanEditText = foragePanEditText
         )
 
         when (response) {
