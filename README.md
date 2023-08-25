@@ -250,7 +250,7 @@ The ForageSDK exposes the following function to collect the EBT card number:
 ```kotlin
     suspend fun tokenizeEBTCard(
         merchantAccount: String,
-        panForageEditText: ForagePANEditText,
+        foragePanEditText: ForagePANEditText,
         bearerToken: String,
         customerId: String,
         reusable: Boolean = true
@@ -260,7 +260,7 @@ The ForageSDK exposes the following function to collect the EBT card number:
 #### Parameter definitions
 
 - `merchantAccount`: A unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants.
-- `panForageEditText`: A reference to the the `ForagePANEditText` that you added to your view. This is needed to extract the card number text.
+- `foragePanEditText`: A reference to the the `ForagePANEditText` that you added to your view. This is needed to extract the card number text.
 - `bearerToken`: A [session token](https://docs.joinforage.app/reference/create-session-token) that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the `/session_token/` endpoint.
 - `customerId`: A unique ID for the end customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
 - `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to true by default.
@@ -270,12 +270,12 @@ The ForageSDK exposes the following function to collect the EBT card number:
 This is an example of usage inside an ACC ViewModel:
 
 ```kotlin
-    fun onSubmit(panForageEditText: ForagePANEditText) = viewModelScope.launch {
+    fun onSubmit(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
         _isLoading.value = true
 
         val response = ForageSDK.tokenizeEBTCard(
             merchantAccount = merchantAccount,
-            panForageEditText = ForagePANEditText,
+            foragePanEditText = ForagePANEditText,
             bearerToken = bearer,
             // NOTE: The following line is for testing purposes only and should not be used in production.
             // Please replace this line with a real hashed customer ID value.

@@ -34,7 +34,7 @@ class FlowTokenizeFragment : Fragment() {
         binding.submitButton.apply {
             setOnClickListener {
                 viewModel.onSubmit(
-                    panForageEditText = binding.tokenizeForagePanEditText
+                    foragePanEditText = binding.tokenizeForagePanEditText
                 )
                 it.context.hideKeyboard(it)
             }

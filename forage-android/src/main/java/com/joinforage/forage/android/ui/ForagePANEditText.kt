@@ -233,14 +233,13 @@ class ForagePANEditText @JvmOverloads constructor(
 
     private fun isNumeric(input: String) = input.matches("[0-9]+".toRegex())
 
-    internal fun shouldTokenize() : Boolean {
+    internal fun shouldTokenize(): Boolean {
         return manager.canTokenizePanElementValue(BuildConfig.DEBUG)
     }
-    internal fun getPanNumber() : String {
-        val rawText = textInputEditText.text.toString();
+    internal fun getPanNumber(): String {
+        val rawText = textInputEditText.text.toString()
 
         // remove format spacing
         return rawText.filter { it.isDigit() }
     }
-
 }
