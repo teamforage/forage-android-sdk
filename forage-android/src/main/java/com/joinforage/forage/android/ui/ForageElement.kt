@@ -12,7 +12,7 @@ import com.joinforage.forage.android.core.element.state.ElementState
 // Minimalist event signatures where the only information
 // conveyed is whether or not a specific event has occurred
 
-interface ForageUI {
+interface ForageElement {
     var typeface: Typeface?
 
     fun clearText()
