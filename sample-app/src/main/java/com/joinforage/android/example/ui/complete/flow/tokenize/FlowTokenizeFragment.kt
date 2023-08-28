@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.joinforage.android.example.databinding.FragmentFlowTokenizeBinding
 import com.joinforage.android.example.ext.hideKeyboard
+import com.joinforage.forage.android.ui.ForagePANEditText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,9 +38,34 @@ class FlowTokenizeFragment : Fragment() {
             }
         }
 
+        val forage: ForagePANEditText = binding.tokenizeForagePanEditText
+
+        forage.requestFocus()
+
         val paymentRef: TextView = binding.paymentRef
         val cardLast4: TextView = binding.cardLast4
         val customerId: TextView = binding.customerId
+        val isFocused: TextView = binding.isFocused
+        val isComplete: TextView = binding.isComplete
+        val isEmpty: TextView = binding.isEmpty
+        val isValid: TextView = binding.isValid
+
+        fun setState() {
+            val state = forage.getElementState()
+            isFocused.text = "isFocused: ${state.isFocused}"
+            isComplete.text = "isComplete: ${state.isComplete}"
+            isEmpty.text = "isEmpty: ${state.isEmpty}"
+            isValid.text = "isValid: ${state.isValid}"
+        }
+
+        forage.setOnFocusEventListener { setState() }
+        forage.setOnChangeEventListener { setState() }
+
+        val state = forage.getElementState()
+        isFocused.text = "isFocused: ${state.isFocused}"
+        isComplete.text = "isComplete: ${state.isComplete}"
+        isEmpty.text = "isEmpty: ${state.isEmpty}"
+        isValid.text = "isValid: ${state.isValid}"
 
         viewModel.paymentMethod.observe(viewLifecycleOwner) {
             when (it == null) {
