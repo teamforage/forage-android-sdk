@@ -47,6 +47,30 @@ class FlowBalanceFragment : Fragment() {
         snap = binding.snap
         nonSnap = binding.nonSnap
 
+        foragePinEditText.requestFocus()
+
+        val isFocused: TextView = binding.isFocused
+        val isComplete: TextView = binding.isComplete
+        val isEmpty: TextView = binding.isEmpty
+        val isValid: TextView = binding.isValid
+
+        fun setState() {
+            val state = foragePinEditText.getElementState()
+            isFocused.text = "isFocused: ${state.isFocused}"
+            isComplete.text = "isComplete: ${state.isComplete}"
+            isEmpty.text = "isEmpty: ${state.isEmpty}"
+            isValid.text = "isValid: ${state.isValid}"
+        }
+
+        foragePinEditText.setOnFocusEventListener { setState() }
+        foragePinEditText.setOnChangeEventListener { setState() }
+
+        val state = foragePinEditText.getElementState()
+        isFocused.text = "isFocused: ${state.isFocused}"
+        isComplete.text = "isComplete: ${state.isComplete}"
+        isEmpty.text = "isEmpty: ${state.isEmpty}"
+        isValid.text = "isValid: ${state.isValid}"
+
         binding.checkBalanceButton.setOnClickListener {
             requireContext().hideKeyboard(it)
             viewModel.checkBalance(
