@@ -33,5 +33,11 @@
 
         <attr format="dimension" name="boxCornerRadiusBottomEnd" />
         <attr format="dimension" name="boxCornerRadius" />
+
+        <attr format="dimension" name="input_height" />
+        <attr format="dimension" name="input_width" />
+
+        <attr format="dimension" name="element_height" />
+        <attr format="dimension" name="element_width" />
     </declare-styleable>
 </resources>
