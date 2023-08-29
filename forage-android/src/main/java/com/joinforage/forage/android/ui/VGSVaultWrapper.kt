@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
@@ -46,11 +47,14 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     val textSize = getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_textSize, -1f)
                     val textColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_textColor, Color.BLACK)
 
+                    val inputWidth: Int = this.getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_width, ViewGroup.LayoutParams.MATCH_PARENT)
+                    val inputHeight: Int = this.getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+
                     _internalEditText = VGSEditText(context, null, textInputLayoutStyleAttribute).apply {
                         layoutParams =
                             LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                inputWidth,
+                                inputHeight
                             )
 
                         setHint(hint)
