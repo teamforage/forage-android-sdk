@@ -107,6 +107,10 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
             }
     }
 
+    override fun clearText() {
+        _internalEditText.setText("")
+    }
+
     override fun getVGSEditText(): VGSEditText {
         return _internalEditText
     }

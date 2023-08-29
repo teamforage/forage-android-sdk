@@ -85,6 +85,10 @@ internal class BTVaultWrapper @JvmOverloads constructor(
             }
     }
 
+    override fun clearText() {
+        _internalTextElement.setText("")
+    }
+
     override fun getVGSEditText(): VGSEditText {
         throw RuntimeException("Unimplemented for this vault!")
     }

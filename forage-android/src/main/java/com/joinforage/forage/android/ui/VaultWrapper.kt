@@ -28,6 +28,8 @@ abstract class VaultWrapper @JvmOverloads constructor(
     // with every set call
     internal abstract val manager: PinElementStateManager
 
+    abstract fun clearText()
+
     abstract fun setTextColor(textColor: Int)
     abstract fun setTextSize(textSize: Float)
     abstract fun setHint(hint: String)

@@ -127,6 +127,10 @@ class ForagePANEditText @JvmOverloads constructor(
         logger.i("ForagePANEditText successfully rendered")
     }
 
+    override fun clearText() {
+        textInputEditText.setText("")
+    }
+
     // NOTE: do not call this method inside `init {}`
     // There was a timing bug that caused the focus
     // callback to not get registered correctly when

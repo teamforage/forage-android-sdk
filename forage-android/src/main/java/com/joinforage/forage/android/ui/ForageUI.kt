@@ -14,6 +14,9 @@ import com.joinforage.forage.android.core.element.state.ElementState
 
 interface ForageUI {
     var typeface: Typeface?
+
+    fun clearText()
+
     fun setTextColor(textColor: Int)
     fun setTextSize(textSize: Float)
     fun setHint(hint: String)
