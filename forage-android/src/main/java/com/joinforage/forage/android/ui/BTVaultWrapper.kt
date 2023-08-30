@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
@@ -39,12 +40,15 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                 val hintTextColorVal =
                     getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_hintTextColor, getThemeAccentColor(context))
 
+                val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_width, ViewGroup.LayoutParams.MATCH_PARENT)
+                val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+
                 try {
                     _internalTextElement = TextElement(context, null, textInputLayoutStyleAttribute).apply {
                         layoutParams =
                             LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                inputWidth,
+                                inputHeight
                             )
                         inputType = com.basistheory.android.model.InputType.NUMBER_PASSWORD
                         val digit = Regex("""\d""")

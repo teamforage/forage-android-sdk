@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.LDManager
@@ -26,24 +28,44 @@ class ForagePINEditText @JvmOverloads constructor(
     private var vault: VaultWrapper
 
     init {
-        // Must initialize DD at the beginning of each render function. DD requires the context,
-        // so we need to wait until a context is present to run initialization code. However,
-        // we have logging all over the SDK that relies on the render happening first.
-        val logger = Log.getInstance()
-        logger.initializeDD(context)
-        logger.initializeSentry(context)
-        setWillNotDraw(false)
-        orientation = VERTICAL
+        context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
+            .apply {
+                try {
+                    // Must initialize DD at the beginning of each render function. DD requires the context,
+                    // so we need to wait until a context is present to run initialization code. However,
+                    // we have logging all over the SDK that relies on the render happening first.
+                    val logger = Log.getInstance()
+                    logger.initializeDD(context)
+                    logger.initializeSentry(context)
+                    setWillNotDraw(false)
+                    orientation = VERTICAL
+                    gravity = Gravity.CENTER
 
-        val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
-        vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
-            BTVaultWrapper(context, attrs, defStyleAttr)
-        } else {
-            VGSVaultWrapper(context, attrs, defStyleAttr)
-        }
-        addView(vault.getUnderlying())
-        addView(getLogoImageViewLayout(context))
-        logger.i("ForagePINEditText successfully rendered")
+                    val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
+                    vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+                        BTVaultWrapper(context, attrs, defStyleAttr)
+                    } else {
+                        VGSVaultWrapper(context, attrs, defStyleAttr)
+                    }
+
+                    val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_element_width, ViewGroup.LayoutParams.MATCH_PARENT)
+                    val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_element_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+                    val linearLayout = LinearLayout(context)
+                    linearLayout.layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)
+
+                    linearLayout.orientation = VERTICAL
+                    linearLayout.gravity = Gravity.CENTER
+
+                    linearLayout.addView(vault.getUnderlying())
+                    linearLayout.addView(getLogoImageViewLayout(context))
+
+                    addView(linearLayout)
+                    logger.i("ForagePINEditText successfully rendered")
+                } finally {
+                    recycle()
+                }
+            }
     }
 
     override fun clearText() {
