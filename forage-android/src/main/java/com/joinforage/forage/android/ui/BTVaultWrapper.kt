@@ -40,8 +40,8 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                 val hintTextColorVal =
                     getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_hintTextColor, getThemeAccentColor(context))
 
-                val inputWidth: Int = this.getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_width, ViewGroup.LayoutParams.MATCH_PARENT)
-                val inputHeight: Int = this.getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+                val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_width, ViewGroup.LayoutParams.MATCH_PARENT)
+                val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_height, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                 try {
                     _internalTextElement = TextElement(context, null, textInputLayoutStyleAttribute).apply {

@@ -48,8 +48,8 @@ class ForagePINEditText @JvmOverloads constructor(
                         VGSVaultWrapper(context, attrs, defStyleAttr)
                     }
 
-                    val elementWidth: Int = this.getDimensionPixelSize(R.styleable.ForagePINEditText_element_width, ViewGroup.LayoutParams.MATCH_PARENT)
-                    val elementHeight: Int = this.getDimensionPixelSize(R.styleable.ForagePINEditText_element_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_element_width, ViewGroup.LayoutParams.MATCH_PARENT)
+                    val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_element_height, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                     val linearLayout = LinearLayout(context)
                     linearLayout.layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)
@@ -57,8 +57,8 @@ class ForagePINEditText @JvmOverloads constructor(
                     linearLayout.orientation = VERTICAL
                     linearLayout.gravity = Gravity.CENTER
 
-                    linearLayout.addView(vault.getUnderlying());
-                    linearLayout.addView(getLogoImageViewLayout(context));
+                    linearLayout.addView(vault.getUnderlying())
+                    linearLayout.addView(getLogoImageViewLayout(context))
 
                     addView(linearLayout)
                     logger.i("ForagePINEditText successfully rendered")
