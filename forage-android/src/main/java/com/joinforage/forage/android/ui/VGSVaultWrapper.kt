@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
@@ -72,6 +73,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
 
                         setTextColor(textColor)
                         setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                        setGravity(Gravity.CENTER)
 
                         // Constant VGS configuration. Can't be externally altered!
                         setFieldName(ForageConstants.VGS.PIN_FIELD_NAME)
