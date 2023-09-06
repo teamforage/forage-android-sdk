@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -63,7 +64,10 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                             cornerRadii = floatArrayOf(boxCornerRadiusTopStart, boxCornerRadiusTopStart, boxCornerRadiusTopEnd, boxCornerRadiusTopEnd, boxCornerRadiusBottomStart, boxCornerRadiusBottomStart, boxCornerRadiusBottomEnd, boxCornerRadiusBottomEnd)
                             setStroke(5, boxStrokeColor)
                         }
+
                         background = customBackground
+
+                        gravity = Gravity.CENTER
                     }
 
                     // Basis Theory keeps a list of as many listeners as you want
