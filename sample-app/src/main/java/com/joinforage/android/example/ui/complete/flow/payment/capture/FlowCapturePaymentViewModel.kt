@@ -66,7 +66,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        snapResponse = response.errors[0].message
+                        snapResponse = response.errors[0].toString()
                     )
                 }
             }

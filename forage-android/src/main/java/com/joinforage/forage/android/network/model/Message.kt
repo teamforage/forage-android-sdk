@@ -13,6 +13,8 @@ sealed class ErrorMessageDetails {
                 return InsufficientFundsDetails(snapBalance, cashBalance)
             }
         }
+
+        override fun toString(): String = "Cash Balance: $cashBalance\nSNAP Balance: $snapBalance"
     }
 }
 

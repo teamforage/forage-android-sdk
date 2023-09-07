@@ -27,8 +27,7 @@ data class ForageError(
     val details: ErrorMessageDetails? = null
 ) {
     override fun toString(): String {
-        // TODO: should we include the stringified JSON details in the toString() ?
-        return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode"
+        return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode\nError Details (below):\n$details"
     }
 }
 
