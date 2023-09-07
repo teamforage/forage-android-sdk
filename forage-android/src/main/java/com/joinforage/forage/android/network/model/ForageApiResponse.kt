@@ -20,10 +20,21 @@ sealed class ForageApiResponse<out T> {
     }
 }
 
+// Learn more about `ForageError`s [here](https://docs.joinforage.app/reference/forage-js-errors#forageerror)
 data class ForageError(
+    // The HTTP status that the Forage API returns in response to the request.
     val httpStatusCode: Int,
+
+    // A short string explaining why the request failed. The [error code](https://docs.joinforage.app/reference/errors#error-codes)
+    // string corresponds to the HTTP status code.
     val code: String,
+
+    // A developer-facing message about the error, not to be displayed to customers.
     val message: String,
+
+    // Additional data associated with certain ForageErrors include for your
+    // convenience. Guaranteed to be present for ForageErrors with details
+    // (e.g. error_code_51 Insufficient Balance). null for all other ForageErrors
     val details: ErrorMessageDetails? = null
 ) {
     override fun toString(): String {
