@@ -5,15 +5,29 @@ import org.json.JSONObject
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>()
+    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
+        companion object {
+            fun fromSQSError(sqsError: SQSError): Failure {
+                val forageError = ForageError(
+                    sqsError.statusCode,
+                    sqsError.forageCode,
+                    sqsError.message,
+                    sqsError.details
+                )
+                return Failure(listOf(forageError))
+            }
+        }
+    }
 }
 
 data class ForageError(
     val httpStatusCode: Int,
     val code: String,
-    val message: String
+    val message: String,
+    val details: ErrorMessageDetails? = null
 ) {
     override fun toString(): String {
+        // TODO: should we include the stringified JSON details in the toString() ?
         return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode"
     }
 }
