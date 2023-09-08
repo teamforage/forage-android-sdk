@@ -3,14 +3,14 @@ package com.joinforage.forage.android.network.model
 import org.json.JSONObject
 
 sealed class ErrorMessageDetails {
-    data class InsufficientFundsDetails(val snapBalance: String? = null, val cashBalance: String? = null) : ErrorMessageDetails() {
+    data class EbtError51Details(val snapBalance: String? = null, val cashBalance: String? = null) : ErrorMessageDetails() {
         companion object {
-            fun from(detailsJson: JSONObject?): InsufficientFundsDetails {
+            fun from(detailsJson: JSONObject?): EbtError51Details {
                 // TODO: should probably add a log here if detailsJSON
                 //  is null since it should not be null if this is called
                 val snapBalance = detailsJson?.optString("snap_balance", null)
                 val cashBalance = detailsJson?.optString("cash_balance", null)
-                return InsufficientFundsDetails(snapBalance, cashBalance)
+                return EbtError51Details(snapBalance, cashBalance)
             }
         }
 
@@ -34,7 +34,7 @@ data class SQSError(
             val rawDetails = jsonObject.optJSONObject("details")
 
             val parsedDetails = when (forageCode) {
-                "ebt_error_51" -> ErrorMessageDetails.InsufficientFundsDetails.from(rawDetails)
+                "ebt_error_51" -> ErrorMessageDetails.EbtError51Details.from(rawDetails)
                 else -> null
             }
 

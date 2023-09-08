@@ -92,7 +92,7 @@ class SQSErrorFromTest {
 
         // be cause we know we're dealing with ebt_error_51, we
         // can make this type assertion
-        val details = result.details as ErrorMessageDetails.InsufficientFundsDetails
+        val details = result.details as ErrorMessageDetails.EbtError51Details
         assertThat(details.snapBalance).isEqualTo("10.00")
         assertThat(details.cashBalance).isEqualTo("5.00")
     }
@@ -106,7 +106,7 @@ class InsufficientFundsDetailsTest {
         val jsonObject = null
 
         // When
-        val result = ErrorMessageDetails.InsufficientFundsDetails.from(jsonObject)
+        val result = ErrorMessageDetails.EbtError51Details.from(jsonObject)
 
         // Then
         assertThat(result.snapBalance).isNull()
@@ -119,7 +119,7 @@ class InsufficientFundsDetailsTest {
         val jsonObject = JSONObject("{}")
 
         // When
-        val result = ErrorMessageDetails.InsufficientFundsDetails.from(jsonObject)
+        val result = ErrorMessageDetails.EbtError51Details.from(jsonObject)
 
         // Then
         assertThat(result.snapBalance).isNull()
@@ -137,10 +137,10 @@ class InsufficientFundsDetailsTest {
         )
 
         // When
-        val result = ErrorMessageDetails.InsufficientFundsDetails.from(jsonObject)
+        val result = ErrorMessageDetails.EbtError51Details.from(jsonObject)
 
         // Then
-        val details = result as ErrorMessageDetails.InsufficientFundsDetails
+        val details = result as ErrorMessageDetails.EbtError51Details
         assertThat(details.snapBalance).isEqualTo("200.00")
         assertThat(details.cashBalance).isEqualTo("100.00")
     }
