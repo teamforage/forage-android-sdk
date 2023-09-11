@@ -187,7 +187,6 @@ internal class VGSPinCollector(
                 "payment_ref" to paymentRef
             )
         )
-
         vgsCollect.asyncSubmit(request)
     }
 
