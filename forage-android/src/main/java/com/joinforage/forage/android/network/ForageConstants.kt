@@ -12,6 +12,7 @@ internal object ForageConstants {
         const val X_KEY = "X-KEY"
         const val MERCHANT_ACCOUNT = "Merchant-Account"
         const val IDEMPOTENCY_KEY = "IDEMPOTENCY-KEY"
+        const val TRACE_ID = "x-datadog-trace-id"
         const val AUTHORIZATION = "Authorization"
         const val BEARER = "Bearer"
         const val API_VERSION = "API-VERSION"

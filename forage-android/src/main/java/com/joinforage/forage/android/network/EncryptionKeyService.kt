@@ -14,10 +14,10 @@ internal class EncryptionKeyService(
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
     suspend fun getEncryptionKey(): ForageApiResponse<String> = try {
-        logger.i("GET request for Encryption Key")
+        logger.i("[HTTP] GET request for Encryption Key")
         getEncryptionToCoroutine()
     } catch (ex: IOException) {
-        logger.e("Failed while trying to GET Encryption Key", ex)
+        logger.e("[HTTP] Failed while trying to GET Encryption Key", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

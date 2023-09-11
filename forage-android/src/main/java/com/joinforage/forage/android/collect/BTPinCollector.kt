@@ -26,7 +26,7 @@ internal class BTPinCollector(
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = buildHeaders(encryptionKey, merchantAccount)
+            headers = buildHeaders(encryptionKey, merchantAccount, traceId = logger.getTraceIdValue())
             body = object {
                 val pin = pinForageEditText.getTextElement()
                 val card_number_token = cardToken
@@ -104,7 +104,7 @@ internal class BTPinCollector(
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = buildHeaders(encryptionKey, merchantAccount, paymentRef)
+            headers = buildHeaders(encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
             body = object {
                 val pin = pinForageEditText.getTextElement()
                 val card_number_token = cardToken
@@ -206,14 +206,16 @@ internal class BTPinCollector(
         private fun buildHeaders(
             encryptionKey: String,
             merchantAccount: String,
-            idempotencyKey: String = UUID.randomUUID().toString()
+            idempotencyKey: String = UUID.randomUUID().toString(),
+            traceId: String = ""
         ): Map<String, String> {
             return mapOf(
                 "X-KEY" to encryptionKey,
                 "Merchant-Account" to merchantAccount,
                 "BT-PROXY-KEY" to PROXY_ID,
                 "IDEMPOTENCY-KEY" to idempotencyKey,
-                "Content-Type" to "application/json"
+                "Content-Type" to "application/json",
+                "x-datadog-trace-id" to traceId
             )
         }
 

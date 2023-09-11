@@ -123,7 +123,7 @@ class ForagePANEditText @JvmOverloads constructor(
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
-        logger.i("ForagePANEditText successfully rendered")
+        logger.i("[UIView] ForagePANEditText successfully rendered")
     }
 
     override fun clearText() {

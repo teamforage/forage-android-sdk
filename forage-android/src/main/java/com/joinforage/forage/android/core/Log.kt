@@ -7,6 +7,7 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.log.Logger
 import com.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.BuildConfig
+import kotlin.random.Random
 
 internal interface Log {
     fun initializeDD(context: Context)
@@ -14,9 +15,11 @@ internal interface Log {
     fun i(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap())
+    fun getTraceIdValue(): String
     companion object {
         private const val LOGGER_NAME = "ForageSDK"
         private const val SERVICE_NAME = "android-sdk"
+
         fun getInstance(): Log {
             return LIVE
         }
@@ -26,7 +29,8 @@ internal interface Log {
         }
 
         private val LIVE = object : Log {
-            var logger: Logger? = null
+            var traceId: String? = null
+            private var logger: Logger? = null
 
             override fun initializeDD(context: Context) {
                 if (logger != null) {
@@ -54,8 +58,14 @@ internal interface Log {
                     .setLoggerName(LOGGER_NAME)
                     .build()
 
+                if (traceId == null) {
+                    traceId = generateTraceId()
+                }
+
                 logger?.addAttribute("version_code", BuildConfig.VERSION)
                 logger?.addTag("version_code", BuildConfig.VERSION)
+                logger?.addAttribute("trace_id", traceId)
+                logger?.addAttribute("sdk_trace_id", traceId)
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
@@ -72,6 +82,13 @@ internal interface Log {
 
             override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
                 logger?.e(msg, throwable, attributes)
+            }
+
+            override fun getTraceIdValue(): String {
+                if (traceId == null) {
+                    return ""
+                }
+                return traceId as String
             }
         }
 
@@ -90,6 +107,16 @@ internal interface Log {
 
             override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
             }
+
+            override fun getTraceIdValue(): String {
+                return ""
+            }
+        }
+
+        private fun generateTraceId(): String {
+            val random = Random(System.currentTimeMillis()) // Seed the random number generator with current time
+            val length = 14
+            return "44" + (1..length).map { random.nextInt(10) }.joinToString("")
         }
     }
 }
