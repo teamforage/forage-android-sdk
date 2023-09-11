@@ -2,8 +2,8 @@ package com.joinforage.forage.android.network.model
 
 import org.json.JSONObject
 
-sealed class ErrorMessageDetails {
-    data class EbtError51Details(val snapBalance: String? = null, val cashBalance: String? = null) : ErrorMessageDetails() {
+sealed class ForageErrorDetails {
+    data class EbtError51Details(val snapBalance: String? = null, val cashBalance: String? = null) : ForageErrorDetails() {
         companion object {
             fun from(detailsJson: JSONObject?): EbtError51Details {
                 // TODO: should probably add a log here if detailsJSON
@@ -22,7 +22,7 @@ data class SQSError(
     val statusCode: Int,
     val forageCode: String,
     val message: String,
-    val details: ErrorMessageDetails? = null
+    val details: ForageErrorDetails? = null
 ) {
     companion object SQSErrorMapper {
         fun from(jsonString: String): SQSError {
@@ -34,7 +34,7 @@ data class SQSError(
             val rawDetails = jsonObject.optJSONObject("details")
 
             val parsedDetails = when (forageCode) {
-                "ebt_error_51" -> ErrorMessageDetails.EbtError51Details.from(rawDetails)
+                "ebt_error_51" -> ForageErrorDetails.EbtError51Details.from(rawDetails)
                 else -> null
             }
 

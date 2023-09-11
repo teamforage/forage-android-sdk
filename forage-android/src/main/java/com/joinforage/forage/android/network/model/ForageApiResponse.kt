@@ -35,7 +35,7 @@ data class ForageError(
     // Additional data associated with certain ForageErrors include for your
     // convenience. Guaranteed to be present for ForageErrors with details
     // (e.g. error_code_51 Insufficient Balance). null for all other ForageErrors
-    val details: ErrorMessageDetails? = null
+    val details: ForageErrorDetails? = null
 ) {
     override fun toString(): String {
         return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode\nError Details (below):\n$details"
