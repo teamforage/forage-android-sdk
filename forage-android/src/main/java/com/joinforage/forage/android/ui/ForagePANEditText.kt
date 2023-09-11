@@ -192,5 +192,4 @@ class ForagePANEditText @JvmOverloads constructor(
         val digitsOnly = s.toString().filter { it.isDigit() }
         ForageSDK.storeEntry(digitsOnly)
     }
-
 }
