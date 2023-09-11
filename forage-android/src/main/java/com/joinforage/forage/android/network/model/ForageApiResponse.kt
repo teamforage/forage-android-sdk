@@ -32,7 +32,7 @@ data class ForageError(
     // A developer-facing message about the error, not to be displayed to customers.
     val message: String,
 
-    // Additional data associated with certain ForageErrors include for your
+    // Additional data associated with certain ForageErrors included for your
     // convenience. Guaranteed to be present for ForageErrors with details
     // (e.g. error_code_51 Insufficient Balance). null for all other ForageErrors
     val details: ForageErrorDetails? = null
