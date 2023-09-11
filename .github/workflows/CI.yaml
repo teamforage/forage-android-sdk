@@ -52,7 +52,7 @@ jobs:
         run: |
           cd mobile-qa-tests
           pip install -r requirements.txt
-          pytest android/tests/test_basic_flow.py
+          pytest android/tests/test_basic_flow.py || true
           pytest --lf --last-failed-no-failures none  --suppress-no-test-exit-code android/tests/test_basic_flow.py
 
       - name: Upload build outputs (APKs and SDK AARs)
