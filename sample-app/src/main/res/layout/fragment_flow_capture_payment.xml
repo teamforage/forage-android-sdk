@@ -11,123 +11,146 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        tools:context=".ui.complete.flow.tokens.FlowTokensFragment">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            tools:context=".ui.complete.flow.tokens.FlowTokensFragment">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/snapAmountLayout"
-            isVisible="@{viewModel.uiState.captureSnapVisible}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:enabled="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/snapAmountEditText"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/snapAmountLayout"
+                isVisible="@{viewModel.uiState.captureSnapVisible}"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.uiState.snapAmountString}" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_margin="16dp"
+                android:enabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <com.joinforage.forage.android.ui.ForagePINEditText
-            android:id="@+id/snapPinEditText"
-            style="@style/ForagePINEditTextStyle"
-            isVisible="@{viewModel.uiState.captureSnapVisible}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/captureSnapAmount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/snapAmountLayout" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/snapAmountEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.uiState.snapAmountString}" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/captureSnapAmount"
-            isVisible="@{viewModel.uiState.captureSnapVisible}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@string/capture_snap"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/snapPinEditText" />
-
-        <TextView
-            android:id="@+id/snapResponse"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@{viewModel.uiState.snapResponse}"
-            app:layout_constraintBottom_toTopOf="@id/nonSnapAmountLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/captureSnapAmount" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/nonSnapAmountLayout"
-            isVisible="@{viewModel.uiState.captureCashVisible}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:enabled="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/snapResponse">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/nonSnapAmountEditText"
-                android:layout_width="match_parent"
+            <com.joinforage.forage.android.ui.ForagePINEditText
+                android:id="@+id/snapPinEditText"
+                style="@style/ForagePINEditTextStyle"
+                isVisible="@{viewModel.uiState.captureSnapVisible}"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.uiState.cashAmountString}" />
-        </com.google.android.material.textfield.TextInputLayout>
+                app:layout_constraintBottom_toTopOf="@id/captureSnapAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snapAmountLayout" />
 
-        <com.joinforage.forage.android.ui.ForagePINEditText
-            android:id="@+id/cashPinEditText"
-            style="@style/ForagePINEditTextStyle"
-            isVisible="@{viewModel.uiState.captureCashVisible}"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/captureNonSnapAmount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nonSnapAmountLayout" />
+            <Button
+                android:id="@+id/captureSnapAmount"
+                isVisible="@{viewModel.uiState.captureSnapVisible}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/capture_snap"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snapPinEditText" />
 
-        <Button
-            android:id="@+id/captureNonSnapAmount"
-            isVisible="@{viewModel.uiState.captureCashVisible}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="4dp"
-            android:text="@string/capture_non_snap"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cashPinEditText" />
+            <TextView
+                android:id="@+id/snapResponse"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@{viewModel.uiState.snapResponse}"
+                app:layout_constraintTop_toBottomOf="@id/captureSnapAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/snapResponseError" />
 
-        <TextView
-            android:id="@+id/cashResponse"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@{viewModel.uiState.cashResponse}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/captureNonSnapAmount" />
+            <TextView
+                android:id="@+id/snapResponseError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@{viewModel.uiState.snapResponseError}"
+                app:layout_constraintTop_toBottomOf="@id/snapResponse"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/nonSnapAmountLayout" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            isVisible="@{viewModel.uiState.isLoading}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/nonSnapAmountLayout"
+                isVisible="@{viewModel.uiState.captureCashVisible}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:enabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snapResponseError">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nonSnapAmountEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.uiState.cashAmountString}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.joinforage.forage.android.ui.ForagePINEditText
+                android:id="@+id/cashPinEditText"
+                style="@style/ForagePINEditTextStyle"
+                isVisible="@{viewModel.uiState.captureCashVisible}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/captureNonSnapAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nonSnapAmountLayout" />
+
+            <Button
+                android:id="@+id/captureNonSnapAmount"
+                isVisible="@{viewModel.uiState.captureCashVisible}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="4dp"
+                android:text="@string/capture_non_snap"
+                app:layout_constraintTop_toBottomOf="@id/cashPinEditText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/cashResponse" />
+
+            <TextView
+                android:id="@+id/cashResponse"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@{viewModel.uiState.cashResponse}"
+                app:layout_constraintTop_toBottomOf="@id/captureNonSnapAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/cashResponseError" />
+
+            <TextView
+                android:id="@+id/cashResponseError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@{viewModel.uiState.cashResponseError}"
+                app:layout_constraintTop_toBottomOf="@id/cashResponse"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                isVisible="@{viewModel.uiState.isLoading}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
