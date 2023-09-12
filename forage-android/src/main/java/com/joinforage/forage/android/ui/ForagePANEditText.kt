@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.ui
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
@@ -58,6 +59,16 @@ class ForagePANEditText @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ForagePANEditText, defStyleAttr, 0)
             .apply {
                 try {
+                    val focusedBoxStrokeColor = getColor(
+                        R.styleable.ForagePANEditText_android_strokeColor,
+                        getThemeAccentColor(context)
+                    )
+
+                    val strokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_android_strokeWidth,
+                        3f
+                    )
+
                     val textInputLayoutStyleAttribute =
                         getResourceId(R.styleable.ForagePANEditText_textInputLayoutStyle, 0)
                     val textColor =
@@ -65,10 +76,30 @@ class ForagePANEditText @JvmOverloads constructor(
 
                     val textSize = getDimension(R.styleable.ForagePANEditText_android_textSize, -1f)
 
+                    val defRadius = resources.getDimension(R.dimen.default_horizontal_field)
+                    val focusedBoxCornerRadius =
+                        getDimension(R.styleable.ForagePANEditText_cornerRadius, defRadius)
+
+                    val boxCornerRadiusTopStart = getBoxCornerRadiusTopStart(focusedBoxCornerRadius)
+                    val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(focusedBoxCornerRadius)
+                    val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(focusedBoxCornerRadius)
+                    val boxCornerRadiusBottomEnd = getBoxCornerRadiusBottomEnd(focusedBoxCornerRadius)
+
                     textInputLayout =
                         TextInputLayout(context, null, textInputLayoutStyleAttribute).apply {
                             layoutParams =
                                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+
+                            boxStrokeColor = focusedBoxStrokeColor
+                            boxStrokeWidth = strokeWidth.toInt()
+                            hintTextColor = ColorStateList.valueOf(focusedBoxStrokeColor)
+
+                            setBoxCornerRadii(
+                                boxCornerRadiusTopStart,
+                                boxCornerRadiusTopEnd,
+                                boxCornerRadiusBottomStart,
+                                boxCornerRadiusBottomEnd
+                            )
                         }
 
                     textInputEditText = TextInputEditText(textInputLayout.context).apply {
@@ -180,6 +211,9 @@ class ForagePANEditText @JvmOverloads constructor(
     }
     override fun setHintTextColor(hintTextColor: Int) {
         // no-ops for now
+    }
+    override fun setBoxStrokeColor(boxStrokeColor: Int) {
+        textInputLayout.boxStrokeColor = boxStrokeColor
     }
 
     private fun disableCopyCardNumber() {

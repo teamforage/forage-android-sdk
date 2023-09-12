@@ -130,4 +130,7 @@ class ForagePINEditText @JvmOverloads constructor(
     override fun setHintTextColor(hintTextColor: Int) {
         vault.setHintTextColor(hintTextColor)
     }
+    override fun setBoxStrokeColor(boxStrokeColor: Int) {
+        // no-ops for now
+    }
 }
