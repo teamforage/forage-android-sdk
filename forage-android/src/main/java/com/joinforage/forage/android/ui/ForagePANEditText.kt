@@ -10,9 +10,6 @@ import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.ActionMode
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -32,7 +29,7 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForageElement, LinearLayout(context, attrs, defStyleAttr), TextWatcher, ActionMode.Callback {
+) : ForageElement, LinearLayout(context, attrs, defStyleAttr), TextWatcher {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
     private val manager: PanElementStateManager = if (BuildConfig.FLAVOR == "prod") {
@@ -136,8 +133,6 @@ class ForagePANEditText @JvmOverloads constructor(
                 }
             }
 
-        disableCopyCardNumber()
-
         // Register the afterTextChanged method on this class
         // so that we store the updated PAN on each input change
         // event
@@ -223,11 +218,6 @@ class ForagePANEditText @JvmOverloads constructor(
         textInputLayout.boxStrokeColor = boxStrokeColor
     }
 
-    private fun disableCopyCardNumber() {
-        textInputEditText.isLongClickable = false
-        textInputEditText.customSelectionActionModeCallback = this
-    }
-
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         // no-op
     }
@@ -242,20 +232,5 @@ class ForagePANEditText @JvmOverloads constructor(
         // digits
         val digitsOnly = s.toString().filter { it.isDigit() }
         ForageSDK.storeEntry(digitsOnly)
-    }
-
-    override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        return false
-    }
-
-    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        return false
-    }
-
-    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-        return false
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode?) {
     }
 }
