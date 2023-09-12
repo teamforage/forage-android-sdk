@@ -2,6 +2,7 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -11,7 +12,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
 import kotlinx.coroutines.delay
-import kotlin.random.Random
 
 internal class CheckBalanceRepository(
     private val pinCollector: PinCollector,
@@ -132,9 +132,7 @@ internal class CheckBalanceRepository(
             }
 
             attempt += 1
-            val random = Random.Default
-            val jitter = random.nextInt(-25, 26)
-            delay(POLLING_INTERVAL_IN_MILLIS + jitter)
+            delay(POLLING_INTERVAL_IN_MILLIS + getJitterAmount())
         }
 
         logger.i(
