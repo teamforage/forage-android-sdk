@@ -64,6 +64,11 @@ class ForagePANEditText @JvmOverloads constructor(
                         getThemeAccentColor(context)
                     )
 
+                    val focusedBoxStrokeWidth = getDimension(
+                        R.styleable.ForagePANEditText_boxStrokeWidthFocused,
+                        3f
+                    )
+
                     val strokeWidth = getFloat(
                         R.styleable.ForagePANEditText_android_strokeWidth,
                         3f
@@ -91,6 +96,8 @@ class ForagePANEditText @JvmOverloads constructor(
                                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
                             boxStrokeColor = focusedBoxStrokeColor
+                            boxStrokeWidthFocused = focusedBoxStrokeWidth.toInt()
+
                             boxStrokeWidth = strokeWidth.toInt()
                             hintTextColor = ColorStateList.valueOf(focusedBoxStrokeColor)
 

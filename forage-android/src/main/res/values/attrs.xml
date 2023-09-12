@@ -21,6 +21,7 @@
 
         <attr name="android:strokeColor" />
         <attr name="android:strokeWidth" />
+        <attr name="boxStrokeWidthFocused" />
     </declare-styleable>
 
     <!-- Style attributes for the ForagePanEditText component. -->
