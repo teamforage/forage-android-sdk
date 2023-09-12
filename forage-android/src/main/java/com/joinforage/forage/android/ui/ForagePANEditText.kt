@@ -3,9 +3,7 @@ package com.joinforage.forage.android.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.text.Editable
 import android.text.InputType
-import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -27,7 +25,7 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForageElement, LinearLayout(context, attrs, defStyleAttr), TextWatcher {
+) : ForageElement, LinearLayout(context, attrs, defStyleAttr) {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
     private val manager: PanElementStateManager = if (BuildConfig.FLAVOR == "prod") {
@@ -132,12 +130,6 @@ class ForagePANEditText @JvmOverloads constructor(
                 }
             }
 
-        // Register the afterTextChanged method on this class
-        // so that we store the updated PAN on each input change
-        // event
-        // NOTE: this is not ideal because it relies on mutating
-        // the state of the ForageSDK singleton
-        textInputEditText.addTextChangedListener(this)
 
         // register FormatPanTextWatcher to keep the format up to date
         // with each user input based on the StateIIN
@@ -216,22 +208,13 @@ class ForagePANEditText @JvmOverloads constructor(
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         textInputLayout.boxStrokeColor = boxStrokeColor
     }
+
     override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
         textInputLayout.boxStrokeWidth = boxStrokeWidth
     }
     override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
         textInputLayout.boxStrokeWidthFocused = boxStrokeWidth
     }
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        // no-op
-    }
-    override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
-        // no-op
-    }
-    override fun afterTextChanged(s: Editable?) {
-    }
-
-    private fun isNumeric(input: String) = input.matches("[0-9]+".toRegex())
 
     internal fun getPanNumber(): String {
         val rawText = textInputEditText.text.toString()
