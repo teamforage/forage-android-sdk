@@ -34,6 +34,7 @@
         <attr name="textSize" />
         <attr name="textColor" />
         <attr name="boxStrokeColor" />
+        <attr name="boxBackgroundColor" format="color" />
         <attr name="hintTextColor" format="color" />
         <attr format="dimension" name="boxCornerRadiusTopEnd" />
 
