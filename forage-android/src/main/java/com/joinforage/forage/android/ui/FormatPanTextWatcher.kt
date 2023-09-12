@@ -2,9 +2,9 @@ package com.joinforage.forage.android.ui
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.util.TypedValue
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.widget.EditText
 import com.joinforage.forage.android.model.queryForStateIIN
 
