@@ -94,7 +94,7 @@ internal class CapturePaymentRepository(
 
         while (true) {
             logger.i(
-                "Polling for balance check response for Payment $paymentRef",
+                "[HTTP] Polling for balance check response for Payment $paymentRef",
                 attributes = mapOf(
                     "payment_ref" to paymentRef,
                     "content_id" to contentId
@@ -109,7 +109,7 @@ internal class CapturePaymentRepository(
                         if (paymentMessage.failed) {
                             val error = paymentMessage.errors[0]
                             logger.e(
-                                "Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
+                                "[HTTP] Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
                                 attributes = mapOf(
                                     "payment_ref" to paymentRef,
                                     "content_id" to contentId
@@ -123,7 +123,7 @@ internal class CapturePaymentRepository(
                     if (paymentMessage.failed) {
                         val error = paymentMessage.errors[0]
                         logger.e(
-                            "Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
+                            "[HTTP] Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
                             attributes = mapOf(
                                 "payment_ref" to paymentRef,
                                 "content_id" to contentId
@@ -139,7 +139,7 @@ internal class CapturePaymentRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.e(
-                    "Max polling attempts reached for capture request of Payment $paymentRef",
+                    "[HTTP] Max polling attempts reached for capture request of Payment $paymentRef",
                     attributes = mapOf(
                         "payment_ref" to paymentRef,
                         "content_id" to contentId
@@ -153,7 +153,7 @@ internal class CapturePaymentRepository(
         }
 
         logger.i(
-            "Polling for capture request response succeeded for Payment $paymentRef",
+            "[HTTP] Polling for capture request response succeeded for Payment $paymentRef",
             attributes = mapOf(
                 "payment_ref" to paymentRef,
                 "content_id" to contentId

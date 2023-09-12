@@ -31,7 +31,7 @@ object ForageSDK : ForageSDKApi {
         val currentEntry = panEntry
 
         logger.i(
-            "Tokenizing Payment Method",
+            "[HTTP] Tokenizing Payment Method",
             attributes = mapOf(
                 "merchant_ref" to merchantAccount,
                 "customer_id" to customerId
@@ -42,7 +42,8 @@ object ForageSDK : ForageSDKApi {
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                 bearerToken,
                 merchantAccount,
-                idempotencyKey = UUID.randomUUID().toString()
+                idempotencyKey = UUID.randomUUID().toString(),
+                traceId = logger.getTraceIdValue()
             ),
             httpUrl = ForageConstants.provideHttpUrl(),
             logger = logger
@@ -61,7 +62,7 @@ object ForageSDK : ForageSDKApi {
         paymentMethodRef: String
     ): ForageApiResponse<String> {
         logger.i(
-            "Submitting balance check for Payment Method $paymentMethodRef",
+            "[HTTP] Submitting balance check for Payment Method $paymentMethodRef",
             attributes = mapOf(
                 "merchant_ref" to merchantAccount,
                 "payment_method_ref" to paymentMethodRef
@@ -74,7 +75,8 @@ object ForageSDK : ForageSDKApi {
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
@@ -82,7 +84,8 @@ object ForageSDK : ForageSDKApi {
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
@@ -90,7 +93,8 @@ object ForageSDK : ForageSDKApi {
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
@@ -109,7 +113,7 @@ object ForageSDK : ForageSDKApi {
         paymentRef: String
     ): ForageApiResponse<String> {
         logger.i(
-            "Submitting capture request for Payment $paymentRef",
+            "[HTTP] Submitting capture request for Payment $paymentRef",
             attributes = mapOf(
                 "merchant_ref" to merchantAccount,
                 "payment_ref" to paymentRef
@@ -122,7 +126,8 @@ object ForageSDK : ForageSDKApi {
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
@@ -130,7 +135,8 @@ object ForageSDK : ForageSDKApi {
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
@@ -138,7 +144,8 @@ object ForageSDK : ForageSDKApi {
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
@@ -146,7 +153,8 @@ object ForageSDK : ForageSDKApi {
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     bearerToken,
-                    merchantAccount
+                    merchantAccount,
+                    traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
