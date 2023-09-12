@@ -2,23 +2,47 @@ package com.joinforage.forage.android.network.model
 
 import org.json.JSONObject
 
+sealed class ForageErrorDetails {
+    data class EbtError51Details(val snapBalance: String? = null, val cashBalance: String? = null) : ForageErrorDetails() {
+        companion object {
+            fun from(detailsJson: JSONObject?): EbtError51Details {
+                // TODO: should probably add a log here if detailsJSON
+                //  is null since it should not be null if this is called
+                val snapBalance = detailsJson?.optString("snap_balance", null)
+                val cashBalance = detailsJson?.optString("cash_balance", null)
+                return EbtError51Details(snapBalance, cashBalance)
+            }
+        }
+
+        override fun toString(): String = "Cash Balance: $cashBalance\nSNAP Balance: $snapBalance"
+    }
+}
+
 data class SQSError(
     val statusCode: Int,
     val forageCode: String,
-    val message: String
+    val message: String,
+    val details: ForageErrorDetails? = null
 ) {
-    object SQSErrorMapper {
-        fun from(string: String): SQSError {
-            val jsonObject = JSONObject(string)
+    companion object SQSErrorMapper {
+        fun from(jsonString: String): SQSError {
+            val jsonObject = JSONObject(jsonString)
 
             val statusCode = jsonObject.getInt("status_code")
             val forageCode = jsonObject.getString("forage_code")
             val message = jsonObject.getString("message")
+            val rawDetails = jsonObject.optJSONObject("details")
+
+            val parsedDetails = when (forageCode) {
+                "ebt_error_51" -> ForageErrorDetails.EbtError51Details.from(rawDetails)
+                else -> null
+            }
 
             return SQSError(
                 statusCode = statusCode,
                 forageCode = forageCode,
-                message = message
+                message = message,
+                details = parsedDetails
             )
         }
     }

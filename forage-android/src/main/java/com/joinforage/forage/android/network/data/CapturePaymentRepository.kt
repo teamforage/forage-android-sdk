@@ -115,7 +115,7 @@ internal class CapturePaymentRepository(
                                     "content_id" to contentId
                                 )
                             )
-                            return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+                            return ForageApiResponse.Failure.fromSQSError(error)
                         }
                         break
                     }
@@ -129,7 +129,7 @@ internal class CapturePaymentRepository(
                                 "content_id" to contentId
                             )
                         )
-                        return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+                        return ForageApiResponse.Failure.fromSQSError(error)
                     }
                 }
                 else -> {

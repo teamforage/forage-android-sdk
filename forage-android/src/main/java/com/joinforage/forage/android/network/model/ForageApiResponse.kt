@@ -5,16 +5,40 @@ import org.json.JSONObject
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>()
+    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
+        companion object {
+            fun fromSQSError(sqsError: SQSError): Failure {
+                val forageError = ForageError(
+                    sqsError.statusCode,
+                    sqsError.forageCode,
+                    sqsError.message,
+                    sqsError.details
+                )
+                return Failure(listOf(forageError))
+            }
+        }
+    }
 }
 
+// Learn more about `ForageError`s [here](https://docs.joinforage.app/reference/forage-js-errors#forageerror)
 data class ForageError(
+    // The HTTP status that the Forage API returns in response to the request.
     val httpStatusCode: Int,
+
+    // A short string explaining why the request failed. The [error code](https://docs.joinforage.app/reference/errors#error-codes)
+    // string corresponds to the HTTP status code.
     val code: String,
-    val message: String
+
+    // A developer-facing message about the error, not to be displayed to customers.
+    val message: String,
+
+    // Additional data associated with certain ForageErrors included for your
+    // convenience. Guaranteed to be present for ForageErrors with details
+    // (e.g. error_code_51 Insufficient Balance). null for all other ForageErrors
+    val details: ForageErrorDetails? = null
 ) {
     override fun toString(): String {
-        return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode"
+        return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode\nError Details (below):\n$details"
     }
 }
 

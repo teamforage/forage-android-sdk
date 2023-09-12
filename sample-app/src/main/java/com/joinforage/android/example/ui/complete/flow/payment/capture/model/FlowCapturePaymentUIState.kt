@@ -7,7 +7,9 @@ data class FlowCapturePaymentUIState(
     val snapPaymentRef: String,
     val cashPaymentRef: String,
     val snapResponse: String = "",
-    val cashResponse: String = ""
+    val cashResponse: String = "",
+    val snapResponseError: String = "",
+    val cashResponseError: String = ""
 ) {
     val isCaptureSnapVisible = snapPaymentRef.isNotEmpty()
     val isCaptureCashVisible = cashPaymentRef.isNotEmpty()
