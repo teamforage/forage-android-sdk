@@ -13,6 +13,7 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 internal class CapturePaymentRepository(
     private val pinCollector: PinCollector,
@@ -149,7 +150,9 @@ internal class CapturePaymentRepository(
             }
 
             attempt += 1
-            delay(POLLING_INTERVAL_IN_MILLIS)
+            val random = Random.Default
+            val jitter = random.nextInt(-25, 26)
+            delay(POLLING_INTERVAL_IN_MILLIS + jitter)
         }
 
         logger.i(
