@@ -6,6 +6,7 @@ import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -209,14 +210,14 @@ internal class BTPinCollector(
             idempotencyKey: String = UUID.randomUUID().toString(),
             traceId: String = ""
         ): Map<String, String> {
-            return mapOf(
-                "X-KEY" to encryptionKey,
-                "Merchant-Account" to merchantAccount,
-                "BT-PROXY-KEY" to PROXY_ID,
-                "IDEMPOTENCY-KEY" to idempotencyKey,
-                "Content-Type" to "application/json",
-                "x-datadog-trace-id" to traceId
-            )
+            val headers = HashMap<String, String>()
+            headers[ForageConstants.Headers.X_KEY] = encryptionKey
+            headers[ForageConstants.Headers.MERCHANT_ACCOUNT] = merchantAccount
+            headers[ForageConstants.Headers.IDEMPOTENCY_KEY] = idempotencyKey
+            headers[ForageConstants.Headers.BT_PROXY_KEY] = PROXY_ID
+            headers[ForageConstants.Headers.CONTENT_TYPE] = "application/json"
+            headers[ForageConstants.Headers.TRACE_ID] = traceId
+            return headers
         }
 
         private fun balancePath(paymentMethodRef: String) =

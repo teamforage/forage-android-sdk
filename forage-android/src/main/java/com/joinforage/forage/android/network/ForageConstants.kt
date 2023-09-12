@@ -16,6 +16,8 @@ internal object ForageConstants {
         const val AUTHORIZATION = "Authorization"
         const val BEARER = "Bearer"
         const val API_VERSION = "API-VERSION"
+        const val BT_PROXY_KEY = "BT-PROXY-KEY"
+        const val CONTENT_TYPE = "Content-Type"
     }
 
     object RequestBody {

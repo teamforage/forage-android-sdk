@@ -19,6 +19,8 @@ internal interface Log {
     companion object {
         private const val LOGGER_NAME = "ForageSDK"
         private const val SERVICE_NAME = "android-sdk"
+        private const val VERSION_CODE = "version_code"
+        private const val TRACE_ID = "trace_id"
 
         fun getInstance(): Log {
             return LIVE
@@ -62,10 +64,9 @@ internal interface Log {
                     traceId = generateTraceId()
                 }
 
-                logger?.addAttribute("version_code", BuildConfig.VERSION)
-                logger?.addTag("version_code", BuildConfig.VERSION)
-                logger?.addAttribute("trace_id", traceId)
-                logger?.addAttribute("sdk_trace_id", traceId)
+                logger?.addAttribute(VERSION_CODE, BuildConfig.VERSION)
+                logger?.addTag(VERSION_CODE, BuildConfig.VERSION)
+                logger?.addAttribute(TRACE_ID, traceId)
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {
@@ -114,7 +115,8 @@ internal interface Log {
         }
 
         private fun generateTraceId(): String {
-            val random = Random(System.currentTimeMillis()) // Seed the random number generator with current time
+            // Seed the random number generator with current time
+            val random = Random(System.currentTimeMillis())
             val length = 14
             return "44" + (1..length).map { random.nextInt(10) }.joinToString("")
         }
