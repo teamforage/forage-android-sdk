@@ -36,6 +36,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                         com.joinforage.forage.android.R.styleable.ForagePINEditText_boxStrokeColor,
                         getThemeAccentColor(context)
                     )
+                    val boxBackgroundColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxBackgroundColor, Color.TRANSPARENT)
                     val defRadius = resources.getDimension(com.joinforage.forage.android.R.dimen.default_horizontal_field)
                     val boxCornerRadius =
                         getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadius, defRadius)
@@ -68,6 +69,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                             shape = GradientDrawable.RECTANGLE
                             cornerRadii = floatArrayOf(boxCornerRadiusTopStart, boxCornerRadiusTopStart, boxCornerRadiusTopEnd, boxCornerRadiusTopEnd, boxCornerRadiusBottomStart, boxCornerRadiusBottomStart, boxCornerRadiusBottomEnd, boxCornerRadiusBottomEnd)
                             setStroke(5, boxStrokeColor)
+                            setColor(boxBackgroundColor)
                         }
                         background = customBackground
 
