@@ -1,7 +1,7 @@
 package com.joinforage.forage.android
 
 import android.content.Context
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService

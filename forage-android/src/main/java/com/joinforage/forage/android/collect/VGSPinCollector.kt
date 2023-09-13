@@ -2,7 +2,10 @@ package com.joinforage.forage.android.collect
 
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.VaultType
+import com.joinforage.forage.android.core.telemetry.ActionType
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -24,6 +27,8 @@ internal class VGSPinCollector(
     private val merchantAccount: String
 ) : PinCollector {
     private val logger = Log.getInstance()
+    private val vaultType = VaultType.VGS_VAULT_TYPE
+
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
@@ -34,13 +39,30 @@ internal class VGSPinCollector(
         val inputField = pinForageEditText.getTextInputEditText()
         vgsCollect.bindView(inputField)
 
+        // This block is used for Metrics Tracking!
+        // ------------------------------------------------------
+        val path = balancePath(paymentMethodRef)
+        val method = HTTPMethod.POST
+
+        val measurement = VaultProxyResponseMonitor.newMeasurement(
+            vault = vaultType,
+            vaultAction = ActionType.BALANCE,
+            logger
+        )
+            .setPath(path)
+            .setMethod(method.toString())
+        // ------------------------------------------------------
+
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
+                measurement.end()
+
                 vgsCollect.onDestroy()
                 inputField.setText("")
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> {
+                        measurement.setHttpStatusCode(response.code).logResult()
                         logger.i(
                             "[VGS] Received successful response from VGS",
                             attributes = mapOf(
@@ -55,6 +77,7 @@ internal class VGSPinCollector(
                         )
                     }
                     is VGSResponse.ErrorResponse -> {
+                        measurement.setHttpStatusCode(response.code).logResult()
                         logger.e(
                             "[VGS] Received an error while submitting balance request to VGS: ${response.body}",
                             attributes = mapOf(
@@ -69,6 +92,8 @@ internal class VGSPinCollector(
                         )
                     }
                     null -> {
+                        val unknownVgsErrorCode = 500
+                        measurement.setHttpStatusCode(unknownVgsErrorCode).logResult()
                         logger.e(
                             "[VGS] Received an unknown error while submitting balance request to VGS",
                             attributes = mapOf(
@@ -78,7 +103,7 @@ internal class VGSPinCollector(
                         )
                         continuation.resumeWith(
                             Result.success(
-                                ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                                ForageApiResponse.Failure(listOf(ForageError(unknownVgsErrorCode, "unknown_server_error", "Unknown Server Error")))
                             )
                         )
                     }
@@ -87,8 +112,8 @@ internal class VGSPinCollector(
         })
 
         val request: VGSRequest = VGSRequest.VGSRequestBuilder()
-            .setMethod(HTTPMethod.POST)
-            .setPath(balancePath(paymentMethodRef))
+            .setMethod(method)
+            .setPath(path)
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
@@ -101,6 +126,7 @@ internal class VGSPinCollector(
 
         logger.i("[VGS] Sending balance check to VGS")
 
+        measurement.start()
         vgsCollect.asyncSubmit(request)
     }
 
@@ -114,13 +140,31 @@ internal class VGSPinCollector(
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
         val inputField = pinForageEditText.getTextInputEditText()
 
+        // This block is used for Metrics Tracking!
+        // ------------------------------------------------------
+        val path = capturePaymentPath(paymentRef)
+        val method = HTTPMethod.POST
+
+        val measurement = VaultProxyResponseMonitor.newMeasurement(
+            vault = vaultType,
+            vaultAction = ActionType.CAPTURE,
+            logger
+        )
+            .setPath(path)
+            .setMethod(method.toString())
+        // ------------------------------------------------------
+
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
+                measurement.end()
+
                 vgsCollect.onDestroy()
                 inputField.setText("")
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> {
+                        measurement.setHttpStatusCode(response.code).logResult()
+
                         logger.i(
                             "[VGS] Received successful response from VGS",
                             attributes = mapOf(
@@ -135,6 +179,8 @@ internal class VGSPinCollector(
                         )
                     }
                     is VGSResponse.ErrorResponse -> {
+                        measurement.setHttpStatusCode(response.code).logResult()
+
                         logger.e(
                             "[VGS] Received an error while submitting capture request to VGS: ${response.body}",
                             attributes = mapOf(
@@ -149,6 +195,9 @@ internal class VGSPinCollector(
                         )
                     }
                     null -> {
+                        val unknownVgsErrorCode = 500
+                        measurement.setHttpStatusCode(unknownVgsErrorCode).logResult()
+
                         logger.e(
                             "[VGS] Received an unknown error while submitting capture request to VGS",
                             attributes = mapOf(
@@ -167,8 +216,8 @@ internal class VGSPinCollector(
         })
 
         val request: VGSRequest = VGSRequest.VGSRequestBuilder()
-            .setMethod(HTTPMethod.POST)
-            .setPath(capturePaymentPath(paymentRef))
+            .setMethod(method)
+            .setPath(path)
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
@@ -188,6 +237,7 @@ internal class VGSPinCollector(
             )
         )
 
+        measurement.start()
         vgsCollect.asyncSubmit(request)
     }
 

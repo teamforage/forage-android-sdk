@@ -1,16 +1,20 @@
 package com.joinforage.forage.android
 
 import android.app.Application
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.Log
 import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
 import com.launchdarkly.sdk.android.integrations.TestData
 
-internal object VaultConstants {
-    const val VGS_VAULT_TYPE = "vgs_vault_type"
-    const val BT_VAULT_TYPE = "bt_vault_type"
+enum class VaultType(val value: String) {
+    VGS_VAULT_TYPE("vgs_vault_type"),
+    BT_VAULT_TYPE("bt_vault_type");
+
+    override fun toString(): String {
+        return value
+    }
 }
 
 internal object LDFlags {
@@ -27,10 +31,10 @@ internal object LDContextKind {
 
 internal object LDManager {
     private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
-    private var internalVaultType: String? = null
+    private var internalVaultType: VaultType? = null
     private var internalLogger: Log = Log.getSilentInstance()
 
-    internal var vaultType: String?
+    internal var vaultType: VaultType?
         get() = internalVaultType
 
         // The setter is only exposed for testing purposes. Otherwise, it is entirely internal and
@@ -49,9 +53,9 @@ internal object LDManager {
     // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
     // want to overwrite it! We must take in the application as a parameter, which means that a
     // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
-    internal fun getVaultProvider(app: Application, logger: Log, dataSource: TestData? = null): String {
+    internal fun getVaultProvider(app: Application, logger: Log, dataSource: TestData? = null): VaultType {
         if (vaultType != null) {
-            return vaultType as String
+            return vaultType as VaultType
         }
         internalLogger = logger
         // Datasource is required for testing purposes!
@@ -73,11 +77,11 @@ internal object LDManager {
         internalLogger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
         val randomNum = Math.random() * 100
         vaultType = if (randomNum < vaultPercent) {
-            VaultConstants.BT_VAULT_TYPE
+            VaultType.BT_VAULT_TYPE
         } else {
-            VaultConstants.VGS_VAULT_TYPE
+            VaultType.VGS_VAULT_TYPE
         }
         internalLogger.i("[LaunchDarkly] Vault type set to $vaultType")
-        return vaultType as String
+        return vaultType as VaultType
     }
 }

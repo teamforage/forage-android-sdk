@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core
+package com.joinforage.forage.android.core.telemetry
 
 import android.content.Context
 import com.datadog.android.Datadog

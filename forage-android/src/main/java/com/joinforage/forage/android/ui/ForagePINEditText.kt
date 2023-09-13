@@ -10,11 +10,11 @@ import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.VaultConstants
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
@@ -41,7 +41,7 @@ class ForagePINEditText @JvmOverloads constructor(
                     gravity = Gravity.CENTER
 
                     val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
-                    vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+                    vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
                         BTVaultWrapper(context, attrs, defStyleAttr)
                     } else {
                         VGSVaultWrapper(context, attrs, defStyleAttr)
