@@ -60,7 +60,7 @@ class ForagePINEditText @JvmOverloads constructor(
                     linearLayout.addView(getLogoImageViewLayout(context))
 
                     addView(linearLayout)
-                    logger.i("ForagePINEditText successfully rendered")
+                    logger.i("[UIView] ForagePINEditText successfully rendered")
                 } finally {
                     recycle()
                 }

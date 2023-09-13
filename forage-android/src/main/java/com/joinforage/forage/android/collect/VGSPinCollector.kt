@@ -41,7 +41,13 @@ internal class VGSPinCollector(
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> {
-                        logger.i("[VGS] Received successful response from VGS")
+                        logger.i(
+                            "[VGS] Received successful response from VGS",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_method_ref" to paymentMethodRef
+                            )
+                        )
                         continuation.resumeWith(
                             Result.success(
                                 ForageApiResponse.Success(response.body!!)
@@ -49,7 +55,13 @@ internal class VGSPinCollector(
                         )
                     }
                     is VGSResponse.ErrorResponse -> {
-                        logger.e("[VGS] Received an error while submitting balance request to VGS: ${response.body}")
+                        logger.e(
+                            "[VGS] Received an error while submitting balance request to VGS: ${response.body}",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_method_ref" to paymentMethodRef
+                            )
+                        )
                         continuation.resumeWith(
                             Result.success(
                                 ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
@@ -57,7 +69,13 @@ internal class VGSPinCollector(
                         )
                     }
                     null -> {
-                        logger.e("[VGS] Received an unknown error while submitting balance request to VGS")
+                        logger.e(
+                            "[VGS] Received an unknown error while submitting balance request to VGS",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_method_ref" to paymentMethodRef
+                            )
+                        )
                         continuation.resumeWith(
                             Result.success(
                                 ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
@@ -74,7 +92,8 @@ internal class VGSPinCollector(
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
-                    encryptionKey
+                    encryptionKey,
+                    traceId = logger.getTraceIdValue()
                 )
             )
             .setCustomData(buildRequestBody(cardToken))
@@ -102,7 +121,13 @@ internal class VGSPinCollector(
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> {
-                        logger.i("[VGS] Received successful response from VGS")
+                        logger.i(
+                            "[VGS] Received successful response from VGS",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_ref" to paymentRef
+                            )
+                        )
                         continuation.resumeWith(
                             Result.success(
                                 ForageApiResponse.Success(response.body!!)
@@ -110,7 +135,13 @@ internal class VGSPinCollector(
                         )
                     }
                     is VGSResponse.ErrorResponse -> {
-                        logger.e("[VGS] Received an error while submitting capture request to VGS: ${response.body}")
+                        logger.e(
+                            "[VGS] Received an error while submitting capture request to VGS: ${response.body}",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_ref" to paymentRef
+                            )
+                        )
                         continuation.resumeWith(
                             Result.success(
                                 ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
@@ -118,7 +149,13 @@ internal class VGSPinCollector(
                         )
                     }
                     null -> {
-                        logger.e("[VGS] Received an unknown error while submitting capture request to VGS")
+                        logger.e(
+                            "[VGS] Received an unknown error while submitting capture request to VGS",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_ref" to paymentRef
+                            )
+                        )
                         continuation.resumeWith(
                             Result.success(
                                 ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
@@ -136,13 +173,20 @@ internal class VGSPinCollector(
                 buildHeaders(
                     merchantAccount,
                     encryptionKey,
-                    idempotencyKey = paymentRef
+                    idempotencyKey = paymentRef,
+                    traceId = logger.getTraceIdValue()
                 )
             )
             .setCustomData(buildRequestBody(cardToken))
             .build()
 
-        logger.i("[VGS] Sending payment capture to VGS")
+        logger.i(
+            "[VGS] Sending payment capture to VGS",
+            attributes = mapOf(
+                "merchant_ref" to merchantAccount,
+                "payment_ref" to paymentRef
+            )
+        )
 
         vgsCollect.asyncSubmit(request)
     }
@@ -179,12 +223,14 @@ internal class VGSPinCollector(
         private fun buildHeaders(
             merchantAccount: String,
             encryptionKey: String,
-            idempotencyKey: String = UUID.randomUUID().toString()
+            idempotencyKey: String = UUID.randomUUID().toString(),
+            traceId: String = ""
         ): HashMap<String, String> {
             val headers = HashMap<String, String>()
             headers[ForageConstants.Headers.X_KEY] = encryptionKey
             headers[ForageConstants.Headers.MERCHANT_ACCOUNT] = merchantAccount
             headers[ForageConstants.Headers.IDEMPOTENCY_KEY] = idempotencyKey
+            headers[ForageConstants.Headers.TRACE_ID] = traceId
             return headers
         }
 

@@ -15,7 +15,7 @@ internal class PaymentService(
 ) : NetworkService(okHttpClient, logger) {
     suspend fun getPayment(paymentRef: String): ForageApiResponse<String> = try {
         logger.i(
-            "GET request for Payment Method $paymentRef",
+            "[HTTP] GET request for Payment Method $paymentRef",
             attributes = mapOf(
                 "payment_ref" to paymentRef
             )
@@ -23,7 +23,7 @@ internal class PaymentService(
         getPaymentToCoroutine(paymentRef)
     } catch (ex: IOException) {
         logger.e(
-            "Failed while trying to GET Payment $paymentRef",
+            "[HTTP] Failed while trying to GET Payment $paymentRef",
             ex,
             attributes = mapOf("payment_ref" to paymentRef)
         )

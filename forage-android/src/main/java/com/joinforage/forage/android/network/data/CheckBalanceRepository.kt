@@ -76,7 +76,7 @@ internal class CheckBalanceRepository(
 
         while (true) {
             logger.i(
-                "Polling for balance check response for Payment Method $paymentMethodRef",
+                "[HTTP] Polling for balance check response for Payment Method $paymentMethodRef",
                 attributes = mapOf(
                     "payment_method_ref" to paymentMethodRef,
                     "content_id" to contentId
@@ -91,7 +91,7 @@ internal class CheckBalanceRepository(
                         if (balanceMessage.failed) {
                             val error = balanceMessage.errors[0]
                             logger.e(
-                                "Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
+                                "[HTTP] Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
                                 attributes = mapOf(
                                     "payment_method_ref" to paymentMethodRef,
                                     "content_id" to contentId
@@ -105,7 +105,7 @@ internal class CheckBalanceRepository(
                     if (balanceMessage.failed) {
                         val error = balanceMessage.errors[0]
                         logger.e(
-                            "Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
+                            "[HTTP] Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
                             attributes = mapOf(
                                 "payment_method_ref" to paymentMethodRef,
                                 "content_id" to contentId
@@ -121,7 +121,7 @@ internal class CheckBalanceRepository(
 
             if (attempt == MAX_ATTEMPTS) {
                 logger.e(
-                    "Max polling attempts reached for balance check of Payment Method $paymentMethodRef",
+                    "[HTTP] Max polling attempts reached for balance check of Payment Method $paymentMethodRef",
                     attributes = mapOf(
                         "payment_method_ref" to paymentMethodRef,
                         "content_id" to contentId
@@ -135,7 +135,7 @@ internal class CheckBalanceRepository(
         }
 
         logger.i(
-            "Polling for balance check response succeeded for Payment Method $paymentMethodRef",
+            "[HTTP] Polling for balance check response succeeded for Payment Method $paymentMethodRef",
             attributes = mapOf(
                 "payment_method_ref" to paymentMethodRef,
                 "content_id" to contentId
@@ -145,7 +145,7 @@ internal class CheckBalanceRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> {
                 logger.i(
-                    "Received updated balance information for Payment Method $paymentMethodRef",
+                    "[HTTP] Received updated balance information for Payment Method $paymentMethodRef",
                     attributes = mapOf(
                         "payment_method_ref" to paymentMethodRef,
                         "content_id" to contentId

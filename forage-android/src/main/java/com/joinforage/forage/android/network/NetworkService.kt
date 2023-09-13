@@ -21,7 +21,7 @@ internal abstract class NetworkService(
             okHttpClient.newCall(request).enqueue(
                 object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
-                        logger.e("Request failed with exception", throwable = e)
+                        logger.e("[HTTP] Request failed with exception", throwable = e)
                         continuation.resumeWith(Result.failure(e))
                     }
 
@@ -32,14 +32,14 @@ internal abstract class NetworkService(
                                 if (body != null) {
                                     val parsedError = ForageApiError.ForageApiErrorMapper.from(body.string())
                                     val error = parsedError.errors[0]
-                                    logger.e("Received ${response.code} response from API ${parsedError.path} with message: ${error.message}")
+                                    logger.e("[HTTP] Received ${response.code} response from API ${parsedError.path} with message: ${error.message}")
                                     continuation.resumeWith(
                                         Result.success(
                                             ForageApiResponse.Failure(listOf(ForageError(response.code, error.code, error.message)))
                                         )
                                     )
                                 } else {
-                                    logger.e("Received unknown response from API")
+                                    logger.e("[HTTP] Received unknown response from API")
                                     continuation.resumeWith(
                                         Result.success(
                                             ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
@@ -47,7 +47,7 @@ internal abstract class NetworkService(
                                     )
                                 }
                             } else {
-                                logger.i("Received ${response.code} response from API ${request.url.encodedPath}")
+                                logger.i("[HTTP] Received ${response.code} response from API ${request.url.encodedPath}")
                                 continuation.resumeWith(
                                     Result.success(
                                         ForageApiResponse.Success(response.body?.string().orEmpty())

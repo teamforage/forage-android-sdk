@@ -7,7 +7,8 @@ internal object OkHttpClientBuilder {
     fun provideOkHttpClient(
         bearerToken: String,
         merchantAccount: String? = null,
-        idempotencyKey: String? = null
+        idempotencyKey: String? = null,
+        traceId: String? = null
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
             .addInterceptor(
@@ -31,6 +32,15 @@ internal object OkHttpClientBuilder {
                                 addHeader(
                                     ForageConstants.Headers.IDEMPOTENCY_KEY,
                                     idempotencyKey
+                                )
+                            }
+                                ?: this
+                        }
+                        .run {
+                            traceId?.let {
+                                addHeader(
+                                    ForageConstants.Headers.TRACE_ID,
+                                    traceId
                                 )
                             }
                                 ?: this
