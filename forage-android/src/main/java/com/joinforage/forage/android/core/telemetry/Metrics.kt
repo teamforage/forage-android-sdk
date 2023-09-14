@@ -1,15 +1,6 @@
 package com.joinforage.forage.android.core.telemetry
 import com.joinforage.forage.android.VaultType
 
-internal interface NetworkMonitor {
-    fun start()
-    fun end()
-    fun setPath(path: String): NetworkMonitor
-    fun setMethod(method: String): NetworkMonitor
-    fun setHttpStatusCode(code: Int): NetworkMonitor
-    fun logResult()
-}
-
 internal object MetricsConstants {
     const val PATH = "path"
     const val METHOD = "method"
@@ -26,6 +17,18 @@ internal enum class ActionType(val value: String) {
     override fun toString(): String {
         return value
     }
+}
+
+internal interface PerformanceMeasurer {
+    fun start()
+    fun end()
+    fun logResult()
+}
+
+internal interface NetworkMonitor: PerformanceMeasurer {
+    fun setPath(path: String): NetworkMonitor
+    fun setMethod(method: String): NetworkMonitor
+    fun setHttpStatusCode(code: Int): NetworkMonitor
 }
 
 internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance()): NetworkMonitor {
@@ -63,15 +66,17 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
     }
 
     override fun logResult() {
-        if (startTime == null || endTime == null) {
+        val defaultVal = Long.MIN_VALUE
+        val start = startTime ?: defaultVal
+        val end = endTime ?: defaultVal
+
+        if (start == defaultVal || end == defaultVal) {
             logger?.e("[Metrics] Missing startTime or endTime. Could not log metric.")
             return
         }
 
-        // TODO: Don't unwrap these
-        responseAttributes[MetricsConstants.RESPONSE_TIME_MS] = calculateDuration(startTime!!, endTime!!)
+        responseAttributes[MetricsConstants.RESPONSE_TIME_MS] = calculateDuration(start, end)
 
-        // Handled by the subclass
         logWithResponseAttributes(metricsLogger = logger, responseAttributes = responseAttributes)
     }
 
@@ -109,6 +114,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
 
         if (path == null || method == null || httpStatus == null || responseTime == null) {
             metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
+            return
         }
 
         val vaultType = vaultType
