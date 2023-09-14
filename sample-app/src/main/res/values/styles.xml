@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="DefaultForagePANEditTextStyle">
+    <style name="DefaultForagePANEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:strokeColor">@color/purple_700</item>
+        <item name="cornerRadius">@dimen/corner_radius</item>
         <!-- Default properties can be added here that will be applied to every ForagePANEditText. -->
     </style>
 
@@ -13,6 +15,7 @@
     <style name="TokenizeForageTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:hint">@string/tokenize_forage_edit_text_hint</item>
         <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeColor">@color/mtrl_textinput_default_box_stroke_color</item>
     </style>
 
     <!-- Style for the first ForagePanEditText in catalog Fragment. -->

@@ -12,6 +12,16 @@
         <attr name="android:textColor" />
         <!-- Reusing android:textColor attribute -->
         <attr name="android:textSize" />
+
+        <attr format="dimension" name="cornerRadius" />
+        <attr format="dimension" name="boxCornerTopEnd" />
+        <attr format="dimension" name="boxCornerTopStart" />
+        <attr format="dimension" name="boxCornerBottomStart" />
+        <attr format="dimension" name="boxCornerBottomEnd" />
+
+        <attr format="color" name="android:strokeColor" />
+        <attr format="float" name="android:strokeWidth" />
+        <attr format="dimension" name="boxStrokeWidthFocused" />
     </declare-styleable>
 
     <!-- Style attributes for the ForagePanEditText component. -->

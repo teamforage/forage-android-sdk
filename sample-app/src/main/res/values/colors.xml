@@ -11,4 +11,5 @@
     <color name="colorAccent">#26A6D4</color>
     <color name="yellow_800">#F9A825</color>
     <color name="red">#F50057</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#FF3700B3</color>
 </resources>
