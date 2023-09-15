@@ -29,6 +29,10 @@ internal class VGSPinCollector(
     private val logger = Log.getInstance()
     private val vaultType = VaultType.VGS_VAULT_TYPE
 
+    override fun getVaultType(): VaultType {
+        return vaultType
+    }
+
     override suspend fun collectPinForBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,

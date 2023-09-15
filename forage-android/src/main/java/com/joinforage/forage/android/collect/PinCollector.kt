@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.collect
 
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -28,4 +29,6 @@ internal interface PinCollector {
     fun parseVaultToken(
         paymentMethod: PaymentMethod
     ): String
+
+    fun getVaultType(): VaultType
 }

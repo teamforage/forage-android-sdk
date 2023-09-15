@@ -8,11 +8,21 @@ internal object MetricsConstants {
     const val RESPONSE_TIME_MS = "response_time_ms"
     const val ACTION = "action"
     const val VAULT_TYPE = "vault_type"
+    const val LATENCY_TYPE = "latency_type"
 }
 
 internal enum class ActionType(val value: String) {
     BALANCE("balance"),
     CAPTURE("capture");
+
+    override fun toString(): String {
+        return value
+    }
+}
+
+internal enum class LatencyType(val value: String) {
+    PROXY("proxy"),
+    ROUND_TRIP("round_trip");
 
     override fun toString(): String {
         return value
@@ -91,6 +101,7 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
 internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
+    private var latencyType: LatencyType = LatencyType.PROXY
 
     init {
         this.vaultType = vault
@@ -126,7 +137,47 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
             MetricsConstants.HTTP_STATUS to httpStatus,
             MetricsConstants.RESPONSE_TIME_MS to responseTime,
             MetricsConstants.VAULT_TYPE to vaultType,
-            MetricsConstants.ACTION to action
+            MetricsConstants.ACTION to action,
+            MetricsConstants.LATENCY_TYPE to latencyType
+        ))
+    }
+}
+
+internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): ResponseMonitor(metricsLogger) {
+    private var vaultType: VaultType? = null
+    private var vaultAction: ActionType? = null
+    private var latencyType: LatencyType = LatencyType.ROUND_TRIP
+
+    init {
+        this.vaultType = vault
+        this.vaultAction = vaultAction
+    }
+
+    internal companion object {
+        internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): RoundTripResponseMonitor {
+            return RoundTripResponseMonitor(vault ,vaultAction, metricsLogger)
+        }
+    }
+
+    override fun logWithResponseAttributes(
+        metricsLogger: Log?,
+        responseAttributes: Map<String, Any>
+    ) {
+        val responseTime = responseAttributes[MetricsConstants.RESPONSE_TIME_MS]
+
+        if (responseTime == null) {
+            metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
+            return
+        }
+
+        val vaultType = vaultType
+        val action = vaultAction
+
+        metricsLogger?.i("[Metrics] Round trip request for $vaultType has completed", attributes = mapOf(
+            MetricsConstants.RESPONSE_TIME_MS to responseTime,
+            MetricsConstants.VAULT_TYPE to vaultType,
+            MetricsConstants.ACTION to action,
+            MetricsConstants.LATENCY_TYPE to latencyType
         ))
     }
 }

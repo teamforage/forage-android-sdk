@@ -2,11 +2,7 @@ package com.joinforage.forage.android.core.telemetry.metrics
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.ActionType
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.MetricsConstants
-import com.joinforage.forage.android.core.telemetry.ResponseMonitor
-import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
+import com.joinforage.forage.android.core.telemetry.*
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -172,11 +168,40 @@ class ResponseMonitorTest {
         val loggedStatusCode = attributes[MetricsConstants.HTTP_STATUS]
         val loggedVaultType = attributes[MetricsConstants.VAULT_TYPE]
         val loggedVaultAction = attributes[MetricsConstants.ACTION]
+        val loggedLatencyType = attributes[MetricsConstants.LATENCY_TYPE]
 
         Assertions.assertThat(loggedPath).isEqualTo(path)
         Assertions.assertThat(loggedMethod).isEqualTo(method)
         Assertions.assertThat(loggedStatusCode).isEqualTo(statusCode)
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(vaultAction)
+        Assertions.assertThat(loggedLatencyType).isEqualTo(LatencyType.PROXY)
+    }
+
+    @Test
+    fun `Validate the attributes of a successful round trip log`() {
+        val mockLogger = MockLogger()
+        val vaultType = VaultType.VGS_VAULT_TYPE
+        val vaultAction = ActionType.CAPTURE
+        val roundTripResponseMonitor = RoundTripResponseMonitor(vault = vaultType, vaultAction = vaultAction, mockLogger)
+        roundTripResponseMonitor.start()
+        roundTripResponseMonitor.end()
+        roundTripResponseMonitor.logResult()
+
+        Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
+        Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(1)
+
+        val msg = mockLogger.infoLogs[0].getMessage()
+
+        Assertions.assertThat(msg).isEqualTo("[Metrics] Round trip request for $vaultType has completed")
+
+        val attributes = mockLogger.infoLogs[0].getAttributes()
+        val loggedVaultType = attributes[MetricsConstants.VAULT_TYPE]
+        val loggedVaultAction = attributes[MetricsConstants.ACTION]
+        val loggedLatencyType = attributes[MetricsConstants.LATENCY_TYPE]
+
+        Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
+        Assertions.assertThat(loggedVaultAction).isEqualTo(vaultAction)
+        Assertions.assertThat(loggedLatencyType).isEqualTo(LatencyType.ROUND_TRIP)
     }
 }

@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.collect.CollectorConstants
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.model.EncryptionKeys
@@ -56,6 +57,10 @@ internal class TestPinCollector : PinCollector {
             return token.split(CollectorConstants.TOKEN_DELIMITER)[0]
         }
         return token
+    }
+
+    override fun getVaultType(): VaultType {
+        return VaultType.VGS_VAULT_TYPE
     }
 
     fun setCollectPinForBalanceCheckResponse(
