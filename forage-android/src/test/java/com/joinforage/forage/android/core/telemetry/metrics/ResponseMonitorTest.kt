@@ -2,7 +2,13 @@ package com.joinforage.forage.android.core.telemetry.metrics
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.*
+import com.joinforage.forage.android.core.telemetry.ActionType
+import com.joinforage.forage.android.core.telemetry.LatencyType
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.MetricsConstants
+import com.joinforage.forage.android.core.telemetry.ResponseMonitor
+import com.joinforage.forage.android.core.telemetry.RoundTripResponseMonitor
+import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,7 +32,7 @@ private class LogEntry(message: String, attributes: Map<String, Any?>) {
     }
 }
 
-private class MockLogger: Log {
+private class MockLogger : Log {
     val infoLogs: MutableList<LogEntry> = mutableListOf()
     val errorLogs: MutableList<LogEntry> = mutableListOf()
 
@@ -53,10 +59,9 @@ private class MockLogger: Log {
     override fun getTraceIdValue(): String {
         return ""
     }
-
 }
 
-internal class TestResponseMonitor(metricsLogger: Log?): ResponseMonitor(metricsLogger) {
+internal class TestResponseMonitor(metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     override fun logWithResponseAttributes(
         metricsLogger: Log?,
         responseAttributes: Map<String, Any>

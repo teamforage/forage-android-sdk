@@ -35,13 +35,13 @@ internal interface PerformanceMeasurer {
     fun logResult()
 }
 
-internal interface NetworkMonitor: PerformanceMeasurer {
+internal interface NetworkMonitor : PerformanceMeasurer {
     fun setPath(path: String): NetworkMonitor
     fun setMethod(method: String): NetworkMonitor
     fun setHttpStatusCode(code: Int): NetworkMonitor
 }
 
-internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance()): NetworkMonitor {
+internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance()) : NetworkMonitor {
     private var startTime: Long? = null
     private var endTime: Long? = null
 
@@ -98,7 +98,7 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
     abstract fun logWithResponseAttributes(metricsLogger: Log?, responseAttributes: Map<String, Any>)
 }
 
-internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): ResponseMonitor(metricsLogger) {
+internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
     private var latencyType: LatencyType = LatencyType.PROXY
@@ -110,7 +110,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
 
     internal companion object {
         internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): VaultProxyResponseMonitor {
-            return VaultProxyResponseMonitor(vault ,vaultAction, metricsLogger)
+            return VaultProxyResponseMonitor(vault, vaultAction, metricsLogger)
         }
     }
 
@@ -131,19 +131,22 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
         val vaultType = vaultType
         val action = vaultAction
 
-        metricsLogger?.i("[Metrics] Received response from $vaultType proxy", attributes = mapOf(
-            MetricsConstants.PATH to path,
-            MetricsConstants.METHOD to method,
-            MetricsConstants.HTTP_STATUS to httpStatus,
-            MetricsConstants.RESPONSE_TIME_MS to responseTime,
-            MetricsConstants.VAULT_TYPE to vaultType,
-            MetricsConstants.ACTION to action,
-            MetricsConstants.LATENCY_TYPE to latencyType
-        ))
+        metricsLogger?.i(
+            "[Metrics] Received response from $vaultType proxy",
+            attributes = mapOf(
+                MetricsConstants.PATH to path,
+                MetricsConstants.METHOD to method,
+                MetricsConstants.HTTP_STATUS to httpStatus,
+                MetricsConstants.RESPONSE_TIME_MS to responseTime,
+                MetricsConstants.VAULT_TYPE to vaultType,
+                MetricsConstants.ACTION to action,
+                MetricsConstants.LATENCY_TYPE to latencyType
+            )
+        )
     }
 }
 
-internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): ResponseMonitor(metricsLogger) {
+internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
     private var latencyType: LatencyType = LatencyType.ROUND_TRIP
@@ -155,7 +158,7 @@ internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionTyp
 
     internal companion object {
         internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): RoundTripResponseMonitor {
-            return RoundTripResponseMonitor(vault ,vaultAction, metricsLogger)
+            return RoundTripResponseMonitor(vault, vaultAction, metricsLogger)
         }
     }
 
@@ -173,11 +176,14 @@ internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionTyp
         val vaultType = vaultType
         val action = vaultAction
 
-        metricsLogger?.i("[Metrics] Round trip request for $vaultType has completed", attributes = mapOf(
-            MetricsConstants.RESPONSE_TIME_MS to responseTime,
-            MetricsConstants.VAULT_TYPE to vaultType,
-            MetricsConstants.ACTION to action,
-            MetricsConstants.LATENCY_TYPE to latencyType
-        ))
+        metricsLogger?.i(
+            "[Metrics] Round trip request for $vaultType has completed",
+            attributes = mapOf(
+                MetricsConstants.RESPONSE_TIME_MS to responseTime,
+                MetricsConstants.VAULT_TYPE to vaultType,
+                MetricsConstants.ACTION to action,
+                MetricsConstants.LATENCY_TYPE to latencyType
+            )
+        )
     }
 }

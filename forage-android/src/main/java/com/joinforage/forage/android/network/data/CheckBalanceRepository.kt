@@ -1,9 +1,9 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.telemetry.*
 import com.joinforage.forage.android.core.telemetry.ActionType
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.core.telemetry.RoundTripResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
@@ -26,7 +26,6 @@ internal class CheckBalanceRepository(
     suspend fun checkBalance(
         paymentMethodRef: String
     ): ForageApiResponse<String> {
-
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = RoundTripResponseMonitor.newMeasurement(

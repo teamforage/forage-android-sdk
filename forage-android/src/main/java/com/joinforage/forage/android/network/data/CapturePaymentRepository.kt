@@ -26,7 +26,6 @@ internal class CapturePaymentRepository(
     private val logger: Log
 ) {
     suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
-
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = RoundTripResponseMonitor.newMeasurement(

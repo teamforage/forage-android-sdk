@@ -15,11 +15,11 @@ import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.element.state.PanElementStateManager
+import com.joinforage.forage.android.core.telemetry.Log
 
 /**
  * Material Design component with a TextInputEditText to collect the EBT card number
