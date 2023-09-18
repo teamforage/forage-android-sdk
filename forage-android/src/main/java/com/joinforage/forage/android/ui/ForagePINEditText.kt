@@ -47,8 +47,8 @@ class ForagePINEditText @JvmOverloads constructor(
                         VGSVaultWrapper(context, attrs, defStyleAttr)
                     }
 
-                    val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementWidth, ViewGroup.LayoutParams.MATCH_PARENT)
-                    val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_element_width, ViewGroup.LayoutParams.MATCH_PARENT)
+                    val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_element_height, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                     val linearLayout = LinearLayout(context)
                     linearLayout.layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)

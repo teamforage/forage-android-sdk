@@ -70,8 +70,8 @@
                 style="@style/ForagePINEditTextStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:inputWidth="200dp"
-                app:inputHeight="60dp"
+                app:input_width="200dp"
+                app:input_height="60dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fourthEditText" />
@@ -81,8 +81,8 @@
                 style="@style/SecondForagePINEditTextStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:elementWidth="150dp"
-                app:elementHeight="70dp"
+                app:element_width="150dp"
+                app:element_height="70dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/foragePINEditText" />
