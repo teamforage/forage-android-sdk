@@ -49,8 +49,8 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     val textSize = getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_textSize, -1f)
                     val textColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_textColor, Color.BLACK)
 
-                    val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_width, ViewGroup.LayoutParams.MATCH_PARENT)
-                    val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+                    val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_inputWidth, ViewGroup.LayoutParams.MATCH_PARENT)
+                    val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_inputHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                     _internalEditText = VGSEditText(context, null, textInputLayoutStyleAttribute).apply {
                         layoutParams =
