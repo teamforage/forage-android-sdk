@@ -1,10 +1,7 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.telemetry.ActionType
-import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
@@ -26,23 +23,12 @@ internal class CapturePaymentRepository(
     private val logger: Log
 ) {
     suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = pinCollector.getVaultType(),
-            vaultAction = ActionType.CAPTURE,
-            logger
-        )
-        measurement.start()
-        // ------------------------------------------------------
-
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
                 encryptionKey = pinCollector.parseEncryptionKey(
                     EncryptionKeys.ModelMapper.from(response.data)
-                ),
-                responseMonitor = measurement
+                )
             )
             else -> response
         }
@@ -50,15 +36,13 @@ internal class CapturePaymentRepository(
 
     private suspend fun getPaymentMethodFromPayment(
         paymentRef: String,
-        encryptionKey: String,
-        responseMonitor: ResponseMonitor
+        encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentService.getPayment(paymentRef)) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentRef = paymentRef,
                 paymentMethodRef = Payment.ModelMapper.from(response.data).paymentMethod,
-                encryptionKey = encryptionKey,
-                responseMonitor = responseMonitor
+                encryptionKey = encryptionKey
             )
             else -> response
         }
@@ -67,15 +51,13 @@ internal class CapturePaymentRepository(
     private suspend fun getTokenFromPaymentMethod(
         paymentRef: String,
         paymentMethodRef: String,
-        encryptionKey: String,
-        responseMonitor: ResponseMonitor
+        encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCapturePayment(
                 paymentRef = paymentRef,
                 cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
-                encryptionKey = encryptionKey,
-                responseMonitor = responseMonitor
+                encryptionKey = encryptionKey
             )
             else -> response
         }
@@ -84,8 +66,7 @@ internal class CapturePaymentRepository(
     private suspend fun collectPinToCapturePayment(
         paymentRef: String,
         cardToken: String,
-        encryptionKey: String,
-        responseMonitor: ResponseMonitor
+        encryptionKey: String
     ): ForageApiResponse<String> {
         val response = pinCollector.collectPinForCapturePayment(
             paymentRef = paymentRef,
@@ -97,8 +78,7 @@ internal class CapturePaymentRepository(
             is ForageApiResponse.Success -> {
                 pollingCapturePaymentMessageStatus(
                     Message.ModelMapper.from(response.data).contentId,
-                    paymentRef,
-                    responseMonitor
+                    paymentRef
                 )
             }
             else -> response
@@ -107,8 +87,7 @@ internal class CapturePaymentRepository(
 
     private suspend fun pollingCapturePaymentMessageStatus(
         contentId: String,
-        paymentRef: String,
-        responseMonitor: ResponseMonitor
+        paymentRef: String
     ): ForageApiResponse<String> {
         var attempt = 1
 
@@ -179,12 +158,6 @@ internal class CapturePaymentRepository(
                 "content_id" to contentId
             )
         )
-
-        // END METRICS TRACKING UPON SUCCESSFUL FULL TRIP
-        // ------------------------------------------------------
-        responseMonitor.end()
-        responseMonitor.logResult()
-        // ------------------------------------------------------
 
         return paymentService.getPayment(paymentRef = paymentRef)
     }

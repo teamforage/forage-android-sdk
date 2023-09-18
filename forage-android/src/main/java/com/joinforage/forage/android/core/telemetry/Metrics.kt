@@ -8,7 +8,8 @@ internal object MetricsConstants {
     const val RESPONSE_TIME_MS = "response_time_ms"
     const val ACTION = "action"
     const val VAULT_TYPE = "vault_type"
-    const val RESPONSE_TYPE = "response_type"
+    const val EVENT_NAME = "event_name"
+    const val EVENT_OUTCOME = "event_outcome"
 }
 
 internal enum class ActionType(val value: String) {
@@ -20,24 +21,29 @@ internal enum class ActionType(val value: String) {
     }
 }
 
-internal enum class ResponseType(val value: String) {
+internal enum class OutcomeType(val value: String) {
+    SUCCESS("success"),
+    FAILURE("failure");
+
+    override fun toString(): String {
+        return value
+    }
+}
+
+internal enum class EventName(val value: String) {
     /*
-    VAULT_RESPONSE_TIME response type refers to the response time from the VGS and BT submit
-    functions. The timer begins when a balance or capture request is submitted to VGS/BT
-    and ends when a response is received by the SDK.
+    VAULT_RESPONSE refers to a response from the VGS or BT submit actions.
      */
-    VAULT_RESPONSE_TIME("vault_response_time"),
+    VAULT_RESPONSE("vault_response"),
 
     /*
-    CUSTOMER_PERCEIVED_RESPONSE_TIME type refers to the response time that a customer
-    experiences while executing a balance or capture action. There are multiple chained requests
-    that come from the client when executing a balance or capture action. The timer begins when the
-    first HTTP request is sent from the SDK and ends when the the SDK returns information back to
-    the user. Ex of a balance action:
-    Timer Begins -> [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT ->
-    [GET] Poll for Response -> [GET] PaymentMethod -> Timer Ends -> Return Balance
+    CUSTOMER_PERCEIVED_RESPONSE refers to the response from a balance or capture action. There are
+    multiple chained requests that come from the client when executing a balance or capture action.
+    Ex of a balance action:
+    [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT -> [GET] Poll for Response ->
+    [GET] PaymentMethod -> Return Balance
      */
-    CUSTOMER_PERCEIVED_RESPONSE_TIME("customer_perceived_response_time");
+    CUSTOMER_PERCEIVED_RESPONSE("customer_perceived_response");
 
     override fun toString(): String {
         return value
@@ -113,10 +119,15 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
     abstract fun logWithResponseAttributes(metricsLogger: Log?, responseAttributes: Map<String, Any>)
 }
 
+/*
+    VaultProxyResponseMonitor is used to track the response time from the VGS and BT submit
+    functions. The timer begins when a balance or capture request is submitted to VGS/BT
+    and ends when a response is received by the SDK.
+     */
 internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
-    private var responseType: ResponseType = ResponseType.VAULT_RESPONSE_TIME
+    private var eventName: EventName = EventName.VAULT_RESPONSE
 
     init {
         this.vaultType = vault
@@ -155,16 +166,26 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
                 MetricsConstants.ACTION to action,
-                MetricsConstants.RESPONSE_TYPE to responseType
+                MetricsConstants.EVENT_NAME to eventName
             )
         )
     }
 }
 
+/*
+    CustomerPerceivedResponseMonitor is used to track the response time that a customer
+    experiences while executing a balance or capture action. There are multiple chained requests
+    that come from the client when executing a balance or capture action. The timer begins when the
+    first HTTP request is sent from the SDK and ends when the the SDK returns information back to
+    the user. Ex of a balance action:
+    Timer Begins -> [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT ->
+    [GET] Poll for Response -> [GET] PaymentMethod -> Timer Ends -> Return Balance
+     */
 internal class CustomerPerceivedResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
-    private var responseType: ResponseType = ResponseType.CUSTOMER_PERCEIVED_RESPONSE_TIME
+    private var outcomeType: OutcomeType? = null
+    private var eventName: EventName = EventName.CUSTOMER_PERCEIVED_RESPONSE
 
     init {
         this.vaultType = vault
@@ -177,13 +198,19 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, vaultAction: A
         }
     }
 
+    fun setEventOutcome(outcomeType: OutcomeType): CustomerPerceivedResponseMonitor {
+        this.outcomeType = outcomeType
+        return this
+    }
+
     override fun logWithResponseAttributes(
         metricsLogger: Log?,
         responseAttributes: Map<String, Any>
     ) {
         val responseTime = responseAttributes[MetricsConstants.RESPONSE_TIME_MS]
+        val outcomeType = outcomeType
 
-        if (responseTime == null) {
+        if (responseTime == null || eventName != EventName.CUSTOMER_PERCEIVED_RESPONSE || outcomeType == null) {
             metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
             return
         }
@@ -197,7 +224,8 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, vaultAction: A
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
                 MetricsConstants.ACTION to action,
-                MetricsConstants.RESPONSE_TYPE to responseType
+                MetricsConstants.EVENT_NAME to eventName,
+                MetricsConstants.EVENT_OUTCOME to outcomeType
             )
         )
     }

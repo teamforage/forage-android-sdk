@@ -111,9 +111,7 @@ internal class BTPinCollector(
                 )
             )
 
-            // Status Code hardcoded because of lack of knowledge
-            val httpStatusCode = 200
-            measurement.setHttpStatusCode(httpStatusCode).logResult()
+            measurement.setHttpStatusCode(200).logResult()
 
             return ForageApiResponse.Success(forageResponse.toString())
         }

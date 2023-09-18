@@ -8,7 +8,7 @@ import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
 import com.launchdarkly.sdk.android.integrations.TestData
 
-enum class VaultType(val value: String) {
+internal enum class VaultType(val value: String) {
     VGS_VAULT_TYPE("vgs_vault_type"),
     BT_VAULT_TYPE("bt_vault_type");
 

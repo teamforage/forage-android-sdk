@@ -7,7 +7,8 @@ import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMon
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.MetricsConstants
 import com.joinforage.forage.android.core.telemetry.ResponseMonitor
-import com.joinforage.forage.android.core.telemetry.ResponseType
+import com.joinforage.forage.android.core.telemetry.EventName
+import com.joinforage.forage.android.core.telemetry.OutcomeType
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import org.assertj.core.api.Assertions
 import org.junit.Test
@@ -173,14 +174,26 @@ class ResponseMonitorTest {
         val loggedStatusCode = attributes[MetricsConstants.HTTP_STATUS]
         val loggedVaultType = attributes[MetricsConstants.VAULT_TYPE]
         val loggedVaultAction = attributes[MetricsConstants.ACTION]
-        val loggedResponseType = attributes[MetricsConstants.RESPONSE_TYPE]
+        val loggedResponseType = attributes[MetricsConstants.EVENT_NAME]
 
         Assertions.assertThat(loggedPath).isEqualTo(path)
         Assertions.assertThat(loggedMethod).isEqualTo(method)
         Assertions.assertThat(loggedStatusCode).isEqualTo(statusCode)
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(vaultAction)
-        Assertions.assertThat(loggedResponseType).isEqualTo(ResponseType.VAULT_RESPONSE_TIME)
+        Assertions.assertThat(loggedResponseType).isEqualTo(EventName.VAULT_RESPONSE)
+    }
+
+    @Test
+    fun `Customer perceived monitor should log error if outcome type is not set`() {
+        val mockLogger = MockLogger()
+        val customerPerceivedResponseMonitor = CustomerPerceivedResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, vaultAction = ActionType.CAPTURE, mockLogger)
+        customerPerceivedResponseMonitor.start()
+        customerPerceivedResponseMonitor.end()
+        customerPerceivedResponseMonitor.logResult()
+        Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
+        Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
+        Assertions.assertThat(mockLogger.errorLogs[0].getMessage()).isEqualTo("[Metrics] Incomplete or missing response attributes. Could not log metric.")
     }
 
     @Test
@@ -191,7 +204,7 @@ class ResponseMonitorTest {
         val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(vault = vaultType, vaultAction = vaultAction, mockLogger)
         roundTripResponseMonitor.start()
         roundTripResponseMonitor.end()
-        roundTripResponseMonitor.logResult()
+        roundTripResponseMonitor.setEventOutcome(OutcomeType.SUCCESS).logResult()
 
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(1)
@@ -203,10 +216,12 @@ class ResponseMonitorTest {
         val attributes = mockLogger.infoLogs[0].getAttributes()
         val loggedVaultType = attributes[MetricsConstants.VAULT_TYPE]
         val loggedVaultAction = attributes[MetricsConstants.ACTION]
-        val loggedResponseType = attributes[MetricsConstants.RESPONSE_TYPE]
+        val loggedEventName = attributes[MetricsConstants.EVENT_NAME]
+        val loggedOutcomeType = attributes[MetricsConstants.EVENT_OUTCOME]
 
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(vaultAction)
-        Assertions.assertThat(loggedResponseType).isEqualTo(ResponseType.CUSTOMER_PERCEIVED_RESPONSE_TIME)
+        Assertions.assertThat(loggedEventName).isEqualTo(EventName.CUSTOMER_PERCEIVED_RESPONSE)
+        Assertions.assertThat(loggedOutcomeType).isEqualTo(OutcomeType.SUCCESS)
     }
 }

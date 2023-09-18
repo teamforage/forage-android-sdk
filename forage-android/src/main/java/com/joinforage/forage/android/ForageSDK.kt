@@ -1,7 +1,10 @@
 package com.joinforage.forage.android
 
 import android.content.Context
+import com.joinforage.forage.android.core.telemetry.ActionType
+import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.OutcomeType
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
@@ -68,7 +71,18 @@ object ForageSDK : ForageSDKApi {
                 "payment_method_ref" to paymentMethodRef
             )
         )
-        return CheckBalanceRepository(
+
+        // This block is used for Metrics Tracking!
+        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+            vault = pinForageEditText.getCollector(merchantAccount).getVaultType(),
+            vaultAction = ActionType.BALANCE,
+            logger
+        )
+        measurement.start()
+        // ------------------------------------------------------
+
+        val response = CheckBalanceRepository(
             pinCollector = pinForageEditText.getCollector(
                 merchantAccount
             ),
@@ -103,6 +117,14 @@ object ForageSDK : ForageSDKApi {
         ).checkBalance(
             paymentMethodRef = paymentMethodRef
         )
+        measurement.end()
+
+        if (response is ForageApiResponse.Failure) {
+            measurement.setEventOutcome(OutcomeType.FAILURE).logResult()
+        } else {
+            measurement.setEventOutcome(OutcomeType.SUCCESS).logResult()
+        }
+        return response
     }
 
     override suspend fun capturePayment(
@@ -119,7 +141,18 @@ object ForageSDK : ForageSDKApi {
                 "payment_ref" to paymentRef
             )
         )
-        return CapturePaymentRepository(
+
+        // This block is used for Metrics Tracking!
+        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+            vault = pinForageEditText.getCollector(merchantAccount).getVaultType(),
+            vaultAction = ActionType.CAPTURE,
+            logger
+        )
+        measurement.start()
+        // ------------------------------------------------------
+
+        val response = CapturePaymentRepository(
             pinCollector = pinForageEditText.getCollector(
                 merchantAccount
             ),
@@ -163,6 +196,15 @@ object ForageSDK : ForageSDKApi {
         ).capturePayment(
             paymentRef = paymentRef
         )
+        measurement.end()
+
+        if (response is ForageApiResponse.Failure) {
+            measurement.setEventOutcome(OutcomeType.FAILURE).logResult()
+        } else {
+            measurement.setEventOutcome(OutcomeType.SUCCESS).logResult()
+        }
+
+        return response
     }
 
     internal fun storeEntry(entry: String) {
