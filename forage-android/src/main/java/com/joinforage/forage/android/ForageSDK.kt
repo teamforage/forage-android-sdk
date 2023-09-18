@@ -208,7 +208,6 @@ object ForageSDK : ForageSDKApi {
 
         measurement.setEventOutcome(outcome).logResult()
 
-
         return response
     }
 

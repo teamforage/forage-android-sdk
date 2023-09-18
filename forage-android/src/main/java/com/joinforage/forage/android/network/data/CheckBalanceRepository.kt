@@ -36,7 +36,7 @@ internal class CheckBalanceRepository(
 
     private suspend fun getTokenFromPaymentMethod(
         paymentMethodRef: String,
-        encryptionKey: String,
+        encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> collectPinToCheckBalance(
