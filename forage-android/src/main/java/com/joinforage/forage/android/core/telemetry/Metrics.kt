@@ -27,6 +27,7 @@ internal enum class ResponseType(val value: String) {
     and ends when a response is received by the SDK.
      */
     VAULT_RESPONSE_TIME("vault_response_time"),
+
     /*
     CUSTOMER_PERCEIVED_RESPONSE_TIME type refers to the response time that a customer
     experiences while executing a balance or capture action. There are multiple chained requests
