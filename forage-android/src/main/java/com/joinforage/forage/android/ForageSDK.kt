@@ -119,11 +119,13 @@ object ForageSDK : ForageSDKApi {
         )
         measurement.end()
 
-        if (response is ForageApiResponse.Failure) {
-            measurement.setEventOutcome(OutcomeType.FAILURE).logResult()
+        val outcome = if (response is ForageApiResponse.Failure) {
+            OutcomeType.FAILURE
         } else {
-            measurement.setEventOutcome(OutcomeType.SUCCESS).logResult()
+            OutcomeType.SUCCESS
         }
+
+        measurement.setEventOutcome(outcome).logResult()
         return response
     }
 
@@ -198,11 +200,14 @@ object ForageSDK : ForageSDKApi {
         )
         measurement.end()
 
-        if (response is ForageApiResponse.Failure) {
-            measurement.setEventOutcome(OutcomeType.FAILURE).logResult()
+        val outcome = if (response is ForageApiResponse.Failure) {
+            OutcomeType.FAILURE
         } else {
-            measurement.setEventOutcome(OutcomeType.SUCCESS).logResult()
+            OutcomeType.SUCCESS
         }
+
+        measurement.setEventOutcome(outcome).logResult()
+
 
         return response
     }
