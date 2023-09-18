@@ -8,7 +8,7 @@ internal object MetricsConstants {
     const val RESPONSE_TIME_MS = "response_time_ms"
     const val ACTION = "action"
     const val VAULT_TYPE = "vault_type"
-    const val LATENCY_TYPE = "latency_type"
+    const val RESPONSE_TYPE = "response_type"
 }
 
 internal enum class ActionType(val value: String) {
@@ -20,9 +20,23 @@ internal enum class ActionType(val value: String) {
     }
 }
 
-internal enum class LatencyType(val value: String) {
-    PROXY("proxy"),
-    ROUND_TRIP("round_trip");
+internal enum class ResponseType(val value: String) {
+    /*
+    VAULT_RESPONSE_TIME response type refers to the response time from the VGS and BT submit
+    functions. The timer begins when a balance or capture request is submitted to VGS/BT
+    and ends when a response is received by the SDK.
+     */
+    VAULT_RESPONSE_TIME("vault_response_time"),
+    /*
+    CUSTOMER_PERCEIVED_RESPONSE_TIME type refers to the response time that a customer
+    experiences while executing a balance or capture action. There are multiple chained requests
+    that come from the client when executing a balance or capture action. The timer begins when the
+    first HTTP request is sent from the SDK and ends when the the SDK returns information back to
+    the user. Ex of a balance action:
+    Timer Begins -> [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT ->
+    [GET] Poll for Response -> [GET] PaymentMethod -> Timer Ends -> Return Balance
+     */
+    CUSTOMER_PERCEIVED_RESPONSE_TIME("customer_perceived_response_time");
 
     override fun toString(): String {
         return value
@@ -101,7 +115,7 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
 internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
-    private var latencyType: LatencyType = LatencyType.PROXY
+    private var responseType: ResponseType = ResponseType.VAULT_RESPONSE_TIME
 
     init {
         this.vaultType = vault
@@ -140,16 +154,16 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
                 MetricsConstants.ACTION to action,
-                MetricsConstants.LATENCY_TYPE to latencyType
+                MetricsConstants.RESPONSE_TYPE to responseType
             )
         )
     }
 }
 
-internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
+internal class CustomerPerceivedResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
     private var vaultAction: ActionType? = null
-    private var latencyType: LatencyType = LatencyType.ROUND_TRIP
+    private var responseType: ResponseType = ResponseType.CUSTOMER_PERCEIVED_RESPONSE_TIME
 
     init {
         this.vaultType = vault
@@ -157,8 +171,8 @@ internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionTyp
     }
 
     internal companion object {
-        internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): RoundTripResponseMonitor {
-            return RoundTripResponseMonitor(vault, vaultAction, metricsLogger)
+        internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): CustomerPerceivedResponseMonitor {
+            return CustomerPerceivedResponseMonitor(vault, vaultAction, metricsLogger)
         }
     }
 
@@ -177,12 +191,12 @@ internal class RoundTripResponseMonitor(vault: VaultType, vaultAction: ActionTyp
         val action = vaultAction
 
         metricsLogger?.i(
-            "[Metrics] Round trip request for $vaultType has completed",
+            "[Metrics] Customer perceived response time for $vaultType has been collected",
             attributes = mapOf(
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
                 MetricsConstants.ACTION to action,
-                MetricsConstants.LATENCY_TYPE to latencyType
+                MetricsConstants.RESPONSE_TYPE to responseType
             )
         )
     }
