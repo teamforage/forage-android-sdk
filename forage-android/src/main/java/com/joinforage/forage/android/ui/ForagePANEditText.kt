@@ -92,7 +92,7 @@ class ForagePANEditText @JvmOverloads constructor(
                             layoutParams =
                                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
-                            // Set stroke color
+                            // Set stroke color on focused text
                             boxStrokeColor = panBoxStrokeColor
                             // Set stroke width on focused text
                             boxStrokeWidthFocused = panFocusedBoxStrokeWidth.toInt()
