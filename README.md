@@ -180,7 +180,7 @@ To provide a style to your `ForagePANEditText`, you need to include these two th
 </resources>
 ```
 
-Now you can add the style to your `ForagePANEditText`:
+Now you can add the style to your `ForagePANEditText`
 
 ```xml
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
