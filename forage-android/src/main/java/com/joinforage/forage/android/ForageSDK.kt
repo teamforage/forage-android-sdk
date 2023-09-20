@@ -12,7 +12,7 @@ import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForageContext
-import com.joinforage.forage.android.ui.InternalForageElement
+import com.joinforage.forage.android.ui.AbstractForageElement
 import java.util.UUID
 
 /**
@@ -20,7 +20,7 @@ import java.util.UUID
  */
 class ForageSDK : ForageSDKInterface {
 
-    private fun _getForageContextOrThrow(element: InternalForageElement): ForageContext {
+    private fun _getForageContextOrThrow(element: AbstractForageElement): ForageContext {
         val context = element.getForageContext()
         // TODO: create a custom Exception instead of using IllegalArgumentException
         return context ?: throw IllegalArgumentException(
