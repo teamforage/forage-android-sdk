@@ -7,7 +7,6 @@ import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.BuildConfig
@@ -129,7 +128,6 @@ class ForagePANEditText @JvmOverloads constructor(
                     recycle()
                 }
             }
-
 
         // register FormatPanTextWatcher to keep the format up to date
         // with each user input based on the StateIIN

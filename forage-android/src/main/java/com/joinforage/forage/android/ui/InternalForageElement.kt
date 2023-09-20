@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
 
-
 abstract class InternalForageElement(
     context: Context,
     attrs: AttributeSet? = null,
@@ -21,7 +20,7 @@ abstract class InternalForageElement(
     // don't to lull developers into passing a
     // ForagePANEdText instance around as a proxy for
     // the ForageContext value. Seems like an anti-pattern
-    internal fun getForageContext() : ForageContext? {
+    internal fun getForageContext(): ForageContext? {
         return _forageContext
     }
 }

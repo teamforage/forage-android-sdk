@@ -47,7 +47,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
             val response = ForageSDK().capturePayment(
                 CapturePaymentParams(
-                   foragePinEditText = pinForageEditText,
+                    foragePinEditText = pinForageEditText,
                     paymentRef = snapPaymentRef
                 )
             )

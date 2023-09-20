@@ -5,7 +5,7 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 
-data class ForageContext (
+data class ForageContext(
     val merchantId: String,
     val sessionToken: String
     // TODO: thoughts on customerId being part of the
