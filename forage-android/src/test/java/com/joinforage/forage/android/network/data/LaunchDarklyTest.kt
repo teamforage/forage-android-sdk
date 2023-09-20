@@ -42,13 +42,15 @@ class LaunchDarklyTest() {
         // Set the test data to send all traffic to BT
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysBT)))
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val vaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
+        LDManager.initialize(app, logger = Log.getSilentInstance(), dataSource = td)
+        val vaultType = LDManager.getVaultProvider()
         assertThat(vaultType).isEqualTo(VaultType.BT_VAULT_TYPE)
 
         // Update the test data to send all traffic to VGS
         // Since ForageSDK is a singleton, we should still return BT in this instance
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysVGS)))
-        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
+
+        val secondVaultType = LDManager.getVaultProvider()
         assertThat(secondVaultType).isEqualTo(VaultType.BT_VAULT_TYPE)
     }
 
@@ -57,13 +59,27 @@ class LaunchDarklyTest() {
         // Set the test data to send all traffic to VGS
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysVGS)))
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val vaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
+
+        LDManager.initialize(app, logger = Log.getSilentInstance(), dataSource = td)
+        val vaultType = LDManager.getVaultProvider()
         assertThat(vaultType).isEqualTo(VaultType.VGS_VAULT_TYPE)
 
         // Update the test data to send all traffic to BT
         // Since ForageSDK is a singleton, we should still return VGS in this instance
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(alwaysBT)))
-        val secondVaultType = LDManager.getVaultProvider(app, logger = Log.getSilentInstance(), dataSource = td)
+
+        val secondVaultType = LDManager.getVaultProvider()
         assertThat(secondVaultType).isEqualTo(VaultType.VGS_VAULT_TYPE)
+    }
+
+    @Test
+    fun `Default polling intervals`() = runTest {
+        // Set the test data to be {"intervals" : [1000]}
+        td.update(td.flag(LDFlags.ISO_POLLING_WAIT_INTERVALS).variations(LDValue.buildObject().put("intervals", LDValue.buildArray().add(1000L).build()).build()))
+        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
+
+        LDManager.initialize(app, logger = Log.getSilentInstance(), dataSource = td)
+        val pollingIntervals = LDManager.getPollingIntervals()
+        assertThat(pollingIntervals).isEqualTo(longArrayOf(1000L))
     }
 }

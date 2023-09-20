@@ -5,6 +5,7 @@ import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
 import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
+import com.launchdarkly.sdk.LDValue
 import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
 import com.launchdarkly.sdk.android.integrations.TestData
@@ -20,6 +21,7 @@ internal enum class VaultType(val value: String) {
 
 internal object LDFlags {
     const val VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG = "vault-primary-traffic-percentage"
+    const val ISO_POLLING_WAIT_INTERVALS = "iso-polling-wait-intervals"
 }
 
 internal object LDContexts {
@@ -33,7 +35,9 @@ internal object LDContextKind {
 internal object LDManager {
     private val LD_MOBILE_KEY = StopgapGlobalState.envConfig.ldMobileKey
     private var internalVaultType: VaultType? = null
+
     private var internalLogger: Log = Log.getSilentInstance()
+    private var client: LDClient? = null
 
     internal var vaultType: VaultType?
         get() = internalVaultType
@@ -51,15 +55,7 @@ internal object LDManager {
             }
         }
 
-    // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
-    // want to overwrite it! We must take in the application as a parameter, which means that a
-    // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
-    internal fun getVaultProvider(app: Application, logger: Log, dataSource: TestData? = null): VaultType {
-        if (vaultType != null) {
-            return vaultType as VaultType
-        }
-        internalLogger = logger
-        // Datasource is required for testing purposes!
+    internal fun initialize(app: Application, logger: Log, dataSource: TestData? = null) {
         val ldConfig = if (dataSource != null) {
             LDConfig.Builder()
                 .mobileKey(LD_MOBILE_KEY)
@@ -72,11 +68,25 @@ internal object LDManager {
         }
         val contextKind = ContextKind.of(LDContextKind.SERVICE)
         val context = LDContext.create(contextKind, LDContexts.ANDROID_CONTEXT)
-        val client = LDClient.init(app, ldConfig, context, 0)
+        client = LDClient.init(app, ldConfig, context, 0)
+
+        internalLogger = logger
+    }
+
+    // vaultType is instantiated lazily and is a singleton. Once we set the vault type once, we don't
+    // want to overwrite it! We must take in the application as a parameter, which means that a
+    // ForagePINEditText must be rendered before any of the ForageSDKApi functions are called.
+    internal fun getVaultProvider(): VaultType {
+        if (vaultType != null) {
+            return vaultType as VaultType
+        }
         // default to 100% VGS usage in case LD flag retrieval fails
-        val vaultPercent = client.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 0.0)
+        val defaultVal = 0.0
+        val vaultPercent =
+            client?.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, defaultVal) ?: defaultVal
         internalLogger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
         val randomNum = Math.random() * 100
+
         vaultType = if (randomNum < vaultPercent) {
             VaultType.BT_VAULT_TYPE
         } else {
@@ -84,5 +94,22 @@ internal object LDManager {
         }
         internalLogger.i("[LaunchDarkly] Vault type set to $vaultType")
         return vaultType as VaultType
+    }
+
+    internal fun getPollingIntervals(): LongArray {
+        val defaultVal = LDValue.buildObject().put(
+            "intervals",
+            LDValue.Convert.Long.arrayFrom(List(10) { 1000L })
+        ).build()
+
+        val jsonIntervals = client?.jsonValueVariation(LDFlags.ISO_POLLING_WAIT_INTERVALS, defaultVal) ?: defaultVal
+
+        val intervals = jsonIntervals.get("intervals")
+
+        // Converting the LDArray into a LongArray
+        val pollingList = LongArray(intervals.size()) { intervals.get(it).longValue() }
+
+        internalLogger.i("[LaunchDarkly] polling intervals $pollingList")
+        return pollingList
     }
 }
