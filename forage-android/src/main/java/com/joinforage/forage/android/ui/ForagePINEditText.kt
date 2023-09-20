@@ -24,7 +24,7 @@ class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : InternalForageElement(context, attrs, defStyleAttr) {
+) : AbstractForageElement(context, attrs, defStyleAttr) {
     private var vault: VaultWrapper
 
     init {

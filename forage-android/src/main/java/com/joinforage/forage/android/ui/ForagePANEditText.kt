@@ -24,7 +24,7 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : InternalForageElement(context, attrs, defStyleAttr) {
+) : AbstractForageElement(context, attrs, defStyleAttr) {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
     private val manager: PanElementStateManager = if (BuildConfig.FLAVOR == "prod") {
