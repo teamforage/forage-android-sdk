@@ -46,9 +46,9 @@ class FlowTokenizeFragment : Fragment() {
         val foragePANEditText: ForagePANEditText = binding.tokenizeForagePanEditText
         foragePANEditText.setForageContext(
             ForageContext(
-            merchantId = viewModel.merchantAccount,
-            sessionToken = viewModel.bearer
-        )
+                merchantId = viewModel.merchantAccount,
+                sessionToken = viewModel.bearer
+            )
         )
 
         foragePANEditText.requestFocus()

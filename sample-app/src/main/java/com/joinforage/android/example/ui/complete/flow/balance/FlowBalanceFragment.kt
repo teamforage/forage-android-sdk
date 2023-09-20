@@ -50,10 +50,12 @@ class FlowBalanceFragment : Fragment() {
         // as soon as possible set the forage context on
         // the ForageElement
         foragePinEditText = binding.foragePinEditText
-        foragePinEditText.setForageContext(ForageContext(
-            merchantId = viewModel.merchantAccount,
-            sessionToken = viewModel.bearer
-        ))
+        foragePinEditText.setForageContext(
+            ForageContext(
+                merchantId = viewModel.merchantAccount,
+                sessionToken = viewModel.bearer
+            )
+        )
 
         foragePinEditText.requestFocus()
 

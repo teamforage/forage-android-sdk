@@ -28,7 +28,6 @@ class ForageSDK : ForageSDKInterface {
         )
     }
 
-
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
         val (merchantId, sessionToken) = _getForageContextOrThrow(foragePanEditText)

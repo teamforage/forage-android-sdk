@@ -4,8 +4,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
-
-
 /**
  * The Forage SDK public API
  */
@@ -17,7 +15,6 @@ internal interface ForageSDKInterface {
 
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
 }
-
 
 data class TokenizeEBTCardParams(
     val foragePANEditText: ForagePANEditText,
