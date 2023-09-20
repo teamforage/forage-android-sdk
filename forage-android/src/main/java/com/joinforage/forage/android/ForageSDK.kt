@@ -1,6 +1,5 @@
 package com.joinforage.forage.android
 
-import android.content.Context
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
@@ -12,36 +11,42 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForagePANEditText
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.InternalForageElement
 import java.util.UUID
 
 /**
  * Singleton responsible for implementing the SDK API
  */
-object ForageSDK : ForageSDKApi {
-    private val logger = Log.getInstance()
+class ForageSDK : ForageSDKInterface {
 
-    // TODO: this should be a Config argument that uses the builder pattern
-    override suspend fun tokenizeEBTCard(
-        merchantAccount: String,
-        foragePanEditText: ForagePANEditText,
-        bearerToken: String,
-        customerId: String,
-        reusable: Boolean
-    ): ForageApiResponse<String> {
+    private fun _getForageContextOrThrow(element: InternalForageElement): ForageContext {
+        val context = element.getForageContext()
+        // TODO: create a custom Exception instead of using IllegalArgumentException
+        return context ?: throw IllegalArgumentException(
+            "You need to call element.setForageContext(forageContext: ForageContext) on a ForageElement before you can call submit."
+        )
+    }
+
+
+    override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
+        val (foragePanEditText, customerId, reusable) = params
+        val (merchantId, sessionToken) = _getForageContextOrThrow(foragePanEditText)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
         logger.i(
             "[HTTP] Tokenizing Payment Method",
             attributes = mapOf(
-                "merchant_ref" to merchantAccount,
+                "merchant_ref" to merchantId,
                 "customer_id" to customerId
             )
         )
 
         return TokenizeCardService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                bearerToken,
-                merchantAccount,
+                sessionToken,
+                merchantId,
                 idempotencyKey = UUID.randomUUID().toString(),
                 traceId = logger.getTraceIdValue()
             ),
@@ -54,28 +59,27 @@ object ForageSDK : ForageSDKApi {
         )
     }
 
-    override suspend fun checkBalance(
-        context: Context,
-        pinForageEditText: ForagePINEditText,
-        merchantAccount: String,
-        bearerToken: String,
-        paymentMethodRef: String
-    ): ForageApiResponse<String> {
+    override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
+        val (foragePinEditText, paymentMethodRef) = params
+        val (merchantId, sessionToken) = _getForageContextOrThrow(foragePinEditText)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
         logger.i(
             "[HTTP] Submitting balance check for Payment Method $paymentMethodRef",
             attributes = mapOf(
-                "merchant_ref" to merchantAccount,
+                "merchant_ref" to merchantId,
                 "payment_method_ref" to paymentMethodRef
             )
         )
         return CheckBalanceRepository(
-            pinCollector = pinForageEditText.getCollector(
-                merchantAccount
+            pinCollector = foragePinEditText.getCollector(
+                merchantId
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -83,8 +87,8 @@ object ForageSDK : ForageSDKApi {
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -92,8 +96,8 @@ object ForageSDK : ForageSDKApi {
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -105,28 +109,27 @@ object ForageSDK : ForageSDKApi {
         )
     }
 
-    override suspend fun capturePayment(
-        context: Context,
-        pinForageEditText: ForagePINEditText,
-        merchantAccount: String,
-        bearerToken: String,
-        paymentRef: String
-    ): ForageApiResponse<String> {
+    override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
+        val (foragePinEditText, paymentRef) = params
+        val (merchantId, sessionToken) = _getForageContextOrThrow(foragePinEditText)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
         logger.i(
             "[HTTP] Submitting capture request for Payment $paymentRef",
             attributes = mapOf(
-                "merchant_ref" to merchantAccount,
+                "merchant_ref" to merchantId,
                 "payment_ref" to paymentRef
             )
         )
         return CapturePaymentRepository(
-            pinCollector = pinForageEditText.getCollector(
-                merchantAccount
+            pinCollector = foragePinEditText.getCollector(
+                merchantId
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -134,8 +137,8 @@ object ForageSDK : ForageSDKApi {
             ),
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -143,8 +146,8 @@ object ForageSDK : ForageSDKApi {
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -152,8 +155,8 @@ object ForageSDK : ForageSDKApi {
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
