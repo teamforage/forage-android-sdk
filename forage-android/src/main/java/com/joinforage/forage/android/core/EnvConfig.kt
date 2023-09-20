@@ -2,7 +2,7 @@ package com.joinforage.forage.android.core
 
 import com.joinforage.forage.android.ui.ForageContext
 
-enum class EnvOption {
+internal enum class EnvOption {
     DEV,
     STAGING,
     SANDBOX,
@@ -10,7 +10,7 @@ enum class EnvOption {
     PROD
 }
 
-sealed class EnvConfig(
+internal sealed class EnvConfig(
     val FLAVOR: EnvOption,
     val btProxyID: String,
     val btAPIKey: String,
@@ -37,7 +37,7 @@ sealed class EnvConfig(
         btAPIKey = "key_6B4cvpcDCEeNDYNow9zH7c",
         vgsVaultId = "tnteykuh975",
         vgsVaultType = "SANDBOXbox",
-        baseUrl = "https://api.STAGINGing.joinforage.app/",
+        baseUrl = "https://api.staging.joinforage.app/",
         ldMobileKey = "mob-a9903698-759b-48e2-86e1-c551e2b69118",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -48,7 +48,7 @@ sealed class EnvConfig(
         btAPIKey = "key_DQ5NfUAgiqzwX1pxqcrSzK",
         vgsVaultId = "tntagcot4b1",
         vgsVaultType = "SANDBOXbox",
-        baseUrl = "https://api.SANDBOXbox.joinforage.app/",
+        baseUrl = "https://api.sandbox.joinforage.app/",
         ldMobileKey = "mob-22024b85-05b7-4e24-b290-a071310dfc3d",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
