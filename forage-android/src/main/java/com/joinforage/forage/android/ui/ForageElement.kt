@@ -5,6 +5,15 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 
+data class ForageContext (
+    val merchantId: String,
+    val sessionToken: String
+    // TODO: thoughts on customerId being part of the
+    //  ForageContext instead of a param for tokenizeEBTCard?
+    //  Is there a future where we use customerID as part of
+    //  fraud detection in checkBalance?
+)
+
 // an interface that represents that abstract state of
 // a ForageElement.
 // NOTE: isValid is true when validationError = null
@@ -14,6 +23,8 @@ import com.joinforage.forage.android.core.element.state.ElementState
 
 interface ForageElement {
     var typeface: Typeface?
+
+    fun setForageContext(forageContext: ForageContext)
 
     fun clearText()
 
