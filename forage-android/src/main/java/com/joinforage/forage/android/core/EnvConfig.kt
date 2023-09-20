@@ -28,7 +28,7 @@ internal sealed class EnvConfig(
         vgsVaultType = "SANDBOXbox",
         baseUrl = "https://api.dev.joinforage.app/",
         ldMobileKey = "mob-03e025cb-5b4e-4d97-8685-39a22316d601",
-        ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a",
+        ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
 
     object Staging : EnvConfig(

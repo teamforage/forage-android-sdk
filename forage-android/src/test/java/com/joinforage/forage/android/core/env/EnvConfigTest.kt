@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.core.env
 
-
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.ui.ForageContext
 import org.assertj.core.api.Assertions.assertThat
@@ -60,7 +59,6 @@ class EnvConfigTest_fromSessionToken {
         val result = EnvConfig.fromSessionToken("prod_202020202")
         assertThat(result).isEqualTo(EnvConfig.Prod)
     }
-
 }
 
 class EnvConfigTest_fromForageContext {
