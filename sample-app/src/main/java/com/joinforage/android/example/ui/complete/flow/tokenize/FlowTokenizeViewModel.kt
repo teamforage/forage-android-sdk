@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.squareup.moshi.JsonAdapter
@@ -49,11 +50,12 @@ class FlowTokenizeViewModel @Inject constructor(
     fun onSubmit(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
         _isLoading.value = true
 
-        val response = ForageSDK.tokenizeEBTCard(
-            merchantAccount = merchantAccount,
-            bearerToken = bearer,
-            customerId = "android-test-customer-id",
-            foragePanEditText = foragePanEditText
+        val response = ForageSDK().tokenizeEBTCard(
+            TokenizeEBTCardParams(
+               foragePANEditText = foragePanEditText,
+                customerId = "android-test-customer-id",
+                reusable = true
+            )
         )
 
         when (response) {
