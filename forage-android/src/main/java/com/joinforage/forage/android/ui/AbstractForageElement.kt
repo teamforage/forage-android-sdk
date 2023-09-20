@@ -3,6 +3,7 @@ package com.joinforage.forage.android.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import com.joinforage.forage.android.core.STOPGAP_GLOBAL_STATE
 
 abstract class AbstractForageElement(
     context: Context,
@@ -13,6 +14,11 @@ abstract class AbstractForageElement(
     private var _forageConfig: ForageConfig? = null
     override fun setForageConfig(forageConfig: ForageConfig) {
         this._forageConfig = forageConfig
+
+        // TODO: 9/20/23: This is a temporary workaround and is
+        //  not meant to stick around. See this doc for more details
+        //  https://www.notion.so/joinforage/226d8ee6f8294d2694b1bb451791960b
+        STOPGAP_GLOBAL_STATE.context = forageConfig
     }
 
     // internal because submit methods need read-access
