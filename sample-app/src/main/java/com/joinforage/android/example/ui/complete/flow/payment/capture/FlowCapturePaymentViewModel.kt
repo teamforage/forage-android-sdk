@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.base.BaseViewModel
 import com.joinforage.android.example.ui.complete.flow.payment.capture.model.FlowCapturePaymentUIState
+import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -24,8 +25,8 @@ class FlowCapturePaymentViewModel @Inject constructor(
     private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val snapAmount = args.snapAmount
     private val cashAmount = args.cashAmount
-    private val merchantAccount = args.merchantAccount
-    private val bearer = args.bearer
+    internal val merchantAccount = args.merchantAccount
+    internal val bearer = args.bearer
     private val snapPaymentRef = args.snapPaymentRef
     private val cashPaymentRef = args.cashPaymentRef
 
@@ -44,12 +45,11 @@ class FlowCapturePaymentViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
-            val response = ForageSDK.capturePayment(
-                context = context,
-                pinForageEditText = pinForageEditText,
-                merchantAccount = merchantAccount,
-                bearerToken = bearer,
-                paymentRef = snapPaymentRef
+            val response = ForageSDK().capturePayment(
+                CapturePaymentParams(
+                   foragePinEditText = pinForageEditText,
+                    paymentRef = snapPaymentRef
+                )
             )
 
             when (response) {
@@ -77,12 +77,11 @@ class FlowCapturePaymentViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
-            val response = ForageSDK.capturePayment(
-                context = context,
-                pinForageEditText = pinForageEditText,
-                merchantAccount = merchantAccount,
-                bearerToken = bearer,
-                paymentRef = cashPaymentRef
+            val response = ForageSDK().capturePayment(
+                CapturePaymentParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentRef = cashPaymentRef
+                )
             )
 
             when (response) {

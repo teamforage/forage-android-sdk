@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.joinforage.android.example.databinding.FragmentFlowTokenizeBinding
 import com.joinforage.android.example.ext.hideKeyboard
+import com.joinforage.forage.android.ui.ForageContext
 import com.joinforage.forage.android.ui.ForagePANEditText
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,9 +41,17 @@ class FlowTokenizeFragment : Fragment() {
             }
         }
 
-        val forage: ForagePANEditText = binding.tokenizeForagePanEditText
+        // as soon as possible set the forage context on
+        // the ForageElement
+        val foragePANEditText: ForagePANEditText = binding.tokenizeForagePanEditText
+        foragePANEditText.setForageContext(
+            ForageContext(
+            merchantId = viewModel.merchantAccount,
+            sessionToken = viewModel.bearer
+        )
+        )
 
-        forage.requestFocus()
+        foragePANEditText.requestFocus()
 
         val paymentRef: TextView = binding.paymentRef
         val cardLast4: TextView = binding.cardLast4
@@ -53,17 +62,17 @@ class FlowTokenizeFragment : Fragment() {
         val isValid: TextView = binding.isValid
 
         fun setState() {
-            val state = forage.getElementState()
+            val state = foragePANEditText.getElementState()
             isFocused.text = "isFocused: ${state.isFocused}"
             isComplete.text = "isComplete: ${state.isComplete}"
             isEmpty.text = "isEmpty: ${state.isEmpty}"
             isValid.text = "isValid: ${state.isValid}"
         }
 
-        forage.setOnFocusEventListener { setState() }
-        forage.setOnChangeEventListener { setState() }
+        foragePANEditText.setOnFocusEventListener { setState() }
+        foragePANEditText.setOnChangeEventListener { setState() }
 
-        val state = forage.getElementState()
+        val state = foragePANEditText.getElementState()
         isFocused.text = "isFocused: ${state.isFocused}"
         isComplete.text = "isComplete: ${state.isComplete}"
         isEmpty.text = "isEmpty: ${state.isEmpty}"
