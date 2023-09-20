@@ -56,18 +56,18 @@ class ForagePANEditText @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ForagePANEditText, defStyleAttr, 0)
             .apply {
                 try {
-                    val focusedBoxStrokeColor = getColor(
-                        R.styleable.ForagePANEditText_android_strokeColor,
+                    val panBoxStrokeColor = getColor(
+                        R.styleable.ForagePANEditText_panBoxStrokeColor,
                         getThemeAccentColor(context)
                     )
 
-                    val focusedBoxStrokeWidth = getDimension(
-                        R.styleable.ForagePANEditText_boxStrokeWidthFocused,
+                    val panFocusedBoxStrokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_panBoxStrokeWidthFocused,
                         3f
                     )
 
-                    val strokeWidth = getFloat(
-                        R.styleable.ForagePANEditText_android_strokeWidth,
+                    val panBoxStrokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_panBoxStrokeWidth,
                         3f
                     )
 
@@ -92,14 +92,14 @@ class ForagePANEditText @JvmOverloads constructor(
                             layoutParams =
                                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
-                            // Set stroke color on focused text
-                            boxStrokeColor = focusedBoxStrokeColor
+                            // Set stroke color
+                            boxStrokeColor = panBoxStrokeColor
                             // Set stroke width on focused text
-                            boxStrokeWidthFocused = focusedBoxStrokeWidth.toInt()
+                            boxStrokeWidthFocused = panFocusedBoxStrokeWidth.toInt()
                             // Set stroke width on unfocused text
-                            boxStrokeWidth = strokeWidth.toInt()
+                            boxStrokeWidth = panBoxStrokeWidth.toInt()
                             // Match hint text color with stroke color
-                            hintTextColor = ColorStateList.valueOf(focusedBoxStrokeColor)
+                            hintTextColor = ColorStateList.valueOf(panBoxStrokeColor)
 
                             setBoxCornerRadii(
                                 boxCornerRadiusTopStart,

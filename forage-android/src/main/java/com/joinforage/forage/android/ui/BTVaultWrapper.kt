@@ -28,7 +28,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                 val textInputLayoutStyleAttribute =
                     getResourceId(com.joinforage.forage.android.R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
                 val boxStrokeColor = getColor(
-                    com.joinforage.forage.android.R.styleable.ForagePINEditText_boxStrokeColor,
+                    com.joinforage.forage.android.R.styleable.ForagePINEditText_pinBoxStrokeColor,
                     getThemeAccentColor(context)
                 )
                 val boxBackgroundColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxBackgroundColor, Color.TRANSPARENT)

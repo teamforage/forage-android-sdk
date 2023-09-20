@@ -23,7 +23,7 @@ import com.verygoodsecurity.vgscollect.widget.VGSEditText
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.foragePanEditTextStyle
+    defStyleAttr: Int
 ) : ForageElement, LinearLayout(context, attrs, defStyleAttr) {
     private var vault: VaultWrapper
 
