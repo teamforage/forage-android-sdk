@@ -2,6 +2,7 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
@@ -149,7 +150,7 @@ internal class CapturePaymentRepository(
             }
 
             attempt += 1
-            delay(POLLING_INTERVAL_IN_MILLIS)
+            delay(POLLING_INTERVAL_IN_MILLIS + getJitterAmount())
         }
 
         logger.i(
