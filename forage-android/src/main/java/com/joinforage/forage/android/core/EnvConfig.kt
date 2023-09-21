@@ -2,12 +2,12 @@ package com.joinforage.forage.android.core
 
 import com.joinforage.forage.android.ui.ForageConfig
 
-internal enum class EnvOption {
-    DEV,
-    STAGING,
-    SANDBOX,
-    CERT,
-    PROD
+internal enum class EnvOption(val value: String) {
+    DEV("dev"),
+    STAGING("staging"),
+    SANDBOX("sandbox"),
+    CERT("cert"),
+    PROD("prod")
 }
 
 internal sealed class EnvConfig(
