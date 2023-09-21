@@ -2,8 +2,8 @@ package com.joinforage.forage.android.collect
 
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -195,8 +195,11 @@ internal class BTPinCollector(
     }
 
     companion object {
-        private const val PROXY_ID = BuildConfig.BT_PROXY_ID
-        private const val API_KEY = BuildConfig.BT_API_KEY
+        // this code assumes that .setForageConfig() has been called
+        // on a Forage***EditText before PROXY_ID or API_KEY get
+        // referenced
+        private val PROXY_ID = StopgapGlobalState.envConfig.btProxyID
+        private val API_KEY = StopgapGlobalState.envConfig.btAPIKey
 
         private fun buildBt(): BasisTheoryElements {
             return BasisTheoryElements.builder()
