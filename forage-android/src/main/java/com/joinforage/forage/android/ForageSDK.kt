@@ -1,10 +1,10 @@
 package com.joinforage.forage.android
 
 import android.content.Context
-import com.joinforage.forage.android.core.telemetry.ActionType
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
+import com.joinforage.forage.android.core.telemetry.EventOutcome
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.OutcomeType
+import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
@@ -76,7 +76,7 @@ object ForageSDK : ForageSDKApi {
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
             vault = pinForageEditText.getCollector(merchantAccount).getVaultType(),
-            vaultAction = ActionType.BALANCE,
+            vaultAction = UserAction.BALANCE,
             logger
         )
         measurement.start()
@@ -113,16 +113,17 @@ object ForageSDK : ForageSDKApi {
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
             ),
-            logger = logger
+            logger = logger,
+            responseMonitor = measurement
         ).checkBalance(
             paymentMethodRef = paymentMethodRef
         )
         measurement.end()
 
         val outcome = if (response is ForageApiResponse.Failure) {
-            OutcomeType.FAILURE
+            EventOutcome.FAILURE
         } else {
-            OutcomeType.SUCCESS
+            EventOutcome.SUCCESS
         }
 
         measurement.setEventOutcome(outcome).logResult()
@@ -148,7 +149,7 @@ object ForageSDK : ForageSDKApi {
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
             vault = pinForageEditText.getCollector(merchantAccount).getVaultType(),
-            vaultAction = ActionType.CAPTURE,
+            vaultAction = UserAction.CAPTURE,
             logger
         )
         measurement.start()
@@ -194,16 +195,17 @@ object ForageSDK : ForageSDKApi {
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
             ),
-            logger = logger
+            logger = logger,
+            responseMonitor = measurement
         ).capturePayment(
             paymentRef = paymentRef
         )
         measurement.end()
 
         val outcome = if (response is ForageApiResponse.Failure) {
-            OutcomeType.FAILURE
+            EventOutcome.FAILURE
         } else {
-            OutcomeType.SUCCESS
+            EventOutcome.SUCCESS
         }
 
         measurement.setEventOutcome(outcome).logResult()

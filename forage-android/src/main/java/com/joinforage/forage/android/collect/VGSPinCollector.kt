@@ -3,8 +3,8 @@ package com.joinforage.forage.android.collect
 import android.content.Context
 import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.ActionType
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
@@ -50,7 +50,7 @@ internal class VGSPinCollector(
 
         val measurement = VaultProxyResponseMonitor.newMeasurement(
             vault = vaultType,
-            vaultAction = ActionType.BALANCE,
+            userAction = UserAction.BALANCE,
             logger
         )
             .setPath(path)
@@ -151,7 +151,7 @@ internal class VGSPinCollector(
 
         val measurement = VaultProxyResponseMonitor.newMeasurement(
             vault = vaultType,
-            vaultAction = ActionType.CAPTURE,
+            userAction = UserAction.CAPTURE,
             logger
         )
             .setPath(path)

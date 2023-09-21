@@ -9,8 +9,8 @@ import com.launchdarkly.sdk.android.LDConfig
 import com.launchdarkly.sdk.android.integrations.TestData
 
 internal enum class VaultType(val value: String) {
-    VGS_VAULT_TYPE("vgs_vault_type"),
-    BT_VAULT_TYPE("bt_vault_type");
+    VGS_VAULT_TYPE("vgs"),
+    BT_VAULT_TYPE("basis_theory");
 
     override fun toString(): String {
         return value

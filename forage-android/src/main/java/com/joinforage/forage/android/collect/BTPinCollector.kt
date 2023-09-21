@@ -5,8 +5,8 @@ import com.basistheory.android.service.HttpMethod
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.ActionType
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
@@ -43,7 +43,7 @@ internal class BTPinCollector(
 
         val measurement = VaultProxyResponseMonitor.newMeasurement(
             vault = vaultType,
-            vaultAction = ActionType.BALANCE,
+            userAction = UserAction.BALANCE,
             logger
         )
             .setPath(requestPath)
@@ -149,7 +149,7 @@ internal class BTPinCollector(
 
         val measurement = VaultProxyResponseMonitor.newMeasurement(
             vault = vaultType,
-            vaultAction = ActionType.CAPTURE,
+            userAction = UserAction.CAPTURE,
             logger
         )
             .setPath(requestPath)

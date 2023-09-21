@@ -10,9 +10,10 @@ internal object MetricsConstants {
     const val VAULT_TYPE = "vault_type"
     const val EVENT_NAME = "event_name"
     const val EVENT_OUTCOME = "event_outcome"
+    const val FORAGE_ERROR_CODE = "forage_error_code"
 }
 
-internal enum class ActionType(val value: String) {
+internal enum class UserAction(val value: String) {
     BALANCE("balance"),
     CAPTURE("capture");
 
@@ -21,7 +22,7 @@ internal enum class ActionType(val value: String) {
     }
 }
 
-internal enum class OutcomeType(val value: String) {
+internal enum class EventOutcome(val value: String) {
     SUCCESS("success"),
     FAILURE("failure");
 
@@ -60,6 +61,7 @@ internal interface NetworkMonitor : PerformanceMeasurer {
     fun setPath(path: String): NetworkMonitor
     fun setMethod(method: String): NetworkMonitor
     fun setHttpStatusCode(code: Int): NetworkMonitor
+    fun setForageErrorCode(errorCode: String): NetworkMonitor
 }
 
 internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance()) : NetworkMonitor {
@@ -96,6 +98,11 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
         return this
     }
 
+    override fun setForageErrorCode(errorCode: String): NetworkMonitor {
+        responseAttributes[MetricsConstants.FORAGE_ERROR_CODE] = errorCode
+        return this
+    }
+
     override fun logResult() {
         val defaultVal = Long.MIN_VALUE
         val start = startTime ?: defaultVal
@@ -124,19 +131,19 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
     functions. The timer begins when a balance or capture request is submitted to VGS/BT
     and ends when a response is received by the SDK.
      */
-internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
+internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
-    private var vaultAction: ActionType? = null
+    private var userAction: UserAction? = null
     private var eventName: EventName = EventName.VAULT_RESPONSE
 
     init {
         this.vaultType = vault
-        this.vaultAction = vaultAction
+        this.userAction = userAction
     }
 
     internal companion object {
-        internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): VaultProxyResponseMonitor {
-            return VaultProxyResponseMonitor(vault, vaultAction, metricsLogger)
+        internal fun newMeasurement(vault: VaultType, userAction: UserAction, metricsLogger: Log?): VaultProxyResponseMonitor {
+            return VaultProxyResponseMonitor(vault, userAction, metricsLogger)
         }
     }
 
@@ -155,7 +162,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
         }
 
         val vaultType = vaultType
-        val action = vaultAction
+        val userAction = userAction
 
         metricsLogger?.i(
             "[Metrics] Received response from $vaultType proxy",
@@ -165,7 +172,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
                 MetricsConstants.HTTP_STATUS to httpStatus,
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
-                MetricsConstants.ACTION to action,
+                MetricsConstants.ACTION to userAction,
                 MetricsConstants.EVENT_NAME to eventName
             )
         )
@@ -181,25 +188,25 @@ internal class VaultProxyResponseMonitor(vault: VaultType, vaultAction: ActionTy
     Timer Begins -> [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT ->
     [GET] Poll for Response -> [GET] PaymentMethod -> Timer Ends -> Return Balance
      */
-internal class CustomerPerceivedResponseMonitor(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
+internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
     private var vaultType: VaultType? = null
-    private var vaultAction: ActionType? = null
-    private var outcomeType: OutcomeType? = null
+    private var userAction: UserAction? = null
+    private var eventOutcome: EventOutcome? = null
     private var eventName: EventName = EventName.CUSTOMER_PERCEIVED_RESPONSE
 
     init {
         this.vaultType = vault
-        this.vaultAction = vaultAction
+        this.userAction = userAction
     }
 
     internal companion object {
-        internal fun newMeasurement(vault: VaultType, vaultAction: ActionType, metricsLogger: Log?): CustomerPerceivedResponseMonitor {
+        internal fun newMeasurement(vault: VaultType, vaultAction: UserAction, metricsLogger: Log?): CustomerPerceivedResponseMonitor {
             return CustomerPerceivedResponseMonitor(vault, vaultAction, metricsLogger)
         }
     }
 
-    fun setEventOutcome(outcomeType: OutcomeType): CustomerPerceivedResponseMonitor {
-        this.outcomeType = outcomeType
+    fun setEventOutcome(eventOutcome: EventOutcome): CustomerPerceivedResponseMonitor {
+        this.eventOutcome = eventOutcome
         return this
     }
 
@@ -208,24 +215,26 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, vaultAction: A
         responseAttributes: Map<String, Any>
     ) {
         val responseTime = responseAttributes[MetricsConstants.RESPONSE_TIME_MS]
-        val outcomeType = outcomeType
+        val forageErrorCode = responseAttributes[MetricsConstants.FORAGE_ERROR_CODE]
+        val eventOutcome = eventOutcome
 
-        if (responseTime == null || eventName != EventName.CUSTOMER_PERCEIVED_RESPONSE || outcomeType == null) {
+        if (responseTime == null || eventName != EventName.CUSTOMER_PERCEIVED_RESPONSE || eventOutcome == null) {
             metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
             return
         }
 
         val vaultType = vaultType
-        val action = vaultAction
+        val userAction = userAction
 
         metricsLogger?.i(
             "[Metrics] Customer perceived response time for $vaultType has been collected",
             attributes = mapOf(
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
-                MetricsConstants.ACTION to action,
+                MetricsConstants.ACTION to userAction,
                 MetricsConstants.EVENT_NAME to eventName,
-                MetricsConstants.EVENT_OUTCOME to outcomeType
+                MetricsConstants.EVENT_OUTCOME to eventOutcome,
+                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCode
             )
         )
     }

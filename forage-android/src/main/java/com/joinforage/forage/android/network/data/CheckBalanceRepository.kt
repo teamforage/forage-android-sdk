@@ -1,7 +1,9 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
+import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -17,7 +19,8 @@ internal class CheckBalanceRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val messageStatusService: MessageStatusService,
-    private val logger: Log
+    private val logger: Log,
+    private val responseMonitor: ResponseMonitor
 ) {
 
     suspend fun checkBalance(
@@ -97,7 +100,9 @@ internal class CheckBalanceRepository(
                                     "content_id" to contentId
                                 )
                             )
-                            return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+
+                            responseMonitor.setForageErrorCode(error.forageCode)
+                            return ForageApiResponse.Failure.fromSQSError(error)
                         }
                         break
                     }
@@ -111,7 +116,9 @@ internal class CheckBalanceRepository(
                                 "content_id" to contentId
                             )
                         )
-                        return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+
+                        responseMonitor.setForageErrorCode(error.forageCode)
+                        return ForageApiResponse.Failure.fromSQSError(error)
                     }
                 }
                 else -> {
@@ -127,7 +134,10 @@ internal class CheckBalanceRepository(
                         "content_id" to contentId
                     )
                 )
-                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+
+                val unknownServerError = "unknown_server_error"
+                responseMonitor.setForageErrorCode(unknownServerError)
+                return ForageApiResponse.Failure(listOf(ForageError(500, unknownServerError, "Unknown Server Error")))
             }
 
             attempt += 1

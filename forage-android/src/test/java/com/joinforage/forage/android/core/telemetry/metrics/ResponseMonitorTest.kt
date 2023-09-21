@@ -2,12 +2,12 @@ package com.joinforage.forage.android.core.telemetry.metrics
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.ActionType
+import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.EventName
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.MetricsConstants
-import com.joinforage.forage.android.core.telemetry.OutcomeType
+import com.joinforage.forage.android.core.telemetry.EventOutcome
 import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import org.assertj.core.api.Assertions
@@ -115,7 +115,7 @@ class ResponseMonitorTest {
     @Test
     fun `Vault proxy monitor should log error if path is not set`() {
         val mockLogger = MockLogger()
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, vaultAction = ActionType.CAPTURE, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
         vaultProxyResponseMonitor.start()
         vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setMethod("POST").setHttpStatusCode(200).logResult()
@@ -127,7 +127,7 @@ class ResponseMonitorTest {
     @Test
     fun `Vault proxy monitor should log error if method is not set`() {
         val mockLogger = MockLogger()
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, vaultAction = ActionType.CAPTURE, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
         vaultProxyResponseMonitor.start()
         vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setPath("this/is/test/path/").setHttpStatusCode(200).logResult()
@@ -139,7 +139,7 @@ class ResponseMonitorTest {
     @Test
     fun `Vault proxy monitor should log error if status code is not set`() {
         val mockLogger = MockLogger()
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, vaultAction = ActionType.CAPTURE, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
         vaultProxyResponseMonitor.start()
         vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setPath("this/is/test/path/").setMethod("POST").logResult()
@@ -152,8 +152,8 @@ class ResponseMonitorTest {
     fun `Validate the attributes of a successful vault proxy log`() {
         val mockLogger = MockLogger()
         val vaultType = VaultType.VGS_VAULT_TYPE
-        val vaultAction = ActionType.CAPTURE
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = vaultType, vaultAction = vaultAction, mockLogger)
+        val userAction = UserAction.CAPTURE
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = vaultType, userAction = userAction, mockLogger)
         val path = "this/is/test/path/"
         val method = "POST"
         val statusCode = 200
@@ -180,14 +180,14 @@ class ResponseMonitorTest {
         Assertions.assertThat(loggedMethod).isEqualTo(method)
         Assertions.assertThat(loggedStatusCode).isEqualTo(statusCode)
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
-        Assertions.assertThat(loggedVaultAction).isEqualTo(vaultAction)
+        Assertions.assertThat(loggedVaultAction).isEqualTo(userAction)
         Assertions.assertThat(loggedResponseType).isEqualTo(EventName.VAULT_RESPONSE)
     }
 
     @Test
     fun `Customer perceived monitor should log error if outcome type is not set`() {
         val mockLogger = MockLogger()
-        val customerPerceivedResponseMonitor = CustomerPerceivedResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, vaultAction = ActionType.CAPTURE, mockLogger)
+        val customerPerceivedResponseMonitor = CustomerPerceivedResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
         customerPerceivedResponseMonitor.start()
         customerPerceivedResponseMonitor.end()
         customerPerceivedResponseMonitor.logResult()
@@ -200,11 +200,11 @@ class ResponseMonitorTest {
     fun `Validate the attributes of a successful customer perceived response time log`() {
         val mockLogger = MockLogger()
         val vaultType = VaultType.VGS_VAULT_TYPE
-        val vaultAction = ActionType.CAPTURE
-        val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(vault = vaultType, vaultAction = vaultAction, mockLogger)
+        val userAction = UserAction.CAPTURE
+        val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(vault = vaultType, userAction = userAction, mockLogger)
         roundTripResponseMonitor.start()
         roundTripResponseMonitor.end()
-        roundTripResponseMonitor.setEventOutcome(OutcomeType.SUCCESS).logResult()
+        roundTripResponseMonitor.setEventOutcome(EventOutcome.SUCCESS).logResult()
 
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(1)
@@ -218,10 +218,12 @@ class ResponseMonitorTest {
         val loggedVaultAction = attributes[MetricsConstants.ACTION]
         val loggedEventName = attributes[MetricsConstants.EVENT_NAME]
         val loggedOutcomeType = attributes[MetricsConstants.EVENT_OUTCOME]
+        val loggedForageErrorCode = attributes[MetricsConstants.FORAGE_ERROR_CODE]
 
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
-        Assertions.assertThat(loggedVaultAction).isEqualTo(vaultAction)
+        Assertions.assertThat(loggedVaultAction).isEqualTo(userAction)
         Assertions.assertThat(loggedEventName).isEqualTo(EventName.CUSTOMER_PERCEIVED_RESPONSE)
-        Assertions.assertThat(loggedOutcomeType).isEqualTo(OutcomeType.SUCCESS)
+        Assertions.assertThat(loggedOutcomeType).isEqualTo(EventOutcome.SUCCESS)
+        Assertions.assertThat(loggedForageErrorCode).isEqualTo(null)
     }
 }
