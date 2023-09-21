@@ -38,7 +38,6 @@ class ForagePANEditText @JvmOverloads constructor(
             return _SET_ONLY_manager!!
         }
 
-
     override var typeface: Typeface? = null
 
     init {
