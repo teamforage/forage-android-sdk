@@ -25,7 +25,7 @@ internal sealed class EnvConfig(
         btProxyID = "N31FZgKpYZpo3oQ6XiM6M6",
         btAPIKey = "key_AZfcBuKUsV38PEeYu6ZV8x",
         vgsVaultId = "tntlqkidhc6",
-        vgsVaultType = "SANDBOXbox",
+        vgsVaultType = "sandbox",
         baseUrl = "https://api.dev.joinforage.app/",
         ldMobileKey = "mob-03e025cb-5b4e-4d97-8685-39a22316d601",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
@@ -36,7 +36,7 @@ internal sealed class EnvConfig(
         btProxyID = "ScWvAUkp53xz7muae7fW5p",
         btAPIKey = "key_6B4cvpcDCEeNDYNow9zH7c",
         vgsVaultId = "tnteykuh975",
-        vgsVaultType = "SANDBOXbox",
+        vgsVaultType = "sandbox",
         baseUrl = "https://api.staging.joinforage.app/",
         ldMobileKey = "mob-a9903698-759b-48e2-86e1-c551e2b69118",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
@@ -47,7 +47,7 @@ internal sealed class EnvConfig(
         btProxyID = "R1CNiogSdhnHeNq6ZFWrG1",
         btAPIKey = "key_DQ5NfUAgiqzwX1pxqcrSzK",
         vgsVaultId = "tntagcot4b1",
-        vgsVaultType = "SANDBOXbox",
+        vgsVaultType = "sandbox",
         baseUrl = "https://api.sandbox.joinforage.app/",
         ldMobileKey = "mob-22024b85-05b7-4e24-b290-a071310dfc3d",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
@@ -58,7 +58,7 @@ internal sealed class EnvConfig(
         btProxyID = "AFSMtyyTGLKgmdWwrLCENX",
         btAPIKey = "key_NdWtkKrZqztEfJRkZA8dmw",
         vgsVaultId = "tntpnht7psv",
-        vgsVaultType = "SANDBOXbox",
+        vgsVaultType = "sandbox",
         baseUrl = "https://api.cert.joinforage.app/",
         ldMobileKey = "mob-d2261a08-784b-4300-a45f-ce0e46324d66",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
