@@ -220,15 +220,18 @@ class ForagePANEditText @JvmOverloads constructor(
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         textInputLayout.boxStrokeColor = boxStrokeColor
     }
-
+    override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
+        textInputLayout.boxStrokeWidth = boxStrokeWidth
+    }
+    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
+        textInputLayout.boxStrokeWidthFocused = boxStrokeWidth
+    }
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         // no-op
     }
-
     override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
         // no-op
     }
-
     override fun afterTextChanged(s: Editable?) {
         // PANs will be formatted to include spaces. We want to strip
         // those spaces so downstream services only work with the raw

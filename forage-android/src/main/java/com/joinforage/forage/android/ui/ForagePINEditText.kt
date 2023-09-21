@@ -23,7 +23,7 @@ import com.verygoodsecurity.vgscollect.widget.VGSEditText
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int
+    defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForageElement, LinearLayout(context, attrs, defStyleAttr) {
     private var vault: VaultWrapper
 
@@ -131,6 +131,12 @@ class ForagePINEditText @JvmOverloads constructor(
         vault.setHintTextColor(hintTextColor)
     }
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
+        // no-ops for now
+    }
+    override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
+        // no-ops for now
+    }
+    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
         // no-ops for now
     }
 }
