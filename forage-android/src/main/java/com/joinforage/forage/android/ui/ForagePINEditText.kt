@@ -25,46 +25,69 @@ class ForagePINEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : AbstractForageElement(context, attrs, defStyleAttr) {
-    private var vault: VaultWrapper
+    private val _linearLayout: LinearLayout
+    private val btVaultWrapper: BTVaultWrapper
+    private val vgsVaultWrapper: VGSVaultWrapper
+    private var _SET_ONLY_vault: VaultWrapper? = null
+    private val vault: VaultWrapper
+        get() {
+            if (_SET_ONLY_vault == null) {
+                TODO("throw an error here since that means setForageContext was not called")
+                throw Exception("need to call setForageContext first!")
+            }
+            return _SET_ONLY_vault!!
+        }
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
             .apply {
                 try {
-                    // Must initialize DD at the beginning of each render function. DD requires the context,
-                    // so we need to wait until a context is present to run initialization code. However,
-                    // we have logging all over the SDK that relies on the render happening first.
-                    val logger = Log.getInstance()
-                    logger.initializeDD(context)
                     setWillNotDraw(false)
                     orientation = VERTICAL
                     gravity = Gravity.CENTER
 
-                    val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
-                    vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
-                        BTVaultWrapper(context, attrs, defStyleAttr)
-                    } else {
-                        VGSVaultWrapper(context, attrs, defStyleAttr)
-                    }
+                    btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
+                    vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
+                    // ensure both wrappers init with the
+                    // same typeface (or the attributes)
+                    btVaultWrapper.typeface = vgsVaultWrapper.typeface
 
                     val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementWidth, ViewGroup.LayoutParams.MATCH_PARENT)
                     val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-                    val linearLayout = LinearLayout(context)
-                    linearLayout.layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)
-
-                    linearLayout.orientation = VERTICAL
-                    linearLayout.gravity = Gravity.CENTER
-
-                    linearLayout.addView(vault.getUnderlying())
-                    linearLayout.addView(getLogoImageViewLayout(context))
-
-                    addView(linearLayout)
-                    logger.i("[UIView] ForagePINEditText successfully rendered")
+                    _linearLayout = LinearLayout(context)
+                    _linearLayout.layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)
+                    _linearLayout.orientation = VERTICAL
+                    _linearLayout.gravity = Gravity.CENTER
                 } finally {
                     recycle()
                 }
             }
+    }
+
+    override fun setForageContext(forageContext: ForageContext) {
+        // super is responsible for initializing the log and some
+        // global state so it must be called first
+        super.setForageContext(forageContext)
+
+        // Must initialize DD at the beginning of each render function. DD requires the context,
+        // so we need to wait until a context is present to run initialization code. However,
+        // we have logging all over the SDK that relies on the render happening first.
+        val logger = Log.getInstance()
+        logger.initializeDD(context)
+
+        val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
+        _SET_ONLY_vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+            btVaultWrapper
+        } else {
+            vgsVaultWrapper
+        }
+
+        _linearLayout.addView(vault.getUnderlying())
+        _linearLayout.addView(getLogoImageViewLayout(context))
+        addView(_linearLayout)
+
+        logger.i("[UIView] ForagePINEditText successfully rendered")
     }
 
     override fun clearText() {
@@ -123,7 +146,14 @@ class ForagePINEditText @JvmOverloads constructor(
         vault.setTextSize(textSize)
     }
 
-    override var typeface: Typeface? = vault.typeface
+    override var typeface: Typeface?
+        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface
+        set(value) {
+            // keep all vault providers in sync regardless of
+            // whether they were added to the UI
+            btVaultWrapper.typeface = value
+            vgsVaultWrapper.typeface = value
+        }
     override fun setHint(hint: String) {
         vault.setHint(hint)
     }
