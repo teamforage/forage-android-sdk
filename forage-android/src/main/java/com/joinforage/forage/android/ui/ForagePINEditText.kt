@@ -133,4 +133,10 @@ class ForagePINEditText @JvmOverloads constructor(
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         // no-ops for now
     }
+    override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
+        // no-ops for now
+    }
+    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
+        // no-ops for now
+    }
 }

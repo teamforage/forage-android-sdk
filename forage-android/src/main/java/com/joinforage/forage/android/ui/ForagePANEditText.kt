@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.ui
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
@@ -56,18 +55,18 @@ class ForagePANEditText @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ForagePANEditText, defStyleAttr, 0)
             .apply {
                 try {
-                    val focusedBoxStrokeColor = getColor(
-                        R.styleable.ForagePANEditText_android_strokeColor,
+                    val panBoxStrokeColor = getColor(
+                        R.styleable.ForagePANEditText_panBoxStrokeColor,
                         getThemeAccentColor(context)
                     )
 
-                    val focusedBoxStrokeWidth = getDimension(
-                        R.styleable.ForagePANEditText_boxStrokeWidthFocused,
+                    val panFocusedBoxStrokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_panBoxStrokeWidthFocused,
                         3f
                     )
 
-                    val strokeWidth = getFloat(
-                        R.styleable.ForagePANEditText_android_strokeWidth,
+                    val panBoxStrokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_panBoxStrokeWidth,
                         3f
                     )
 
@@ -93,13 +92,11 @@ class ForagePANEditText @JvmOverloads constructor(
                                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
                             // Set stroke color on focused text
-                            boxStrokeColor = focusedBoxStrokeColor
+                            boxStrokeColor = panBoxStrokeColor
                             // Set stroke width on focused text
-                            boxStrokeWidthFocused = focusedBoxStrokeWidth.toInt()
+                            boxStrokeWidthFocused = panFocusedBoxStrokeWidth.toInt()
                             // Set stroke width on unfocused text
-                            boxStrokeWidth = strokeWidth.toInt()
-                            // Match hint text color with stroke color
-                            hintTextColor = ColorStateList.valueOf(focusedBoxStrokeColor)
+                            boxStrokeWidth = panBoxStrokeWidth.toInt()
 
                             setBoxCornerRadii(
                                 boxCornerRadiusTopStart,
@@ -220,15 +217,18 @@ class ForagePANEditText @JvmOverloads constructor(
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         textInputLayout.boxStrokeColor = boxStrokeColor
     }
-
+    override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
+        textInputLayout.boxStrokeWidth = boxStrokeWidth
+    }
+    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
+        textInputLayout.boxStrokeWidthFocused = boxStrokeWidth
+    }
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         // no-op
     }
-
     override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
         // no-op
     }
-
     override fun afterTextChanged(s: Editable?) {
         // PANs will be formatted to include spaces. We want to strip
         // those spaces so downstream services only work with the raw
