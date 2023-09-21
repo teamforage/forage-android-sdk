@@ -100,13 +100,15 @@ internal class VGSPinCollector(
 
                             continuation.resumeWith(
                                 Result.success(
-                                    ForageApiResponse.Failure(listOf(
-                                        ForageError(
-                                            httpStatusCode,
-                                            error.code,
-                                            error.message
+                                    ForageApiResponse.Failure(
+                                        listOf(
+                                            ForageError(
+                                                httpStatusCode,
+                                                error.code,
+                                                error.message
+                                            )
                                         )
-                                    ))
+                                    )
                                 )
                             )
                             return
@@ -232,13 +234,15 @@ internal class VGSPinCollector(
 
                             continuation.resumeWith(
                                 Result.success(
-                                    ForageApiResponse.Failure(listOf(
-                                        ForageError(
-                                            httpStatusCode,
-                                            error.code,
-                                            error.message
+                                    ForageApiResponse.Failure(
+                                        listOf(
+                                            ForageError(
+                                                httpStatusCode,
+                                                error.code,
+                                                error.message
+                                            )
                                         )
-                                    ))
+                                    )
                                 )
                             )
                             return
