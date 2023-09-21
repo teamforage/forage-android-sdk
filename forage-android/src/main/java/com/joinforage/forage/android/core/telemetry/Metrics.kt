@@ -155,6 +155,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
         val method = responseAttributes[MetricsConstants.METHOD]
         val httpStatus = responseAttributes[MetricsConstants.HTTP_STATUS]
         val responseTime = responseAttributes[MetricsConstants.RESPONSE_TIME_MS]
+        val forageErrorCode = responseAttributes[MetricsConstants.FORAGE_ERROR_CODE]
 
         if (path == null || method == null || httpStatus == null || responseTime == null) {
             metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
@@ -163,6 +164,8 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
 
         val vaultType = vaultType
         val userAction = userAction
+
+        val forageErrorCodeOrNull = forageErrorCode ?: "null"
 
         metricsLogger?.i(
             "[Metrics] Received response from $vaultType proxy",
@@ -173,7 +176,8 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
                 MetricsConstants.RESPONSE_TIME_MS to responseTime,
                 MetricsConstants.VAULT_TYPE to vaultType,
                 MetricsConstants.ACTION to userAction,
-                MetricsConstants.EVENT_NAME to eventName
+                MetricsConstants.EVENT_NAME to eventName,
+                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCodeOrNull
             )
         )
     }
@@ -226,6 +230,8 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
         val vaultType = vaultType
         val userAction = userAction
 
+        val forageErrorCodeOrNull = forageErrorCode ?: "null"
+
         metricsLogger?.i(
             "[Metrics] Customer perceived response time for $vaultType has been collected",
             attributes = mapOf(
@@ -234,7 +240,7 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
                 MetricsConstants.ACTION to userAction,
                 MetricsConstants.EVENT_NAME to eventName,
                 MetricsConstants.EVENT_OUTCOME to eventOutcome,
-                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCode
+                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCodeOrNull
             )
         )
     }

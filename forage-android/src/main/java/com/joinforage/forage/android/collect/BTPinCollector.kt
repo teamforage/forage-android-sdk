@@ -197,7 +197,7 @@ internal class BTPinCollector(
 
                 // Error code hardcoded as 400 because of lack of information
                 val httpStatusCode = 400
-                measurement.setHttpStatusCode(httpStatusCode).logResult()
+                measurement.setHttpStatusCode(httpStatusCode).setForageErrorCode(error.code).logResult()
 
                 return ForageApiResponse.Failure(
                     listOf(
