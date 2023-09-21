@@ -55,6 +55,21 @@ class ForagePANEditText @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ForagePANEditText, defStyleAttr, 0)
             .apply {
                 try {
+                    val panBoxStrokeColor = getColor(
+                        R.styleable.ForagePANEditText_panBoxStrokeColor,
+                        getThemeAccentColor(context)
+                    )
+
+                    val panFocusedBoxStrokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_panBoxStrokeWidthFocused,
+                        3f
+                    )
+
+                    val panBoxStrokeWidth = getFloat(
+                        R.styleable.ForagePANEditText_panBoxStrokeWidth,
+                        3f
+                    )
+
                     val textInputLayoutStyleAttribute =
                         getResourceId(R.styleable.ForagePANEditText_textInputLayoutStyle, 0)
                     val textColor =
@@ -62,10 +77,33 @@ class ForagePANEditText @JvmOverloads constructor(
 
                     val textSize = getDimension(R.styleable.ForagePANEditText_android_textSize, -1f)
 
+                    val defRadius = resources.getDimension(R.dimen.default_horizontal_field)
+                    val focusedBoxCornerRadius =
+                        getDimension(R.styleable.ForagePANEditText_cornerRadius, defRadius)
+
+                    val boxCornerRadiusTopStart = getBoxCornerRadiusTopStart(focusedBoxCornerRadius)
+                    val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(focusedBoxCornerRadius)
+                    val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(focusedBoxCornerRadius)
+                    val boxCornerRadiusBottomEnd = getBoxCornerRadiusBottomEnd(focusedBoxCornerRadius)
+
                     textInputLayout =
                         TextInputLayout(context, null, textInputLayoutStyleAttribute).apply {
                             layoutParams =
                                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+
+                            // Set stroke color on focused text
+                            boxStrokeColor = panBoxStrokeColor
+                            // Set stroke width on focused text
+                            boxStrokeWidthFocused = panFocusedBoxStrokeWidth.toInt()
+                            // Set stroke width on unfocused text
+                            boxStrokeWidth = panBoxStrokeWidth.toInt()
+
+                            setBoxCornerRadii(
+                                boxCornerRadiusTopStart,
+                                boxCornerRadiusTopEnd,
+                                boxCornerRadiusBottomStart,
+                                boxCornerRadiusBottomEnd
+                            )
                         }
 
                     textInputEditText = TextInputEditText(textInputLayout.context).apply {
@@ -176,15 +214,21 @@ class ForagePANEditText @JvmOverloads constructor(
     override fun setHintTextColor(hintTextColor: Int) {
         // no-ops for now
     }
-
+    override fun setBoxStrokeColor(boxStrokeColor: Int) {
+        textInputLayout.boxStrokeColor = boxStrokeColor
+    }
+    override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
+        textInputLayout.boxStrokeWidth = boxStrokeWidth
+    }
+    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
+        textInputLayout.boxStrokeWidthFocused = boxStrokeWidth
+    }
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         // no-op
     }
-
     override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
         // no-op
     }
-
     override fun afterTextChanged(s: Editable?) {
         // PANs will be formatted to include spaces. We want to strip
         // those spaces so downstream services only work with the raw

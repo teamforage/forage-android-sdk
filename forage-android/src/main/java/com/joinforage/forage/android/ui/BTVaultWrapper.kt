@@ -28,7 +28,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                 val textInputLayoutStyleAttribute =
                     getResourceId(com.joinforage.forage.android.R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
                 val boxStrokeColor = getColor(
-                    com.joinforage.forage.android.R.styleable.ForagePINEditText_boxStrokeColor,
+                    com.joinforage.forage.android.R.styleable.ForagePINEditText_pinBoxStrokeColor,
                     getThemeAccentColor(context)
                 )
                 val boxBackgroundColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxBackgroundColor, Color.TRANSPARENT)
@@ -42,8 +42,8 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                 val hintTextColorVal =
                     getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_hintTextColor, getThemeAccentColor(context))
 
-                val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_width, ViewGroup.LayoutParams.MATCH_PARENT)
-                val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_input_height, ViewGroup.LayoutParams.WRAP_CONTENT)
+                val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_inputWidth, ViewGroup.LayoutParams.MATCH_PARENT)
+                val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_inputHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                 try {
                     _internalTextElement = TextElement(context, null, textInputLayoutStyleAttribute).apply {

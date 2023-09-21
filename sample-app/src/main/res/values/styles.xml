@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="DefaultForagePANEditTextStyle">
+    <style name="DefaultForagePANEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="panBoxStrokeColor">@color/purple_700</item>
+        <item name="cornerRadius">@dimen/corner_radius</item>
         <!-- Default properties can be added here that will be applied to every ForagePANEditText. -->
     </style>
 
@@ -12,7 +14,8 @@
 
     <style name="TokenizeForageTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:hint">@string/tokenize_forage_edit_text_hint</item>
-        <item name="boxStrokeWidth">1dp</item>
+        <item name="panBoxStrokeWidth">1.0</item>
+        <item name="panBoxStrokeColor">@color/mtrl_textinput_default_box_stroke_color</item>
     </style>
 
     <!-- Style for the first ForagePanEditText in catalog Fragment. -->
@@ -48,7 +51,7 @@
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/ic_balance_24</item>
         <item name="endIconTint">@color/colorAccent</item>
-        <item name="boxStrokeColor">@color/colorAccent</item>
+        <item name="panBoxStrokeColor">@color/colorAccent</item>
     </style>
 
     <style name="CatalogThirdForageTextInputEditTextStyle" parent="TextAppearance.AppCompat">
@@ -68,7 +71,7 @@
         <item name="endIconMode">custom</item>
         <item name="endIconDrawable">@drawable/ic_balance_24</item>
         <item name="endIconTint">@color/colorAccent</item>
-        <item name="boxStrokeColor">@color/colorAccent</item>
+        <item name="panBoxStrokeColor">@color/colorAccent</item>
     </style>
 
     <style name="CatalogFourthForageTextInputEditTextStyle" parent="TextAppearance.AppCompat">
@@ -82,7 +85,7 @@
         <item name="android:layout_marginBottom">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
-        <item name="boxStrokeColor">@color/purple_700</item>
+        <item name="panBoxStrokeColor">@color/purple_700</item>
         <item name="hintTextColor">@color/purple_700</item>
         <item name="boxCornerRadius">@dimen/corner_radius</item>
     </style>
@@ -91,7 +94,7 @@
         <item name="android:layout_margin">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
-        <item name="boxStrokeColor">@color/purple_200</item>
+        <item name="panBoxStrokeColor">@color/purple_200</item>
         <item name="hintTextColor">@color/purple_200</item>
         <item name="boxCornerRadiusTopStart">@dimen/box_corner_radius_top_start</item>
         <item name="boxCornerRadiusTopEnd">@dimen/box_corner_radius_top_end</item>
@@ -108,7 +111,7 @@
         <item name="android:layout_margin">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
-        <item name="boxStrokeColor">@color/colorAccent</item>
+        <item name="panBoxStrokeColor">@color/colorAccent</item>
         <item name="hintTextColor">@color/colorAccent</item>
         <item name="boxCornerRadius">@dimen/corner_radius</item>
     </style>

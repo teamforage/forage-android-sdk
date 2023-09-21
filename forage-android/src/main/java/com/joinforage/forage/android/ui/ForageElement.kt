@@ -21,6 +21,9 @@ interface ForageElement {
     fun setTextSize(textSize: Float)
     fun setHint(hint: String)
     fun setHintTextColor(hintTextColor: Int)
+    fun setBoxStrokeColor(boxStrokeColor: Int)
+    fun setBoxStrokeWidth(boxStrokeWidth: Int)
+    fun setBoxStrokeWidthFocused(boxStrokeWidth: Int)
 
     fun getElementState(): ElementState
     fun setOnFocusEventListener(l: SimpleElementListener)

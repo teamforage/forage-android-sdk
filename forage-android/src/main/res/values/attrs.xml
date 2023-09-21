@@ -12,6 +12,16 @@
         <attr name="android:textColor" />
         <!-- Reusing android:textColor attribute -->
         <attr name="android:textSize" />
+
+        <attr format="dimension" name="cornerRadius" />
+        <attr format="dimension" name="boxCornerTopEnd" />
+        <attr format="dimension" name="boxCornerTopStart" />
+        <attr format="dimension" name="boxCornerBottomStart" />
+        <attr format="dimension" name="boxCornerBottomEnd" />
+
+        <attr format="color" name="panBoxStrokeColor" />
+        <attr format="float" name="panBoxStrokeWidth" />
+        <attr format="float" name="panBoxStrokeWidthFocused" />
     </declare-styleable>
 
     <!-- Style attributes for the ForagePanEditText component. -->
@@ -23,7 +33,7 @@
         <attr name="text" />
         <attr name="textSize" />
         <attr name="textColor" />
-        <attr name="boxStrokeColor" />
+        <attr format="color" name="pinBoxStrokeColor" />
         <attr name="boxBackgroundColor" format="color" />
         <attr name="hintTextColor" format="color" />
         <attr format="dimension" name="boxCornerRadiusTopEnd" />
@@ -35,10 +45,10 @@
         <attr format="dimension" name="boxCornerRadiusBottomEnd" />
         <attr format="dimension" name="boxCornerRadius" />
 
-        <attr format="dimension" name="input_height" />
-        <attr format="dimension" name="input_width" />
+        <attr format="dimension" name="inputHeight" />
+        <attr format="dimension" name="inputWidth" />
 
-        <attr format="dimension" name="element_height" />
-        <attr format="dimension" name="element_width" />
+        <attr format="dimension" name="elementHeight" />
+        <attr format="dimension" name="elementWidth" />
     </declare-styleable>
 </resources>
