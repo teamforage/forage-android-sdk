@@ -13,6 +13,14 @@ internal object MetricsConstants {
     const val FORAGE_ERROR_CODE = "forage_error_code"
 }
 
+internal enum class UnknownForageErrorCode(val value: String) {
+    UNKNOWN("unknown");
+
+    override fun toString(): String {
+        return value
+    }
+}
+
 internal enum class UserAction(val value: String) {
     BALANCE("balance"),
     CAPTURE("capture");
@@ -165,7 +173,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
         val vaultType = vaultType
         val userAction = userAction
 
-        val forageErrorCodeOrNull = forageErrorCode ?: "null"
+        val forageErrorCodeOrNull = forageErrorCode ?: UnknownForageErrorCode.UNKNOWN
 
         metricsLogger?.i(
             "[Metrics] Received response from $vaultType proxy",
@@ -230,7 +238,7 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
         val vaultType = vaultType
         val userAction = userAction
 
-        val forageErrorCodeOrNull = forageErrorCode ?: "null"
+        val forageErrorCodeOrNull = forageErrorCode ?: UnknownForageErrorCode.UNKNOWN
 
         metricsLogger?.i(
             "[Metrics] Customer perceived response time for $vaultType has been collected",
