@@ -94,5 +94,9 @@ internal sealed class EnvConfig(
         fun fromForageConfig(context: ForageConfig?): EnvConfig {
             return fromSessionToken(context?.sessionToken)
         }
+
+        fun inProd(context: ForageContext?): Boolean {
+            return fromForageContext(context).FLAVOR == EnvOption.PROD
+        }
     }
 }
