@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.ui
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
@@ -98,8 +97,6 @@ class ForagePANEditText @JvmOverloads constructor(
                             boxStrokeWidthFocused = panFocusedBoxStrokeWidth.toInt()
                             // Set stroke width on unfocused text
                             boxStrokeWidth = panBoxStrokeWidth.toInt()
-                            // Match hint text color with stroke color
-                            hintTextColor = ColorStateList.valueOf(panBoxStrokeColor)
 
                             setBoxCornerRadii(
                                 boxCornerRadiusTopStart,
