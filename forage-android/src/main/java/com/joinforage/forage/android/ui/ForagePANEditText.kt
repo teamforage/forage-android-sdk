@@ -32,8 +32,7 @@ class ForagePANEditText @JvmOverloads constructor(
     private val manager: PanElementStateManager
         get() {
             if (_SET_ONLY_manager == null) {
-                TODO("throw an error here since that means setForageConfig was not called")
-                throw Exception("need to call setForageConfig first!")
+                throw ForageConfigNotSetException()
             }
             return _SET_ONLY_manager!!
         }

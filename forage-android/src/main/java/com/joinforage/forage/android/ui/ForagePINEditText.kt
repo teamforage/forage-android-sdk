@@ -31,10 +31,8 @@ class ForagePINEditText @JvmOverloads constructor(
     private var _SET_ONLY_vault: VaultWrapper? = null
     private val vault: VaultWrapper
         get() {
-            if (_SET_ONLY_vault == null) {
-                TODO("throw an error here since that means setForageConfig was not called")
-                throw Exception("need to call setForageConfig first!")
-            }
+            if (_SET_ONLY_vault == null)
+                throw ForageConfigNotSetException()
             return _SET_ONLY_vault!!
         }
 

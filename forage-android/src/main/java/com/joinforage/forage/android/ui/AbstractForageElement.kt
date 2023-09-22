@@ -5,6 +5,20 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.joinforage.forage.android.core.StopgapGlobalState
 
+/**
+ * Exception thrown when attempting to call pass a reference to a
+ * ForageElement without first setting its ForageConfig via
+ * `.setForageConfig()`.
+ */
+class ForageConfigNotSetException() : IllegalStateException(
+    """
+    You are attempting invoke a method a ForageElement before setting
+    it's ForageConfig. Make sure to call
+    myForageElement.setForageConfig(forageConfig: ForageConfig) 
+    immediately on your ForageElement before you call any other methods.
+    """.trimIndent()
+)
+
 abstract class AbstractForageElement(
     context: Context,
     attrs: AttributeSet? = null,
