@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.joinforage.android.example.databinding.FragmentFlowBalanceBinding
 import com.joinforage.android.example.ext.hideKeyboard
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,8 +50,8 @@ class FlowBalanceFragment : Fragment() {
         // as soon as possible set the forage context on
         // the ForageElement
         foragePinEditText = binding.foragePinEditText
-        foragePinEditText.setForageContext(
-            ForageContext(
+        foragePinEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )

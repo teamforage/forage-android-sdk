@@ -10,17 +10,17 @@ abstract class AbstractForageElement(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), ForageElement {
 
-    private var _forageContext: ForageContext? = null
-    override fun setForageContext(forageContext: ForageContext) {
-        this._forageContext = forageContext
+    private var _forageConfig: ForageConfig? = null
+    override fun setForageConfig(forageConfig: ForageConfig) {
+        this._forageConfig = forageConfig
     }
 
     // internal because submit methods need read-access
-    // to the ForageContext but not public because we
+    // to the ForageConfig but not public because we
     // don't to lull developers into passing a
     // ForagePANEdText instance around as a proxy for
-    // the ForageContext value. Seems like an anti-pattern
-    internal fun getForageContext(): ForageContext? {
-        return _forageContext
+    // the ForageConfig value. Seems like an anti-pattern
+    internal fun getForageConfig(): ForageConfig? {
+        return _forageConfig
     }
 }

@@ -7,7 +7,7 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.databinding.FragmentFlowCapturePaymentBinding
 import com.joinforage.android.example.ext.hideKeyboard
 import com.joinforage.android.example.ui.base.BaseFragment
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,14 +24,14 @@ class FlowCapturePaymentFragment : BaseFragment<FragmentFlowCapturePaymentBindin
 
         // as soon as possible set the forage context on
         // the ForageElement
-        snapEditText.setForageContext(
-            ForageContext(
+        snapEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )
         )
-        cashEditText.setForageContext(
-            ForageContext(
+        cashEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )

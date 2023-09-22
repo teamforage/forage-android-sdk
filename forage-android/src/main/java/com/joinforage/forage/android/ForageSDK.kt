@@ -11,7 +11,7 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.AbstractForageElement
 import java.util.UUID
 
@@ -20,17 +20,17 @@ import java.util.UUID
  */
 class ForageSDK : ForageSDKInterface {
 
-    private fun _getForageContextOrThrow(element: AbstractForageElement): ForageContext {
-        val context = element.getForageContext()
+    private fun _getForageConfigOrThrow(element: AbstractForageElement): ForageConfig {
+        val context = element.getForageConfig()
         // TODO: create a custom Exception instead of using IllegalArgumentException
         return context ?: throw IllegalArgumentException(
-            "You need to call element.setForageContext(forageContext: ForageContext) on a ForageElement before you can call submit."
+            "You need to call element.setForageConfig(forageConfig: ForageConfig) on a ForageElement before you can call submit."
         )
     }
 
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
-        val (merchantId, sessionToken) = _getForageContextOrThrow(foragePanEditText)
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -60,7 +60,7 @@ class ForageSDK : ForageSDKInterface {
 
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
-        val (merchantId, sessionToken) = _getForageContextOrThrow(foragePinEditText)
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -110,7 +110,7 @@ class ForageSDK : ForageSDKInterface {
 
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
-        val (merchantId, sessionToken) = _getForageContextOrThrow(foragePinEditText)
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
