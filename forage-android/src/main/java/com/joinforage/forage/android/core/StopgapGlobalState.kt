@@ -1,10 +1,10 @@
 package com.joinforage.forage.android.core
 
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 
 internal object StopgapGlobalState {
-    var context: ForageContext? = null
+    var forageConfig: ForageConfig? = null
 
     val FLAVOR: EnvOption
-        get() = EnvConfig.fromForageContext(context).FLAVOR
+        get() = EnvConfig.fromForageContext(forageConfig).FLAVOR
 }

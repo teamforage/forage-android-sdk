@@ -18,7 +18,7 @@ abstract class AbstractForageElement(
         // TODO: 9/20/23: This is a temporary workaround and is
         //  not meant to stick around. See this doc for more details
         //  https://www.notion.so/joinforage/226d8ee6f8294d2694b1bb451791960b
-        StopgapGlobalState.context = forageConfig
+        StopgapGlobalState.forageConfig = forageConfig
     }
 
     // internal because submit methods need read-access
