@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.core
 
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 
 internal enum class EnvOption {
     DEV,
@@ -91,7 +91,7 @@ internal sealed class EnvConfig(
             }
         }
 
-        fun fromForageContext(context: ForageContext?): EnvConfig {
+        fun fromForageConfig(context: ForageConfig?): EnvConfig {
             return fromSessionToken(context?.sessionToken)
         }
     }

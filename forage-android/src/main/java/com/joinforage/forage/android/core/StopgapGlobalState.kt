@@ -6,5 +6,5 @@ internal object StopgapGlobalState {
     var forageConfig: ForageConfig? = null
 
     val FLAVOR: EnvOption
-        get() = EnvConfig.fromForageContext(forageConfig).FLAVOR
+        get() = EnvConfig.fromForageConfig(forageConfig).FLAVOR
 }

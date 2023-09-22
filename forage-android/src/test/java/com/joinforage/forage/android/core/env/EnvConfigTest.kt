@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.core.env
 
 import com.joinforage.forage.android.core.EnvConfig
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -61,17 +61,17 @@ class EnvConfigTest_fromSessionToken {
     }
 }
 
-class EnvConfigTest_fromForageContext {
+class EnvConfigTest_fromForageConfig {
     @Test
     fun `when passed null returns Sandbox`() {
-        val result = EnvConfig.fromForageContext(null)
+        val result = EnvConfig.fromForageConfig(null)
         assertThat(result).isEqualTo(EnvConfig.Sandbox)
     }
 
     @Test
     fun `when passed valid session token, it works`() {
-        val result = EnvConfig.fromForageContext(
-            ForageContext(
+        val result = EnvConfig.fromForageConfig(
+            ForageConfig(
                 merchantId = "",
                 sessionToken = "dev_2020202"
             )
