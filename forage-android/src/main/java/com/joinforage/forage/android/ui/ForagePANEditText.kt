@@ -32,8 +32,8 @@ class ForagePANEditText @JvmOverloads constructor(
     private val manager: PanElementStateManager
         get() {
             if (_SET_ONLY_manager == null) {
-                TODO("throw an error here since that means setForageContext was not called")
-                throw Exception("need to call setForageContext first!")
+                TODO("throw an error here since that means setForageConfig was not called")
+                throw Exception("need to call setForageConfig first!")
             }
             return _SET_ONLY_manager!!
         }
@@ -127,10 +127,10 @@ class ForagePANEditText @JvmOverloads constructor(
             }
     }
 
-    override fun setForageContext(forageContext: ForageContext) {
+    override fun setForageConfig(forageConfig: ForageConfig) {
         // super is responsible for initializing the log and some
         // global state so it must be called first
-        super.setForageContext(forageContext)
+        super.setForageConfig(forageConfig)
 
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
@@ -138,7 +138,7 @@ class ForagePANEditText @JvmOverloads constructor(
         val logger = Log.getInstance()
         logger.initializeDD(context)
 
-        _SET_ONLY_manager = if (EnvConfig.inProd(forageContext)) {
+        _SET_ONLY_manager = if (EnvConfig.inProd(forageConfig)) {
             // strictly support only valid Ebt PAN numbers
             PanElementStateManager.forEmptyInput()
         } else {
