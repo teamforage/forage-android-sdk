@@ -28,6 +28,18 @@ class ForagePANEditText @JvmOverloads constructor(
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
 
+    /**
+     * The `manager` property acts as an abstraction for the actual code
+     * in ForagePANEditText, allowing it to work with a non-nullable
+     * result determined by the choice between `prod` or `sandbox`.
+     * This choice requires knowledge of the environment,which is determined
+     * by `forageConfig` set on this instance.
+     *
+     * The underlying value for `manager` is stored in `_SET_ONLY_manager`.
+     * This backing property is set only after `ForageConfig` has been
+     * initialized for this instance. If `manager` is accessed before
+     * `_SET_ONLY_manager` is set, a runtime exception is thrown.
+     */
     private var _SET_ONLY_manager: PanElementStateManager? = null
     private val manager: PanElementStateManager
         get() {

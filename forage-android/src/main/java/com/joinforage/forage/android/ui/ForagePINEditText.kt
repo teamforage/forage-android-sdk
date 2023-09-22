@@ -28,6 +28,19 @@ class ForagePINEditText @JvmOverloads constructor(
     private val _linearLayout: LinearLayout
     private val btVaultWrapper: BTVaultWrapper
     private val vgsVaultWrapper: VGSVaultWrapper
+
+    /**
+     * The `vault` property acts as an abstraction for the actual code
+     * in ForagePINEditText, allowing it to work with a non-nullable
+     * result determined by the choice between BT or VGS. This choice
+     * depends on Launch Darkly and requires knowledge of the environment,
+     * which is determined by `forageConfig` set on this instance.
+     *
+     * The underlying value for `vault` is stored in `_SET_ONLY_vault`.
+     * This backing property is set only after `ForageConfig` has been
+     * initialized for this instance. If `vault` is accessed before
+     * `_SET_ONLY_vault` is set, a runtime exception is thrown.
+     */
     private var _SET_ONLY_vault: VaultWrapper? = null
     private val vault: VaultWrapper
         get() {
