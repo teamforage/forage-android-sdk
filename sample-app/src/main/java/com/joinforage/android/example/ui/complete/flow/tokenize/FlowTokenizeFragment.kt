@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.joinforage.android.example.databinding.FragmentFlowTokenizeBinding
 import com.joinforage.android.example.ext.hideKeyboard
-import com.joinforage.forage.android.ui.ForageContext
+import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePANEditText
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,8 +44,8 @@ class FlowTokenizeFragment : Fragment() {
         // as soon as possible set the forage context on
         // the ForageElement
         val foragePANEditText: ForagePANEditText = binding.tokenizeForagePanEditText
-        foragePANEditText.setForageContext(
-            ForageContext(
+        foragePANEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )
