@@ -8,10 +8,6 @@ import com.joinforage.forage.android.core.element.state.ElementState
 data class ForageConfig(
     val merchantId: String,
     val sessionToken: String
-    // TODO: thoughts on customerId being part of the
-    //  ForageConfig instead of a param for tokenizeEBTCard?
-    //  Is there a future where we use customerID as part of
-    //  fraud detection in checkBalance?
 )
 
 // an interface that represents that abstract state of
