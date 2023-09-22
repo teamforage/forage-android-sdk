@@ -11,8 +11,8 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.AbstractForageElement
+import com.joinforage.forage.android.ui.ForageConfig
 import java.util.UUID
 
 /**

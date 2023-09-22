@@ -16,7 +16,6 @@ data class ForageConfig(
     val sessionToken: String
 )
 
-
 /**
  * The interface that all Forage UI Components adhere to. For example,
  * both the ForagePANEditText and the ForagePINEditText satisfy

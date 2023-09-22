@@ -18,7 +18,7 @@ abstract class AbstractForageElement(
     // internal because submit methods need read-access
     // to the ForageConfig but not public because we
     // don't to lull developers into passing a
-    // ForagePANEdText instance around as a proxy for
+    // ForagePANEdiText instance around as a proxy for
     // the ForageConfig value. Seems like an anti-pattern
     internal fun getForageConfig(): ForageConfig? {
         return _forageConfig
