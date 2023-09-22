@@ -57,6 +57,13 @@ class ForagePINEditText @JvmOverloads constructor(
                     orientation = VERTICAL
                     gravity = Gravity.CENTER
 
+                    // at this point in time, we do not know the environment and
+                    // we are operating and thus do not know whether to add
+                    // BTVaultWrapper or VGSVaultWrapper to the UI.
+                    // But that's OK. We can hedge and instantiate both of them
+                    // Then, within setForageConfig, once we know the environment
+                    // and are thus able to initial LaunchDarkly and find out
+                    // whether to use BT or VGS. So, below we are hedging
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
                     vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
                     // ensure both wrappers init with the
