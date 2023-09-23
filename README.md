@@ -427,8 +427,8 @@ suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String>
 
 #### Parameter definitions
 
-- `TokenizeEBTCardParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
-- `TokenizeEBTCardParams.paymentMethodRef`: The `paymentMethodRef` parameter is a string identifier that refers to an instance in Forage's database of a [`PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method), a tokenized representation of an EBT Card.
+- `CheckBalanceParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
+- `CheckBalanceParams.paymentMethodRef`: The `paymentMethodRef` parameter is a string identifier that refers to an instance in Forage's database of a [`PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method), a tokenized representation of an EBT Card.
 
 #### Example
 
@@ -546,8 +546,8 @@ suspend fun capturePayment(
 
 #### Parameter definitions
 
-- `TokenizeEBTCardParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
-- `TokenizeEBTCardParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
+- `CapturePaymentParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
+- `CapturePaymentParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
 
 #### Example
 
