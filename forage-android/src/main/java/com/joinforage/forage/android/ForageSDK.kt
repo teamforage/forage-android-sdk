@@ -65,7 +65,7 @@ class ForageSDK : ForageSDKInterface {
         ).tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
-            reusable = reusable
+            reusable = reusable ?: true
         )
     }
 
