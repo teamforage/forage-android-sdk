@@ -19,7 +19,7 @@ data class ForageConfig(
 /**
  * The interface that all Forage UI Components adhere to. For example,
  * both the ForagePANEditText and the ForagePINEditText satisfy
- * ForageElements
+ * ForageElement
  */
 interface ForageElement {
     var typeface: Typeface?
