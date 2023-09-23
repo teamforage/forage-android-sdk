@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultConstants
@@ -45,7 +46,13 @@ class ForagePINEditText @JvmOverloads constructor(
     private val vault: VaultWrapper
         get() {
             if (_SET_ONLY_vault == null) {
-                throw ForageConfigNotSetException()
+                throw ForageConfigNotSetException(
+                    """You are attempting invoke a method a ForageElement before setting
+                    it's ForageConfig. Make sure to call
+                    myForageElement.setForageConfig(forageConfig: ForageConfig) 
+                    immediately on your ForageElement before you call any other methods.
+                    """.trimIndent()
+                )
             }
             return _SET_ONLY_vault!!
         }

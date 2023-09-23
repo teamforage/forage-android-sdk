@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.Log
@@ -44,7 +45,13 @@ class ForagePANEditText @JvmOverloads constructor(
     private val manager: PanElementStateManager
         get() {
             if (_SET_ONLY_manager == null) {
-                throw ForageConfigNotSetException()
+                throw ForageConfigNotSetException(
+                    """You are attempting invoke a method a ForageElement before setting
+                    it's ForageConfig. Make sure to call
+                    myForageElement.setForageConfig(forageConfig: ForageConfig) 
+                    immediately on your ForageElement before you call any other methods.
+                    """.trimIndent()
+                )
             }
             return _SET_ONLY_manager!!
         }
