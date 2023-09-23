@@ -311,9 +311,9 @@ class TokenizeFragment : Fragment() {
         _binding = TokenizeFragmentBinding.inflate(inflater, container, false)
         val foragePANEditText: ForagePANEditText = binding.tokenizeForagePanEditText
 
-        // immediately call setForageContext() on the binding 
-        foragePANEditText.setForageContext(
-            ForageContext(
+        // immediately call setForageConfig() on the binding 
+        foragePANEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )
@@ -449,9 +449,9 @@ class BalanceCheckFragment : Fragment() {
         _binding = BalanceCheckFragmentBinding.inflate(inflater, container, false)
         val foragePINEditText: ForagePANEditText = binding.checkBalanceForagePinEditText
 
-        // immediately call setForageContext() on the binding 
-        foragePINEditText.setForageContext(
-            ForageContext(
+        // immediately call setForageConfig() on the binding 
+        foragePINEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantId,
                 sessionToken = viewModel.sessionToken
             )
@@ -569,15 +569,15 @@ class PaymentCaptureFragment : Fragment() {
         val snapEditText = binding.snapPinEditText
         val cashEditText = binding.cashPinEditText
 
-        // immediately call setForageContext() on the binding 
-        snapEditText.setForageContext(
-            ForageContext(
+        // immediately call setForageConfig() on the binding 
+        snapEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )
         )
-        cashEditText.setForageContext(
-            ForageContext(
+        cashEditText.setForageConfig(
+            ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )
