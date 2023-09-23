@@ -78,7 +78,7 @@ internal interface ForageSDKInterface {
 /**
  * Data class representing the parameters required for tokenizing an EBT card.
  *
- * @property foragePANEditText A ForagePANEditText  UI component. Importantly,
+ * @property foragePanEditText A ForagePANEditText  UI component. Importantly,
  * you must have called .setForageConfig() already
  * @property customerId A unique identifier associated with a customer. This is
  * required by FNS for fraud detection purposes
@@ -86,7 +86,7 @@ internal interface ForageSDKInterface {
  * multiple transactions.
  */
 data class TokenizeEBTCardParams(
-    val foragePANEditText: ForagePANEditText,
+    val foragePanEditText: ForagePANEditText,
     val customerId: String,
     val reusable: Boolean
 )
