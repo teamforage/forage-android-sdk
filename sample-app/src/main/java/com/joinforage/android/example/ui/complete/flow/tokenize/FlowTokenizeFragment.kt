@@ -43,15 +43,15 @@ class FlowTokenizeFragment : Fragment() {
 
         // as soon as possible set the forage context on
         // the ForageElement
-        val foragePANEditText: ForagePANEditText = binding.tokenizeForagePanEditText
-        foragePANEditText.setForageConfig(
+        val foragePanEditText: ForagePANEditText = binding.tokenizeForagePanEditText
+        foragePanEditText.setForageConfig(
             ForageConfig(
                 merchantId = viewModel.merchantAccount,
                 sessionToken = viewModel.bearer
             )
         )
 
-        foragePANEditText.requestFocus()
+        foragePanEditText.requestFocus()
 
         val paymentRef: TextView = binding.paymentRef
         val cardLast4: TextView = binding.cardLast4
@@ -62,17 +62,17 @@ class FlowTokenizeFragment : Fragment() {
         val isValid: TextView = binding.isValid
 
         fun setState() {
-            val state = foragePANEditText.getElementState()
+            val state = foragePanEditText.getElementState()
             isFocused.text = "isFocused: ${state.isFocused}"
             isComplete.text = "isComplete: ${state.isComplete}"
             isEmpty.text = "isEmpty: ${state.isEmpty}"
             isValid.text = "isValid: ${state.isValid}"
         }
 
-        foragePANEditText.setOnFocusEventListener { setState() }
-        foragePANEditText.setOnChangeEventListener { setState() }
+        foragePanEditText.setOnFocusEventListener { setState() }
+        foragePanEditText.setOnChangeEventListener { setState() }
 
-        val state = foragePANEditText.getElementState()
+        val state = foragePanEditText.getElementState()
         isFocused.text = "isFocused: ${state.isFocused}"
         isComplete.text = "isComplete: ${state.isComplete}"
         isEmpty.text = "isEmpty: ${state.isEmpty}"
