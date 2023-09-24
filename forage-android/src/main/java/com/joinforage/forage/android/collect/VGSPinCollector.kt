@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.collect
 
 import android.content.Context
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -204,8 +204,11 @@ internal class VGSPinCollector(
     }
 
     companion object {
-        private const val VAULT_ID = BuildConfig.VGS_VAULT_ID
-        private const val VGS_ENVIRONMENT = BuildConfig.VGS_VAULT_TYPE
+        // this code assumes that .setForageConfig() has been called
+        // on a Forage***EditText before PROXY_ID or API_KEY get
+        // referenced
+        private val VAULT_ID = StopgapGlobalState.envConfig.vgsVaultId
+        private val VGS_ENVIRONMENT = StopgapGlobalState.envConfig.vgsVaultType
 
         private fun buildVGSCollect(context: Context): VGSCollect {
             VGSCollectLogger.isEnabled = false
