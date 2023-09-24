@@ -2,12 +2,12 @@ package com.joinforage.forage.android.core
 
 import com.joinforage.forage.android.ui.ForageConfig
 
-internal enum class EnvOption {
-    DEV,
-    STAGING,
-    SANDBOX,
-    CERT,
-    PROD
+internal enum class EnvOption(val value: String) {
+    DEV("dev"),
+    STAGING("staging"),
+    SANDBOX("sandbox"),
+    CERT("cert"),
+    PROD("prod")
 }
 
 internal sealed class EnvConfig(
@@ -91,8 +91,12 @@ internal sealed class EnvConfig(
             }
         }
 
-        fun fromForageConfig(context: ForageConfig?): EnvConfig {
-            return fromSessionToken(context?.sessionToken)
+        fun fromForageConfig(config: ForageConfig?): EnvConfig {
+            return fromSessionToken(config?.sessionToken)
+        }
+
+        fun inProd(config: ForageConfig?): Boolean {
+            return fromForageConfig(config).FLAVOR == EnvOption.PROD
         }
     }
 }

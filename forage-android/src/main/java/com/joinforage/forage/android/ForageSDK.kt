@@ -22,7 +22,12 @@ class ForageSDK : ForageSDKInterface {
 
     private fun _getForageConfigOrThrow(element: AbstractForageElement): ForageConfig {
         val context = element.getForageConfig()
-        return context ?: throw MissingForageConfigException()
+        return context ?: throw ForageConfigNotSetException("""
+    The ForageElement you passed did have a ForageConfig. In order to submit
+    a request via Forage SDK, your ForageElement MUST have a ForageConfig.
+    Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
+    immediately on your ForageElement 
+    """.trimIndent())
     }
 
     /**
@@ -36,7 +41,7 @@ class ForageSDK : ForageSDKInterface {
      * token which can be securely stored and used for subsequent transactions. On failure,
      * returns a detailed error response for proper handling.
      *
-     * @throws MissingForageConfigException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
@@ -65,7 +70,7 @@ class ForageSDK : ForageSDKInterface {
         ).tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
-            reusable = reusable
+            reusable = reusable ?: true
         )
     }
 
@@ -80,7 +85,7 @@ class ForageSDK : ForageSDKInterface {
      * On success, returns an object with `snap` and `cash` fields, whose values
      * indicate the balance of each tender as of now
      *
-     * @throws MissingForageConfigException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
@@ -143,7 +148,7 @@ class ForageSDK : ForageSDKInterface {
      * payment capture. On success, returns a confirmation of the transaction.
      * On failure, provides a detailed error response.
      *
-     * @throws MissingForageConfigException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
