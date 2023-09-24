@@ -1,10 +1,10 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.StopgapGlobalState
 import okhttp3.Request
 
 internal object ForageConstants {
-    private const val BASE_URL = BuildConfig.BASE_URL
+    private val BASE_URL = StopgapGlobalState.envConfig.baseUrl
 
     fun provideHttpUrl() = Request.Builder().url(BASE_URL).build().url
 

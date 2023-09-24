@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.network.model.balance.BalanceResponse
+import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -64,12 +65,11 @@ class FlowBalanceViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
 
-            val response = ForageSDK.checkBalance(
-                context = context,
-                pinForageEditText = pinForageEditText,
-                merchantAccount = merchantAccount,
-                bearerToken = bearer,
-                paymentMethodRef = paymentMethodRef
+            val response = ForageSDK().checkBalance(
+                CheckBalanceParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentMethodRef = paymentMethodRef
+                )
             )
 
             when (response) {

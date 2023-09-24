@@ -1,6 +1,5 @@
 package com.joinforage.forage.android
 
-import android.content.Context
 import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
@@ -12,70 +11,106 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.ui.AbstractForageElement
+import com.joinforage.forage.android.ui.ForageConfig
 import java.util.UUID
 
 /**
- * Singleton responsible for implementing the SDK API
+ * A class implementation of ForageSDKInterface
  */
-object ForageSDK : ForageSDKApi {
-    private var panEntry: String = ""
-    private val logger = Log.getInstance()
+class ForageSDK : ForageSDKInterface {
 
-    override suspend fun tokenizeEBTCard(
-        merchantAccount: String,
-        bearerToken: String,
-        customerId: String,
-        reusable: Boolean
-    ): ForageApiResponse<String> {
-        val currentEntry = panEntry
+    private fun _getForageConfigOrThrow(element: AbstractForageElement): ForageConfig {
+        val context = element.getForageConfig()
+        return context ?: throw ForageConfigNotSetException(
+            """
+    The ForageElement you passed did have a ForageConfig. In order to submit
+    a request via Forage SDK, your ForageElement MUST have a ForageConfig.
+    Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
+    immediately on your ForageElement 
+            """.trimIndent()
+        )
+    }
 
+    /**
+     * A method to securely tokenize an EBT card via ForagePANEditText
+     *
+     * @param params The parameters required for tokenization, including
+     * reference to a ForagePANEditText view for card input.
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the operation.
+     * On success, returns a [PaymentMethod](https://docs.joinforage.app/reference/create-payment-method)
+     * token which can be securely stored and used for subsequent transactions. On failure,
+     * returns a detailed error response for proper handling.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
+        val (foragePanEditText, customerId, reusable) = params
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
         logger.i(
             "[HTTP] Tokenizing Payment Method",
             attributes = mapOf(
-                "merchant_ref" to merchantAccount,
+                "merchant_ref" to merchantId,
                 "customer_id" to customerId
             )
         )
 
         return TokenizeCardService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                bearerToken,
-                merchantAccount,
+                sessionToken,
+                merchantId,
                 idempotencyKey = UUID.randomUUID().toString(),
                 traceId = logger.getTraceIdValue()
             ),
             httpUrl = ForageConstants.provideHttpUrl(),
             logger = logger
         ).tokenizeCard(
-            cardNumber = currentEntry,
+            cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
-            reusable = reusable
+            reusable = reusable ?: true
         )
     }
 
-    override suspend fun checkBalance(
-        context: Context,
-        pinForageEditText: ForagePINEditText,
-        merchantAccount: String,
-        bearerToken: String,
-        paymentMethodRef: String
-    ): ForageApiResponse<String> {
+    /**
+     * Checks the balance SNAP and EBT Cash balances of an EBT account via
+     * ForagePINEditText
+     *
+     * @param params The parameters required for tokenization, including
+     * reference to a ForagePINEditText and PaymentMethod ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the operation.
+     * On success, returns an object with `snap` and `cash` fields, whose values
+     * indicate the balance of each tender as of now
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
+        val (foragePinEditText, paymentMethodRef) = params
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
         logger.i(
             "[HTTP] Submitting balance check for Payment Method $paymentMethodRef",
             attributes = mapOf(
-                "merchant_ref" to merchantAccount,
+                "merchant_ref" to merchantId,
                 "payment_method_ref" to paymentMethodRef
             )
         )
         return CheckBalanceRepository(
-            pinCollector = pinForageEditText.getCollector(
-                merchantAccount
+            pinCollector = foragePinEditText.getCollector(
+                merchantId
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -83,8 +118,8 @@ object ForageSDK : ForageSDKApi {
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -92,8 +127,8 @@ object ForageSDK : ForageSDKApi {
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -105,28 +140,40 @@ object ForageSDK : ForageSDKApi {
         )
     }
 
-    override suspend fun capturePayment(
-        context: Context,
-        pinForageEditText: ForagePINEditText,
-        merchantAccount: String,
-        bearerToken: String,
-        paymentRef: String
-    ): ForageApiResponse<String> {
+    /**
+     * Captures a Forage Payment associated with an EBT card
+     *
+     * @param params The parameters required for payment capture, including
+     * reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * payment capture. On success, returns a confirmation of the transaction.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
+        val (foragePinEditText, paymentRef) = params
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
         logger.i(
             "[HTTP] Submitting capture request for Payment $paymentRef",
             attributes = mapOf(
-                "merchant_ref" to merchantAccount,
+                "merchant_ref" to merchantId,
                 "payment_ref" to paymentRef
             )
         )
         return CapturePaymentRepository(
-            pinCollector = pinForageEditText.getCollector(
-                merchantAccount
+            pinCollector = foragePinEditText.getCollector(
+                merchantId
             ),
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -134,8 +181,8 @@ object ForageSDK : ForageSDKApi {
             ),
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -143,8 +190,8 @@ object ForageSDK : ForageSDKApi {
             ),
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -152,8 +199,8 @@ object ForageSDK : ForageSDKApi {
             ),
             messageStatusService = MessageStatusService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    bearerToken,
-                    merchantAccount,
+                    sessionToken,
+                    merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
                 httpUrl = ForageConstants.provideHttpUrl(),
@@ -163,9 +210,5 @@ object ForageSDK : ForageSDKApi {
         ).capturePayment(
             paymentRef = paymentRef
         )
-    }
-
-    internal fun storeEntry(entry: String) {
-        panEntry = entry
     }
 }

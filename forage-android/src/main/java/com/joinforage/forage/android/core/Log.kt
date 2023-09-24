@@ -45,9 +45,9 @@ internal interface Log {
                     rumEnabled = false
                 ).build()
                 val credentials = Credentials(
-                    clientToken = BuildConfig.DD_CLIENT_TOKEN,
-                    envName = BuildConfig.FLAVOR,
-                    variant = BuildConfig.FLAVOR,
+                    clientToken = StopgapGlobalState.envConfig.ddClientToken,
+                    envName = StopgapGlobalState.envConfig.FLAVOR.value,
+                    variant = StopgapGlobalState.envConfig.FLAVOR.value,
                     rumApplicationId = null,
                     serviceName = SERVICE_NAME
                 )

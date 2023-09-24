@@ -66,7 +66,7 @@
                 app:layout_constraintTop_toBottomOf="@id/thirdEditText" />
 
             <com.joinforage.forage.android.ui.ForagePINEditText
-                android:id="@+id/foragePINEditText"
+                android:id="@+id/foragePinEditText"
                 style="@style/ForagePINEditTextStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 app:elementHeight="70dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/foragePINEditText" />
+                app:layout_constraintTop_toBottomOf="@id/foragePinEditText" />
 
             <com.joinforage.forage.android.ui.ForagePINEditText
                 android:id="@+id/thirdForagePINEditText"
