@@ -22,12 +22,14 @@ class ForageSDK : ForageSDKInterface {
 
     private fun _getForageConfigOrThrow(element: AbstractForageElement): ForageConfig {
         val context = element.getForageConfig()
-        return context ?: throw ForageConfigNotSetException("""
+        return context ?: throw ForageConfigNotSetException(
+            """
     The ForageElement you passed did have a ForageConfig. In order to submit
     a request via Forage SDK, your ForageElement MUST have a ForageConfig.
     Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
     immediately on your ForageElement 
-    """.trimIndent())
+            """.trimIndent()
+        )
     }
 
     /**
