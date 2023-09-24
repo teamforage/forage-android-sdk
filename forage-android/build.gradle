@@ -109,7 +109,7 @@ dependencies {
 
 ext {
     PUBLISH_GROUP_ID = 'com.joinforage'
-    PUBLISH_VERSION = '2.0.9'
+    PUBLISH_VERSION = '3.0.0'
     PUBLISH_ARTIFACT_ID = 'forage-android'
     PUBLISH_DESCRIPTION = 'Forage Android SDK'
     PUBLISH_URL = 'https://github.com/teamforage/forage-android-sdk'
