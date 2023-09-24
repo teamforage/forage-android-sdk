@@ -7,6 +7,7 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.databinding.FragmentFlowCapturePaymentBinding
 import com.joinforage.android.example.ext.hideKeyboard
 import com.joinforage.android.example.ui.base.BaseFragment
+import com.joinforage.forage.android.ui.ForageConfig
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,6 +19,23 @@ class FlowCapturePaymentFragment : BaseFragment<FragmentFlowCapturePaymentBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val snapEditText = binding.snapPinEditText
+        val cashEditText = binding.cashPinEditText
+
+        // as soon as possible set the forage context on
+        // the ForageElement
+        snapEditText.setForageConfig(
+            ForageConfig(
+                merchantId = viewModel.merchantAccount,
+                sessionToken = viewModel.bearer
+            )
+        )
+        cashEditText.setForageConfig(
+            ForageConfig(
+                merchantId = viewModel.merchantAccount,
+                sessionToken = viewModel.bearer
+            )
+        )
 
         binding.captureSnapAmount.setOnClickListener {
             viewModel.captureSnapAmount(

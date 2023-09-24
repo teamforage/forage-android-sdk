@@ -45,53 +45,18 @@ android {
     flavorDimensions "version"
     productFlavors {
         dev {
-            buildConfigField "String", "BT_PROXY_ID", '"N31FZgKpYZpo3oQ6XiM6M6"'
-            buildConfigField "String", "BT_API_KEY", '"key_AZfcBuKUsV38PEeYu6ZV8x"'
-            buildConfigField "String", "VGS_VAULT_ID", '"tntlqkidhc6"'
-            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
-            buildConfigField "String", "BASE_URL", '"https://api.dev.joinforage.app/"'
-            buildConfigField "String", "LD_MOBILE_KEY", '"mob-03e025cb-5b4e-4d97-8685-39a22316d601"'
-            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
             buildConfigField "String", "VERSION", "$publishVersion"
         }
         staging {
-            buildConfigField "String", "BT_PROXY_ID", '"ScWvAUkp53xz7muae7fW5p"'
-            buildConfigField "String", "BT_API_KEY", '"key_6B4cvpcDCEeNDYNow9zH7c"'
-            buildConfigField "String", "VGS_VAULT_ID", '"tnteykuh975"'
-            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
-            buildConfigField "String", "BASE_URL", '"https://api.staging.joinforage.app/"'
-            buildConfigField "String", "LD_MOBILE_KEY", '"mob-a9903698-759b-48e2-86e1-c551e2b69118"'
-            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
             buildConfigField "String", "VERSION", "$publishVersion"
         }
         sandbox {
-            buildConfigField "String", "BT_PROXY_ID", '"R1CNiogSdhnHeNq6ZFWrG1"'
-            buildConfigField "String", "BT_API_KEY", '"key_DQ5NfUAgiqzwX1pxqcrSzK"'
-            buildConfigField "String", "VGS_VAULT_ID", '"tntagcot4b1"'
-            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
-            buildConfigField "String", "BASE_URL", '"https://api.sandbox.joinforage.app/"'
-            buildConfigField "String", "LD_MOBILE_KEY", '"mob-22024b85-05b7-4e24-b290-a071310dfc3d"'
-            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
             buildConfigField "String", "VERSION", "$publishVersion"
         }
         cert {
-            buildConfigField "String", "BT_PROXY_ID", '"AFSMtyyTGLKgmdWwrLCENX"'
-            buildConfigField "String", "BT_API_KEY", '"key_NdWtkKrZqztEfJRkZA8dmw"'
-            buildConfigField "String", "VGS_VAULT_ID", '"tntpnht7psv"'
-            buildConfigField "String", "VGS_VAULT_TYPE", '"sandbox"'
-            buildConfigField "String", "BASE_URL", '"https://api.cert.joinforage.app/"'
-            buildConfigField "String", "LD_MOBILE_KEY", '"mob-d2261a08-784b-4300-a45f-ce0e46324d66"'
-            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
             buildConfigField "String", "VERSION", "$publishVersion"
         }
         prod {
-            buildConfigField "String", "BT_PROXY_ID", '"UxbU4Jn2RmvCovABjwCwsa"'
-            buildConfigField "String", "BT_API_KEY", '"key_BypNREttGMPbZ1muARDUf4"'
-            buildConfigField "String", "VGS_VAULT_ID", '"tntbcrncmgi"'
-            buildConfigField "String", "VGS_VAULT_TYPE", '"live"'
-            buildConfigField "String", "BASE_URL", '"https://api.joinforage.app/"'
-            buildConfigField "String", "LD_MOBILE_KEY", '"mob-5c3dfa7a-fa6d-4cdf-93e8-d28ef8080696"'
-            buildConfigField "String", "DD_CLIENT_TOKEN", '"pubf13cedf24ba2ad50d4b9cb0b0100bd4a"'
             buildConfigField "String", "VERSION", "$publishVersion"
         }
     }
