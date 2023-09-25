@@ -20,8 +20,8 @@
         <attr format="dimension" name="boxCornerBottomEnd" />
 
         <attr format="color" name="panBoxStrokeColor" />
-        <attr format="float" name="panBoxStrokeWidth" />
-        <attr format="float" name="panBoxStrokeWidthFocused" />
+        <attr format="dimension" name="panBoxStrokeWidth" />
+        <attr format="dimension" name="panBoxStrokeWidthFocused" />
     </declare-styleable>
 
     <!-- Style attributes for the ForagePanEditText component. -->

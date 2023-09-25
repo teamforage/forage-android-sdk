@@ -71,12 +71,12 @@ class ForagePANEditText @JvmOverloads constructor(
                         getThemeAccentColor(context)
                     )
 
-                    val panFocusedBoxStrokeWidth = getFloat(
+                    val panBoxStrokeWidthFocused = getDimension(
                         R.styleable.ForagePANEditText_panBoxStrokeWidthFocused,
                         3f
                     )
 
-                    val panBoxStrokeWidth = getFloat(
+                    val panBoxStrokeWidth = getDimension(
                         R.styleable.ForagePANEditText_panBoxStrokeWidth,
                         3f
                     )
@@ -105,7 +105,7 @@ class ForagePANEditText @JvmOverloads constructor(
                             // Set stroke color on focused text
                             boxStrokeColor = panBoxStrokeColor
                             // Set stroke width on focused text
-                            boxStrokeWidthFocused = panFocusedBoxStrokeWidth.toInt()
+                            boxStrokeWidthFocused = panBoxStrokeWidthFocused.toInt()
                             // Set stroke width on unfocused text
                             boxStrokeWidth = panBoxStrokeWidth.toInt()
 
