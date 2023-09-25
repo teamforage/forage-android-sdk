@@ -148,14 +148,16 @@ class ForageSDK : ForageSDKInterface {
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
             ),
-            logger = logger,
-            responseMonitor = measurement
+            logger = logger
         ).checkBalance(
             paymentMethodRef = paymentMethodRef
         )
         measurement.end()
 
         val outcome = if (response is ForageApiResponse.Failure) {
+            if (response.errors.isNotEmpty()) {
+                measurement.setForageErrorCode(response.errors[0].code)
+            }
             EventOutcome.FAILURE
         } else {
             EventOutcome.SUCCESS
@@ -242,14 +244,16 @@ class ForageSDK : ForageSDKInterface {
                 httpUrl = ForageConstants.provideHttpUrl(),
                 logger = logger
             ),
-            logger = logger,
-            responseMonitor = measurement
+            logger = logger
         ).capturePayment(
             paymentRef = paymentRef
         )
         measurement.end()
 
         val outcome = if (response is ForageApiResponse.Failure) {
+            if (response.errors.isNotEmpty()) {
+                measurement.setForageErrorCode(response.errors[0].code)
+            }
             EventOutcome.FAILURE
         } else {
             EventOutcome.SUCCESS

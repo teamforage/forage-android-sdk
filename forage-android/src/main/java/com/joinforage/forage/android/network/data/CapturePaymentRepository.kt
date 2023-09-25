@@ -2,7 +2,6 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
@@ -22,8 +21,7 @@ internal class CapturePaymentRepository(
     private val messageStatusService: MessageStatusService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
-    private val logger: Log,
-    private val responseMonitor: ResponseMonitor
+    private val logger: Log
 ) {
     suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
@@ -118,7 +116,6 @@ internal class CapturePaymentRepository(
                                 )
                             )
 
-                            responseMonitor.setForageErrorCode(error.forageCode)
                             return ForageApiResponse.Failure.fromSQSError(error)
                         }
                         break
@@ -134,7 +131,6 @@ internal class CapturePaymentRepository(
                             )
                         )
 
-                        responseMonitor.setForageErrorCode(error.forageCode)
                         return ForageApiResponse.Failure.fromSQSError(error)
                     }
                 }
@@ -152,9 +148,7 @@ internal class CapturePaymentRepository(
                     )
                 )
 
-                val unknownServerError = "unknown_server_error"
-                responseMonitor.setForageErrorCode(unknownServerError)
-                return ForageApiResponse.Failure(listOf(ForageError(500, unknownServerError, "Unknown Server Error")))
+                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
             attempt += 1

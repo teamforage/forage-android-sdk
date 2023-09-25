@@ -2,7 +2,6 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
@@ -19,8 +18,7 @@ internal class CheckBalanceRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val messageStatusService: MessageStatusService,
-    private val logger: Log,
-    private val responseMonitor: ResponseMonitor
+    private val logger: Log
 ) {
 
     suspend fun checkBalance(
@@ -101,7 +99,6 @@ internal class CheckBalanceRepository(
                                 )
                             )
 
-                            responseMonitor.setForageErrorCode(error.forageCode)
                             return ForageApiResponse.Failure.fromSQSError(error)
                         }
                         break
@@ -117,7 +114,6 @@ internal class CheckBalanceRepository(
                             )
                         )
 
-                        responseMonitor.setForageErrorCode(error.forageCode)
                         return ForageApiResponse.Failure.fromSQSError(error)
                     }
                 }
@@ -135,9 +131,7 @@ internal class CheckBalanceRepository(
                     )
                 )
 
-                val unknownServerError = "unknown_server_error"
-                responseMonitor.setForageErrorCode(unknownServerError)
-                return ForageApiResponse.Failure(listOf(ForageError(500, unknownServerError, "Unknown Server Error")))
+                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
             attempt += 1
