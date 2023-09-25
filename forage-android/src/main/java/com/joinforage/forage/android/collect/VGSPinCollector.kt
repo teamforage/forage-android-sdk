@@ -2,10 +2,10 @@ package com.joinforage.forage.android.collect
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
+import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
-import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants

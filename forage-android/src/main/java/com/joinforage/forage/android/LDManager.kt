@@ -1,8 +1,8 @@
 package com.joinforage.forage.android
 
 import android.app.Application
-import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.StopgapGlobalState
+import com.joinforage.forage.android.core.telemetry.Log
 import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
