@@ -5,15 +5,26 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 
-// an interface that represents that abstract state of
-// a ForageElement.
-// NOTE: isValid is true when validationError = null
+/**
+ * Configuration details required by ForageElement to operate correctly
+ *
+ * @property merchantId Your merchant FNS number
+ * @property sessionToken A temporary token used for authenticate
+ */
+data class ForageConfig(
+    val merchantId: String,
+    val sessionToken: String
+)
 
-// Minimalist event signatures where the only information
-// conveyed is whether or not a specific event has occurred
-
+/**
+ * The interface that all Forage UI Components adhere to. For example,
+ * both the ForagePANEditText and the ForagePINEditText satisfy
+ * ForageElement
+ */
 interface ForageElement {
     var typeface: Typeface?
+
+    fun setForageConfig(forageConfig: ForageConfig)
 
     fun clearText()
 

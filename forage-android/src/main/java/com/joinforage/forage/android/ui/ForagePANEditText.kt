@@ -3,18 +3,15 @@ package com.joinforage.forage.android.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.text.Editable
 import android.text.InputType
-import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
@@ -28,26 +25,40 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForageElement, LinearLayout(context, attrs, defStyleAttr), TextWatcher {
+) : AbstractForageElement(context, attrs, defStyleAttr) {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
-    private val manager: PanElementStateManager = if (BuildConfig.FLAVOR == "prod") {
-        // strictly support only valid Ebt PAN numbers
-        PanElementStateManager.forEmptyInput()
-    } else {
-        // allows whitelist of special Ebt PAN numbers
-        PanElementStateManager.NON_PROD_forEmptyInput()
-    }
-    private val formatTextWatcher: FormatPanTextWatcher
+
+    /**
+     * The `manager` property acts as an abstraction for the actual code
+     * in ForagePANEditText, allowing it to work with a non-nullable
+     * result determined by the choice between `prod` or `sandbox`.
+     * This choice requires knowledge of the environment,which is determined
+     * by `forageConfig` set on this instance.
+     *
+     * The underlying value for `manager` is stored in `_SET_ONLY_manager`.
+     * This backing property is set only after `ForageConfig` has been
+     * initialized for this instance. If `manager` is accessed before
+     * `_SET_ONLY_manager` is set, a runtime exception is thrown.
+     */
+    private var _SET_ONLY_manager: PanElementStateManager? = null
+    private val manager: PanElementStateManager
+        get() {
+            if (_SET_ONLY_manager == null) {
+                throw ForageConfigNotSetException(
+                    """You are attempting invoke a method a ForageElement before setting
+                    it's ForageConfig. Make sure to call
+                    myForageElement.setForageConfig(forageConfig: ForageConfig) 
+                    immediately on your ForageElement before you call any other methods.
+                    """.trimIndent()
+                )
+            }
+            return _SET_ONLY_manager!!
+        }
 
     override var typeface: Typeface? = null
 
     init {
-        // Must initialize DD at the beginning of each render function. DD requires the context,
-        // so we need to wait until a context is present to run initialization code. However,
-        // we have logging all over the SDK that relies on the render happening first.
-        val logger = Log.getInstance()
-        logger.initializeDD(context)
         setWillNotDraw(false)
 
         orientation = VERTICAL
@@ -132,13 +143,26 @@ class ForagePANEditText @JvmOverloads constructor(
                     recycle()
                 }
             }
+    }
 
-        // Register the afterTextChanged method on this class
-        // so that we store the updated PAN on each input change
-        // event
-        // NOTE: this is not ideal because it relies on mutating
-        // the state of the ForageSDK singleton
-        textInputEditText.addTextChangedListener(this)
+    override fun setForageConfig(forageConfig: ForageConfig) {
+        // super is responsible for initializing the log and some
+        // global state so it must be called first
+        super.setForageConfig(forageConfig)
+
+        // Must initialize DD at the beginning of each render function. DD requires the context,
+        // so we need to wait until a context is present to run initialization code. However,
+        // we have logging all over the SDK that relies on the render happening first.
+        val logger = Log.getInstance()
+        logger.initializeDD(context)
+
+        _SET_ONLY_manager = if (EnvConfig.inProd(forageConfig)) {
+            // strictly support only valid Ebt PAN numbers
+            PanElementStateManager.forEmptyInput()
+        } else {
+            // allows whitelist of special Ebt PAN numbers
+            PanElementStateManager.NON_PROD_forEmptyInput()
+        }
 
         // register FormatPanTextWatcher to keep the format up to date
         // with each user input based on the StateIIN
@@ -146,11 +170,11 @@ class ForagePANEditText @JvmOverloads constructor(
         // are actually the users and which ones are programmatic updates
         // for reformatting purposes, we'll let the FormatPanTextWatcher
         // decide when its appropriate to invoke the user-registered callback
-        formatTextWatcher = FormatPanTextWatcher(textInputEditText)
-        formatTextWatcher.onFormattedChangeEvent { formattedCardNumber ->
+        val formatPanTextWatcher = FormatPanTextWatcher(textInputEditText)
+        formatPanTextWatcher.onFormattedChangeEvent { formattedCardNumber ->
             manager.handleChangeEvent(formattedCardNumber)
         }
-        textInputEditText.addTextChangedListener(formatTextWatcher)
+        textInputEditText.addTextChangedListener(formatPanTextWatcher)
 
         textInputLayout.addView(textInputEditText)
         addView(textInputLayout)
@@ -217,23 +241,18 @@ class ForagePANEditText @JvmOverloads constructor(
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         textInputLayout.boxStrokeColor = boxStrokeColor
     }
+
     override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
         textInputLayout.boxStrokeWidth = boxStrokeWidth
     }
     override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
         textInputLayout.boxStrokeWidthFocused = boxStrokeWidth
     }
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        // no-op
-    }
-    override fun onTextChanged(cardNumber: CharSequence?, start: Int, before: Int, count: Int) {
-        // no-op
-    }
-    override fun afterTextChanged(s: Editable?) {
-        // PANs will be formatted to include spaces. We want to strip
-        // those spaces so downstream services only work with the raw
-        // digits
-        val digitsOnly = s.toString().filter { it.isDigit() }
-        ForageSDK.storeEntry(digitsOnly)
+
+    internal fun getPanNumber(): String {
+        val rawText = textInputEditText.text.toString()
+
+        // remove format spacing
+        return rawText.filter { it.isDigit() }
     }
 }

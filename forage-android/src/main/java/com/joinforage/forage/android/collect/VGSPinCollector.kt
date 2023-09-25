@@ -1,11 +1,11 @@
 package com.joinforage.forage.android.collect
 
 import android.content.Context
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
+import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -112,7 +112,7 @@ internal class VGSPinCollector(
                                 )
                             )
                             return
-                        } catch (e: JSONException) { }
+                        } catch (_: JSONException) { }
 
                         // If we have made if this far, then this isn't a Forage error
                         measurement.setHttpStatusCode(response.code).logResult()
@@ -246,7 +246,7 @@ internal class VGSPinCollector(
                                 )
                             )
                             return
-                        } catch (e: JSONException) { }
+                        } catch (_: JSONException) { }
 
                         measurement.setHttpStatusCode(response.code).logResult()
                         logger.e(
@@ -322,8 +322,11 @@ internal class VGSPinCollector(
     }
 
     companion object {
-        private const val VAULT_ID = BuildConfig.VGS_VAULT_ID
-        private const val VGS_ENVIRONMENT = BuildConfig.VGS_VAULT_TYPE
+        // this code assumes that .setForageConfig() has been called
+        // on a Forage***EditText before PROXY_ID or API_KEY get
+        // referenced
+        private val VAULT_ID = StopgapGlobalState.envConfig.vgsVaultId
+        private val VGS_ENVIRONMENT = StopgapGlobalState.envConfig.vgsVaultType
 
         private fun buildVGSCollect(context: Context): VGSCollect {
             VGSCollectLogger.isEnabled = false

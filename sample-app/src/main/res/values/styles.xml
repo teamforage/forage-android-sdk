@@ -85,7 +85,7 @@
         <item name="android:layout_marginBottom">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
-        <item name="panBoxStrokeColor">@color/purple_700</item>
+        <item name="pinBoxStrokeColor">@color/purple_700</item>
         <item name="hintTextColor">@color/purple_700</item>
         <item name="boxCornerRadius">@dimen/corner_radius</item>
     </style>
@@ -94,7 +94,7 @@
         <item name="android:layout_margin">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
-        <item name="panBoxStrokeColor">@color/purple_200</item>
+        <item name="pinBoxStrokeColor">@color/purple_200</item>
         <item name="hintTextColor">@color/purple_200</item>
         <item name="boxCornerRadiusTopStart">@dimen/box_corner_radius_top_start</item>
         <item name="boxCornerRadiusTopEnd">@dimen/box_corner_radius_top_end</item>
@@ -111,7 +111,7 @@
         <item name="android:layout_margin">@dimen/pin_field_margin</item>
         <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
-        <item name="panBoxStrokeColor">@color/colorAccent</item>
+        <item name="pinBoxStrokeColor">@color/colorAccent</item>
         <item name="hintTextColor">@color/colorAccent</item>
         <item name="boxCornerRadius">@dimen/corner_radius</item>
     </style>

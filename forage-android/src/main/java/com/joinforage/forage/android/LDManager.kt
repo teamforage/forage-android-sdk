@@ -2,6 +2,7 @@ package com.joinforage.forage.android
 
 import android.app.Application
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.StopgapGlobalState
 import com.launchdarkly.sdk.ContextKind
 import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.android.LDClient
@@ -30,7 +31,7 @@ internal object LDContextKind {
 }
 
 internal object LDManager {
-    private const val LD_MOBILE_KEY = BuildConfig.LD_MOBILE_KEY
+    private val LD_MOBILE_KEY = StopgapGlobalState.envConfig.ldMobileKey
     private var internalVaultType: VaultType? = null
     private var internalLogger: Log = Log.getSilentInstance()
 
