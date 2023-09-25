@@ -2,7 +2,16 @@ package com.joinforage.forage.android.core.telemetry.metrics
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.*
+import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
+import com.joinforage.forage.android.core.telemetry.EventName
+import com.joinforage.forage.android.core.telemetry.EventOutcome
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.LogType
+import com.joinforage.forage.android.core.telemetry.MetricsConstants
+import com.joinforage.forage.android.core.telemetry.ResponseMonitor
+import com.joinforage.forage.android.core.telemetry.UnknownForageErrorCode
+import com.joinforage.forage.android.core.telemetry.UserAction
+import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
