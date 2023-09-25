@@ -10,17 +10,18 @@
     <!-- Style for the ForagePANEditText in tokenize Fragment. -->
     <style name="TokenizeForagePANEditTextStyle" parent="DefaultForagePANEditTextStyle">
         <item name="textInputLayoutStyle">@attr/tokenizeForageTextInputLayoutStyle</item>
+        <item name="panBoxStrokeWidth">5dp</item>
+        <item name="panBoxStrokeColor">@color/mtrl_textinput_default_box_stroke_color</item>
     </style>
 
     <style name="TokenizeForageTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:hint">@string/tokenize_forage_edit_text_hint</item>
-        <item name="panBoxStrokeWidth">1.0</item>
-        <item name="panBoxStrokeColor">@color/mtrl_textinput_default_box_stroke_color</item>
     </style>
 
     <!-- Style for the first ForagePanEditText in catalog Fragment. -->
     <style name="CatalogFirstForagePanEditTextStyle" parent="DefaultForagePANEditTextStyle">
         <item name="textInputLayoutStyle">@attr/catalogFirstForageTextInputLayoutStyle</item>
+        <item name="panBoxStrokeWidthFocused">5dp</item>
     </style>
 
     <style name="CatalogFirstForageTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
