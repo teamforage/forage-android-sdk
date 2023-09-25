@@ -2,14 +2,7 @@ package com.joinforage.forage.android.core.telemetry.metrics
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.telemetry.EventName
-import com.joinforage.forage.android.core.telemetry.EventOutcome
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.MetricsConstants
-import com.joinforage.forage.android.core.telemetry.ResponseMonitor
-import com.joinforage.forage.android.core.telemetry.UserAction
-import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
+import com.joinforage.forage.android.core.telemetry.*
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -175,6 +168,7 @@ class ResponseMonitorTest {
         val loggedVaultType = attributes[MetricsConstants.VAULT_TYPE]
         val loggedVaultAction = attributes[MetricsConstants.ACTION]
         val loggedResponseType = attributes[MetricsConstants.EVENT_NAME]
+        val loggedLogType = attributes[MetricsConstants.LOG_TYPE]
 
         Assertions.assertThat(loggedPath).isEqualTo(path)
         Assertions.assertThat(loggedMethod).isEqualTo(method)
@@ -182,6 +176,7 @@ class ResponseMonitorTest {
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(userAction)
         Assertions.assertThat(loggedResponseType).isEqualTo(EventName.VAULT_RESPONSE)
+        Assertions.assertThat(loggedLogType).isEqualTo(LogType.METRIC)
     }
 
     @Test
@@ -219,11 +214,13 @@ class ResponseMonitorTest {
         val loggedEventName = attributes[MetricsConstants.EVENT_NAME]
         val loggedOutcomeType = attributes[MetricsConstants.EVENT_OUTCOME]
         val loggedForageErrorCode = attributes[MetricsConstants.FORAGE_ERROR_CODE]
+        val loggedLogType = attributes[MetricsConstants.LOG_TYPE]
 
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(userAction)
         Assertions.assertThat(loggedEventName).isEqualTo(EventName.CUSTOMER_PERCEIVED_RESPONSE)
         Assertions.assertThat(loggedOutcomeType).isEqualTo(EventOutcome.SUCCESS)
-        Assertions.assertThat(loggedForageErrorCode).isEqualTo(null)
+        Assertions.assertThat(loggedForageErrorCode).isEqualTo(UnknownForageErrorCode.UNKNOWN)
+        Assertions.assertThat(loggedLogType).isEqualTo(LogType.METRIC)
     }
 }

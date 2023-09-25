@@ -11,6 +11,15 @@ internal object MetricsConstants {
     const val EVENT_NAME = "event_name"
     const val EVENT_OUTCOME = "event_outcome"
     const val FORAGE_ERROR_CODE = "forage_error_code"
+    const val LOG_TYPE = "log_type"
+}
+
+internal enum class LogType(val value: String) {
+    METRIC("metric");
+
+    override fun toString(): String {
+        return value
+    }
 }
 
 internal enum class UnknownForageErrorCode(val value: String) {
@@ -81,6 +90,7 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
 
     init {
         logger = metricsLogger
+        responseAttributes[MetricsConstants.LOG_TYPE] = LogType.METRIC
     }
 
     override fun start() {
@@ -164,8 +174,9 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
         val httpStatus = responseAttributes[MetricsConstants.HTTP_STATUS]
         val responseTime = responseAttributes[MetricsConstants.RESPONSE_TIME_MS]
         val forageErrorCode = responseAttributes[MetricsConstants.FORAGE_ERROR_CODE]
+        val logType = responseAttributes[MetricsConstants.LOG_TYPE]
 
-        if (path == null || method == null || httpStatus == null || responseTime == null) {
+        if (path == null || method == null || httpStatus == null || responseTime == null || logType == null) {
             metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
             return
         }
@@ -185,7 +196,8 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
                 MetricsConstants.VAULT_TYPE to vaultType,
                 MetricsConstants.ACTION to userAction,
                 MetricsConstants.EVENT_NAME to eventName,
-                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCodeOrNull
+                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCodeOrNull,
+                MetricsConstants.LOG_TYPE to logType
             )
         )
     }
@@ -228,9 +240,10 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
     ) {
         val responseTime = responseAttributes[MetricsConstants.RESPONSE_TIME_MS]
         val forageErrorCode = responseAttributes[MetricsConstants.FORAGE_ERROR_CODE]
+        val logType = responseAttributes[MetricsConstants.LOG_TYPE]
         val eventOutcome = eventOutcome
 
-        if (responseTime == null || eventName != EventName.CUSTOMER_PERCEIVED_RESPONSE || eventOutcome == null) {
+        if (responseTime == null || eventName != EventName.CUSTOMER_PERCEIVED_RESPONSE || eventOutcome == null || logType == null) {
             metricsLogger?.e("[Metrics] Incomplete or missing response attributes. Could not log metric.")
             return
         }
@@ -248,7 +261,8 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
                 MetricsConstants.ACTION to userAction,
                 MetricsConstants.EVENT_NAME to eventName,
                 MetricsConstants.EVENT_OUTCOME to eventOutcome,
-                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCodeOrNull
+                MetricsConstants.FORAGE_ERROR_CODE to forageErrorCodeOrNull,
+                MetricsConstants.LOG_TYPE to logType
             )
         )
     }
