@@ -40,6 +40,18 @@ class CatalogFragment : Fragment() {
         binding.secondForagePINEditText.setForageConfig(forageConfig)
         binding.thirdForagePINEditText.setForageConfig(forageConfig)
 
+        // NOTE: we call setForageConfig a second time here so that
+        //  the CI tests always confirm that running setForageConfig
+        //  more than once is OK and does not cause a crash. So,
+        //  these duplicate calls are intentional here
+        binding.firstForageEditText.setForageConfig(forageConfig)
+        binding.secondEditText.setForageConfig(forageConfig)
+        binding.thirdEditText.setForageConfig(forageConfig)
+        binding.fourthEditText.setForageConfig(forageConfig)
+        binding.foragePinEditText.setForageConfig(forageConfig)
+        binding.secondForagePINEditText.setForageConfig(forageConfig)
+        binding.thirdForagePINEditText.setForageConfig(forageConfig)
+
         return root
     }
 

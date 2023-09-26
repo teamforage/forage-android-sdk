@@ -91,17 +91,17 @@ class ForagePINEditText @JvmOverloads constructor(
             }
     }
 
-    override fun setForageConfig(forageConfig: ForageConfig) {
-        // super is responsible for initializing the log and some
-        // global state so it must be called first
-        super.setForageConfig(forageConfig)
-
+    override fun initWithForageConfig() {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
         val logger = Log.getInstance()
         logger.initializeDD(context)
 
+        // flagging that LDManager depends on StopgapGlobalState so
+        // its relying on forageConfig under the hood. This
+        // relationship will be made explicit once we drop
+        // StopgapGlobalState
         val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
         _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
