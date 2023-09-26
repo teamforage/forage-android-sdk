@@ -1,14 +1,14 @@
-name: Alert Slack on QA-Test failure
+name: Alert
 
 on:
   workflow_run:
     workflows: ["CI"]
-    types:
-      - completed
+    types: ["completed"]
+    branches: ["main"]
 
 jobs:
   send-alert:
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +18,7 @@ jobs:
         with:
           payload: |
             {
-              "message": "CI failed on main branch in forage-android-sdk!",
+              "message": "CI failed on main branch in forage-android-sdk! https://github.com/teamforage/forage-ios-sdk/actions"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
