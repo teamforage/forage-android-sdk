@@ -39,8 +39,9 @@ abstract class AbstractForageElement(
         // ForageConfig data. However, we don't want to run these
         // operations on any subsequent calls to setForageConfig
         // or else that could crash the app.
-        if (isFirstCallToSet) initWithForageConfig()
-        else {
+        if (isFirstCallToSet) {
+            initWithForageConfig()
+        } else {
             // TODO: possible opportunity to log that
             //  they tried to do sessionToken refreshing
         }
