@@ -18,7 +18,7 @@ jobs:
         with:
           payload: |
             {
-              "message": "CI failed on main branch in forage-android-sdk! https://github.com/teamforage/forage-ios-sdk/actions"
+              "message": "CI failed on main branch in forage-android-sdk! https://github.com/teamforage/forage-android-sdk/actions"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
