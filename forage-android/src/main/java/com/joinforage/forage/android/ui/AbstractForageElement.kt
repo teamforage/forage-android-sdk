@@ -15,7 +15,9 @@ abstract class AbstractForageElement(
 
     // designated method that subclass can run all the
     // side-effect things exactly once the first time
-    // setForageConfig is called
+    // setForageConfig is called. Side effect include
+    // initializing logger module, feature flag module,
+    // and view UI manipulation logic
     protected abstract fun initWithForageConfig()
 
     override fun setForageConfig(forageConfig: ForageConfig) {
