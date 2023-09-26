@@ -11,14 +11,14 @@ import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.VaultConstants
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
-import com.joinforage.forage.android.core.Log
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
+import com.joinforage.forage.android.core.telemetry.Log
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
@@ -103,7 +103,7 @@ class ForagePINEditText @JvmOverloads constructor(
         logger.initializeDD(context)
 
         val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
-        _SET_ONLY_vault = if (vaultType == VaultConstants.BT_VAULT_TYPE) {
+        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
         } else {
             vgsVaultWrapper
@@ -113,7 +113,7 @@ class ForagePINEditText @JvmOverloads constructor(
         _linearLayout.addView(getLogoImageViewLayout(context))
         addView(_linearLayout)
 
-        logger.i("[UIView] ForagePINEditText successfully rendered")
+        logger.i("[View] ForagePINEditText successfully rendered")
     }
 
     override fun clearText() {

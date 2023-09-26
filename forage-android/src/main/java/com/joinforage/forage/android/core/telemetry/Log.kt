@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core
+package com.joinforage.forage.android.core.telemetry
 
 import android.content.Context
 import com.datadog.android.Datadog
@@ -7,6 +7,7 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.log.Logger
 import com.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.BuildConfig
+import com.joinforage.forage.android.core.StopgapGlobalState
 import kotlin.random.Random
 
 internal interface Log {

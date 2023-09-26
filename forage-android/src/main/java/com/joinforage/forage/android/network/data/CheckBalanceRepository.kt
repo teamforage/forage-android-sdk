@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
@@ -27,7 +27,7 @@ internal class CheckBalanceRepository(
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getTokenFromPaymentMethod(
                 paymentMethodRef = paymentMethodRef,
-                pinCollector.parseEncryptionKey(
+                encryptionKey = pinCollector.parseEncryptionKey(
                     EncryptionKeys.ModelMapper.from(response.data)
                 )
             )
@@ -98,7 +98,8 @@ internal class CheckBalanceRepository(
                                     "content_id" to contentId
                                 )
                             )
-                            return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+
+                            return ForageApiResponse.Failure.fromSQSError(error)
                         }
                         break
                     }
@@ -112,7 +113,8 @@ internal class CheckBalanceRepository(
                                 "content_id" to contentId
                             )
                         )
-                        return ForageApiResponse.Failure(listOf(ForageError(error.statusCode, error.forageCode, error.message)))
+
+                        return ForageApiResponse.Failure.fromSQSError(error)
                     }
                 }
                 else -> {
@@ -128,6 +130,7 @@ internal class CheckBalanceRepository(
                         "content_id" to contentId
                     )
                 )
+
                 return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 

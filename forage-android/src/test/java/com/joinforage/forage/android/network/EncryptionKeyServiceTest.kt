@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey

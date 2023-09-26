@@ -1,6 +1,9 @@
 package com.joinforage.forage.android
 
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
+import com.joinforage.forage.android.core.telemetry.EventOutcome
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
@@ -103,7 +106,18 @@ class ForageSDK : ForageSDKInterface {
                 "payment_method_ref" to paymentMethodRef
             )
         )
-        return CheckBalanceRepository(
+
+        // This block is used for Metrics Tracking!
+        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vaultAction = UserAction.BALANCE,
+            logger
+        )
+        measurement.start()
+        // ------------------------------------------------------
+
+        val response = CheckBalanceRepository(
             pinCollector = foragePinEditText.getCollector(
                 merchantId
             ),
@@ -138,6 +152,19 @@ class ForageSDK : ForageSDKInterface {
         ).checkBalance(
             paymentMethodRef = paymentMethodRef
         )
+        measurement.end()
+
+        val outcome = if (response is ForageApiResponse.Failure) {
+            if (response.errors.isNotEmpty()) {
+                measurement.setForageErrorCode(response.errors[0].code)
+            }
+            EventOutcome.FAILURE
+        } else {
+            EventOutcome.SUCCESS
+        }
+
+        measurement.setEventOutcome(outcome).logResult()
+        return response
     }
 
     /**
@@ -166,7 +193,18 @@ class ForageSDK : ForageSDKInterface {
                 "payment_ref" to paymentRef
             )
         )
-        return CapturePaymentRepository(
+
+        // This block is used for Metrics Tracking!
+        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vaultAction = UserAction.CAPTURE,
+            logger
+        )
+        measurement.start()
+        // ------------------------------------------------------
+
+        val response = CapturePaymentRepository(
             pinCollector = foragePinEditText.getCollector(
                 merchantId
             ),
@@ -210,5 +248,19 @@ class ForageSDK : ForageSDKInterface {
         ).capturePayment(
             paymentRef = paymentRef
         )
+        measurement.end()
+
+        val outcome = if (response is ForageApiResponse.Failure) {
+            if (response.errors.isNotEmpty()) {
+                measurement.setForageErrorCode(response.errors[0].code)
+            }
+            EventOutcome.FAILURE
+        } else {
+            EventOutcome.SUCCESS
+        }
+
+        measurement.setEventOutcome(outcome).logResult()
+
+        return response
     }
 }

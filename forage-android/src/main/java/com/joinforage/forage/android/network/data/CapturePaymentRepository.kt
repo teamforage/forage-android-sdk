@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.Log
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
@@ -27,7 +27,7 @@ internal class CapturePaymentRepository(
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
-                pinCollector.parseEncryptionKey(
+                encryptionKey = pinCollector.parseEncryptionKey(
                     EncryptionKeys.ModelMapper.from(response.data)
                 )
             )
@@ -68,7 +68,6 @@ internal class CapturePaymentRepository(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
-
     ): ForageApiResponse<String> {
         val response = pinCollector.collectPinForCapturePayment(
             paymentRef = paymentRef,
@@ -116,6 +115,7 @@ internal class CapturePaymentRepository(
                                     "content_id" to contentId
                                 )
                             )
+
                             return ForageApiResponse.Failure.fromSQSError(error)
                         }
                         break
@@ -130,6 +130,7 @@ internal class CapturePaymentRepository(
                                 "content_id" to contentId
                             )
                         )
+
                         return ForageApiResponse.Failure.fromSQSError(error)
                     }
                 }
@@ -146,6 +147,7 @@ internal class CapturePaymentRepository(
                         "content_id" to contentId
                     )
                 )
+
                 return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
