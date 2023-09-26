@@ -6,7 +6,6 @@ import com.datadog.android.core.configuration.Configuration
 import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.log.Logger
 import com.datadog.android.privacy.TrackingConsent
-import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.core.StopgapGlobalState
 import kotlin.random.Random
 
@@ -65,8 +64,8 @@ internal interface Log {
                     traceId = generateTraceId()
                 }
 
-                logger?.addAttribute(VERSION_CODE, BuildConfig.VERSION)
-                logger?.addTag(VERSION_CODE, BuildConfig.VERSION)
+                logger?.addAttribute(VERSION_CODE, StopgapGlobalState.envConfig.PUBLISH_VERSION)
+                logger?.addTag(VERSION_CODE, StopgapGlobalState.envConfig.PUBLISH_VERSION)
                 logger?.addAttribute(TRACE_ID, traceId)
             }
 

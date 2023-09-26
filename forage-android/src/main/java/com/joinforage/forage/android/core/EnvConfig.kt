@@ -20,6 +20,13 @@ internal sealed class EnvConfig(
     val ldMobileKey: String,
     val ddClientToken: String
 ) {
+    // This is how we currently offer access to the the release
+    // version to code at runtime. It is essential that this
+    // value stay in sync with forage-android/build.gradle's
+    // PUBLISH_VERSION value.
+    val PUBLISH_VERSION: String = "3.1.0"
+
+
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
         btProxyID = "N31FZgKpYZpo3oQ6XiM6M6",
