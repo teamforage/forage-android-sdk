@@ -40,6 +40,27 @@ internal class VGSPinCollector(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
+        // If the PIN isn't valid (less than 4 numbers) then return a response here.
+        if (!pinForageEditText.getElementState().isComplete) {
+            logger.e(
+                "[VGS] User attempted to submit an invalid PIN",
+                attributes = mapOf(
+                    "merchant_ref" to merchantAccount,
+                    "payment_method_ref" to paymentMethodRef
+                )
+            )
+            continuation.resumeWith(
+                Result.success(
+                    ForageApiResponse.Failure(
+                        listOf(
+                            ForageError(400, "user_error", "Attempted to submit an invalid PIN")
+                        )
+                    )
+                )
+            )
+            return@suspendCoroutine
+        }
+
         val vgsCollect = buildVGSCollect(context)
 
         val inputField = pinForageEditText.getTextInputEditText()
@@ -173,6 +194,27 @@ internal class VGSPinCollector(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
+        // If the PIN isn't valid (less than 4 numbers) then return a response here.
+        if (!pinForageEditText.getElementState().isComplete) {
+            logger.e(
+                "[VGS] User attempted to submit an invalid PIN",
+                attributes = mapOf(
+                    "merchant_ref" to merchantAccount,
+                    "payment_ref" to paymentRef
+                )
+            )
+            continuation.resumeWith(
+                Result.success(
+                    ForageApiResponse.Failure(
+                        listOf(
+                            ForageError(400, "user_error", "Attempted to submit an invalid PIN")
+                        )
+                    )
+                )
+            )
+            return@suspendCoroutine
+        }
+
         val vgsCollect = buildVGSCollect(context)
 
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
