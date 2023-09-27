@@ -24,7 +24,7 @@ internal sealed class EnvConfig(
     // version to code at runtime. It is essential that this
     // value stay in sync with forage-android/build.gradle's
     // PUBLISH_VERSION value.
-    val PUBLISH_VERSION: String = "3.1.0"
+    val PUBLISH_VERSION: String = "3.2.0"
 
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
