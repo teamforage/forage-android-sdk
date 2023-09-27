@@ -36,7 +36,7 @@ internal class BTPinCollector(
     ): ForageApiResponse<String> {
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            logger.e(
+            logger.w(
                 "[BT] User attempted to submit an invalid PIN",
                 attributes = mapOf(
                     "merchant_ref" to merchantAccount,
@@ -44,9 +44,7 @@ internal class BTPinCollector(
                 )
             )
             return ForageApiResponse.Failure(
-                listOf(
-                    ForageError(400, "user_error", "Attempted to submit an invalid PIN")
-                )
+                ForageConstants.ErrorResponseObjects.INVALID_PIN_ERROR
             )
         }
 
@@ -158,7 +156,7 @@ internal class BTPinCollector(
     ): ForageApiResponse<String> {
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            logger.e(
+            logger.w(
                 "[BT] User attempted to submit an invalid PIN",
                 attributes = mapOf(
                     "merchant_ref" to merchantAccount,
@@ -166,9 +164,7 @@ internal class BTPinCollector(
                 )
             )
             return ForageApiResponse.Failure(
-                listOf(
-                    ForageError(400, "user_error", "Attempted to submit an invalid PIN")
-                )
+                ForageConstants.ErrorResponseObjects.INVALID_PIN_ERROR
             )
         }
 

@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network
 
 import com.joinforage.forage.android.core.StopgapGlobalState
+import com.joinforage.forage.android.network.model.ForageError
 import okhttp3.Request
 
 internal object ForageConstants {
@@ -35,5 +36,11 @@ internal object ForageConstants {
 
     object VGS {
         const val PIN_FIELD_NAME = "pin"
+    }
+
+    object ErrorResponseObjects {
+        val INVALID_PIN_ERROR = listOf(
+            ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
+        )
     }
 }
