@@ -46,7 +46,11 @@ android {
 }
 
 dependencies {
+//    this line tests against the local forage-android
     implementation(project(":forage-android"))
+
+//     uncomment this line 👇 to test against remote repository forage-android
+//    implementation("com.joinforage:forage-android:3.1.0.1")
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
