@@ -17,13 +17,6 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
-    publishing {
-        multipleVariants("full") {
-            includeBuildTypeValues("release", "debug")
-            includeFlavorDimensionAndValues("version", "prod", "sandbox")
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -40,25 +33,6 @@ android {
 
     buildFeatures {
         dataBinding true
-    }
-
-    flavorDimensions "version"
-    productFlavors {
-        dev {
-            buildConfigField "String", "VERSION", "$publishVersion"
-        }
-        staging {
-            buildConfigField "String", "VERSION", "$publishVersion"
-        }
-        sandbox {
-            buildConfigField "String", "VERSION", "$publishVersion"
-        }
-        cert {
-            buildConfigField "String", "VERSION", "$publishVersion"
-        }
-        prod {
-            buildConfigField "String", "VERSION", "$publishVersion"
-        }
     }
 
     testOptions {
