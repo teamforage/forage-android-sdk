@@ -1,60 +1,45 @@
 package com.joinforage.android.example.network.di
 
-import com.joinforage.android.example.BuildConfig
 import com.joinforage.android.example.network.ForageApi
 import com.joinforage.android.example.network.interceptors.AuthInterceptor
+import com.joinforage.android.example.network.model.EnvConfig
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.addAdapter
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import javax.inject.Singleton
 
 @ExperimentalStdlibApi
-@Module
-@InstallIn(SingletonComponent::class)
-object ForageApiModule {
-    private fun provideBaseUrl() = when (BuildConfig.FLAVOR) {
-        "dev" -> "https://api.dev.joinforage.app/"
-        "staging" -> "https://api.staging.joinforage.app/"
-        "sandbox" -> "https://api.sandbox.joinforage.app/"
-        "cert" -> "https://api.cert.joinforage.app/"
-        else -> "https://api.joinforage.app/"
-    }
+class ForageApiModule {
 
-    @Provides
-    fun provideMoshi(): Moshi = Moshi.Builder()
-        .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
-        .build()
-
-    private fun provideMoshiConverterFactory(): MoshiConverterFactory =
-        MoshiConverterFactory.create(
-            provideMoshi()
-        )
-
-    private fun provideRetrofit(
-        httpClient: OkHttpClient
-    ) = Retrofit.Builder()
-        .baseUrl(provideBaseUrl())
-        .client(httpClient)
-        .addConverterFactory(provideMoshiConverterFactory())
-        .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
-        .build()
-
-    @Singleton
-    @Provides
-    fun provideForageApi(
-        httpClientBuilder: OkHttpClient.Builder,
-        authInterceptor: AuthInterceptor
-    ): ForageApi = provideRetrofit(
-        httpClientBuilder
+    private fun provideRetrofit(baseUrl: String): Retrofit {
+        val authInterceptor = AuthInterceptor()
+        val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .build()
-    ).create(ForageApi::class.java)
+
+        val moshi = Moshi.Builder()
+            .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
+            .build()
+
+        val moshiConverterFactory = MoshiConverterFactory.create(moshi)
+        val callAdapterFactory = ApiResponseCallAdapterFactory.create()
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(moshiConverterFactory)
+            .addCallAdapterFactory(callAdapterFactory)
+            .build()
+    }
+
+
+    fun provideForageApi(
+        sessionToken: String
+    ): ForageApi {
+        val baseUrl = EnvConfig.fromSessionToken(sessionToken).baseUrl
+        return provideRetrofit(baseUrl).create(ForageApi::class.java)
+    }
 }

@@ -16,13 +16,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FlowCreatePaymentViewModel @Inject constructor(
-    private val repository: PaymentsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val args = FlowCreatePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
     val merchantAccount = args.merchantAccount
     val bearer = args.bearer
     val paymentMethodRef = args.paymentMethodRef
+    private val repository: PaymentsRepository = PaymentsRepository(bearer)
 
     private val _isLoading = MutableLiveData<Boolean>().apply {
         value = false
