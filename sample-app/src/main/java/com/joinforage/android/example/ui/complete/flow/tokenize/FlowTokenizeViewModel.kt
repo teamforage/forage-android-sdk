@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FlowTokenizeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val TAG = FlowTokenizeViewModel::class.java.simpleName

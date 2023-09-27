@@ -35,7 +35,6 @@ class ForageApiModule {
             .build()
     }
 
-
     fun provideForageApi(
         sessionToken: String
     ): ForageApi {
