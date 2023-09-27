@@ -26,7 +26,6 @@ internal sealed class EnvConfig(
     // PUBLISH_VERSION value.
     val PUBLISH_VERSION: String = "3.1.0"
 
-
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
         btProxyID = "N31FZgKpYZpo3oQ6XiM6M6",
