@@ -44,7 +44,7 @@ internal class BTPinCollector(
                 )
             )
             return ForageApiResponse.Failure(
-                ForageConstants.ErrorResponseObjects.INVALID_PIN_ERROR
+                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
             )
         }
 
@@ -164,7 +164,7 @@ internal class BTPinCollector(
                 )
             )
             return ForageApiResponse.Failure(
-                ForageConstants.ErrorResponseObjects.INVALID_PIN_ERROR
+                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
             )
         }
 

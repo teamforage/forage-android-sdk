@@ -39,7 +39,7 @@ internal object ForageConstants {
     }
 
     object ErrorResponseObjects {
-        val INVALID_PIN_ERROR = listOf(
+        val INCOMPLETE_PIN_ERROR = listOf(
             ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
         )
     }

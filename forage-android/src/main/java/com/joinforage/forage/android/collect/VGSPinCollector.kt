@@ -52,7 +52,7 @@ internal class VGSPinCollector(
             continuation.resumeWith(
                 Result.success(
                     ForageApiResponse.Failure(
-                        ForageConstants.ErrorResponseObjects.INVALID_PIN_ERROR
+                        ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
                     )
                 )
             )
@@ -204,7 +204,7 @@ internal class VGSPinCollector(
             continuation.resumeWith(
                 Result.success(
                     ForageApiResponse.Failure(
-                        ForageConstants.ErrorResponseObjects.INVALID_PIN_ERROR
+                        ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
                     )
                 )
             )
