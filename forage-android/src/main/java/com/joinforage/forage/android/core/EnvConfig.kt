@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.core
 
+import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.ui.ForageConfig
 
 internal enum class EnvOption(val value: String) {
@@ -20,11 +21,10 @@ internal sealed class EnvConfig(
     val ldMobileKey: String,
     val ddClientToken: String
 ) {
-    // This is how we currently offer access to the the release
-    // version to code at runtime. It is essential that this
-    // value stay in sync with forage-android/build.gradle's
-    // PUBLISH_VERSION value.
-    val PUBLISH_VERSION: String = "3.2.0"
+    // For the time being, I figure we can consume BuildConfig in exactly
+    // one spot (here) to reduce the pieces of source code have to couple
+    // to BuildConfig.
+    val PUBLISH_VERSION: String = BuildConfig.PUBLISH_VERSION
 
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
