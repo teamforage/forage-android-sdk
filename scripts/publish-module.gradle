@@ -4,8 +4,10 @@ apply plugin: 'signing'
 task androidSourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     if (project.plugins.findPlugin("com.android.library")) {
+        // source code for forage-android
         from android.sourceSets.main.java.srcDirs
     } else {
+        // source code for sample-app
         from sourceSets.main.java.srcDirs
     }
 }
@@ -21,12 +23,28 @@ afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                from components.full
                 // The coordinates of the library, being set from variables that
                 // we'll set up later
                 groupId PUBLISH_GROUP_ID
                 artifactId PUBLISH_ARTIFACT_ID
                 version PUBLISH_VERSION
+
+                // We want to release both the executable that can be run
+                // by a device and the source code. We include the source
+                // code for transparency so that developers can look
+                // around for themselves.
+
+                // this code block exposes primary artifact (the executable)
+                if (project.plugins.findPlugin("com.android.library")) {
+                    // executable for forage-android
+                    from components.release
+                } else {
+                    // executable for sample-app
+                    artifact("$buildDir/libs/${project.getName()}-${version}.jar")
+                }
+
+                // this code block exposes the source code (human readable)
+                // it is created above by `task androidSourcesJar(type: Jar)`
                 artifact androidSourcesJar
 
                 // Mostly self-explanatory metadata
