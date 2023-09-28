@@ -18,7 +18,7 @@ sealed class ForageErrorDetails {
     }
 }
 
-data class SQSError(
+internal data class SQSError(
     val statusCode: Int,
     val forageCode: String,
     val message: String,
@@ -48,7 +48,7 @@ data class SQSError(
     }
 }
 
-data class Message(
+internal data class Message(
     val contentId: String,
     val messageType: String,
     val status: String,

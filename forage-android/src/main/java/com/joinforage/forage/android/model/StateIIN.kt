@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.model
 
-const val STATE_INN_LENGTH = 6
+internal const val STATE_INN_LENGTH = 6
 
 internal enum class StateIIN(
     val iin: String,

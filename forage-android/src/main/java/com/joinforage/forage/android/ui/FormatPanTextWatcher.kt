@@ -5,7 +5,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import com.joinforage.forage.android.model.queryForStateIIN
 
-fun expandDigitsToFormat(pattern: String): (String) -> String {
+internal fun expandDigitsToFormat(pattern: String): (String) -> String {
     val targetCharGroupSizes = pattern.split(" ").map { it.length }
     return { input: String ->
         val acc = listOf<String>() to 0
@@ -31,13 +31,13 @@ fun expandDigitsToFormat(pattern: String): (String) -> String {
     }
 }
 
-const val MAX_PAN_LENGTH = 19
-val space16DigitPAN = expandDigitsToFormat("#### #### #### ####")
-val space18DigitPAN = expandDigitsToFormat("###### #### ##### ## #")
-val space19DigitPAN = expandDigitsToFormat("###### #### #### ### ##")
-val defaultTransform = expandDigitsToFormat("#### #### #### #### ###")
+internal const val MAX_PAN_LENGTH = 19
+internal val space16DigitPAN = expandDigitsToFormat("#### #### #### ####")
+internal val space18DigitPAN = expandDigitsToFormat("###### #### ##### ## #")
+internal val space19DigitPAN = expandDigitsToFormat("###### #### #### ### ##")
+internal val defaultTransform = expandDigitsToFormat("#### #### #### #### ###")
 
-fun stripNonDigits(input: String): String {
+internal fun stripNonDigits(input: String): String {
     return input.replace(Regex("\\D"), "")
 }
 
@@ -47,7 +47,7 @@ internal fun truncateDigitsByStateIIN(digits: String): String {
     return digits.take(targetLength)
 }
 
-fun formatDigitsByStateIIN(digits: String): String {
+internal fun formatDigitsByStateIIN(digits: String): String {
     val stateIIN = queryForStateIIN(digits)
     val transform = when (stateIIN?.panLength) {
         16 -> space16DigitPAN
@@ -58,14 +58,14 @@ fun formatDigitsByStateIIN(digits: String): String {
     return transform(digits)
 }
 
-fun countSpacesBeforePos(pos: Int, str: String): Int {
+internal fun countSpacesBeforePos(pos: Int, str: String): Int {
     // protect against boundary cases
     val end = minOf(pos, str.length)
 
     // do the logic we actually care about
     return str.substring(0, end).count { it == ' ' }
 }
-fun getTransformedPosition(pos: Int, oldPrettyText: String, newPrettyText: String): Int {
+internal fun getTransformedPosition(pos: Int, oldPrettyText: String, newPrettyText: String): Int {
     // formatted digits include spaces which change  on inserts,
     // copy/paste, etc. We need to ensure we factor any space
     // additions or removals into the cursor's position so the
@@ -79,7 +79,7 @@ fun getTransformedPosition(pos: Int, oldPrettyText: String, newPrettyText: Strin
     return minOf(shiftedPos, newPrettyText.length)
 }
 
-class FormatPanTextWatcher(
+internal class FormatPanTextWatcher(
     private val editText: EditText
 ) : TextWatcher {
     private var isProgrammaticChange: Boolean = false

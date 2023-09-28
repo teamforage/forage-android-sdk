@@ -1,5 +1,8 @@
 package com.joinforage.forage.android
 
+import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.SQSError
 import kotlin.random.Random
 
 /**
@@ -11,4 +14,14 @@ import kotlin.random.Random
  */
 internal fun getJitterAmount(random: Random = Random.Default): Int {
     return random.nextInt(-25, 26)
+}
+
+internal fun sqsMessageToError(sqsError: SQSError): ForageApiResponse.Failure {
+    val forageError = ForageError(
+        sqsError.statusCode,
+        sqsError.forageCode,
+        sqsError.message,
+        sqsError.details
+    )
+    return ForageApiResponse.Failure(listOf(forageError))
 }

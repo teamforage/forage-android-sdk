@@ -4,7 +4,7 @@ import com.joinforage.forage.android.core.element.ElementValidationError
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 
-abstract class ElementStateManager(
+internal abstract class ElementStateManager(
     private var isFocused: Boolean,
     private var isBlurred: Boolean,
     internal var isEmpty: Boolean,

@@ -11,6 +11,7 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.sqsMessageToError
 import kotlinx.coroutines.delay
 
 internal class CheckBalanceRepository(
@@ -99,7 +100,7 @@ internal class CheckBalanceRepository(
                                 )
                             )
 
-                            return ForageApiResponse.Failure.fromSQSError(error)
+                            return sqsMessageToError(error)
                         }
                         break
                     }
@@ -114,7 +115,7 @@ internal class CheckBalanceRepository(
                             )
                         )
 
-                        return ForageApiResponse.Failure.fromSQSError(error)
+                        return sqsMessageToError(error)
                     }
                 }
                 else -> {
