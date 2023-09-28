@@ -13,14 +13,15 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import com.squareup.moshi.addAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FlowTokenizeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val moshi: Moshi
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val TAG = FlowTokenizeViewModel::class.java.simpleName
@@ -47,6 +48,7 @@ class FlowTokenizeViewModel @Inject constructor(
 
     val error: LiveData<String?> = _error
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun onSubmit(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
         _isLoading.value = true
 
@@ -61,6 +63,9 @@ class FlowTokenizeViewModel @Inject constructor(
         when (response) {
             is ForageApiResponse.Success -> {
                 Log.d(TAG, "Tokenize EBT card Response: ${response.data}")
+                val moshi = Moshi.Builder()
+                    .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
+                    .build()
                 val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
 
                 val result = adapter.fromJson(response.data)

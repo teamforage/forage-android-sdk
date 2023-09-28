@@ -14,13 +14,14 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import com.squareup.moshi.addAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FlowBalanceViewModel @Inject constructor(
-    private val moshi: Moshi,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -61,6 +62,7 @@ class FlowBalanceViewModel @Inject constructor(
 
     val isNextVisible: LiveData<Boolean> = _isNextVisible
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun checkBalance(context: Context, pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _isLoading.value = true
@@ -76,6 +78,9 @@ class FlowBalanceViewModel @Inject constructor(
                 is ForageApiResponse.Success -> {
                     Log.d(TAG, "Check Balance Response: ${response.data}")
 
+                    val moshi = Moshi.Builder()
+                        .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
+                        .build()
                     val adapter: JsonAdapter<BalanceResponse> =
                         moshi.adapter(BalanceResponse::class.java)
 

@@ -1,17 +1,16 @@
 package com.joinforage.android.example.data
 
-import com.joinforage.android.example.network.ForageApi
+import com.joinforage.android.example.network.di.ForageApiModule
 import com.joinforage.android.example.network.model.Address
 import com.joinforage.android.example.network.model.PaymentRequest
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.skydoves.sandwich.ApiResponse
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PaymentsRepository @Inject constructor(
-    private val forageApi: ForageApi
-) {
+class PaymentsRepository(sessionToken: String) {
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private val forageApi = ForageApiModule().provideForageApi(sessionToken)
+
     suspend fun createPayment(
         bearerToken: String,
         fnsNumber: String,
@@ -23,7 +22,7 @@ class PaymentsRepository @Inject constructor(
         deliveryAddress: Address,
         isDelivery: Boolean
     ): ApiResponse<PaymentResponse> {
-        var bearerString = "Bearer $bearerToken"
+        val bearerString = "Bearer $bearerToken"
         return forageApi.createPayment(
             bearerString,
             fnsNumber,
