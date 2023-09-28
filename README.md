@@ -54,23 +54,6 @@ dependencies {
 }
 ```
 
-### A Note on Build Variants
-
-While the Forage Android SDK comes with a flavor dimension `version` with values
-of `prod` and `sandbox` the Forage Android SDK will infer whether to operate
-in `prod` or `sandbox` based on the [`sessionToken`](https://docs.joinforage.app/reference/create-session-token)
-passed to either [`ForagePANEditText`](#foragepanedittext) or the 
-[`ForagePINEditText`](#foragepinedittext) views. We recommend that you only
-use the `prod` flavor of the Forage Android SDK.
-
-```groovy
-android {
-    defaultConfig {
-        missingDimensionStrategy("version", "prod")
-    }
-}
-```
-
 ## UI Components
 
 The Android SDK exposes two text field components, collectively referred to as
