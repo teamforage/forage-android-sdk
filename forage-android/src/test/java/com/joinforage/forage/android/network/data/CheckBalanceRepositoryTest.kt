@@ -224,14 +224,6 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                 put("errors", emptyList<String>())
             }.toString()
         }
-
-        fun getSendToProxyResponse(contentId: String) = Message(
-            contentId = contentId,
-            messageType = "0200",
-            status = "sent_to_proxy",
-            failed = false,
-            errors = emptyList()
-        )
     }
 
     private data class ExpectedData(

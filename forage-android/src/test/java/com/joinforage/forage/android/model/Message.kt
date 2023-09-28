@@ -5,7 +5,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Message(
+internal data class Message(
     @Json(name = "content_id")
     val contentId: String,
     @Json(name = "message_type")
