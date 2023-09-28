@@ -5,6 +5,26 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
 
+ext {
+    PUBLISH_GROUP_ID = 'com.joinforage'
+    PUBLISH_VERSION = '3.3.0'
+    PUBLISH_ARTIFACT_ID = 'forage-android'
+    PUBLISH_DESCRIPTION = 'Forage Android SDK'
+    PUBLISH_URL = 'https://github.com/teamforage/forage-android-sdk'
+    PUBLISH_LICENSE_NAME = 'MIT License'
+    PUBLISH_LICENSE_URL =
+            'https://github.com/teamforage/forage-android-sdk/blob/main/LICENSE'
+    PUBLISH_DEVELOPER_ID = 'owenkim'
+    PUBLISH_DEVELOPER_NAME = 'Owen Kim'
+    PUBLISH_DEVELOPER_EMAIL = 'owenkim@forage.com'
+    PUBLISH_SCM_CONNECTION =
+            'scm:git:github.com:teamforage/forage-android-sdk.git'
+    PUBLISH_SCM_DEVELOPER_CONNECTION =
+            'scm:git:ssh://github.com:teamforage/forage-android-sdk.git'
+    PUBLISH_SCM_URL =
+            'https://github.com/teamforage/forage-android-sdk/tree/main'
+}
+
 android {
     namespace 'com.joinforage.forage.android'
     compileSdk 33
@@ -15,6 +35,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField 'String', 'PUBLISH_VERSION', "\"${PUBLISH_VERSION}\""
     }
 
     buildTypes {
@@ -81,24 +103,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }
 
-ext {
-    PUBLISH_GROUP_ID = 'com.joinforage'
-    PUBLISH_VERSION = '3.2.0'
-    PUBLISH_ARTIFACT_ID = 'forage-android'
-    PUBLISH_DESCRIPTION = 'Forage Android SDK'
-    PUBLISH_URL = 'https://github.com/teamforage/forage-android-sdk'
-    PUBLISH_LICENSE_NAME = 'MIT License'
-    PUBLISH_LICENSE_URL =
-            'https://github.com/teamforage/forage-android-sdk/blob/main/LICENSE'
-    PUBLISH_DEVELOPER_ID = 'owenkim'
-    PUBLISH_DEVELOPER_NAME = 'Owen Kim'
-    PUBLISH_DEVELOPER_EMAIL = 'owenkim@forage.com'
-    PUBLISH_SCM_CONNECTION =
-            'scm:git:github.com:teamforage/forage-android-sdk.git'
-    PUBLISH_SCM_DEVELOPER_CONNECTION =
-            'scm:git:ssh://github.com:teamforage/forage-android-sdk.git'
-    PUBLISH_SCM_URL =
-            'https://github.com/teamforage/forage-android-sdk/tree/main'
-}
+
 
 apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
