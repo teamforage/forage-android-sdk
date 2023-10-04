@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.addTrailingSlash
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -37,6 +38,7 @@ internal class EncryptionKeyService(
             .newBuilder()
             .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
             .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
+            .addTrailingSlash()
             .build()
     }
 }

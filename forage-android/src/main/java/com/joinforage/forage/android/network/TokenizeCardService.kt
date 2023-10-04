@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.addTrailingSlash
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -54,7 +55,7 @@ internal class TokenizeCardService(
             .newBuilder()
             .addPathSegment(ForageConstants.PathSegment.API)
             .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
-            .addPathSegment("")
+            .addTrailingSlash()
             .build()
     }
 }
