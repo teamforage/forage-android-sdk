@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.addTrailingSlash
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -43,7 +44,7 @@ internal class MessageStatusService(
             .addPathSegment(ForageConstants.PathSegment.API)
             .addPathSegment(ForageConstants.PathSegment.MESSAGE)
             .addPathSegment(contentId)
-            .addPathSegment("")
+            .addTrailingSlash()
             .build()
     }
 }

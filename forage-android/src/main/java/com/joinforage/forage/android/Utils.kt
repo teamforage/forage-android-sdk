@@ -1,5 +1,6 @@
 package com.joinforage.forage.android
 
+import okhttp3.HttpUrl
 import kotlin.random.Random
 
 /**
@@ -11,4 +12,8 @@ import kotlin.random.Random
  */
 internal fun getJitterAmount(random: Random = Random.Default): Int {
     return random.nextInt(-25, 26)
+}
+
+internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
+    return this.addPathSegment("")
 }
