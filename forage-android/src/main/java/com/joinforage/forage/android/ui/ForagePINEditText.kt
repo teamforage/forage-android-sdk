@@ -102,7 +102,10 @@ class ForagePINEditText @JvmOverloads constructor(
         // its relying on forageConfig under the hood. This
         // relationship will be made explicit once we drop
         // StopgapGlobalState
-        val vaultType = LDManager.getVaultProvider(context.applicationContext as Application, logger)
+
+        LDManager.initialize(context.applicationContext as Application, logger)
+        val vaultType = LDManager.getVaultProvider()
+
         _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
         } else {
