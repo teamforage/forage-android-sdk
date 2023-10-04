@@ -286,7 +286,9 @@ internal class BTPinCollector(
                 "payment_method_ref" to paymentMethod.ref
             )
         )
-        throw RuntimeException("BT token not found on card!")
+        // This will lead to a Forage API error, ensuring the app won't crash.
+        // However, the reason for the error may be confusing.
+        return ""
     }
 
     companion object {
