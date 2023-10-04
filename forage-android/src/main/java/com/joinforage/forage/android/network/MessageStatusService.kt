@@ -43,6 +43,7 @@ internal class MessageStatusService(
             .addPathSegment(ForageConstants.PathSegment.API)
             .addPathSegment(ForageConstants.PathSegment.MESSAGE)
             .addPathSegment(contentId)
+            .addPathSegment("")
             .build()
     }
 }

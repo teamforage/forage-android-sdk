@@ -37,6 +37,7 @@ internal class EncryptionKeyService(
             .newBuilder()
             .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
             .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
+            .addPathSegment("")
             .build()
     }
 }

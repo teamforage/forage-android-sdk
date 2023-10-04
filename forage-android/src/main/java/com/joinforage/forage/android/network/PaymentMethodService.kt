@@ -48,6 +48,7 @@ internal class PaymentMethodService(
             .addPathSegment(ForageConstants.PathSegment.API)
             .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
             .addPathSegment(paymentMethodRef)
+            .addPathSegment("")
             .build()
     }
 }
