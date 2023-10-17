@@ -1,15 +1,14 @@
 package com.joinforage
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import kotlin.io.path.createTempDirectory
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.file.FileCollection
-import org.gradle.kotlin.dsl.get
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-
+import org.gradle.kotlin.dsl.get
+import kotlin.io.path.createTempDirectory
 
 private fun getGroupFromArtifact(artifact: String): String? {
     val parts = artifact.split(":")
@@ -19,10 +18,13 @@ private fun getGroupFromArtifact(artifact: String): String? {
 abstract class ShadowAarDependenciesPluginExtension {
     @get:Input
     abstract val targetAar: Property<String>
+
     @get:Input
     abstract val targetPackageName: Property<String>
+
     @get:Input
     abstract val destinationPackageName: Property<String>
+
     @get:Input
     abstract val subDependencies: ListProperty<String>
 }
@@ -126,6 +128,5 @@ class ShadowAarDependenciesPlugin : Plugin<Project> {
             manuallyIncludeSubDependencies(project, subDependencies)
             addTargetAarDependency(project, targetAar)
         }
-
     }
 }
