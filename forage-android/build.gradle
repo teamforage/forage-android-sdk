@@ -1,9 +1,12 @@
+import com.joinforage.ShadowAarDependenciesPlugin
+
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id("com.google.devtools.ksp").version("1.7.21-1.0.8")
+    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
+apply plugin: ShadowAarDependenciesPlugin
 
 ext {
     PUBLISH_GROUP_ID = 'com.joinforage'
@@ -55,6 +58,7 @@ android {
 
     buildFeatures {
         dataBinding true
+        buildConfig true
     }
 
     testOptions {
@@ -66,6 +70,45 @@ android {
     lint {
         sarifReport true
     }
+}
+
+shadowAarDependencies {
+    targetAar.set("com.datadoghq:dd-sdk-android-logs:2.2.0")
+    targetPackageName.set("com.datadog")
+    destinationPackageName.set("com.joinforage.datadog")
+
+    /**
+     * For normal dependencies, we can simply list it as
+     * implementation("<group>:<name>:<version") and Gradle will take care of
+     * fetching the dependencies AAR/JAR artifact from the remote repository.
+     * Gradle will also take care of recursively fetching any sub-dependencies
+     * as well.
+     *
+     * Because of the intensive manipulations we are doing to the datadog AAR
+     * artifact, we have yet to figure out an elegant way for Gradle to continue
+     * handling the process for resolving the dependencies and sub-dependencies
+     * of datadog-android-sdk-logs.
+     *
+     * Until we have a more eloquent answer, we are opting to manually install
+     * all the sub-dependencies that datadog-android-sdk-logs and its peer
+     * dependencies datadog-android-sdk-core require.
+     *
+     * These dependencies are listed publically on the maven central reposictory
+     * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-logs/2.2.0
+     * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-core/2.2.0
+     *
+     * This function just organizes adding all of these dependencies to the
+     * implementation configuration
+     */
+    subDependencies.set([
+            "androidx.annotation:annotation:1.1.0",
+            "androidx.collection:collection:1.1.0",
+            "androidx.work:work-runtime:2.8.1",
+            "com.google.code.gson:gson:2.10.1",
+            "com.lyft.kronos:kronos-android:0.0.1-alpha11",
+            "com.squareup.okhttp3:okhttp:4.11.0",
+            "org.jetbrains.kotlin:kotlin-stdlib:1.8.10",
+    ])
 }
 
 dependencies {
@@ -85,7 +128,6 @@ dependencies {
     }
     implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
 
-    implementation "com.datadoghq:dd-sdk-android:1.19.2"
     testImplementation 'androidx.test:core-ktx:1.5.0'
 
     testImplementation 'junit:junit:4.13.2'

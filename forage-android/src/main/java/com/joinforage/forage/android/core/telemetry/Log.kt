@@ -1,11 +1,12 @@
 package com.joinforage.forage.android.core.telemetry
 
 import android.content.Context
-import com.datadog.android.Datadog
-import com.datadog.android.core.configuration.Configuration
-import com.datadog.android.core.configuration.Credentials
-import com.datadog.android.log.Logger
-import com.datadog.android.privacy.TrackingConsent
+import com.joinforage.datadog.android.Datadog
+import com.joinforage.datadog.android.core.configuration.Configuration
+import com.joinforage.datadog.android.log.Logger
+import com.joinforage.datadog.android.log.Logs
+import com.joinforage.datadog.android.log.LogsConfiguration
+import com.joinforage.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.core.StopgapGlobalState
 import kotlin.random.Random
 
@@ -39,25 +40,20 @@ internal interface Log {
                     return
                 }
                 val configuration = Configuration.Builder(
-                    logsEnabled = true,
-                    tracesEnabled = true,
-                    crashReportsEnabled = true,
-                    rumEnabled = false
-                ).build()
-                val credentials = Credentials(
                     clientToken = StopgapGlobalState.envConfig.ddClientToken,
-                    envName = StopgapGlobalState.envConfig.FLAVOR.value,
-                    variant = StopgapGlobalState.envConfig.FLAVOR.value,
-                    rumApplicationId = null,
-                    serviceName = SERVICE_NAME
-                )
-                Datadog.initialize(context, credentials, configuration, TrackingConsent.GRANTED)
+                    env = StopgapGlobalState.envConfig.FLAVOR.value,
+                    variant = StopgapGlobalState.envConfig.FLAVOR.value
+                ).build()
+                Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
+                val logsConfig = LogsConfiguration.Builder().build()
+                Logs.enable(logsConfig)
+
                 logger = Logger.Builder()
                     .setNetworkInfoEnabled(true)
                     .setLogcatLogsEnabled(false)
-                    .setDatadogLogsEnabled(true)
                     .setBundleWithTraceEnabled(true)
-                    .setLoggerName(LOGGER_NAME)
+                    .setName(LOGGER_NAME)
+                    .setService(SERVICE_NAME)
                     .build()
 
                 if (traceId == null) {
