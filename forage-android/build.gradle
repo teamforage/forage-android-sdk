@@ -80,17 +80,17 @@ shadowAarDependencies {
     /**
      * For normal dependencies, we can simply list it as
      * implementation("<group>:<name>:<version") and Gradle will take care of
-     * fetching the dependencies AAR/JAR artificat from the removte repository.
-     * Gradle will also take care of recurisvely fetching any sub-dependencies
+     * fetching the dependencies AAR/JAR artifact from the remote repository.
+     * Gradle will also take care of recursively fetching any sub-dependencies
      * as well.
      *
      * Because of the intensive manipulations we are doing to the datadog AAR
-     * artificat, we have yet to figure out an elegant way for Gradle to continue
+     * artifact, we have yet to figure out an elegant way for Gradle to continue
      * handling the process for resolving the dependencies and sub-dependencies
      * of datadog-android-sdk-logs.
      *
-     * Until we have a more elquent answer, we are opting to manually install
-     * all the sub-denpendencies that datadog-android-sdk-logs and its peer
+     * Until we have a more eloquent answer, we are opting to manually install
+     * all the sub-dependencies that datadog-android-sdk-logs and its peer
      * dependencies datadog-android-sdk-core require.
      *
      * These dependencies are listed publically on the maven central reposictory

@@ -62,8 +62,8 @@ class ShadowAarDependenciesPlugin : Plugin<Project> {
             // use the configurations property to let the ShadowJarTask
             // know which artifacts we want it to operate on. In our case
             // we want it to operate on the targetAarGroup's .jar file.
-            // These .jar artifacts called classes.jar inside .aar the file
-            // so we need to  unzip the .aar files
+            // .jar artifacts seemed to be called `classes.jar` inside
+            // of the .aar the file so we need to  unzip the .aar files
             val jarArtifacts = ddArtifacts.map {
                 // we need a unique name for each .jar since all .jars have
                 // classes.jar as their name inside of an .aar
