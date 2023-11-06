@@ -5,12 +5,13 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
 internal class MessageStatusService(
-    private val httpUrl: HttpUrl,
+    private val httpUrl: String,
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
@@ -38,13 +39,11 @@ internal class MessageStatusService(
         return convertCallbackToCoroutine(request)
     }
 
-    private fun getMessageStatusUrl(contentId: String): HttpUrl {
-        return httpUrl
+    private fun getMessageStatusUrl(contentId: String): HttpUrl = httpUrl.toHttpUrlOrNull()!!
             .newBuilder()
             .addPathSegment(ForageConstants.PathSegment.API)
             .addPathSegment(ForageConstants.PathSegment.MESSAGE)
             .addPathSegment(contentId)
             .addTrailingSlash()
             .build()
-    }
 }
