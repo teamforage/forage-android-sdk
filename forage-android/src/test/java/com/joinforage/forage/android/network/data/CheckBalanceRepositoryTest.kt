@@ -44,7 +44,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             paymentMethodService = PaymentMethodService(
@@ -52,7 +52,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             messageStatusService = MessageStatusService(
@@ -60,7 +60,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             logger = logger

@@ -47,7 +47,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             messageStatusService = MessageStatusService(
@@ -55,7 +55,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             paymentService = PaymentService(
@@ -63,7 +63,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             paymentMethodService = PaymentMethodService(
@@ -71,7 +71,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                     testData.bearerToken,
                     merchantAccount = testData.merchantAccount
                 ),
-                httpUrl = server.url(""),
+                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             logger = logger

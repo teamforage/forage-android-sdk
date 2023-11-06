@@ -28,7 +28,7 @@ class EncryptionKeyServiceTest : MockServerSuite() {
 
         encryptionKeyService = EncryptionKeyService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(bearerToken),
-            httpUrl = server.url(""),
+            httpUrl = server.url("").toUrl().toString(),
             logger = Log.getSilentInstance()
         )
     }
