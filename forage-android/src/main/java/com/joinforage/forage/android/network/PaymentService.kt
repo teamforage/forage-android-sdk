@@ -45,10 +45,10 @@ internal class PaymentService(
     }
 
     private fun getPaymentUrl(paymentRef: String): HttpUrl = httpUrl.toHttpUrlOrNull()!!
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.API)
-            .addPathSegment(ForageConstants.PathSegment.PAYMENTS)
-            .addPathSegment(paymentRef)
-            .addTrailingSlash()
-            .build()
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.API)
+        .addPathSegment(ForageConstants.PathSegment.PAYMENTS)
+        .addPathSegment(paymentRef)
+        .addTrailingSlash()
+        .build()
 }

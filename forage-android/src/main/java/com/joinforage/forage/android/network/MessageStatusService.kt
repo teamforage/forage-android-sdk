@@ -40,10 +40,10 @@ internal class MessageStatusService(
     }
 
     private fun getMessageStatusUrl(contentId: String): HttpUrl = httpUrl.toHttpUrlOrNull()!!
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.API)
-            .addPathSegment(ForageConstants.PathSegment.MESSAGE)
-            .addPathSegment(contentId)
-            .addTrailingSlash()
-            .build()
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.API)
+        .addPathSegment(ForageConstants.PathSegment.MESSAGE)
+        .addPathSegment(contentId)
+        .addTrailingSlash()
+        .build()
 }

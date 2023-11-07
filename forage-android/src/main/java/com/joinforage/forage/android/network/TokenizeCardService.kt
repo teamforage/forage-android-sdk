@@ -52,9 +52,9 @@ internal class TokenizeCardService(
     }
 
     private fun getTokenizeCardUrl(): HttpUrl = httpUrl.toHttpUrlOrNull()!!
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.API)
-            .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
-            .addTrailingSlash()
-            .build()
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.API)
+        .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
+        .addTrailingSlash()
+        .build()
 }

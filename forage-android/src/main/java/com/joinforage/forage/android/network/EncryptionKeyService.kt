@@ -35,9 +35,9 @@ internal class EncryptionKeyService(
     }
 
     private fun getEncryptionKeyUrl(): HttpUrl = httpUrl.toHttpUrlOrNull()!!
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
-            .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
-            .addTrailingSlash()
-            .build()
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
+        .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
+        .addTrailingSlash()
+        .build()
 }

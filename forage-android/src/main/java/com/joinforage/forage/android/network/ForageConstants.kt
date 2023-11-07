@@ -4,7 +4,6 @@ import com.joinforage.forage.android.network.model.ForageError
 
 internal object ForageConstants {
 
-
     object Headers {
         const val X_KEY = "X-KEY"
         const val MERCHANT_ACCOUNT = "Merchant-Account"
