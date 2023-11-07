@@ -7,11 +7,12 @@ import com.joinforage.datadog.android.log.Logger
 import com.joinforage.datadog.android.log.Logs
 import com.joinforage.datadog.android.log.LogsConfiguration
 import com.joinforage.datadog.android.privacy.TrackingConsent
-import com.joinforage.forage.android.core.StopgapGlobalState
+import com.joinforage.forage.android.core.EnvConfig
+import com.joinforage.forage.android.ui.ForageConfig
 import kotlin.random.Random
 
 internal interface Log {
-    fun initializeDD(context: Context)
+    fun initializeDD(context: Context, config: ForageConfig)
     fun d(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun i(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
@@ -35,14 +36,16 @@ internal interface Log {
             var traceId: String? = null
             private var logger: Logger? = null
 
-            override fun initializeDD(context: Context) {
+            override fun initializeDD(context: Context, config: ForageConfig) {
                 if (logger != null) {
                     return
                 }
+                val envConfig = EnvConfig.fromForageConfig(config)
+
                 val configuration = Configuration.Builder(
-                    clientToken = StopgapGlobalState.envConfig.ddClientToken,
-                    env = StopgapGlobalState.envConfig.FLAVOR.value,
-                    variant = StopgapGlobalState.envConfig.FLAVOR.value
+                    clientToken = envConfig.ddClientToken,
+                    env = envConfig.FLAVOR.value,
+                    variant = envConfig.FLAVOR.value
                 ).build()
                 Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
                 val logsConfig = LogsConfiguration.Builder().build()
@@ -60,8 +63,8 @@ internal interface Log {
                     traceId = generateTraceId()
                 }
 
-                logger?.addAttribute(VERSION_CODE, StopgapGlobalState.envConfig.PUBLISH_VERSION)
-                logger?.addTag(VERSION_CODE, StopgapGlobalState.envConfig.PUBLISH_VERSION)
+                logger?.addAttribute(VERSION_CODE, envConfig.PUBLISH_VERSION)
+                logger?.addTag(VERSION_CODE, envConfig.PUBLISH_VERSION)
                 logger?.addAttribute(TRACE_ID, traceId)
             }
 
@@ -90,7 +93,7 @@ internal interface Log {
         }
 
         private val SILENT = object : Log {
-            override fun initializeDD(context: Context) {
+            override fun initializeDD(context: Context, config: ForageConfig) {
             }
 
             override fun d(msg: String, attributes: Map<String, Any?>) {

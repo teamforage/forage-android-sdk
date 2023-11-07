@@ -145,14 +145,13 @@ class ForagePANEditText @JvmOverloads constructor(
             }
     }
 
-    override fun initWithForageConfig() {
+    override fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
         val logger = Log.getInstance()
-        logger.initializeDD(context)
+        logger.initializeDD(context, forageConfig)
 
-        val forageConfig = getForageConfig() // already set by parent class
         _SET_ONLY_manager = if (EnvConfig.inProd(forageConfig)) {
             // strictly support only valid Ebt PAN numbers
             PanElementStateManager.forEmptyInput()
