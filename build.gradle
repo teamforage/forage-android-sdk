@@ -6,9 +6,9 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '7.3.1' apply false
-    id 'com.android.library' version '7.3.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.7.21' apply false
+    id 'com.android.application' version '8.1.0' apply false
+    id 'com.android.library' version '8.1.0' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
     id "com.diffplug.spotless" version "6.11.0"
     id 'androidx.navigation.safeargs' version '2.5.3' apply false
     id 'com.google.dagger.hilt.android' version '2.44' apply false
@@ -24,6 +24,15 @@ spotless {
     kotlinGradle {
         target '*.gradle.kts'
         ktlint()
+    }
+}
+
+
+allprojects {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
+        }
     }
 }
 

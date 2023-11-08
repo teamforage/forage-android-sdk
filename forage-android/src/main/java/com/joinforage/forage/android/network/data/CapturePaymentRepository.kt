@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
@@ -92,6 +93,7 @@ internal class CapturePaymentRepository(
         paymentRef: String
     ): ForageApiResponse<String> {
         var attempt = 1
+        val pollingIntervals = LDManager.getPollingIntervals()
 
         while (true) {
             logger.i(
@@ -152,8 +154,15 @@ internal class CapturePaymentRepository(
                 return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
             }
 
+            val index = attempt - 1
+            var intervalTime: Long = if (index < pollingIntervals.size) {
+                pollingIntervals[index]
+            } else {
+                1000L
+            }
+
             attempt += 1
-            delay(POLLING_INTERVAL_IN_MILLIS + getJitterAmount())
+            delay(intervalTime + getJitterAmount())
         }
 
         logger.i(
@@ -168,7 +177,6 @@ internal class CapturePaymentRepository(
     }
 
     companion object {
-        private const val POLLING_INTERVAL_IN_MILLIS = 1000L
         private const val MAX_ATTEMPTS = 10
 
         private fun ForageApiResponse<String>.getStringResponse() = when (this) {

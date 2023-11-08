@@ -4,7 +4,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.dagger.hilt.android'
     id "org.jetbrains.kotlin.kapt"
-    id("com.google.devtools.ksp").version("1.7.21-1.0.8")
+    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
 }
 
 android {
@@ -51,6 +51,12 @@ dependencies {
 
 //    uncomment this line 👇 to test against remote Sonatype repository forage-android
 //    implementation("com.joinforage:forage-android:<some_version_you_want_to_test>")
+
+    // we include this dependency to ensure that our workaround for
+    // including Datadog v2 in forage-android continues to work.
+    // That is, if our workaround fails, the presence of datadog v1
+    // in the sample app along side datadog v2 should fail to build
+    implementation("com.datadoghq:dd-sdk-android:1.19.2")
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
