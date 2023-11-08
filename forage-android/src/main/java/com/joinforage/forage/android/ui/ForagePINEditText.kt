@@ -20,6 +20,7 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.telemetry.Log
+import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
@@ -101,11 +102,11 @@ class ForagePINEditText @JvmOverloads constructor(
 
         // initialize Launch Darkly singleton
         val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
-        val ldConfig = LDManager.createLdConfig(ldMobileKey)
-        LDManager.initialize(context.applicationContext as Application, logger, ldConfig)
+        val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
+        LDManager.initialize(context.applicationContext as Application,ldConfig)
 
         // decide on a vault provider and the corresponding vault wrapper
-        val vaultType = LDManager.getVaultProvider()
+        val vaultType = LDManager.getVaultProvider(logger)
         _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
         } else {

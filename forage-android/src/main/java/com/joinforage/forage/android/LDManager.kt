@@ -7,7 +7,6 @@ import com.launchdarkly.sdk.LDContext
 import com.launchdarkly.sdk.LDValue
 import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
-import com.launchdarkly.sdk.android.integrations.TestData
 
 internal enum class VaultType(val value: String) {
     VGS_VAULT_TYPE("vgs"),
@@ -40,85 +39,51 @@ internal fun computeVaultType(trafficPrimaryPercentFlag: Double): VaultType {
 }
 
 internal object LDManager {
-    private var internalLogger: Log = Log.getSilentInstance()
+    // as much as I would LOVE to not have this be a shared state on a
+    // singleton object, Launch Darkly literally tells us to make it
+    // a singleton :/
+    //
+    // https://docs.launchdarkly.com/sdk/client-side/android#:~:text=LDClient%20must%20be%20a%20singleton
     private var client: LDClient? = null
 
-    // default to 100% VGS usage in case LD flag retrieval fails
-    private var primaryTrafficPercent = ALWAYS_VGS
-
-    // we only ever want to fetch primary traffic percent flag once
-    // so that all parts of the code are guaranteed to use the same
-    // value
-    private var hasFetchedPrimaryTrafficPercentFlag = false
-
-    fun createLdConfig(ldMobileKey: String): LDConfig {
-        return LDConfig.Builder()
-            .mobileKey(ldMobileKey)
-            .build()
-    }
-    fun TEST_createLdConfig(ldMobileKey: String, dataSource: TestData): LDConfig {
-        return LDConfig.Builder()
-            .mobileKey(ldMobileKey)
-            .dataSource(dataSource)
-            .build()
-    }
-
-    internal fun initialize(app: Application, logger: Log, ldConfig: LDConfig) {
+    internal fun initialize(app: Application, ldConfig: LDConfig) {
         val contextKind = ContextKind.of(LDContextKind.SERVICE)
         val context = LDContext.create(contextKind, LDContexts.ANDROID_CONTEXT)
         client = LDClient.init(app, ldConfig, context, 0)
-
-        internalLogger = logger
     }
 
-    internal fun TEST_clearPrimaryTrafficPercentCache() {
-        hasFetchedPrimaryTrafficPercentFlag = false
-    }
-
-    // We need to ensure that all subsequent calls to getVaultProvider
-    // return the same vault provider for all parts of the codebase.
-    // ForagePINEditText is the entrypoint and is responsible for
-    // initializing LDManager and calling getVaultProvider initially
-    // before ForageSDK can reference these values
-    internal fun getVaultProvider(): VaultType {
-        primaryTrafficPercent = if (hasFetchedPrimaryTrafficPercentFlag) {
-            // return the cached value if we already tried to fetch the flag
-            primaryTrafficPercent
-        } else {
-            // indicate that we've attempted to fetch the flag so we don't do it again
-            hasFetchedPrimaryTrafficPercentFlag = true
-
-            // fetch the flag
-            val vaultPercent =
-                client?.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, ALWAYS_VGS) ?: ALWAYS_VGS
-            internalLogger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
-
-            // return the flag value
-            vaultPercent
-        }
+    internal fun getVaultProvider(logger: Log = Log.getSilentInstance()): VaultType {
+        val vaultPercent = client?.doubleVariation(
+            LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG,
+            ALWAYS_VGS
+        ) ?: ALWAYS_VGS
+        logger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
 
         // convert the flag percent into an answer to which vault provider to use
-        val vaultType = computeVaultType(primaryTrafficPercent)
-        internalLogger.i("[LaunchDarkly] Vault type set to $vaultType")
+        val vaultType = computeVaultType(vaultPercent)
+        logger.i("[LaunchDarkly] Vault type set to $vaultType")
 
         // return vault provider derived from the novel or cached flag value
         return vaultType
     }
 
-    internal fun getPollingIntervals(): LongArray {
+    internal fun getPollingIntervals(logger: Log = Log.getSilentInstance()): LongArray {
         val defaultVal = LDValue.buildObject().put(
             "intervals",
             LDValue.Convert.Long.arrayFrom(List(10) { 1000L })
         ).build()
 
-        val jsonIntervals = client?.jsonValueVariation(LDFlags.ISO_POLLING_WAIT_INTERVALS, defaultVal) ?: defaultVal
+        val jsonIntervals = client?.jsonValueVariation(
+            LDFlags.ISO_POLLING_WAIT_INTERVALS,
+            defaultVal
+        ) ?: defaultVal
 
         val intervals = jsonIntervals.get("intervals")
 
         // Converting the LDArray into a LongArray
         val pollingList = LongArray(intervals.size()) { intervals.get(it).longValue() }
 
-        internalLogger.i("[LaunchDarkly] polling intervals $pollingList")
+        logger.i("[LaunchDarkly] polling intervals $pollingList")
         return pollingList
     }
 }

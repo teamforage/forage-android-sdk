@@ -93,7 +93,7 @@ internal class CapturePaymentRepository(
         paymentRef: String
     ): ForageApiResponse<String> {
         var attempt = 1
-        val pollingIntervals = LDManager.getPollingIntervals()
+        val pollingIntervals = LDManager.getPollingIntervals(logger)
 
         while (true) {
             logger.i(

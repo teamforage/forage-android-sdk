@@ -8,8 +8,8 @@ import com.joinforage.forage.android.LDFlags
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.computeVaultType
-import com.joinforage.forage.android.core.telemetry.Log
 import com.launchdarkly.sdk.LDValue
+import com.launchdarkly.sdk.android.LDConfig
 import com.launchdarkly.sdk.android.integrations.TestData
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -28,6 +28,10 @@ class LaunchDarklyTest() {
     // race conditions within tests
     companion object {
         private var td: TestData = TestData.dataSource()
+        private val ldConfig = LDConfig.Builder()
+            .mobileKey(LD_MOBILE_KEY)
+            .dataSource(td)
+            .build()
     }
 
     @Test
@@ -41,53 +45,30 @@ class LaunchDarklyTest() {
     }
 
     @Test
-    fun `It should default to using VGS as the vault provider`() = runTest {
+    fun `It should default to using VGS and honor flag updates`() = runTest {
         // set up LDManager, importantly, we're not giving it any value for
         // primaryTrafficPercent since we want to test it defaults to VGS
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val ldConfig = LDManager.TEST_createLdConfig(LD_MOBILE_KEY, td)
-        LDManager.initialize(app, logger = Log.getSilentInstance(), ldConfig)
-
-        // we don't want to use the cached value from another test
-        // since LDManager is a singleton
-        LDManager.TEST_clearPrimaryTrafficPercentCache()
+        LDManager.initialize(app, ldConfig)
 
         // it should default to using VGS as the vault provider
-        assertThat(LDManager.getVaultProvider()).isEqualTo(VaultType.VGS_VAULT_TYPE)
-    }
-
-    @Test
-    fun `It should cache primaryTrafficPercent flag for subsequent calls to getVaultProvider`() = runTest {
-        // set up LDManager
-        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val ldConfig = LDManager.TEST_createLdConfig(LD_MOBILE_KEY, td)
-        LDManager.initialize(app, logger = Log.getSilentInstance(), ldConfig)
-
-        // we don't want to use the cached value from another test
-        // since LDManager is a singleton
-        LDManager.TEST_clearPrimaryTrafficPercentCache()
+        val original = LDManager.getVaultProvider()
+        assertThat(original).isEqualTo(VaultType.VGS_VAULT_TYPE)
 
         // Set the test data to send all traffic to BT
         td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(ALWAYS_BT)))
 
         // it should consume the flag and choose BT
-        val original = LDManager.getVaultProvider()
-        assertThat(original).isEqualTo(VaultType.BT_VAULT_TYPE)
-
-        // Update the test data to send all traffic to VGS
-        td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(ALWAYS_VGS)))
-
-        // we expect the value to be cached and thus should be BT again
-        val cached = LDManager.getVaultProvider()
-        assertThat(cached).isEqualTo(VaultType.BT_VAULT_TYPE)
+        val postUpdate = LDManager.getVaultProvider()
+        assertThat(postUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
     }
+
 
     @Test
     fun `Default polling intervals`() = runTest {
         // set up LDManager
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        val ldConfig = LDManager.TEST_createLdConfig(LD_MOBILE_KEY, td)
-        LDManager.initialize(app, logger = Log.getSilentInstance(), ldConfig)
+        LDManager.initialize(app, ldConfig)
 
         // Set the test data to be {"intervals" : [1000]}
         td.update(td.flag(LDFlags.ISO_POLLING_WAIT_INTERVALS).variations(LDValue.buildObject().put("intervals", LDValue.Convert.Long.arrayFrom(List(1) { 1000L })).build()))
