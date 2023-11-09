@@ -103,7 +103,7 @@ class ForagePINEditText @JvmOverloads constructor(
         // initialize Launch Darkly singleton
         val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
         val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
-        LDManager.initialize(context.applicationContext as Application,ldConfig)
+        LDManager.initialize(context.applicationContext as Application, ldConfig)
 
         // decide on a vault provider and the corresponding vault wrapper
         val vaultType = LDManager.getVaultProvider(logger)

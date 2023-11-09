@@ -63,7 +63,6 @@ class LaunchDarklyTest() {
         assertThat(postUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
     }
 
-
     @Test
     fun `Default polling intervals`() = runTest {
         // set up LDManager
