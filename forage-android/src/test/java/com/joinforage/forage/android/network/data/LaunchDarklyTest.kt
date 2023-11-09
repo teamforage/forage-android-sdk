@@ -2,8 +2,8 @@ package com.joinforage.forage.android.network.data
 
 import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
-import com.joinforage.forage.android.ALWAYS_BT
-import com.joinforage.forage.android.ALWAYS_VGS
+import com.joinforage.forage.android.ALWAYS_BT_PERCENT
+import com.joinforage.forage.android.ALWAYS_VGS_PERCENT
 import com.joinforage.forage.android.LDFlags
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.VaultType
@@ -36,12 +36,12 @@ class LaunchDarklyTest() {
 
     @Test
     fun `Test computeVaultType returns BT percent is 100f`() {
-        assertThat(computeVaultType(ALWAYS_BT)).isEqualTo(VaultType.BT_VAULT_TYPE)
+        assertThat(computeVaultType(ALWAYS_BT_PERCENT)).isEqualTo(VaultType.BT_VAULT_TYPE)
     }
 
     @Test
     fun `Test computeVaultType returns VGS percent is 0f`() {
-        assertThat(computeVaultType(ALWAYS_VGS)).isEqualTo(VaultType.VGS_VAULT_TYPE)
+        assertThat(computeVaultType(ALWAYS_VGS_PERCENT)).isEqualTo(VaultType.VGS_VAULT_TYPE)
     }
 
     @Test
@@ -56,7 +56,7 @@ class LaunchDarklyTest() {
         assertThat(original).isEqualTo(VaultType.VGS_VAULT_TYPE)
 
         // Set the test data to send all traffic to BT
-        td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(ALWAYS_BT)))
+        td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(ALWAYS_BT_PERCENT)))
 
         // it should consume the flag and choose BT
         val postUpdate = LDManager.getVaultProvider()

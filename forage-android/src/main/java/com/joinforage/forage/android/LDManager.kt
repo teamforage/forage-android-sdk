@@ -30,8 +30,8 @@ internal object LDContextKind {
     const val SERVICE = "service"
 }
 
-internal val ALWAYS_BT = 100.0
-internal val ALWAYS_VGS = 0.0
+internal val ALWAYS_BT_PERCENT = 100.0
+internal val ALWAYS_VGS_PERCENT = 0.0
 
 internal fun computeVaultType(trafficPrimaryPercentFlag: Double): VaultType {
     val randomNum = Math.random() * 100
@@ -55,8 +55,8 @@ internal object LDManager {
     internal fun getVaultProvider(logger: Log = Log.getSilentInstance()): VaultType {
         val vaultPercent = client?.doubleVariation(
             LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG,
-            ALWAYS_VGS
-        ) ?: ALWAYS_VGS
+            ALWAYS_VGS_PERCENT
+        ) ?: ALWAYS_VGS_PERCENT
         logger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
 
         // convert the flag percent into an answer to which vault provider to use
