@@ -63,7 +63,7 @@ internal object LDManager {
         val vaultType = computeVaultType(vaultPercent)
         logger.i("[LaunchDarkly] Vault type set to $vaultType")
 
-        // return vault provider derived from the novel or cached flag value
+        // return vault provider
         return vaultType
     }
 
