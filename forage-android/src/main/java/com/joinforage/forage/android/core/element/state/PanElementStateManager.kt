@@ -10,16 +10,16 @@ import com.joinforage.forage.android.model.missingStateIIN
 import com.joinforage.forage.android.model.tooLongForStateIIN
 import com.joinforage.forage.android.model.tooShortForStateIIN
 
-const val MIN_CARD_LENGTH = 16
-const val MAX_CARD_LENGTH = 19
+internal const val MIN_CARD_LENGTH = 16
+internal const val MAX_CARD_LENGTH = 19
 
-interface PanValidator {
+internal interface PanValidator {
     fun checkIfValid(cardNumber: String): Boolean
     fun checkIfComplete(cardNumber: String): Boolean
     fun checkForValidationError(cardNumber: String): ElementValidationError?
 }
 
-class StrictEbtValidator : PanValidator {
+internal class StrictEbtValidator : PanValidator {
     override fun checkIfValid(cardNumber: String): Boolean {
         // we consider a user's input valid if it is too short to
         // contain a StateINN or if it contains a legitimate StateIIN
@@ -49,7 +49,7 @@ class StrictEbtValidator : PanValidator {
     }
 }
 
-open class WhitelistedCards(
+internal open class WhitelistedCards(
     private val prefix: String,
     private val repeatCount: Int = 1
 ) : PanValidator {
@@ -71,12 +71,12 @@ open class WhitelistedCards(
     }
 }
 
-class PaymentCaptureErrorCard : WhitelistedCards("4", 14)
-class BalanceCheckErrorCard : WhitelistedCards("5", 14)
-class NonProdValidEbtCard : WhitelistedCards("9", 4)
-class EmptyEbtCashBalanceCard : WhitelistedCards("654321")
+internal class PaymentCaptureErrorCard : WhitelistedCards("4", 14)
+internal class BalanceCheckErrorCard : WhitelistedCards("5", 14)
+internal class NonProdValidEbtCard : WhitelistedCards("9", 4)
+internal class EmptyEbtCashBalanceCard : WhitelistedCards("654321")
 
-class PanElementStateManager(state: ElementState, private val validators: Array<PanValidator>) : ElementStateManager(state) {
+internal class PanElementStateManager(state: ElementState, private val validators: Array<PanValidator>) : ElementStateManager(state) {
 
     private fun checkIsValid(cardNumber: String): Boolean {
         return validators.any { it.checkIfValid(cardNumber) }

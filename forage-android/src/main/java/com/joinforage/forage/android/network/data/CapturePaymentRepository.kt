@@ -14,6 +14,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.sqsMessageToError
 import kotlinx.coroutines.delay
 
 internal class CapturePaymentRepository(
@@ -118,7 +119,7 @@ internal class CapturePaymentRepository(
                                 )
                             )
 
-                            return ForageApiResponse.Failure.fromSQSError(error)
+                            return sqsMessageToError(error)
                         }
                         break
                     }
@@ -133,7 +134,7 @@ internal class CapturePaymentRepository(
                             )
                         )
 
-                        return ForageApiResponse.Failure.fromSQSError(error)
+                        return sqsMessageToError(error)
                     }
                 }
                 else -> {

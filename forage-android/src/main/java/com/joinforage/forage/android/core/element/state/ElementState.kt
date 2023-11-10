@@ -10,7 +10,7 @@ data class ElementState(
     val isComplete: Boolean,
     val validationError: ElementValidationError?
 )
-val INITIAL_ELEMENT_STATE = ElementState(
+internal val INITIAL_ELEMENT_STATE = ElementState(
     isFocused = false,
     isBlurred = true,
     isEmpty = true,
