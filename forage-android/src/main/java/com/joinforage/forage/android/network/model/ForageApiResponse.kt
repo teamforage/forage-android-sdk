@@ -5,7 +5,21 @@ import org.json.JSONObject
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>()
+    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
+        companion object {
+            fun fromSQSError(sqsError: SQSError): Failure {
+                val forageError = ForageError(
+                    sqsError.statusCode,
+                    sqsError.forageCode,
+                    sqsError.message,
+                    sqsError.details
+                )
+                return Failure(listOf(forageError))
+            }
+
+            fun fromError(error: ForageError) = Failure(listOf(error))
+        }
+    }
 }
 
 // Learn more about `ForageError`s [here](https://docs.joinforage.app/reference/forage-js-errors#forageerror)
