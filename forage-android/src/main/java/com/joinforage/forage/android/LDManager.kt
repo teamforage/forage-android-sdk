@@ -68,7 +68,7 @@ internal object LDManager {
         }
         val contextKind = ContextKind.of(LDContextKind.SERVICE)
         val context = LDContext.create(contextKind, LDContexts.ANDROID_CONTEXT)
-        client = LDClient.init(app, ldConfig, context, 3)
+        client = LDClient.init(app, ldConfig, context, 1)
 
         internalLogger = logger
     }
