@@ -81,10 +81,17 @@ internal object LDManager {
             return vaultType as VaultType
         }
         // default to 100% VGS usage in case LD flag retrieval fails
-        val defaultVal = 0.0
         val vaultPercent =
-            client?.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, defaultVal) ?: defaultVal
-        internalLogger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
+            client?.doubleVariation(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG, 13.0) ?: 14.0
+        if (vaultPercent == 13.0) {
+            internalLogger.i("[LaunchDarkly][Flag Not Found] Vault percent of $vaultPercent return from LD")
+        }
+        else if (vaultPercent == 14.0) {
+            internalLogger.i("[LaunchDarkly][Client Not Initialized] Vault percent of $vaultPercent return from LD")
+        }
+        else {
+            internalLogger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
+        }
         val randomNum = Math.random() * 100
 
         vaultType = if (randomNum < vaultPercent) {
