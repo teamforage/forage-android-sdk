@@ -7,6 +7,7 @@ import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import com.joinforage.forage.android.network.model.toJSONObject
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,7 +16,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 internal class TokenizeCardService(
-    private val httpUrl: HttpUrl,
+    private val httpUrl: String,
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
@@ -50,12 +51,10 @@ internal class TokenizeCardService(
         return convertCallbackToCoroutine(request)
     }
 
-    private fun getTokenizeCardUrl(): HttpUrl {
-        return httpUrl
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.API)
-            .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
-            .addTrailingSlash()
-            .build()
-    }
+    private fun getTokenizeCardUrl(): HttpUrl = httpUrl.toHttpUrlOrNull()!!
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.API)
+        .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
+        .addTrailingSlash()
+        .build()
 }

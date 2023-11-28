@@ -79,3 +79,30 @@ class EnvConfigTest_fromForageConfig {
         assertThat(result).isEqualTo(EnvConfig.Dev)
     }
 }
+
+class EnvConfigTest_BaseUrlsAreCorrect {
+    @Test
+    fun `test Dev baseUrl is correct`() {
+        assertThat(EnvConfig.Dev.baseUrl).isEqualTo("https://api.dev.joinforage.app/")
+    }
+
+    @Test
+    fun `test Staging baseUrl is correct`() {
+        assertThat(EnvConfig.Staging.baseUrl).isEqualTo("https://api.staging.joinforage.app/")
+    }
+
+    @Test
+    fun `test Sandbox baseUrl is correct`() {
+        assertThat(EnvConfig.Sandbox.baseUrl).isEqualTo("https://api.sandbox.joinforage.app/")
+    }
+
+    @Test
+    fun `test Cert baseUrl is correct`() {
+        assertThat(EnvConfig.Cert.baseUrl).isEqualTo("https://api.cert.joinforage.app/")
+    }
+
+    @Test
+    fun `test Prod baseUrl is correct`() {
+        assertThat(EnvConfig.Prod.baseUrl).isEqualTo("https://api.joinforage.app/")
+    }
+}

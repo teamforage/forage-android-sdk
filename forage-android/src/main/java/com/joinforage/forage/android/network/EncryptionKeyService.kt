@@ -5,12 +5,13 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
 internal class EncryptionKeyService(
-    private val httpUrl: HttpUrl,
+    private val httpUrl: String,
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
@@ -33,12 +34,10 @@ internal class EncryptionKeyService(
         return convertCallbackToCoroutine(request)
     }
 
-    private fun getEncryptionKeyUrl(): HttpUrl {
-        return httpUrl
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
-            .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
-            .addTrailingSlash()
-            .build()
-    }
+    private fun getEncryptionKeyUrl(): HttpUrl = httpUrl.toHttpUrlOrNull()!!
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.ISO_SERVER)
+        .addPathSegment(ForageConstants.PathSegment.ENCRYPTION_ALIAS)
+        .addTrailingSlash()
+        .build()
 }

@@ -1,13 +1,8 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.network.model.ForageError
-import okhttp3.Request
 
 internal object ForageConstants {
-    private val BASE_URL = StopgapGlobalState.envConfig.baseUrl
-
-    fun provideHttpUrl() = Request.Builder().url(BASE_URL).build().url
 
     object Headers {
         const val X_KEY = "X-KEY"

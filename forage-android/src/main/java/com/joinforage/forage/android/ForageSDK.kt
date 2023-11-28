@@ -1,11 +1,11 @@
 package com.joinforage.forage.android
 
+import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.EventOutcome
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -52,6 +52,7 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText)
+        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -70,7 +71,7 @@ class ForageSDK : ForageSDKInterface {
                 idempotencyKey = UUID.randomUUID().toString(),
                 traceId = logger.getTraceIdValue()
             ),
-            httpUrl = ForageConstants.provideHttpUrl(),
+            httpUrl = config.baseUrl,
             logger = logger
         ).tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
@@ -96,6 +97,7 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
+        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -127,7 +129,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             paymentMethodService = PaymentMethodService(
@@ -136,7 +138,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             messageStatusService = MessageStatusService(
@@ -145,7 +147,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             logger = logger
@@ -183,6 +185,7 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
+        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -214,7 +217,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             paymentService = PaymentService(
@@ -223,7 +226,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             paymentMethodService = PaymentMethodService(
@@ -232,7 +235,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             messageStatusService = MessageStatusService(
@@ -241,7 +244,7 @@ class ForageSDK : ForageSDKInterface {
                     merchantId,
                     traceId = logger.getTraceIdValue()
                 ),
-                httpUrl = ForageConstants.provideHttpUrl(),
+                httpUrl = config.baseUrl,
                 logger = logger
             ),
             logger = logger

@@ -5,12 +5,13 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
 internal class PaymentMethodService(
-    private val httpUrl: HttpUrl,
+    private val httpUrl: String,
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
@@ -43,13 +44,11 @@ internal class PaymentMethodService(
         return convertCallbackToCoroutine(request)
     }
 
-    private fun getPaymentMethodUrl(paymentMethodRef: String): HttpUrl {
-        return httpUrl
-            .newBuilder()
-            .addPathSegment(ForageConstants.PathSegment.API)
-            .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
-            .addPathSegment(paymentMethodRef)
-            .addTrailingSlash()
-            .build()
-    }
+    private fun getPaymentMethodUrl(paymentMethodRef: String): HttpUrl = httpUrl.toHttpUrlOrNull()!!
+        .newBuilder()
+        .addPathSegment(ForageConstants.PathSegment.API)
+        .addPathSegment(ForageConstants.PathSegment.PAYMENT_METHODS)
+        .addPathSegment(paymentMethodRef)
+        .addTrailingSlash()
+        .build()
 }
