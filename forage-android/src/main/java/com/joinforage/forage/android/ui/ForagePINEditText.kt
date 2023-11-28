@@ -15,10 +15,12 @@ import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.collect.VGSPinCollector
+import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.telemetry.Log
+import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 class ForagePINEditText @JvmOverloads constructor(
@@ -98,14 +100,13 @@ class ForagePINEditText @JvmOverloads constructor(
         val logger = Log.getInstance()
         logger.initializeDD(context, forageConfig)
 
-        // flagging that LDManager depends on StopgapGlobalState so
-        // its relying on forageConfig under the hood. This
-        // relationship will be made explicit once we drop
-        // StopgapGlobalState
+        // initialize Launch Darkly singleton
+        val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
+        val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
+        LDManager.initialize(context.applicationContext as Application, ldConfig)
 
-        LDManager.initialize(context.applicationContext as Application, logger)
-        val vaultType = LDManager.getVaultProvider()
-
+        // decide on a vault provider and the corresponding vault wrapper
+        val vaultType = LDManager.getVaultProvider(logger)
         _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
         } else {
