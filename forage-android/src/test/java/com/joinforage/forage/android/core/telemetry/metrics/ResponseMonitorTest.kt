@@ -12,6 +12,7 @@ import com.joinforage.forage.android.core.telemetry.ResponseMonitor
 import com.joinforage.forage.android.core.telemetry.UnknownForageErrorCode
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
+import com.joinforage.forage.android.ui.ForageConfig
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +40,7 @@ private class MockLogger : Log {
     val infoLogs: MutableList<LogEntry> = mutableListOf()
     val errorLogs: MutableList<LogEntry> = mutableListOf()
 
-    override fun initializeDD(context: Context) {
+    override fun initializeDD(context: Context, forageConfig: ForageConfig) {
         return
     }
 

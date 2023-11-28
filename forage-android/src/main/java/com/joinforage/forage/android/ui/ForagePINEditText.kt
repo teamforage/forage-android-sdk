@@ -91,12 +91,12 @@ class ForagePINEditText @JvmOverloads constructor(
             }
     }
 
-    override fun initWithForageConfig() {
+    override fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
         val logger = Log.getInstance()
-        logger.initializeDD(context)
+        logger.initializeDD(context, forageConfig)
 
         // flagging that LDManager depends on StopgapGlobalState so
         // its relying on forageConfig under the hood. This

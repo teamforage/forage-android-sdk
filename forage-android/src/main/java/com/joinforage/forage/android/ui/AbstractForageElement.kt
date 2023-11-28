@@ -18,7 +18,7 @@ abstract class AbstractForageElement(
     // setForageConfig is called. Side effect include
     // initializing logger module, feature flag module,
     // and view UI manipulation logic
-    protected abstract fun initWithForageConfig()
+    protected abstract fun initWithForageConfig(forageConfig: ForageConfig)
 
     override fun setForageConfig(forageConfig: ForageConfig) {
         // keep a record of whether this was the first time
@@ -40,7 +40,7 @@ abstract class AbstractForageElement(
         // operations on any subsequent calls to setForageConfig
         // or else that could crash the app.
         if (isFirstCallToSet) {
-            initWithForageConfig()
+            initWithForageConfig(forageConfig)
         } else {
             // TODO: possible opportunity to log that
             //  they tried to do sessionToken refreshing
