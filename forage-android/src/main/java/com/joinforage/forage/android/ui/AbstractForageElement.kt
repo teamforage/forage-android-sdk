@@ -5,11 +5,11 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.joinforage.forage.android.core.StopgapGlobalState
 
-abstract class AbstractForageElement(
+abstract class AbstractForageElement<InputDetails>(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr), ForageElement {
+) : LinearLayout(context, attrs, defStyleAttr), ForageElement<InputDetails> {
 
     private var _forageConfig: ForageConfig? = null
 

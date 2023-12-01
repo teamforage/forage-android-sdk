@@ -4,35 +4,38 @@ import com.joinforage.forage.android.core.element.ElementValidationError
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 
-internal abstract class ElementStateManager(
+internal abstract class ElementStateManager<InputDetails>(
     private var isFocused: Boolean,
     private var isBlurred: Boolean,
     internal var isEmpty: Boolean,
     internal var isValid: Boolean,
     internal var isComplete: Boolean,
-    internal var validationError: ElementValidationError?
+    internal var validationError: ElementValidationError?,
+    internal var details: InputDetails
 ) {
     private var onFocusEventListener: SimpleElementListener? = null
     private var onBlurEventListener: SimpleElementListener? = null
-    internal var onChangeEventListener: StatefulElementListener? = null
+    internal var onChangeEventListener: StatefulElementListener<InputDetails>? = null
 
-    internal constructor(state: ElementState) : this(
+    internal constructor(state: ElementState<InputDetails>) : this(
         isFocused = state.isFocused,
         isBlurred = state.isBlurred,
         isEmpty = state.isEmpty,
         isValid = state.isValid,
         isComplete = state.isComplete,
-        validationError = state.validationError
+        validationError = state.validationError,
+        details = state.details
     )
 
-    fun getState(): ElementState {
+    fun getState(): ElementState<InputDetails> {
         return ElementState(
             isFocused = isFocused,
             isBlurred = isBlurred,
             isEmpty = isEmpty,
             isValid = isValid,
             isComplete = isComplete,
-            validationError = validationError
+            validationError = validationError,
+            details = details
         )
     }
 
@@ -44,7 +47,7 @@ internal abstract class ElementStateManager(
         onBlurEventListener = l
     }
 
-    fun setOnChangeEventListener(l: StatefulElementListener) {
+    fun setOnChangeEventListener(l: StatefulElementListener<InputDetails>) {
         onChangeEventListener = l
     }
 

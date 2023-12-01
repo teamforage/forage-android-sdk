@@ -15,6 +15,7 @@ import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
+import com.joinforage.forage.android.core.element.state.PanDetails
 import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.core.telemetry.Log
 
@@ -25,7 +26,7 @@ class ForagePANEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : AbstractForageElement(context, attrs, defStyleAttr) {
+) : AbstractForageElement<PanDetails>(context, attrs, defStyleAttr) {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
 
@@ -214,11 +215,11 @@ class ForagePANEditText @JvmOverloads constructor(
         manager.setOnBlurEventListener(l)
         restartFocusChangeListener()
     }
-    override fun setOnChangeEventListener(l: StatefulElementListener) {
+    override fun setOnChangeEventListener(l: StatefulElementListener<PanDetails>) {
         manager.setOnChangeEventListener(l)
     }
 
-    override fun getElementState(): ElementState {
+    override fun getElementState(): ElementState<PanDetails> {
         return manager.getState()
     }
 

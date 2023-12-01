@@ -23,7 +23,7 @@ import java.util.UUID
  */
 class ForageSDK : ForageSDKInterface {
 
-    private fun _getForageConfigOrThrow(element: AbstractForageElement): ForageConfig {
+    private fun <InputDetails> _getForageConfigOrThrow(element: AbstractForageElement<InputDetails>): ForageConfig {
         val context = element.getForageConfig()
         return context ?: throw ForageConfigNotSetException(
             """
