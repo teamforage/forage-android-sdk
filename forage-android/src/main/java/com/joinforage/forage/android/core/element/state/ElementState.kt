@@ -26,7 +26,7 @@ internal val INITIAL_PIN_ELEMENT_STATE = ElementState<PinDetails>(
 
 data class DerivedCardInfo(val usState: USState? = null)
 data class PanDetails(
-    val derivedCardInfo: DerivedCardInfo?
+    val derivedCardInfo: DerivedCardInfo
 )
 internal val INITIAL_PAN_ELEMENT_STATE = ElementState<PanDetails>(
     isFocused = false,
@@ -35,5 +35,5 @@ internal val INITIAL_PAN_ELEMENT_STATE = ElementState<PanDetails>(
     isValid = true,
     isComplete = false,
     validationError = null,
-    details = PanDetails(null)
+    details = PanDetails(DerivedCardInfo())
 )
