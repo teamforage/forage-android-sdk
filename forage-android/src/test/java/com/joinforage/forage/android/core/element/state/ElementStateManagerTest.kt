@@ -16,6 +16,7 @@ class ElementStateManagerTest {
         assertThat(state.isValid).isEqualTo(INITIAL_ELEMENT_STATE.isValid)
         assertThat(state.isComplete).isEqualTo(INITIAL_ELEMENT_STATE.isComplete)
         assertThat(state.validationError).isEqualTo(INITIAL_ELEMENT_STATE.validationError)
+        assertThat(state.derivedCardInfo).isEqualTo(INITIAL_ELEMENT_STATE.derivedCardInfo)
     }
 
     @Test

@@ -7,8 +7,10 @@ import com.joinforage.forage.android.core.element.TooLongEbtPanError
 import com.joinforage.forage.android.model.hasInvalidStateIIN
 import com.joinforage.forage.android.model.isCorrectLength
 import com.joinforage.forage.android.model.missingStateIIN
+import com.joinforage.forage.android.model.queryForStateIIN
 import com.joinforage.forage.android.model.tooLongForStateIIN
 import com.joinforage.forage.android.model.tooShortForStateIIN
+import com.joinforage.forage.android.ui.DerivedCardInfo
 
 internal const val MIN_CARD_LENGTH = 16
 internal const val MAX_CARD_LENGTH = 19
@@ -90,6 +92,12 @@ internal class PanElementStateManager(state: ElementState, private val validator
             .firstOrNull { it != null }
     }
 
+    private fun inferCardInfo(cardNumber: String): DerivedCardInfo {
+        return DerivedCardInfo(
+            usState = queryForStateIIN(cardNumber)?.abbreviation
+        )
+    }
+
     fun handleChangeEvent(rawInput: String) {
         // because the input may be formatted, we need to
         // strip everything but digits
@@ -101,6 +109,7 @@ internal class PanElementStateManager(state: ElementState, private val validator
         this.isComplete = checkIfComplete(newCardNumber)
         this.validationError = checkForValidationError(newCardNumber)
         this.isEmpty = newCardNumber.isEmpty()
+        this.derivedCardInfo = inferCardInfo(newCardNumber)
 
         // invoke the registered listener with the updated state
         onChangeEventListener?.invoke(getState())

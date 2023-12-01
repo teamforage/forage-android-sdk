@@ -3,6 +3,7 @@ package com.joinforage.forage.android.core.element.state
 import com.joinforage.forage.android.core.element.ElementValidationError
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.ui.DerivedCardInfo
 
 internal abstract class ElementStateManager(
     private var isFocused: Boolean,
@@ -10,7 +11,8 @@ internal abstract class ElementStateManager(
     internal var isEmpty: Boolean,
     internal var isValid: Boolean,
     internal var isComplete: Boolean,
-    internal var validationError: ElementValidationError?
+    internal var validationError: ElementValidationError?,
+    internal var derivedCardInfo: DerivedCardInfo
 ) {
     private var onFocusEventListener: SimpleElementListener? = null
     private var onBlurEventListener: SimpleElementListener? = null
@@ -22,7 +24,8 @@ internal abstract class ElementStateManager(
         isEmpty = state.isEmpty,
         isValid = state.isValid,
         isComplete = state.isComplete,
-        validationError = state.validationError
+        validationError = state.validationError,
+        derivedCardInfo = state.derivedCardInfo
     )
 
     fun getState(): ElementState {
@@ -32,7 +35,8 @@ internal abstract class ElementStateManager(
             isEmpty = isEmpty,
             isValid = isValid,
             isComplete = isComplete,
-            validationError = validationError
+            validationError = validationError,
+            derivedCardInfo = derivedCardInfo
         )
     }
 

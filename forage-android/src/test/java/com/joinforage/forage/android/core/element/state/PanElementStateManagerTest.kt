@@ -4,6 +4,7 @@ import com.joinforage.forage.android.core.element.IncompleteEbtPanError
 import com.joinforage.forage.android.core.element.InvalidEbtPanError
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.TooLongEbtPanError
+import com.joinforage.forage.android.model.USState
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -18,6 +19,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isNull()
+        assertThat(state.derivedCardInfo.usState).isNull()
     }
 
     @Test
@@ -34,6 +36,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+        assertThat(state.derivedCardInfo.usState).isNull()
     }
 
     @Test
@@ -46,6 +49,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isFalse
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
+        assertThat(state.derivedCardInfo.usState).isNull()
     }
 
     @Test
@@ -58,6 +62,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+        assertThat(state.derivedCardInfo.usState).isEqualTo(USState.MAINE)
     }
 
     @Test
@@ -70,6 +75,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.derivedCardInfo.usState).isEqualTo(USState.MAINE)
     }
 
     @Test
@@ -85,6 +91,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isFalse
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(TooLongEbtPanError)
+        assertThat(state.derivedCardInfo.usState).isEqualTo(USState.MAINE)
     }
 }
 
@@ -272,6 +279,7 @@ class PanHandleChangeEventTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.derivedCardInfo.usState).isEqualTo(USState.ALABAMA)
     }
 
     @Test
@@ -305,5 +313,6 @@ class PanHandleChangeEventTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.derivedCardInfo.usState).isEqualTo(USState.ALABAMA)
     }
 }
