@@ -3,7 +3,18 @@ package com.joinforage.forage.android.core.element.state
 import com.joinforage.forage.android.core.element.IncompleteEbtPinError
 import com.joinforage.forage.android.core.element.WrongEbtPinError
 
-internal class PinElementStateManager(state: ElementState<PinDetails>) : ElementStateManager<PinDetails>(state) {
+internal class PinElementStateManager(state: PinElementState) : ElementStateManager<PinElementState>(state) {
+
+    override fun getState(): PinElementState {
+        return PinElementStateDto(
+            isFocused = this.isFocused,
+            isBlurred = this.isBlurred,
+            isEmpty = this.isEmpty,
+            isValid = this.isValid,
+            isComplete = this.isComplete,
+            validationError = this.validationError
+        )
+    }
 
     // this function is used for after the submit event
     // happens and we learn that the PIN was not correct
@@ -26,16 +37,9 @@ internal class PinElementStateManager(state: ElementState<PinDetails>) : Element
         this.isEmpty = isEmpty
     }
 
-    private fun setDetails() {
-        // right now there is no extra info we want to supply along
-        // side the existing element state so we set details = null
-        this.details = null
-    }
-
     fun handleChangeEvent(isComplete: Boolean, isEmpty: Boolean) {
         setPinIsComplete(isComplete)
         setIsEmpty(isEmpty)
-        setDetails()
         onChangeEventListener?.invoke(getState())
     }
 

@@ -18,8 +18,7 @@ import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
-import com.joinforage.forage.android.core.element.state.ElementState
-import com.joinforage.forage.android.core.element.state.PinDetails
+import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.telemetry.Log
 import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
@@ -28,7 +27,7 @@ class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : AbstractForageElement<PinDetails>(context, attrs, defStyleAttr) {
+) : AbstractForageElement<PinElementState>(context, attrs, defStyleAttr) {
     private val _linearLayout: LinearLayout
     private val btVaultWrapper: BTVaultWrapper
     private val vgsVaultWrapper: VGSVaultWrapper
@@ -138,11 +137,11 @@ class ForagePINEditText @JvmOverloads constructor(
     override fun setOnBlurEventListener(l: SimpleElementListener) {
         vault.setOnBlurEventListener(l)
     }
-    override fun setOnChangeEventListener(l: StatefulElementListener<PinDetails>) {
+    override fun setOnChangeEventListener(l: StatefulElementListener<PinElementState>) {
         vault.setOnChangeEventListener(l)
     }
 
-    override fun getElementState(): ElementState<PinDetails> {
+    override fun getElementState(): PinElementState {
         return vault.manager.getState()
     }
 

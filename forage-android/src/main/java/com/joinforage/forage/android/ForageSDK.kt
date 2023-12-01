@@ -1,6 +1,7 @@
 package com.joinforage.forage.android
 
 import com.joinforage.forage.android.core.EnvConfig
+import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.EventOutcome
 import com.joinforage.forage.android.core.telemetry.Log
@@ -23,7 +24,7 @@ import java.util.UUID
  */
 class ForageSDK : ForageSDKInterface {
 
-    private fun <InputDetails> _getForageConfigOrThrow(element: AbstractForageElement<InputDetails>): ForageConfig {
+    private fun <T : ElementState> _getForageConfigOrThrow(element: AbstractForageElement<T>): ForageConfig {
         val context = element.getForageConfig()
         return context ?: throw ForageConfigNotSetException(
             """

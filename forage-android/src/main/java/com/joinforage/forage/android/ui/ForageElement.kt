@@ -21,7 +21,7 @@ data class ForageConfig(
  * both the ForagePANEditText and the ForagePINEditText satisfy
  * ForageElement
  */
-interface ForageElement<InputDetails> {
+interface ForageElement<T : ElementState> {
     var typeface: Typeface?
 
     fun setForageConfig(forageConfig: ForageConfig)
@@ -36,8 +36,8 @@ interface ForageElement<InputDetails> {
     fun setBoxStrokeWidth(boxStrokeWidth: Int)
     fun setBoxStrokeWidthFocused(boxStrokeWidth: Int)
 
-    fun getElementState(): ElementState<InputDetails>
+    fun getElementState(): T
     fun setOnFocusEventListener(l: SimpleElementListener)
     fun setOnBlurEventListener(l: SimpleElementListener)
-    fun setOnChangeEventListener(l: StatefulElementListener<InputDetails>)
+    fun setOnChangeEventListener(l: StatefulElementListener<T>)
 }
