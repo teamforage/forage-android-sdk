@@ -10,7 +10,7 @@ data class ElementState<InputDetails>(
     val isValid: Boolean,
     val isComplete: Boolean,
     val validationError: ElementValidationError?,
-    val details: InputDetails,
+    val details: InputDetails
 )
 
 internal typealias PinDetails = Nothing?
@@ -21,7 +21,7 @@ internal val INITIAL_PIN_ELEMENT_STATE = ElementState<PinDetails>(
     isValid = true,
     isComplete = false,
     validationError = null,
-    details = null,
+    details = null
 )
 
 data class DerivedCardInfo(val usState: USState? = null)
@@ -35,5 +35,5 @@ internal val INITIAL_PAN_ELEMENT_STATE = ElementState<PanDetails>(
     isValid = true,
     isComplete = false,
     validationError = null,
-    details = PanDetails(null),
+    details = PanDetails(null)
 )

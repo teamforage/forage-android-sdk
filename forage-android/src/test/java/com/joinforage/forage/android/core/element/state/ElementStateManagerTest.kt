@@ -77,7 +77,6 @@ class ElementStateManagerTest {
         // is unique to PinDetails because it's an alias for `Nothing?`
         assertThat(state.details as Any?).isEqualTo(INITIAL_PIN_ELEMENT_STATE.details)
 
-
         // unfocus
         manager.changeFocus(false)
         state = manager.getState()
@@ -90,6 +89,5 @@ class ElementStateManagerTest {
         // cast to Any? to avoid ambiguous overload issue that
         // is unique to PinDetails because it's an alias for `Nothing?`
         assertThat(state.details as Any?).isEqualTo(INITIAL_PIN_ELEMENT_STATE.details)
-
     }
 }
