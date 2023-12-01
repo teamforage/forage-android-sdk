@@ -4,6 +4,7 @@ import com.joinforage.forage.android.core.element.IncompleteEbtPanError
 import com.joinforage.forage.android.core.element.InvalidEbtPanError
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.TooLongEbtPanError
+import com.joinforage.forage.android.model.USState
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -18,6 +19,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isNull()
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -34,6 +36,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -46,6 +49,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isFalse
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -58,6 +62,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo(USState.MAINE)))
     }
 
     @Test
@@ -70,6 +75,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo(USState.MAINE)))
     }
 
     @Test
@@ -85,6 +91,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isFalse
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(TooLongEbtPanError)
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo(USState.MAINE)))
     }
 }
 
@@ -99,6 +106,7 @@ class DEV_ONLY_IntegrationTests {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo(USState.MAINE)))
     }
 
     @Test
@@ -110,6 +118,7 @@ class DEV_ONLY_IntegrationTests {
 
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -121,6 +130,7 @@ class DEV_ONLY_IntegrationTests {
 
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -132,6 +142,7 @@ class DEV_ONLY_IntegrationTests {
 
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -143,6 +154,7 @@ class DEV_ONLY_IntegrationTests {
 
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -154,6 +166,7 @@ class DEV_ONLY_IntegrationTests {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isNull()
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 
     @Test
@@ -165,6 +178,7 @@ class DEV_ONLY_IntegrationTests {
         assertThat(state.isValid).isFalse
         assertThat(state.isComplete).isFalse
         assertThat(state.validationError).isEqualTo(InvalidEbtPanError)
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
 }
 
@@ -259,8 +273,8 @@ class PanHandleChangeEventTest {
     @Test
     fun `valid card 16-digit card number passes correct state to callback`() {
         val manager = PanElementStateManager.forEmptyInput()
-        var state: ElementState = manager.getState()
-        val callback: StatefulElementListener = { newState -> state = newState }
+        var state: ElementState<PanDetails> = manager.getState()
+        val callback: StatefulElementListener<PanDetails> = { newState -> state = newState }
         manager.setOnChangeEventListener(callback)
         manager.handleChangeEvent("5076807890123456")
 
@@ -272,6 +286,7 @@ class PanHandleChangeEventTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo(USState.ALABAMA)))
     }
 
     @Test
@@ -279,8 +294,8 @@ class PanHandleChangeEventTest {
         val manager = PanElementStateManager.forEmptyInput()
         var callbackAInvoked = false
         var callbackBInvoked = false
-        val callbackA: StatefulElementListener = { callbackAInvoked = true }
-        val callbackB: StatefulElementListener = { callbackBInvoked = true }
+        val callbackA: StatefulElementListener<PanDetails> = { callbackAInvoked = true }
+        val callbackB: StatefulElementListener<PanDetails> = { callbackBInvoked = true }
 
         manager.setOnChangeEventListener(callbackA)
         manager.setOnChangeEventListener(callbackB)
@@ -294,8 +309,8 @@ class PanHandleChangeEventTest {
     @Test
     fun `strips all non-digit characters before processing`() {
         val manager = PanElementStateManager.forEmptyInput()
-        var state: ElementState = manager.getState()
-        val callback: StatefulElementListener = { newState -> state = newState }
+        var state: ElementState<PanDetails> = manager.getState()
+        val callback: StatefulElementListener<PanDetails> = { newState -> state = newState }
 
         val validStringContaminatedByOtherChars = "!@# $%^ &*()_+<>? abcd5076807890123456"
         manager.setOnChangeEventListener(callback)
@@ -305,5 +320,6 @@ class PanHandleChangeEventTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.details).isEqualTo(PanDetails(DerivedCardInfo(USState.ALABAMA)))
     }
 }

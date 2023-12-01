@@ -32,6 +32,7 @@ class SetPinIsCompleteTest {
         assertThat(state.isComplete).isTrue
         assertThat(state.isValid).isTrue
         assertThat(state.validationError).isNull()
+        assertThat(state.details as Any?).isNull()
     }
 
     @Test
@@ -48,6 +49,10 @@ class SetPinIsCompleteTest {
         assertThat(state.isComplete).isFalse
         assertThat(state.isValid).isFalse
         assertThat(state.validationError).isEqualTo(IncompleteEbtPinError)
+
+        // cast to Any? to avoid ambiguous overload issue that
+        // is unique to PinDetails because it's an alias for `Nothing?`
+        assertThat(state.details as Any?).isNull()
     }
 }
 
@@ -65,8 +70,8 @@ class PinHandleChangeEventTest {
     @Test
     fun `completed pin passes correct state to callback`() {
         val manager = PinElementStateManager.forEmptyInput()
-        var state: ElementState = manager.getState()
-        val callback: StatefulElementListener = { newState -> state = newState }
+        var state: ElementState<PinDetails> = manager.getState()
+        val callback: StatefulElementListener<PinDetails> = { newState -> state = newState }
         manager.setOnChangeEventListener(callback)
         manager.handleChangeEvent(isComplete = true, isEmpty = false)
 
@@ -78,6 +83,10 @@ class PinHandleChangeEventTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
+
+        // cast to Any? to avoid ambiguous overload issue that
+        // is unique to PinDetails because it's an alias for `Nothing?`
+        assertThat(state.details as Any?).isNull()
     }
 
     @Test
@@ -85,8 +94,8 @@ class PinHandleChangeEventTest {
         val manager = PinElementStateManager.forEmptyInput()
         var callbackAInvoked = false
         var callbackBInvoked = false
-        val callbackA: StatefulElementListener = { callbackAInvoked = true }
-        val callbackB: StatefulElementListener = { callbackBInvoked = true }
+        val callbackA: StatefulElementListener<PinDetails> = { callbackAInvoked = true }
+        val callbackB: StatefulElementListener<PinDetails> = { callbackBInvoked = true }
 
         manager.setOnChangeEventListener(callbackA)
         manager.setOnChangeEventListener(callbackB)
