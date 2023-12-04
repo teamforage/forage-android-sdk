@@ -29,5 +29,4 @@ class ElementStateTest {
         assertThat(INITIAL_PAN_ELEMENT_STATE.validationError).isNull()
         assertThat(INITIAL_PAN_ELEMENT_STATE.details).isEqualTo(PanDetails(DerivedCardInfo()))
     }
-
 }
