@@ -16,9 +16,9 @@ class ElementStateManagerTest {
         assertThat(state.isValid).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isValid)
         assertThat(state.isComplete).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isComplete)
         assertThat(state.validationError).isEqualTo(INITIAL_PIN_ELEMENT_STATE.validationError)
-        // TODO: Compiler is very confused about accessing the state.details for the PIN
-        // This test fails because of it
-        assertThat(state.details).isEqualTo(INITIAL_PIN_ELEMENT_STATE.details)
+        // cast to Any? to avoid ambiguous overload issue that
+        // is unique to PinDetails because it's an alias for `Nothing?`
+        assertThat(state.details as Any?).isEqualTo(INITIAL_PIN_ELEMENT_STATE.details)
     }
 
     @Test
