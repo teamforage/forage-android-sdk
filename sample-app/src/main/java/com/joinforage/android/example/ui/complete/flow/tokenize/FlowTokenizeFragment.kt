@@ -68,7 +68,7 @@ class FlowTokenizeFragment : Fragment() {
             isComplete.text = "isComplete: ${state.isComplete}"
             isEmpty.text = "isEmpty: ${state.isEmpty}"
             isValid.text = "isValid: ${state.isValid}"
-            usState.text = "usState: ${state.details.derivedCardInfo.usState?.abbreviation}"
+            usState.text = "usState: ${state.derivedCardInfo.usState?.abbreviation}"
         }
 
         foragePanEditText.setOnFocusEventListener { setState() }
@@ -79,7 +79,7 @@ class FlowTokenizeFragment : Fragment() {
         isComplete.text = "isComplete: ${state.isComplete}"
         isEmpty.text = "isEmpty: ${state.isEmpty}"
         isValid.text = "isValid: ${state.isValid}"
-        usState.text = "usState: ${state.details.derivedCardInfo.usState?.abbreviation}"
+        usState.text = "usState: ${state.derivedCardInfo.usState?.abbreviation}"
 
         viewModel.paymentMethod.observe(viewLifecycleOwner) {
             when (it == null) {
