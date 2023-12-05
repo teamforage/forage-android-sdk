@@ -26,6 +26,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        /**
+         * IF YOU WANT TO ENABLE PROGUARD, USE THESE BUILD TYPES
+         */
 //        release {
 //            minifyEnabled true
 //            shrinkResources true
