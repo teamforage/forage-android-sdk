@@ -3,6 +3,7 @@ package com.joinforage.forage.android.collect
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.HttpMethod
 import com.basistheory.android.service.ProxyRequest
+import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
@@ -17,6 +18,8 @@ import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
 import org.json.JSONException
 import java.util.*
+
+internal data class ProxyRequestObject(val pin: TextElement, val card_number_token: String)
 
 internal class BTPinCollector(
     private val pinForageEditText: ForagePINEditText,
@@ -66,10 +69,10 @@ internal class BTPinCollector(
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = buildHeaders(encryptionKey, merchantAccount, traceId = logger.getTraceIdValue())
-            body = object {
-                val pin = pinForageEditText.getTextElement()
-                val card_number_token = cardToken
-            }
+            body = ProxyRequestObject(
+                pin = pinForageEditText.getTextElement(),
+                card_number_token = cardToken
+            )
             path = requestPath
         }
 
@@ -186,10 +189,10 @@ internal class BTPinCollector(
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = buildHeaders(encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
-            body = object {
-                val pin = pinForageEditText.getTextElement()
-                val card_number_token = cardToken
-            }
+            body = ProxyRequestObject(
+                pin = pinForageEditText.getTextElement(),
+                card_number_token = cardToken
+            )
             path = capturePaymentPath(paymentRef)
         }
 
