@@ -27,7 +27,7 @@ internal val INITIAL_PIN_ELEMENT_STATE = PinElementStateDto(
     isFocused = false,
     isBlurred = true,
     isEmpty = true,
-    isValid = true,
+    isValid = false,
     isComplete = false,
     validationError = null
 )

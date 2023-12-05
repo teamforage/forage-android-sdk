@@ -7,7 +7,19 @@ import org.junit.Test
 class ElementStateManagerTest {
 
     @Test
-    fun testGetState() {
+    fun testGetStatePIN() {
+        val manager = PinElementStateManager.forEmptyInput()
+        val state = manager.getState()
+        assertThat(state.isFocused).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isFocused)
+        assertThat(state.isBlurred).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isBlurred)
+        assertThat(state.isEmpty).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isEmpty)
+        assertThat(state.isValid).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isValid)
+        assertThat(state.isComplete).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isComplete)
+        assertThat(state.validationError).isEqualTo(INITIAL_PIN_ELEMENT_STATE.validationError)
+    }
+
+    @Test
+    fun testGetStatePAN() {
         val manager = PanElementStateManager.forEmptyInput()
         val state = manager.getState()
         assertThat(state.isFocused).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isFocused)
@@ -58,7 +70,7 @@ class ElementStateManagerTest {
     }
 
     @Test
-    fun testChangeFocus() {
+    fun testChangeFocusPIN() {
         val manager = PinElementStateManager.forEmptyInput()
         var state = manager.getState()
 
@@ -81,5 +93,33 @@ class ElementStateManagerTest {
         assertThat(state.isEmpty).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isEmpty)
         assertThat(state.isValid).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isValid)
         assertThat(state.isComplete).isEqualTo(INITIAL_PIN_ELEMENT_STATE.isComplete)
+    }
+
+    @Test
+    fun testChangeFocusPAN() {
+        val manager = PanElementStateManager.forEmptyInput()
+        var state = manager.getState()
+
+        // focus
+
+        // only focus and blur should change
+        manager.changeFocus(true)
+        state = manager.getState()
+        assertThat(state.isFocused).isTrue
+        assertThat(state.isBlurred).isFalse
+        assertThat(state.isEmpty).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isEmpty)
+        assertThat(state.isValid).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isValid)
+        assertThat(state.isComplete).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isComplete)
+        assertThat(state.derivedCardInfo).isEqualTo(INITIAL_PAN_ELEMENT_STATE.derivedCardInfo)
+
+        // unfocus
+        manager.changeFocus(false)
+        state = manager.getState()
+        assertThat(state.isFocused).isFalse
+        assertThat(state.isBlurred).isTrue
+        assertThat(state.isEmpty).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isEmpty)
+        assertThat(state.isValid).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isValid)
+        assertThat(state.isComplete).isEqualTo(INITIAL_PAN_ELEMENT_STATE.isComplete)
+        assertThat(state.derivedCardInfo).isEqualTo(INITIAL_PAN_ELEMENT_STATE.derivedCardInfo)
     }
 }
