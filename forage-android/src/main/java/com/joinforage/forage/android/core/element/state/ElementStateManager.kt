@@ -4,9 +4,12 @@ import com.joinforage.forage.android.core.element.ElementValidationError
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 
-internal abstract class ElementStateManager(
-    private var isFocused: Boolean,
-    private var isBlurred: Boolean,
+internal abstract class ElementStateManager<T : ElementState>(
+    // private because only this class should house focus / blur logic
+    private var _isFocused: Boolean,
+    private var _isBlurred: Boolean,
+
+    // internal because subclasses will define the logic for these
     internal var isEmpty: Boolean,
     internal var isValid: Boolean,
     internal var isComplete: Boolean,
@@ -14,27 +17,24 @@ internal abstract class ElementStateManager(
 ) {
     private var onFocusEventListener: SimpleElementListener? = null
     private var onBlurEventListener: SimpleElementListener? = null
-    internal var onChangeEventListener: StatefulElementListener? = null
+    internal var onChangeEventListener: StatefulElementListener<T>? = null
 
-    internal constructor(state: ElementState) : this(
-        isFocused = state.isFocused,
-        isBlurred = state.isBlurred,
+    internal val isFocused
+        get() = _isFocused
+
+    internal val isBlurred
+        get() = _isBlurred
+
+    internal constructor(state: T) : this(
+        _isFocused = state.isFocused,
+        _isBlurred = state.isBlurred,
         isEmpty = state.isEmpty,
         isValid = state.isValid,
         isComplete = state.isComplete,
         validationError = state.validationError
     )
 
-    fun getState(): ElementState {
-        return ElementState(
-            isFocused = isFocused,
-            isBlurred = isBlurred,
-            isEmpty = isEmpty,
-            isValid = isValid,
-            isComplete = isComplete,
-            validationError = validationError
-        )
-    }
+    internal abstract fun getState(): T
 
     fun setOnFocusEventListener(l: SimpleElementListener) {
         onFocusEventListener = l
@@ -44,13 +44,13 @@ internal abstract class ElementStateManager(
         onBlurEventListener = l
     }
 
-    fun setOnChangeEventListener(l: StatefulElementListener) {
+    fun setOnChangeEventListener(l: StatefulElementListener<T>) {
         onChangeEventListener = l
     }
 
     fun changeFocus(hasFocus: Boolean) {
-        isFocused = hasFocus
-        isBlurred = !hasFocus
+        _isFocused = hasFocus
+        _isBlurred = !hasFocus
         if (hasFocus) {
             onFocusEventListener?.invoke()
         } else {

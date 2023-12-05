@@ -7,6 +7,7 @@ import com.joinforage.forage.android.core.element.TooLongEbtPanError
 import com.joinforage.forage.android.model.hasInvalidStateIIN
 import com.joinforage.forage.android.model.isCorrectLength
 import com.joinforage.forage.android.model.missingStateIIN
+import com.joinforage.forage.android.model.queryForStateIIN
 import com.joinforage.forage.android.model.tooLongForStateIIN
 import com.joinforage.forage.android.model.tooShortForStateIIN
 
@@ -76,7 +77,11 @@ internal class BalanceCheckErrorCard : WhitelistedCards("5", 14)
 internal class NonProdValidEbtCard : WhitelistedCards("9", 4)
 internal class EmptyEbtCashBalanceCard : WhitelistedCards("654321")
 
-internal class PanElementStateManager(state: ElementState, private val validators: Array<PanValidator>) : ElementStateManager(state) {
+internal class PanElementStateManager(
+    state: PanElementState,
+    private val validators: Array<PanValidator>
+) : ElementStateManager<PanElementState>(state) {
+    private var derivedCardInfo = DerivedCardInfoDto()
 
     private fun checkIsValid(cardNumber: String): Boolean {
         return validators.any { it.checkIfValid(cardNumber) }
@@ -89,6 +94,21 @@ internal class PanElementStateManager(state: ElementState, private val validator
             .map { it.checkForValidationError(cardNumber) }
             .firstOrNull { it != null }
     }
+    private fun getDerivedCardInfo(cardNumber: String): DerivedCardInfoDto {
+        return DerivedCardInfoDto(queryForStateIIN(cardNumber)?.publicEnum)
+    }
+
+    override fun getState(): PanElementState {
+        return PanElementStateDto(
+            isFocused = this.isFocused,
+            isBlurred = this.isBlurred,
+            isEmpty = this.isEmpty,
+            isValid = this.isValid,
+            isComplete = this.isComplete,
+            validationError = this.validationError,
+            derivedCardInfo = this.derivedCardInfo
+        )
+    }
 
     fun handleChangeEvent(rawInput: String) {
         // because the input may be formatted, we need to
@@ -97,10 +117,13 @@ internal class PanElementStateManager(state: ElementState, private val validator
 
         // check to see if any of the validators believe the
         // card to be valid
-        this.isValid = checkIsValid(newCardNumber)
-        this.isComplete = checkIfComplete(newCardNumber)
-        this.validationError = checkForValidationError(newCardNumber)
-        this.isEmpty = newCardNumber.isEmpty()
+        isEmpty = newCardNumber.isEmpty()
+        isValid = checkIsValid(newCardNumber)
+        isComplete = checkIfComplete(newCardNumber)
+        validationError = checkForValidationError(newCardNumber)
+
+        // update state details based on newCardNumber
+        derivedCardInfo = getDerivedCardInfo(newCardNumber)
 
         // invoke the registered listener with the updated state
         onChangeEventListener?.invoke(getState())
@@ -109,14 +132,14 @@ internal class PanElementStateManager(state: ElementState, private val validator
     companion object {
         fun forEmptyInput(): PanElementStateManager {
             return PanElementStateManager(
-                INITIAL_ELEMENT_STATE,
+                INITIAL_PAN_ELEMENT_STATE,
                 arrayOf(StrictEbtValidator())
             )
         }
 
         fun NON_PROD_forEmptyInput(): PanElementStateManager {
             return PanElementStateManager(
-                INITIAL_ELEMENT_STATE,
+                INITIAL_PAN_ELEMENT_STATE,
                 arrayOf(
                     StrictEbtValidator(),
                     PaymentCaptureErrorCard(),

@@ -65,8 +65,8 @@ class PinHandleChangeEventTest {
     @Test
     fun `completed pin passes correct state to callback`() {
         val manager = PinElementStateManager.forEmptyInput()
-        var state: ElementState = manager.getState()
-        val callback: StatefulElementListener = { newState -> state = newState }
+        var state: PinElementState = manager.getState()
+        val callback: StatefulElementListener<PinElementState> = { newState -> state = newState }
         manager.setOnChangeEventListener(callback)
         manager.handleChangeEvent(isComplete = true, isEmpty = false)
 
@@ -85,8 +85,8 @@ class PinHandleChangeEventTest {
         val manager = PinElementStateManager.forEmptyInput()
         var callbackAInvoked = false
         var callbackBInvoked = false
-        val callbackA: StatefulElementListener = { callbackAInvoked = true }
-        val callbackB: StatefulElementListener = { callbackBInvoked = true }
+        val callbackA: StatefulElementListener<PinElementState> = { callbackAInvoked = true }
+        val callbackB: StatefulElementListener<PinElementState> = { callbackBInvoked = true }
 
         manager.setOnChangeEventListener(callbackA)
         manager.setOnChangeEventListener(callbackB)

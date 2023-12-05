@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
@@ -76,7 +77,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
         manager.setOnBlurEventListener(l)
     }
 
-    fun setOnChangeEventListener(l: StatefulElementListener) {
+    fun setOnChangeEventListener(l: StatefulElementListener<PinElementState>) {
         manager.setOnChangeEventListener(l)
     }
 }
