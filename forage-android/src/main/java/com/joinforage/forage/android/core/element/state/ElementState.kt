@@ -27,7 +27,7 @@ internal val INITIAL_PIN_ELEMENT_STATE = PinElementStateDto(
     isFocused = false,
     isBlurred = true,
     isEmpty = true,
-    isValid = true,
+    isValid = false,
     isComplete = false,
     validationError = null
 )
@@ -58,7 +58,7 @@ internal val INITIAL_PAN_ELEMENT_STATE = PanElementStateDto(
     isFocused = false,
     isBlurred = true,
     isEmpty = true,
-    isValid = false,
+    isValid = true,
     isComplete = false,
     validationError = null,
     derivedCardInfo = DerivedCardInfoDto()

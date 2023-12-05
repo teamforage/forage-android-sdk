@@ -13,10 +13,6 @@ class ElementStateTest {
         assertThat(INITIAL_PIN_ELEMENT_STATE.isValid).isFalse
         assertThat(INITIAL_PIN_ELEMENT_STATE.isComplete).isFalse
         assertThat(INITIAL_PIN_ELEMENT_STATE.validationError).isNull()
-
-        // cast to Any? to avoid ambiguous overload issue that
-        // is unique to PinDetails because it's an alias for `Nothing?`
-        assertThat(INITIAL_PIN_ELEMENT_STATE.details as Any?).isNull()
     }
 
     @Test
@@ -27,6 +23,6 @@ class ElementStateTest {
         assertThat(INITIAL_PAN_ELEMENT_STATE.isValid).isTrue
         assertThat(INITIAL_PAN_ELEMENT_STATE.isComplete).isFalse
         assertThat(INITIAL_PAN_ELEMENT_STATE.validationError).isNull()
-        assertThat(INITIAL_PAN_ELEMENT_STATE.details).isEqualTo(PanDetails(DerivedCardInfo()))
+        assertThat(INITIAL_PAN_ELEMENT_STATE.derivedCardInfo).isEqualTo(DerivedCardInfoDto())
     }
 }
