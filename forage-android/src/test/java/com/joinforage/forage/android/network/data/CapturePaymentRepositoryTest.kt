@@ -98,7 +98,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
 
         val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
-        pinCollector.setCollectPinForCapturePaymentResponse(
+        pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -115,7 +115,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinForCapturePaymentResponse(
+        pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -181,7 +181,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinForCapturePaymentResponse(
+        pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -211,7 +211,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinForCapturePaymentResponse(
+        pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -251,7 +251,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenContentId(testData.contentId)
             .returnsMessageCompletedSuccessfully()
-        pinCollector.setCollectPinForCapturePaymentResponse(
+        pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,

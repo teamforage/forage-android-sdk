@@ -12,17 +12,19 @@ import com.joinforage.forage.android.network.model.ForageError
  * Fake test implementation of PinCollector that could be used to replace VGS on tests
  */
 internal class TestPinCollector : PinCollector {
-    private var collectPinForBalanceCheckResponses =
+    private var submitBalanceCheckResponses =
         HashMap<CheckBalanceWrapper, ForageApiResponse<String>>()
-    private var collectPinForCapturePaymentResponses =
+    private var submitPaymentCaptureResponses =
         HashMap<CapturePaymentWrapper, ForageApiResponse<String>>()
+    private var submitCollectPinResponses =
+        HashMap<CollectPinWrapper, ForageApiResponse<String>>()
 
-    override suspend fun collectPinForBalanceCheck(
+    override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        return collectPinForBalanceCheckResponses.getOrDefault(
+        return submitBalanceCheckResponses.getOrDefault(
             CheckBalanceWrapper(
                 paymentMethodRef,
                 cardToken,
@@ -32,13 +34,28 @@ internal class TestPinCollector : PinCollector {
         )
     }
 
-    override suspend fun collectPinForCapturePayment(
+    override suspend fun submitPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        return collectPinForCapturePaymentResponses.getOrDefault(
+        return submitPaymentCaptureResponses.getOrDefault(
             CapturePaymentWrapper(
+                paymentRef = paymentRef,
+                cardToken = cardToken,
+                encryptionKey = encryptionKey
+            ),
+            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+        )
+    }
+
+    override suspend fun submitCollectPin(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String
+    ): ForageApiResponse<String> {
+        return submitCollectPinResponses.getOrDefault(
+            CollectPinWrapper(
                 paymentRef = paymentRef,
                 cardToken = cardToken,
                 encryptionKey = encryptionKey
@@ -63,13 +80,13 @@ internal class TestPinCollector : PinCollector {
         return VaultType.VGS_VAULT_TYPE
     }
 
-    fun setCollectPinForBalanceCheckResponse(
+    fun setBalanceCheckResponse(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String,
         response: ForageApiResponse<String>
     ) {
-        collectPinForBalanceCheckResponses[
+        submitBalanceCheckResponses[
             CheckBalanceWrapper(
                 paymentMethodRef,
                 cardToken,
@@ -79,14 +96,30 @@ internal class TestPinCollector : PinCollector {
             response
     }
 
-    fun setCollectPinForCapturePaymentResponse(
+    fun setCapturePaymentResponse(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String,
         response: ForageApiResponse<String>
     ) {
-        collectPinForCapturePaymentResponses[
+        submitPaymentCaptureResponses[
             CapturePaymentWrapper(
+                paymentRef,
+                cardToken,
+                encryptionKey
+            )
+        ] =
+            response
+    }
+
+    fun setCollectPinResponse(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String,
+        response: ForageApiResponse<String>
+    ) {
+        submitCollectPinResponses[
+            CollectPinWrapper(
                 paymentRef,
                 cardToken,
                 encryptionKey
@@ -102,6 +135,12 @@ internal class TestPinCollector : PinCollector {
     )
 
     private data class CapturePaymentWrapper(
+        val paymentRef: String,
+        val cardToken: String,
+        val encryptionKey: String
+    )
+
+    private data class CollectPinWrapper(
         val paymentRef: String,
         val cardToken: String,
         val encryptionKey: String

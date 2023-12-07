@@ -14,6 +14,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
+import com.joinforage.forage.android.network.data.CollectPinRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
@@ -266,5 +267,79 @@ class ForageSDK : ForageSDKInterface {
         measurement.setEventOutcome(outcome).logResult()
 
         return response
+    }
+
+    /**
+     * Captures a Forage Payment associated with an EBT card
+     *
+     * @param params The parameters required for payment capture, including
+     * reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * payment capture. On success, returns a confirmation of the transaction.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun collectPin(params: CollectPinParams): ForageApiResponse<String> {
+        val (foragePinEditText, paymentRef) = params
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
+        val config = EnvConfig.fromSessionToken(sessionToken)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
+        logger.i(
+            "[HTTP] Submitting pin cache request for Payment $paymentRef",
+            attributes = mapOf(
+                "merchant_ref" to merchantId,
+                "payment_ref" to paymentRef
+            )
+        )
+
+        return CollectPinRepository(
+            pinCollector = foragePinEditText.getCollector(
+                merchantId
+            ),
+            encryptionKeyService = EncryptionKeyService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            ),
+            paymentService = PaymentService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            ),
+            paymentMethodService = PaymentMethodService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            ),
+            messageStatusService = MessageStatusService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            ),
+            logger = logger
+        ).collectPin(
+            paymentRef = paymentRef
+        )
     }
 }

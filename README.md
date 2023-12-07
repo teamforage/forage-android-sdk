@@ -13,6 +13,7 @@
 - [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
 - [Performing a balance check](#performing-a-balance-check)
 - [Capturing a payment](#capturing-a-payment)
+- [Collecting the pin for a payment](#collecting-the-pin-for-a-payment)
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the Sample App](#running-the-sample-app)
 - [Dependencies](#dependencies)
@@ -27,6 +28,7 @@ In addition to [UI components](#ui-components), the SDK provides APIs for:
 1. [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
 2. [Performing a balance check](#performing-a-balance-check)
 3. [Capturing a payment](#capturing-a-payment)
+4. [Collecting the pin for a payment](#collecting-the-pin-for-a-payment)
 
 Read on for installation instructions and details about the APIs.
 
@@ -557,7 +559,7 @@ class PaymentCaptureFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // establish bindings to ForagePANEditText
+        // establish bindings to ForagePINEditText
         _binding = PaymentCaptureFragmentBinding.inflate(inflater, container, false)
         val snapEditText = binding.snapPinEditText
         val cashEditText = binding.cashPinEditText
@@ -570,7 +572,7 @@ class PaymentCaptureFragment : Fragment() {
         snapEditText.setForageConfig(forageConfig)
         cashEditText.setForageConfig(forageConfig)
 
-        // then freely call other methods on ForagePANEditText binding
+        // then freely call other methods on ForagePINEditText binding
         // ...
     }
 }
@@ -622,6 +624,116 @@ class PaymentCaptureViewModel @Inject constructor(
 
 It is the `funding_type` on a [Payment object](#step-0-create-a-payment-object)
 where you indicate whether a `Payment` will capture (SNAP or EBT Cash).
+
+## Collecting the pin for a payment
+
+### Step 0: Create a `Payment` object
+
+Send a POST request to Forage's `/payments/` endpoint [to create a
+`Payment` object](https://docs.joinforage.app/reference/create-a-payment).
+You need the `ref` of the `Payment` within the POST's response for Step 3.
+
+### Step 1: Add the `ForagePINEditText` UI component
+
+As with [performing a balance check](#performing-a-balance-check), you will need
+to add a `ForagePINEditText` to your UI. Please reference
+[Step 1 of Performing a Balance Check](#step-1-add-the-foragepinedittext-ui-component)
+
+### Step 2: Customizing `ForagePINEditText`
+
+Please reference [Step 2 of Performing a Balance Check](#step-2-customizing-foragepinedittext)
+
+### Step 3: Call `setForageConfig()`
+
+Please reference [Step 3 of Performing a Balance Check](#step-3-call-setforageconfig)
+
+### Step 4: Collect the pin for the EBT payment
+
+The ForageSDK exposes the following function to collect a pin for an EBT payment and defer capture to the server:
+
+```kotlin
+data class CollectPinParams(
+    val foragePinEditText: ForagePINEditText,
+    val paymentRef: String
+)
+
+suspend fun collectPin(
+    params: CollectPinParams
+): ForageApiResponse<String>
+```
+
+#### Parameter definitions
+
+- `CollectPinParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
+- `CollectPinParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
+
+#### Example
+
+```kotlin
+@AndroidEntryPoint
+class PinCollectFragment : Fragment() {
+    private val viewModel: PinCollectViewModel by viewModels()
+    private var _binding: PinCollectFragmentBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // establish bindings to ForagePANEditText
+        _binding = PinCollectFragmentBinding.inflate(inflater, container, false)
+        val snapEditText = binding.snapPinEditText
+        val cashEditText = binding.cashPinEditText
+
+        // immediately call setForageConfig() on the binding
+        val forageConfig = ForageConfig(
+            merchantId = viewModel.merchantAccount,
+            sessionToken = viewModel.bearer
+        )
+        snapEditText.setForageConfig(forageConfig)
+        cashEditText.setForageConfig(forageConfig)
+
+        // then freely call other methods on ForagePANEditText binding
+        // ...
+    }
+}
+```
+
+```kotlin
+@HiltViewModel
+class PinCollectViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val moshi: Moshi
+) : ViewModel() {
+    private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
+
+    // internal so that PinCollectFragment can access these values
+    val snapPaymentRef = args.snapPaymentRef
+    val cashPaymentRef = args.cashPaymentRef
+    val merchantID = args.merchantID
+    val sessionToken = args.sessionToken
+
+    fun collectPin(pinForageEditText: ForagePINEditText, paymentRef: String) =
+        viewModelScope.launch {
+            val response = ForageSDK().collectPin(
+                CollectPinParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentRef = paymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    // handle successful reponse
+                }
+                is ForageApiResponse.Failure -> {
+                    // handle error response
+                }
+            }
+        }
+}
+```
 
 ## The ForageApiResponse sealed class
 

@@ -35,7 +35,7 @@ internal class VGSPinCollector(
         return vaultType
     }
 
-    override suspend fun collectPinForBalanceCheck(
+    override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String
@@ -187,7 +187,7 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun collectPinForCapturePayment(
+    override suspend fun submitPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
@@ -347,6 +347,144 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
+    override suspend fun submitCollectPin(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String
+    ): ForageApiResponse<String> = suspendCoroutine { continuation ->
+        // If the PIN isn't valid (less than 4 numbers) then return a response here.
+        if (!pinForageEditText.getElementState().isComplete) {
+            logger.w(
+                "[VGS] User attempted to submit an invalid PIN",
+                attributes = mapOf(
+                    "merchant_ref" to merchantAccount,
+                    "payment_ref" to paymentRef
+                )
+            )
+            continuation.resumeWith(
+                Result.success(
+                    ForageApiResponse.Failure(
+                        ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
+                    )
+                )
+            )
+            return@suspendCoroutine
+        }
+
+        val vgsCollect = buildVGSCollect(context)
+
+        vgsCollect.bindView(pinForageEditText.getTextInputEditText())
+        val inputField = pinForageEditText.getTextInputEditText()
+
+        vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
+            override fun onResponse(response: VGSResponse?) {
+
+                vgsCollect.onDestroy()
+                inputField.setText("")
+
+                when (response) {
+                    is VGSResponse.SuccessResponse -> {
+
+                        logger.i(
+                            "[VGS] Received successful response from VGS",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_ref" to paymentRef
+                            )
+                        )
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Success(response.body!!)
+                            )
+                        )
+                    }
+                    is VGSResponse.ErrorResponse -> {
+                        // Attempt to see if this error is a Forage error
+                        try {
+                            val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
+                            val error = forageApiError.errors[0]
+                            logger.e(
+                                "[VGS] Received an error while submitting pin cache request to VGS: ${response.body}",
+                                attributes = mapOf(
+                                    "merchant_ref" to merchantAccount,
+                                    "payment_ref" to paymentRef
+                                )
+                            )
+
+                            val httpStatusCode = response.errorCode
+
+                            continuation.resumeWith(
+                                Result.success(
+                                    ForageApiResponse.Failure(
+                                        listOf(
+                                            ForageError(
+                                                httpStatusCode,
+                                                error.code,
+                                                error.message
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                            return
+                        } catch (_: JSONException) { }
+
+                        logger.e(
+                            "[VGS] Received an error while submitting pin cache request to VGS: ${response.body}",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_ref" to paymentRef
+                            )
+                        )
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                            )
+                        )
+                    }
+                    null -> {
+                        logger.e(
+                            "[VGS] Received an unknown error while submitting pin cache request to VGS",
+                            attributes = mapOf(
+                                "merchant_ref" to merchantAccount,
+                                "payment_ref" to paymentRef
+                            )
+                        )
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                            )
+                        )
+                    }
+                }
+            }
+        })
+
+        val request: VGSRequest = VGSRequest.VGSRequestBuilder()
+            .setMethod(HTTPMethod.POST)
+            .setPath(collectPinPath(paymentRef))
+            .setCustomHeader(
+                buildHeaders(
+                    merchantAccount,
+                    encryptionKey,
+                    idempotencyKey = paymentRef,
+                    traceId = logger.getTraceIdValue()
+                )
+            )
+            .setCustomData(buildRequestBody(cardToken))
+            .build()
+
+        logger.i(
+            "[VGS] Sending pin cache to VGS",
+            attributes = mapOf(
+                "merchant_ref" to merchantAccount,
+                "payment_ref" to paymentRef
+            )
+        )
+
+        vgsCollect.asyncSubmit(request)
+    }
+
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return encryptionKeys.vgsAlias
     }
@@ -398,5 +536,8 @@ internal class VGSPinCollector(
 
         private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
+
+        private fun collectPinPath(paymentRef: String) =
+            "/api/payments/$paymentRef/collect_pin/"
     }
 }

@@ -86,7 +86,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
-        pinCollector.setCollectPinForBalanceCheckResponse(
+        pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -103,7 +103,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        pinCollector.setCollectPinForBalanceCheckResponse(
+        pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -126,7 +126,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the get message returns failed`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinForBalanceCheckResponse(
+        pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -151,7 +151,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         // Get Payment Method is called twice!
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
-        pinCollector.setCollectPinForBalanceCheckResponse(
+        pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
@@ -180,7 +180,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return an error when it reaches the max attempts`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinForBalanceCheckResponse(
+        pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,

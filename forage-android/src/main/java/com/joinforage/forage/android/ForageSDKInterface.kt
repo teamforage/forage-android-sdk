@@ -47,7 +47,7 @@ internal interface ForageSDKInterface {
      * On success, returns an object with `snap` and `cash` fields, whose values
      * indicate the balance of each tender as of now
      *
-     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String>
@@ -62,10 +62,26 @@ internal interface ForageSDKInterface {
      * payment capture. On success, returns a confirmation of the transaction.
      * On failure, provides a detailed error response.
      *
-     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
+
+    /**
+     * Collects the pin for a Forage Payment associated with an EBT card
+     *
+     * @param params The parameters required for pin collection, including
+     * reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * TODO: WHAT DOES IT RETURN ON SUCCESS?
+     * pin collection. On success, returns a confirmation of the transaction.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    suspend fun collectPin(params: CollectPinParams): ForageApiResponse<String>
 }
 
 /**
@@ -105,6 +121,18 @@ data class CheckBalanceParams(
  * @property paymentRef A reference to the intended payment transaction.
  */
 data class CapturePaymentParams(
+    val foragePinEditText: ForagePINEditText,
+    val paymentRef: String
+)
+
+/**
+ * Data class representing the parameters required for collecting the PIN for a payment on an EBT card.
+ *
+ * @property foragePinEditText A UI ForagePINEditText UI component. Importantly,
+ * you must have called .setForageConfig() already
+ * @property paymentRef A reference to the intended payment transaction.
+ */
+data class CollectPinParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String
 )

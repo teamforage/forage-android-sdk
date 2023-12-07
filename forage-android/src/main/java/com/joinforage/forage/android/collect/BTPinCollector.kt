@@ -32,7 +32,7 @@ internal class BTPinCollector(
         return vaultType
     }
 
-    override suspend fun collectPinForBalanceCheck(
+    override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String
@@ -152,7 +152,7 @@ internal class BTPinCollector(
         )
     }
 
-    override suspend fun collectPinForCapturePayment(
+    override suspend fun submitPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
@@ -273,6 +273,101 @@ internal class BTPinCollector(
         )
     }
 
+    override suspend fun submitCollectPin(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String
+    ): ForageApiResponse<String> {
+        // If the PIN isn't valid (less than 4 numbers) then return a response here.
+        if (!pinForageEditText.getElementState().isComplete) {
+            logger.w(
+                "[BT] User attempted to submit an invalid PIN",
+                attributes = mapOf(
+                    "merchant_ref" to merchantAccount,
+                    "payment_ref" to paymentRef
+                )
+            )
+            return ForageApiResponse.Failure(
+                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
+            )
+        }
+
+        val bt = buildBt()
+
+        val proxyRequest: ProxyRequest = ProxyRequest().apply {
+            headers = buildHeaders(encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
+            body = ProxyRequestObject(
+                pin = pinForageEditText.getTextElement(),
+                card_number_token = cardToken
+            )
+            path = collectPinPath(paymentRef)
+        }
+
+        logger.i(
+            "[BT] Sending pin cache to BasisTheory",
+            attributes = mapOf(
+                "merchant_ref" to merchantAccount,
+                "payment_ref" to paymentRef
+            )
+        )
+
+        val response = runCatching {
+            bt.proxy.post(proxyRequest)
+        }
+
+        // MUST reset the PIN value after submitting
+        pinForageEditText.getTextElement().setText("")
+
+        if (response.isSuccess) {
+            val forageResponse = response.getOrNull()
+            try {
+                val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
+                val error = forageApiError.errors[0]
+                logger.e(
+                    "[BT] Received an error while submitting pin cache request to BasisTheory: $error.message",
+                    attributes = mapOf(
+                        "merchant_ref" to merchantAccount,
+                        "payment_ref" to paymentRef
+                    )
+                )
+
+                // Error code hardcoded as 400 because of lack of information
+                val httpStatusCode = 400
+                return ForageApiResponse.Failure(
+                    listOf(
+                        ForageError(
+                            httpStatusCode,
+                            error.code,
+                            error.message
+                        )
+                    )
+                )
+            } catch (_: JSONException) { }
+            logger.i(
+                "[BT] Received successful response from BasisTheory",
+                attributes = mapOf(
+                    "merchant_ref" to merchantAccount,
+                    "payment_ref" to paymentRef
+                )
+            )
+
+            return ForageApiResponse.Success(forageResponse.toString())
+        }
+        val btErrorResponse = response.exceptionOrNull()
+        logger.e(
+            "[BT] Received BasisTheory API exception while caching pin: $btErrorResponse",
+            attributes = mapOf(
+                "merchant_ref" to merchantAccount,
+                "payment_ref" to paymentRef
+            )
+        )
+        return ForageApiResponse.Failure(
+            listOf(
+                ForageError(500, "unknown_server_error", "Unknown Server Error")
+            )
+        )
+    }
+
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return encryptionKeys.btAlias
     }
@@ -326,5 +421,8 @@ internal class BTPinCollector(
 
         private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
+
+        private fun collectPinPath(paymentRef: String) =
+            "/api/payments/$paymentRef/collect_pin/"
     }
 }
