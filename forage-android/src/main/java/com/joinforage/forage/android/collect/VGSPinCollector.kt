@@ -378,13 +378,11 @@ internal class VGSPinCollector(
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
-
                 vgsCollect.onDestroy()
                 inputField.setText("")
 
                 when (response) {
                     is VGSResponse.SuccessResponse -> {
-
                         logger.i(
                             "[VGS] Received successful response from VGS",
                             attributes = mapOf(
