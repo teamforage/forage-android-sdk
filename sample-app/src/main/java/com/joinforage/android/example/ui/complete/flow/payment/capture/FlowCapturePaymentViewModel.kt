@@ -1,6 +1,5 @@
 package com.joinforage.android.example.ui.complete.flow.payment.capture
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.base.BaseViewModel
 import com.joinforage.android.example.ui.complete.flow.payment.capture.model.FlowCapturePaymentUIState
 import com.joinforage.forage.android.CapturePaymentParams
+import com.joinforage.forage.android.CollectPinParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -41,7 +41,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
     val uiState: LiveData<FlowCapturePaymentUIState> = _uiState
 
-    fun captureSnapAmount(context: Context, pinForageEditText: ForagePINEditText) =
+    fun captureSnapAmount(pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
@@ -73,7 +73,39 @@ class FlowCapturePaymentViewModel @Inject constructor(
             }
         }
 
-    fun captureCashAmount(context: Context, pinForageEditText: ForagePINEditText) =
+    fun collectPinSnap(pinForageEditText: ForagePINEditText) =
+        viewModelScope.launch {
+            _uiState.value = _uiState.value!!.copy(isLoading = true)
+
+            val response = ForageSDK().collectPinForDeferredCapture(
+                CollectPinParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentRef = snapPaymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    Log.d(TAG, "Collect Pin Snap Response: ${response.data}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        snapResponse = response.data
+                    )
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Collect Pin Snap Response: ${response.errors[0].message}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        snapResponse = response.errors[0].message,
+                        snapResponseError = response.errors[0].toString()
+                    )
+                }
+            }
+        }
+
+    fun captureCashAmount(pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 

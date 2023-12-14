@@ -39,7 +39,13 @@ class FlowCapturePaymentFragment : BaseFragment<FragmentFlowCapturePaymentBindin
 
         binding.captureSnapAmount.setOnClickListener {
             viewModel.captureSnapAmount(
-                context = requireContext(),
+                binding.snapPinEditText
+            )
+            it.context.hideKeyboard(it)
+        }
+
+        binding.collectPinSnap.setOnClickListener {
+            viewModel.collectPinSnap(
                 binding.snapPinEditText
             )
             it.context.hideKeyboard(it)
@@ -47,7 +53,6 @@ class FlowCapturePaymentFragment : BaseFragment<FragmentFlowCapturePaymentBindin
 
         binding.captureNonSnapAmount.setOnClickListener {
             viewModel.captureCashAmount(
-                context = requireContext(),
                 binding.cashPinEditText
             )
             it.context.hideKeyboard(it)

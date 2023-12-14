@@ -657,7 +657,7 @@ data class CollectPinParams(
     val paymentRef: String
 )
 
-suspend fun collectPin(
+suspend fun collectPinForDeferredCapture(
     params: CollectPinParams
 ): ForageApiResponse<String>
 ```
@@ -716,7 +716,7 @@ class PinCollectViewModel @Inject constructor(
 
     fun collectPin(pinForageEditText: ForagePINEditText, paymentRef: String) =
         viewModelScope.launch {
-            val response = ForageSDK().collectPin(
+            val response = ForageSDK().collectPinForDeferredCapture(
                 CollectPinParams(
                     foragePinEditText = pinForageEditText,
                     paymentRef = paymentRef

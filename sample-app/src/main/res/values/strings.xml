@@ -22,5 +22,6 @@
     <string name="merchant_account">8000009</string>
     <string name="pin">PIN</string>
     <string name="capture_snap">Capture Snap</string>
+    <string name="collect_pin_snap">Collect Pin Snap</string>
     <string name="capture_non_snap">Capture Non Snap</string>
 </resources>

@@ -81,7 +81,7 @@ internal interface ForageSDKInterface {
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    suspend fun collectPin(params: CollectPinParams): ForageApiResponse<String>
+    suspend fun collectPinForDeferredCapture(params: CollectPinParams): ForageApiResponse<String>
 }
 
 /**

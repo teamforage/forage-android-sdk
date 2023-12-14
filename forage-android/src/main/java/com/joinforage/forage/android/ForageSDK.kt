@@ -282,7 +282,7 @@ class ForageSDK : ForageSDKInterface {
      * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    override suspend fun collectPin(params: CollectPinParams): ForageApiResponse<String> {
+    override suspend fun collectPinForDeferredCapture(params: CollectPinParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
         val config = EnvConfig.fromSessionToken(sessionToken)
@@ -327,17 +327,7 @@ class ForageSDK : ForageSDKInterface {
                 ),
                 httpUrl = config.baseUrl,
                 logger = logger
-            ),
-            messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            logger = logger
+            )
         ).collectPin(
             paymentRef = paymentRef
         )

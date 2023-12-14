@@ -347,7 +347,7 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun submitCollectPin(
+    override suspend fun collectPinForDeferredCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String

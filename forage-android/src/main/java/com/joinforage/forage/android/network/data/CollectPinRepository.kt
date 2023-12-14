@@ -16,8 +16,6 @@ internal class CollectPinRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val paymentService: PaymentService,
-    private val messageStatusService: MessageStatusService,
-    private val logger: Log
 ) {
     suspend fun collectPin(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
@@ -65,7 +63,7 @@ internal class CollectPinRepository(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        return pinCollector.submitCollectPin(
+        return pinCollector.collectPinForDeferredCapture(
             paymentRef = paymentRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey
