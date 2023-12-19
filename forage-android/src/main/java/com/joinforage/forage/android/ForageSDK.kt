@@ -270,16 +270,16 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Captures a Forage Payment associated with an EBT card
+     * Collects the pin for a Forage Payment associated with an EBT card
      *
-     * @param params The parameters required for payment capture, including
+     * @param params The parameters required for pin collection, including
      * reference to a ForagePINEditText and a Payment ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the
-     * payment capture. On success, returns a confirmation of the transaction.
+     * pin collection. On success, returns nothing.
      * On failure, provides a detailed error response.
      *
-     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun collectPinForDeferredCapture(params: CollectPinParams): ForageApiResponse<String> {

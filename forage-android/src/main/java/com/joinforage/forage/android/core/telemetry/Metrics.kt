@@ -32,7 +32,8 @@ internal enum class UnknownForageErrorCode(val value: String) {
 
 internal enum class UserAction(val value: String) {
     BALANCE("balance"),
-    CAPTURE("capture");
+    CAPTURE("capture"),
+    COLLECT_PIN("collect_pin");
 
     override fun toString(): String {
         return value
