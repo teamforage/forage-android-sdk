@@ -1,23 +1,16 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.givenPaymentRef
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
-import com.joinforage.forage.android.fixtures.returnsExpiredCard
 import com.joinforage.forage.android.fixtures.returnsFailedPayment
 import com.joinforage.forage.android.fixtures.returnsFailedPaymentMethod
-import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
-import com.joinforage.forage.android.fixtures.returnsSendToProxy
-import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
@@ -27,7 +20,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import me.jorgecastillo.hiroaki.matchers.times
-import me.jorgecastillo.hiroaki.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -65,7 +57,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
                 ),
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger
-            ),
+            )
         )
     }
 

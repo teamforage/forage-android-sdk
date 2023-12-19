@@ -42,43 +42,21 @@ internal class VGSPinCollector(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
+        val logAttributes = mapOf(
+            "merchant_ref" to merchantAccount,
+            "payment_method_ref" to paymentMethodRef
+        )
+
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            logger.w(
-                "[VGS] User attempted to submit an invalid PIN",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_method_ref" to paymentMethodRef
-                )
-            )
-            continuation.resumeWith(
-                Result.success(
-                    ForageApiResponse.Failure(
-                        ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
-                    )
-                )
-            )
+            returnIncompletePinError(logAttributes, continuation, logger)
             return@suspendCoroutine
         }
 
         val vgsCollect = buildVGSCollect(context)
-
         val inputField = pinForageEditText.getTextInputEditText()
         vgsCollect.bindView(inputField)
-
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val path = balancePath(paymentMethodRef)
-        val method = HTTPMethod.POST
-
-        val measurement = VaultProxyResponseMonitor.newMeasurement(
-            vault = vaultType,
-            userAction = UserAction.BALANCE,
-            logger
-        )
-            .setPath(path)
-            .setMethod(method.toString())
-        // ------------------------------------------------------
+        val measurement = setupMeasurement(balancePath(paymentMethodRef), UserAction.BALANCE)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
@@ -92,10 +70,7 @@ internal class VGSPinCollector(
                         measurement.setHttpStatusCode(response.code).logResult()
                         logger.i(
                             "[VGS] Received successful response from VGS",
-                            attributes = mapOf(
-                                "merchant_ref" to merchantAccount,
-                                "payment_method_ref" to paymentMethodRef
-                            )
+                            attributes = logAttributes
                         )
                         continuation.resumeWith(
                             Result.success(
@@ -106,73 +81,33 @@ internal class VGSPinCollector(
                     is VGSResponse.ErrorResponse -> {
                         // Attempt to see if this error is a Forage error
                         try {
-                            val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
-                            val error = forageApiError.errors[0]
                             logger.e(
                                 "[VGS] Received an error while submitting balance request to VGS: ${response.body}",
-                                attributes = mapOf(
-                                    "merchant_ref" to merchantAccount,
-                                    "payment_method_ref" to paymentMethodRef
-                                )
+                                attributes = logAttributes
                             )
-
-                            val httpStatusCode = response.errorCode
-                            measurement.setHttpStatusCode(httpStatusCode).setForageErrorCode(error.code).logResult()
-
-                            continuation.resumeWith(
-                                Result.success(
-                                    ForageApiResponse.Failure(
-                                        listOf(
-                                            ForageError(
-                                                httpStatusCode,
-                                                error.code,
-                                                error.message
-                                            )
-                                        )
-                                    )
-                                )
-                            )
+                            returnForageError(response, measurement, continuation)
                             return
                         } catch (_: JSONException) { }
-
-                        // If we have made if this far, then this isn't a Forage error
-                        measurement.setHttpStatusCode(response.code).logResult()
                         logger.e(
                             "[VGS] Received an error while submitting balance request to VGS: ${response.body}",
-                            attributes = mapOf(
-                                "merchant_ref" to merchantAccount,
-                                "payment_method_ref" to paymentMethodRef
-                            )
+                            attributes = logAttributes
                         )
-                        continuation.resumeWith(
-                            Result.success(
-                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
-                            )
-                        )
+                        returnVgsError(response, measurement, continuation)
                     }
                     null -> {
-                        val unknownVgsErrorCode = 500
-                        measurement.setHttpStatusCode(unknownVgsErrorCode).logResult()
                         logger.e(
                             "[VGS] Received an unknown error while submitting balance request to VGS",
-                            attributes = mapOf(
-                                "merchant_ref" to merchantAccount,
-                                "payment_method_ref" to paymentMethodRef
-                            )
+                            attributes = logAttributes
                         )
-                        continuation.resumeWith(
-                            Result.success(
-                                ForageApiResponse.Failure(listOf(ForageError(unknownVgsErrorCode, "unknown_server_error", "Unknown Server Error")))
-                            )
-                        )
+                        returnUnknownError(measurement, continuation)
                     }
                 }
             }
         })
 
         val request: VGSRequest = VGSRequest.VGSRequestBuilder()
-            .setMethod(method)
-            .setPath(path)
+            .setMethod(HTTPMethod.POST)
+            .setPath(balancePath(paymentMethodRef))
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
@@ -183,7 +118,10 @@ internal class VGSPinCollector(
             .setCustomData(buildRequestBody(cardToken))
             .build()
 
-        logger.i("[VGS] Sending balance check to VGS")
+        logger.i(
+            "[VGS] Sending balance check to VGS",
+            attributes = logAttributes
+        )
 
         measurement.start()
         vgsCollect.asyncSubmit(request)
@@ -201,15 +139,13 @@ internal class VGSPinCollector(
 
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            returnIncompletePinError(logAttributes, continuation)
+            returnIncompletePinError(logAttributes, continuation, logger)
             return@suspendCoroutine
         }
 
         val vgsCollect = buildVGSCollect(context)
-
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
         val inputField = pinForageEditText.getTextInputEditText()
-
         val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.CAPTURE)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
@@ -295,7 +231,7 @@ internal class VGSPinCollector(
 
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            returnIncompletePinError(logAttributes, continuation)
+            returnIncompletePinError(logAttributes, continuation, logger)
             return@suspendCoroutine
         }
 
@@ -389,7 +325,7 @@ internal class VGSPinCollector(
         return token
     }
 
-    internal fun setupMeasurement(path: String, action: UserAction): NetworkMonitor {
+    private fun setupMeasurement(path: String, action: UserAction): NetworkMonitor {
         return VaultProxyResponseMonitor.newMeasurement(
             vault = vaultType,
             userAction = action,
@@ -397,20 +333,6 @@ internal class VGSPinCollector(
         )
             .setPath(path)
             .setMethod(HTTPMethod.POST.toString())
-    }
-
-    internal fun returnIncompletePinError(logAttributes: Map<String, String>, continuation: Continuation<ForageApiResponse<String>>) {
-        logger.w(
-            "[VGS] User attempted to submit an invalid PIN",
-            attributes = logAttributes
-        )
-        continuation.resumeWith(
-            Result.success(
-                ForageApiResponse.Failure(
-                    ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
-                )
-            )
-        )
     }
 
     companion object {
@@ -456,7 +378,8 @@ internal class VGSPinCollector(
 
             continuation.resumeWith(
                 Result.success(
-                    ForageApiResponse.Failure(listOf(ForageError(httpStatusCode, error.code, error.message))
+                    ForageApiResponse.Failure(
+                        listOf(ForageError(httpStatusCode, error.code, error.message))
                     )
                 )
             )
@@ -477,6 +400,20 @@ internal class VGSPinCollector(
             continuation.resumeWith(
                 Result.success(
                     ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                )
+            )
+        }
+
+        internal fun returnIncompletePinError(logAttributes: Map<String, String>, continuation: Continuation<ForageApiResponse<String>>, logger: Log) {
+            logger.w(
+                "[VGS] User attempted to submit an invalid PIN",
+                attributes = logAttributes
+            )
+            continuation.resumeWith(
+                Result.success(
+                    ForageApiResponse.Failure(
+                        ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
+                    )
                 )
             )
         }

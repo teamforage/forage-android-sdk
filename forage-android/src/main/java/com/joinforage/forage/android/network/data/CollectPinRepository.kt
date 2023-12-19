@@ -1,12 +1,10 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -15,7 +13,7 @@ internal class CollectPinRepository(
     private val pinCollector: PinCollector,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
-    private val paymentService: PaymentService,
+    private val paymentService: PaymentService
 ) {
     suspend fun collectPin(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {

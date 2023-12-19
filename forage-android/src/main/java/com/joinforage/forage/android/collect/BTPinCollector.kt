@@ -1,12 +1,12 @@
 package com.joinforage.forage.android.collect
 
 import com.basistheory.android.service.BasisTheoryElements
-import com.basistheory.android.service.HttpMethod
 import com.basistheory.android.service.ProxyRequest
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.NetworkMonitor
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
@@ -16,6 +16,7 @@ import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
+import com.verygoodsecurity.vgscollect.core.HTTPMethod
 import org.json.JSONException
 import java.util.*
 
@@ -37,35 +38,18 @@ internal class BTPinCollector(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
+        val logAttributes = mapOf(
+            "merchant_ref" to merchantAccount,
+            "payment_method_ref" to paymentMethodRef
+        )
+
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            logger.w(
-                "[BT] User attempted to submit an invalid PIN",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_method_ref" to paymentMethodRef
-                )
-            )
-            return ForageApiResponse.Failure(
-                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
-            )
+            return returnIncompletePinError(logAttributes, logger)
         }
 
         val bt = buildBt()
-
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val requestPath = balancePath(paymentMethodRef)
-        val method = HttpMethod.POST
-
-        val measurement = VaultProxyResponseMonitor.newMeasurement(
-            vault = vaultType,
-            userAction = UserAction.BALANCE,
-            logger
-        )
-            .setPath(requestPath)
-            .setMethod(method.toString())
-        // ------------------------------------------------------
+        val measurement = setupMeasurement(balancePath(paymentMethodRef), UserAction.BALANCE)
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = buildHeaders(encryptionKey, merchantAccount, traceId = logger.getTraceIdValue())
@@ -73,15 +57,12 @@ internal class BTPinCollector(
                 pin = pinForageEditText.getTextElement(),
                 card_number_token = cardToken
             )
-            path = requestPath
+            path = balancePath(paymentMethodRef)
         }
 
         logger.i(
             "[BT] Sending balance check to BasisTheory",
-            attributes = mapOf(
-                "merchant_ref" to merchantAccount,
-                "payment_method_ref" to paymentMethodRef
-            )
+            attributes = logAttributes
         )
 
         measurement.start()
@@ -105,10 +86,7 @@ internal class BTPinCollector(
                 val error = forageApiError.errors[0]
                 logger.e(
                     "[BT] Received an error while submitting balance request to BasisTheory: $error.message",
-                    attributes = mapOf(
-                        "merchant_ref" to merchantAccount,
-                        "payment_method_ref" to paymentMethodRef
-                    )
+                    attributes = logAttributes
                 )
                 return ForageApiResponse.Failure(
                     listOf(
@@ -122,24 +100,17 @@ internal class BTPinCollector(
             } catch (_: JSONException) { }
             logger.i(
                 "[BT] Received successful response from BasisTheory",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_method_ref" to paymentMethodRef
-                )
+                attributes = logAttributes
             )
 
             measurement.setHttpStatusCode(200).logResult()
-
             return ForageApiResponse.Success(forageResponse.toString())
         }
 
         val btErrorResponse = response.exceptionOrNull()
         logger.e(
             "[BT] Received BasisTheory API exception on balance check: $btErrorResponse",
-            attributes = mapOf(
-                "merchant_ref" to merchantAccount,
-                "payment_method_ref" to paymentMethodRef
-            )
+            attributes = logAttributes
         )
 
         val unknownBtStatusCode = 500
@@ -157,35 +128,18 @@ internal class BTPinCollector(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
+        val logAttributes = mapOf(
+            "merchant_ref" to merchantAccount,
+            "payment_ref" to paymentRef
+        )
+
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            logger.w(
-                "[BT] User attempted to submit an invalid PIN",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_ref" to paymentRef
-                )
-            )
-            return ForageApiResponse.Failure(
-                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
-            )
+            return returnIncompletePinError(logAttributes, logger)
         }
 
         val bt = buildBt()
-
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val requestPath = capturePaymentPath(paymentRef)
-        val method = HttpMethod.POST
-
-        val measurement = VaultProxyResponseMonitor.newMeasurement(
-            vault = vaultType,
-            userAction = UserAction.CAPTURE,
-            logger
-        )
-            .setPath(requestPath)
-            .setMethod(method.toString())
-        // ------------------------------------------------------
+        val measurement = setupMeasurement(capturePaymentPath(paymentRef), UserAction.CAPTURE)
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = buildHeaders(encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
@@ -198,10 +152,7 @@ internal class BTPinCollector(
 
         logger.i(
             "[BT] Sending payment capture to BasisTheory",
-            attributes = mapOf(
-                "merchant_ref" to merchantAccount,
-                "payment_ref" to paymentRef
-            )
+            attributes = logAttributes
         )
 
         measurement.start()
@@ -220,10 +171,7 @@ internal class BTPinCollector(
                 val error = forageApiError.errors[0]
                 logger.e(
                     "[BT] Received an error while submitting capture request to BasisTheory: $error.message",
-                    attributes = mapOf(
-                        "merchant_ref" to merchantAccount,
-                        "payment_ref" to paymentRef
-                    )
+                    attributes = logAttributes
                 )
 
                 // Error code hardcoded as 400 because of lack of information
@@ -242,10 +190,7 @@ internal class BTPinCollector(
             } catch (_: JSONException) { }
             logger.i(
                 "[BT] Received successful response from BasisTheory",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_ref" to paymentRef
-                )
+                attributes = logAttributes
             )
 
             // Status Code hardcoded because of lack of knowledge
@@ -257,10 +202,7 @@ internal class BTPinCollector(
         val btErrorResponse = response.exceptionOrNull()
         logger.e(
             "[BT] Received BasisTheory API exception on payment capture: $btErrorResponse",
-            attributes = mapOf(
-                "merchant_ref" to merchantAccount,
-                "payment_ref" to paymentRef
-            )
+            attributes = logAttributes
         )
 
         val unknownBtStatusCode = 500
@@ -278,18 +220,13 @@ internal class BTPinCollector(
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
+        val logAttributes = mapOf(
+            "merchant_ref" to merchantAccount,
+            "payment_ref" to paymentRef
+        )
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!pinForageEditText.getElementState().isComplete) {
-            logger.w(
-                "[BT] User attempted to submit an invalid PIN",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_ref" to paymentRef
-                )
-            )
-            return ForageApiResponse.Failure(
-                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
-            )
+            return returnIncompletePinError(logAttributes, logger)
         }
 
         val bt = buildBt()
@@ -302,18 +239,18 @@ internal class BTPinCollector(
             )
             path = collectPinPath(paymentRef)
         }
+        val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.COLLECT_PIN)
 
         logger.i(
             "[BT] Sending pin cache to BasisTheory",
-            attributes = mapOf(
-                "merchant_ref" to merchantAccount,
-                "payment_ref" to paymentRef
-            )
+            attributes = logAttributes
         )
 
+        measurement.start()
         val response = runCatching {
             bt.proxy.post(proxyRequest)
         }
+        measurement.end()
 
         // MUST reset the PIN value after submitting
         pinForageEditText.getTextElement().setText("")
@@ -325,14 +262,12 @@ internal class BTPinCollector(
                 val error = forageApiError.errors[0]
                 logger.e(
                     "[BT] Received an error while submitting pin cache request to BasisTheory: $error.message",
-                    attributes = mapOf(
-                        "merchant_ref" to merchantAccount,
-                        "payment_ref" to paymentRef
-                    )
+                    attributes = logAttributes
                 )
 
                 // Error code hardcoded as 400 because of lack of information
                 val httpStatusCode = 400
+                measurement.setHttpStatusCode(httpStatusCode).setForageErrorCode(error.code).logResult()
                 return ForageApiResponse.Failure(
                     listOf(
                         ForageError(
@@ -345,25 +280,27 @@ internal class BTPinCollector(
             } catch (_: JSONException) { }
             logger.i(
                 "[BT] Received successful response from BasisTheory",
-                attributes = mapOf(
-                    "merchant_ref" to merchantAccount,
-                    "payment_ref" to paymentRef
-                )
+                attributes = logAttributes
             )
+
+            // Status Code hardcoded because of lack of knowledge
+            val httpStatusCode = 200
+            measurement.setHttpStatusCode(httpStatusCode).logResult()
 
             return ForageApiResponse.Success(forageResponse.toString())
         }
         val btErrorResponse = response.exceptionOrNull()
         logger.e(
             "[BT] Received BasisTheory API exception while caching pin: $btErrorResponse",
-            attributes = mapOf(
-                "merchant_ref" to merchantAccount,
-                "payment_ref" to paymentRef
-            )
+            attributes = logAttributes
         )
+
+        val unknownBtStatusCode = 500
+        measurement.setHttpStatusCode(unknownBtStatusCode).logResult()
+
         return ForageApiResponse.Failure(
             listOf(
-                ForageError(500, "unknown_server_error", "Unknown Server Error")
+                ForageError(unknownBtStatusCode, "unknown_server_error", "Unknown Server Error")
             )
         )
     }
@@ -385,6 +322,16 @@ internal class BTPinCollector(
             )
         )
         throw RuntimeException("BT token not found on card!")
+    }
+
+    private fun setupMeasurement(path: String, action: UserAction): NetworkMonitor {
+        return VaultProxyResponseMonitor.newMeasurement(
+            vault = vaultType,
+            userAction = action,
+            logger
+        )
+            .setPath(path)
+            .setMethod(HTTPMethod.POST.toString())
     }
 
     companion object {
@@ -414,6 +361,16 @@ internal class BTPinCollector(
             headers[ForageConstants.Headers.CONTENT_TYPE] = "application/json"
             headers[ForageConstants.Headers.TRACE_ID] = traceId
             return headers
+        }
+
+        internal fun returnIncompletePinError(logAttributes: Map<String, String>, logger: Log): ForageApiResponse.Failure {
+            logger.w(
+                "[BT] User attempted to submit an invalid PIN",
+                attributes = logAttributes
+            )
+            return ForageApiResponse.Failure(
+                ForageConstants.ErrorResponseObjects.INCOMPLETE_PIN_ERROR
+            )
         }
 
         private fun balancePath(paymentMethodRef: String) =

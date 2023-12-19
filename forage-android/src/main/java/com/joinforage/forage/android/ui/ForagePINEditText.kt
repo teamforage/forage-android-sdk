@@ -106,14 +106,12 @@ class ForagePINEditText @JvmOverloads constructor(
         LDManager.initialize(context.applicationContext as Application, ldConfig)
 
         // decide on a vault provider and the corresponding vault wrapper
-//        val vaultType = LDManager.getVaultProvider(logger)
-//        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
-//            btVaultWrapper
-//        } else {
-//            vgsVaultWrapper
-//        }
-
-        _SET_ONLY_vault = vgsVaultWrapper
+        val vaultType = LDManager.getVaultProvider(logger)
+        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
+            btVaultWrapper
+        } else {
+            vgsVaultWrapper
+        }
 
         _linearLayout.addView(vault.getUnderlying())
         _linearLayout.addView(getLogoImageViewLayout(context))

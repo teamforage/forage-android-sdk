@@ -38,6 +38,7 @@ internal class LogEntry(message: String, attributes: Map<String, Any?>) {
 
 internal class MockLogger : Log {
     val infoLogs: MutableList<LogEntry> = mutableListOf()
+    val warnLogs: MutableList<LogEntry> = mutableListOf()
     val errorLogs: MutableList<LogEntry> = mutableListOf()
 
     override fun initializeDD(context: Context, forageConfig: ForageConfig) {
@@ -53,7 +54,7 @@ internal class MockLogger : Log {
     }
 
     override fun w(msg: String, attributes: Map<String, Any?>) {
-        return
+        warnLogs.add(LogEntry(msg, attributes))
     }
 
     override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
