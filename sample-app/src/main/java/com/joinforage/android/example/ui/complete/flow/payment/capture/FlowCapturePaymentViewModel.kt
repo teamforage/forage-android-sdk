@@ -136,4 +136,36 @@ class FlowCapturePaymentViewModel @Inject constructor(
                 }
             }
         }
+
+    fun collectPinCash(pinForageEditText: ForagePINEditText) =
+        viewModelScope.launch {
+            _uiState.value = _uiState.value!!.copy(isLoading = true)
+
+            val response = ForageSDK().collectPinForDeferredCapture(
+                CollectPinParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentRef = cashPaymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    Log.d(TAG, "Collect Pin Cash Response: ${response.data}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        cashResponse = "Successfully Cached Pin!"
+                    )
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Collect Pin Cash Response: ${response.errors[0].message}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        cashResponse = response.errors[0].message,
+                        cashResponseError = response.errors[0].toString()
+                    )
+                }
+            }
+        }
 }

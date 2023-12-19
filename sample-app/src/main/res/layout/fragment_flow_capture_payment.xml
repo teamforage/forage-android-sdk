@@ -116,23 +116,34 @@
                 isVisible="@{viewModel.uiState.captureCashVisible}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/captureNonSnapAmount"
+                app:layout_constraintBottom_toTopOf="@id/cashContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/nonSnapAmountLayout" />
 
-            <Button
-                android:id="@+id/captureNonSnapAmount"
+            <LinearLayout
+                android:id="@+id/cashContainer"
                 isVisible="@{viewModel.uiState.captureCashVisible}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="4dp"
-                android:text="@string/capture_non_snap"
-                app:layout_constraintTop_toBottomOf="@id/cashPinEditText"
+                android:orientation="horizontal"
+                android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/cashResponse" />
+                app:layout_constraintTop_toBottomOf="@id/cashPinEditText">
+                <Button
+                    android:id="@+id/collectPinCash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/collect_pin_cash" />
+                <Button
+                    android:id="@+id/captureCashAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/capture_cash"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/cashResponse"
@@ -140,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="@{viewModel.uiState.cashResponse}"
-                app:layout_constraintTop_toBottomOf="@id/captureNonSnapAmount"
+                app:layout_constraintTop_toBottomOf="@id/cashContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/cashResponseError" />
