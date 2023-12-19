@@ -137,7 +137,33 @@ class CollectPinRepositoryTest : MockServerSuite() {
         assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
-    // TODO: Need to write a test for failure of the endpoint!
+    @Test
+    fun `it should fail on pin collection`() = runTest {
+        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+        server.givenPaymentRef().returnsPayment()
+        server.givenPaymentRef().returnsPayment()
+        server.givenPaymentMethodRef().returnsPaymentMethod()
+
+        val expectedMessage = "You don't have access to this endpoint"
+        val expectedForageCode = "permission_denied"
+        val expectedStatusCode = 401
+
+        pinCollector.setCollectPinResponse(
+            paymentRef = testData.paymentRef,
+            cardToken = testData.cardToken,
+            encryptionKey = testData.encryptionKey,
+            response = ForageApiResponse.Failure(listOf(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
+        )
+
+        val response = repository.collectPin(testData.paymentRef)
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+        val failureResponse = response as ForageApiResponse.Failure
+
+        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+    }
 
     @Test
     fun `it should succeed`() = runTest {
@@ -149,14 +175,12 @@ class CollectPinRepositoryTest : MockServerSuite() {
             paymentRef = testData.paymentRef,
             cardToken = testData.cardToken,
             encryptionKey = testData.encryptionKey,
-            // TODO: Need to fix this response to be PIN related
-            response = ForageApiResponse.Success("Success!")
+            response = ForageApiResponse.Success("")
         )
 
         val response = repository.collectPin(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
-        // TODO: Need to fix this response to be PIN related
         when (response) {
             is ForageApiResponse.Success -> {
                 assertThat(true)

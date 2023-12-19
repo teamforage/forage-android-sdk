@@ -74,8 +74,7 @@ internal interface ForageSDKInterface {
      * reference to a ForagePINEditText and a Payment ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the
-     * TODO: WHAT DOES IT RETURN ON SUCCESS?
-     * pin collection. On success, returns a confirmation of the transaction.
+     * pin collection. On success, returns nothing.
      * On failure, provides a detailed error response.
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
@@ -126,7 +125,7 @@ data class CapturePaymentParams(
 )
 
 /**
- * Data class representing the parameters required for collecting the PIN for a payment on an EBT card.
+ * Data class representing the parameters required for collecting the PIN for an EBT payment.
  *
  * @property foragePinEditText A UI ForagePINEditText UI component. Importantly,
  * you must have called .setForageConfig() already

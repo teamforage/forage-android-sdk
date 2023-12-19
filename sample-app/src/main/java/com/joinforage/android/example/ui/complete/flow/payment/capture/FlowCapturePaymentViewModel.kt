@@ -90,7 +90,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        snapResponse = response.data
+                        snapResponse = "Successfully Cached Pin!"
                     )
                 }
                 is ForageApiResponse.Failure -> {

@@ -649,7 +649,7 @@ Please reference [Step 3 of Performing a Balance Check](#step-3-call-setforageco
 
 ### Step 4: Collect the pin for the EBT payment
 
-The ForageSDK exposes the following function to collect a pin for an EBT payment and defer capture to the server:
+The ForageSDK provides a method to collect a customer's PIN for an EBT payment and defer the capture of the payment to the server.
 
 ```kotlin
 data class CollectPinParams(

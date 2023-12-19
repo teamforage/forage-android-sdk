@@ -288,7 +288,7 @@ internal class VGSPinCollector(
 
                         measurement.setHttpStatusCode(response.code).logResult()
                         logger.e(
-                            "[VGS] Received an error while submitting capture request to VGS: ${response.body}",
+                            "[VGS] Received an unknown error while submitting capture request to VGS: ${response.body}",
                             attributes = mapOf(
                                 "merchant_ref" to merchantAccount,
                                 "payment_ref" to paymentRef
@@ -296,7 +296,7 @@ internal class VGSPinCollector(
                         )
                         continuation.resumeWith(
                             Result.success(
-                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "unknown_server_error", "Unknown Server Error")))
                             )
                         )
                     }
@@ -392,7 +392,7 @@ internal class VGSPinCollector(
                         )
                         continuation.resumeWith(
                             Result.success(
-                                ForageApiResponse.Success(response.body!!)
+                                ForageApiResponse.Success("")
                             )
                         )
                     }
@@ -428,7 +428,7 @@ internal class VGSPinCollector(
                         } catch (_: JSONException) { }
 
                         logger.e(
-                            "[VGS] Received an error while submitting pin cache request to VGS: ${response.body}",
+                            "[VGS] Received an unknown error while submitting pin cache request to VGS: ${response.body}",
                             attributes = mapOf(
                                 "merchant_ref" to merchantAccount,
                                 "payment_ref" to paymentRef
@@ -436,7 +436,7 @@ internal class VGSPinCollector(
                         )
                         continuation.resumeWith(
                             Result.success(
-                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "user_error", "Invalid Data")))
+                                ForageApiResponse.Failure(listOf(ForageError(response.errorCode, "unknown_server_error", "Unknown Server Error")))
                             )
                         )
                     }
