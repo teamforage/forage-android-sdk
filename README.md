@@ -506,9 +506,9 @@ class BalanceCheckViewModel @Inject constructor(
 
 ### Step 0: Create a `Payment` object
 
-Send a POST request to Forage's `/payments/` endpoint [to create a
+Send a `POST` request to Forage's `/payments/` endpoint [to create a
 `Payment` object](https://docs.joinforage.app/reference/create-a-payment).
-You need the `ref` of the `Payment` within the POST's response for Step 3.
+You need the `ref` of the `Payment` within the `/payments` response for Step 3.
 
 ### Step 1: Add the `ForagePINEditText` UI component
 
@@ -625,13 +625,13 @@ class PaymentCaptureViewModel @Inject constructor(
 It is the `funding_type` on a [Payment object](#step-0-create-a-payment-object)
 where you indicate whether a `Payment` will capture (SNAP or EBT Cash).
 
-## Collecting the pin for a payment
+## Collecting the PIN for a deferred EBT payment
 
 ### Step 0: Create a `Payment` object
 
-Send a POST request to Forage's `/payments/` endpoint [to create a
+Send a `POST` request to Forage's `/payments/` endpoint [to create a
 `Payment` object](https://docs.joinforage.app/reference/create-a-payment).
-You need the `ref` of the `Payment` within the POST's response for Step 3.
+You need the `ref` of the `Payment` within the `/payments` response for Step 3.
 
 ### Step 1: Add the `ForagePINEditText` UI component
 
@@ -681,7 +681,7 @@ class PinCollectFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // establish bindings to ForagePANEditText
+        // establish bindings to ForagePINEditText
         _binding = PinCollectFragmentBinding.inflate(inflater, container, false)
         val snapEditText = binding.snapPinEditText
         val cashEditText = binding.cashPinEditText
@@ -694,7 +694,7 @@ class PinCollectFragment : Fragment() {
         snapEditText.setForageConfig(forageConfig)
         cashEditText.setForageConfig(forageConfig)
 
-        // then freely call other methods on ForagePANEditText binding
+        // then freely call other methods on ForagePINEditText binding
         // ...
     }
 }

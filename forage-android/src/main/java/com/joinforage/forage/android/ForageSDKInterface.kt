@@ -68,13 +68,13 @@ internal interface ForageSDKInterface {
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
 
     /**
-     * Collects the pin for a Forage Payment associated with an EBT card
+     * Collect a customer's PIN for an EBT payment and defer the capture of the payment to the server
      *
      * @param params The parameters required for pin collection, including
      * reference to a ForagePINEditText and a Payment ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the
-     * pin collection. On success, returns nothing.
+     * PIN collection. On success, returns `Nothing`.
      * On failure, provides a detailed error response.
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
