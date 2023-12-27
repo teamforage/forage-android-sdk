@@ -22,7 +22,7 @@
     <string name="merchant_account">8000009</string>
     <string name="pin">PIN</string>
     <string name="capture_snap">Capture SNAP</string>
-    <string name="collect_pin_snap">Collect SNAP PIN</string>
+    <string name="defer_capture_snap">Defer SNAP</string>
     <string name="capture_cash">Capture EBT Cash</string>
-    <string name="collect_pin_cash">Collect EBT Cash PIN</string>
+    <string name="defer_capture_cash">Defer EBT Cash</string>
 </resources>

@@ -13,7 +13,7 @@
 - [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
 - [Performing a balance check](#performing-a-balance-check)
 - [Capturing a payment](#capturing-a-payment)
-- [Submitting the pin for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
+- [Submitting the PIN for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the Sample App](#running-the-sample-app)
 - [Dependencies](#dependencies)
@@ -28,7 +28,7 @@ In addition to [UI components](#ui-components), the SDK provides APIs for:
 1. [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
 2. [Performing a balance check](#performing-a-balance-check)
 3. [Capturing a payment](#capturing-a-payment)
-4. [Submitting the pin for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
+4. [Submitting the PIN for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
 
 Read on for installation instructions and details about the APIs.
 
@@ -647,7 +647,7 @@ Please reference [Step 2 of Performing a Balance Check](#step-2-customizing-fora
 
 Please reference [Step 3 of Performing a Balance Check](#step-3-call-setforageconfig)
 
-### Step 4: Submit the pin for the deferred EBT payment
+### Step 4: Submit the PIN for the deferred EBT payment
 
 The ForageSDK provides a method to submit a customer's PIN for an EBT payment and defer the capture of the payment to the server.
 
