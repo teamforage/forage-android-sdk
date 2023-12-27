@@ -90,7 +90,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        snapResponse = "Successfully Captured Pin!"
+                        snapResponse = "deferPaymentCapture: success"
                     )
                 }
                 is ForageApiResponse.Failure -> {
@@ -154,7 +154,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        cashResponse = "Successfully Captured Pin!"
+                        cashResponse = "deferPaymentCapture: success"
                     )
                 }
                 is ForageApiResponse.Failure -> {
