@@ -14,7 +14,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
-import com.joinforage.forage.android.network.data.DeferCapturePaymentRepository
+import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
@@ -297,7 +297,7 @@ class ForageSDK : ForageSDKInterface {
             )
         )
 
-        return DeferCapturePaymentRepository(
+        return DeferPaymentCaptureRepository(
             pinCollector = foragePinEditText.getCollector(
                 merchantId
             ),

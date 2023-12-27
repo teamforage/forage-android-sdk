@@ -24,8 +24,8 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DeferCapturePaymentRepositoryTest : MockServerSuite() {
-    private lateinit var repository: DeferCapturePaymentRepository
+class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
+    private lateinit var repository: DeferPaymentCaptureRepository
     private val pinCollector = TestPinCollector()
     private val testData = ExpectedData()
 
@@ -34,7 +34,7 @@ class DeferCapturePaymentRepositoryTest : MockServerSuite() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = DeferCapturePaymentRepository(
+        repository = DeferPaymentCaptureRepository(
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),

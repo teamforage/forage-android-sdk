@@ -146,7 +146,7 @@ internal class VGSPinCollector(
         val vgsCollect = buildVGSCollect(context)
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
         val inputField = pinForageEditText.getTextInputEditText()
-        val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.CAPTURE)
+        val measurement = setupMeasurement(capturePaymentPath(paymentRef), UserAction.CAPTURE)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
@@ -240,7 +240,7 @@ internal class VGSPinCollector(
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
         val inputField = pinForageEditText.getTextInputEditText()
 
-        val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.DEFER_CAPTURE)
+        val measurement = setupMeasurement(deferPaymentCapturePath(paymentRef), UserAction.DEFER_CAPTURE)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
@@ -292,7 +292,7 @@ internal class VGSPinCollector(
 
         val request: VGSRequest = VGSRequest.VGSRequestBuilder()
             .setMethod(HTTPMethod.POST)
-            .setPath(collectPinPath(paymentRef))
+            .setPath(deferPaymentCapturePath(paymentRef))
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
@@ -424,7 +424,7 @@ internal class VGSPinCollector(
         private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
 
-        private fun collectPinPath(paymentRef: String) =
+        private fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
     }
 }

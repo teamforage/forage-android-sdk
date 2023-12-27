@@ -237,9 +237,9 @@ internal class BTPinCollector(
                 pin = pinForageEditText.getTextElement(),
                 card_number_token = cardToken
             )
-            path = deferCapturePaymentPath(paymentRef)
+            path = deferPaymentCapturePath(paymentRef)
         }
-        val measurement = setupMeasurement(deferCapturePaymentPath(paymentRef), UserAction.DEFER_CAPTURE)
+        val measurement = setupMeasurement(deferPaymentCapturePath(paymentRef), UserAction.DEFER_CAPTURE)
 
         logger.i(
             "[BT] Sending defer payment capture to BasisTheory",
@@ -379,7 +379,7 @@ internal class BTPinCollector(
         private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
 
-        private fun deferCapturePaymentPath(paymentRef: String) =
+        private fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
     }
 }

@@ -9,7 +9,7 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 
-internal class DeferCapturePaymentRepository(
+internal class DeferPaymentCaptureRepository(
     private val pinCollector: PinCollector,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
