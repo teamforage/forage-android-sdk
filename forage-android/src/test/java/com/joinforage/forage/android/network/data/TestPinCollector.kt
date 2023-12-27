@@ -17,7 +17,7 @@ internal class TestPinCollector : PinCollector {
     private var submitPaymentCaptureResponses =
         HashMap<CapturePaymentWrapper, ForageApiResponse<String>>()
     private var submitCollectPinResponses =
-        HashMap<CollectPinWrapper, ForageApiResponse<String>>()
+        HashMap<DeferPaymentCaptureWrapper, ForageApiResponse<String>>()
 
     override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
@@ -49,13 +49,13 @@ internal class TestPinCollector : PinCollector {
         )
     }
 
-    override suspend fun collectPinForDeferredCapture(
+    override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
         return submitCollectPinResponses.getOrDefault(
-            CollectPinWrapper(
+            DeferPaymentCaptureWrapper(
                 paymentRef = paymentRef,
                 cardToken = cardToken,
                 encryptionKey = encryptionKey
@@ -119,7 +119,7 @@ internal class TestPinCollector : PinCollector {
         response: ForageApiResponse<String>
     ) {
         submitCollectPinResponses[
-            CollectPinWrapper(
+            DeferPaymentCaptureWrapper(
                 paymentRef,
                 cardToken,
                 encryptionKey
@@ -140,7 +140,7 @@ internal class TestPinCollector : PinCollector {
         val encryptionKey: String
     )
 
-    private data class CollectPinWrapper(
+    private data class DeferPaymentCaptureWrapper(
         val paymentRef: String,
         val cardToken: String,
         val encryptionKey: String

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.base.BaseViewModel
 import com.joinforage.android.example.ui.complete.flow.payment.capture.model.FlowCapturePaymentUIState
 import com.joinforage.forage.android.CapturePaymentParams
-import com.joinforage.forage.android.CollectPinParams
+import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -73,12 +73,12 @@ class FlowCapturePaymentViewModel @Inject constructor(
             }
         }
 
-    fun collectPinSnap(pinForageEditText: ForagePINEditText) =
+    fun deferPaymentCaptureSnap(pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
-            val response = ForageSDK().collectPinForDeferredCapture(
-                CollectPinParams(
+            val response = ForageSDK().deferPaymentCapture(
+                DeferPaymentCaptureParams(
                     foragePinEditText = pinForageEditText,
                     paymentRef = snapPaymentRef
                 )
@@ -86,15 +86,15 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
             when (response) {
                 is ForageApiResponse.Success -> {
-                    Log.d(TAG, "Collect Pin Snap Response: ${response.data}")
+                    Log.d(TAG, "Defer Capture Snap Response: ${response.data}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        snapResponse = "Successfully Cached Pin!"
+                        snapResponse = "Successfully Captured Pin!"
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Collect Pin Snap Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Defer Capture Snap Response: ${response.errors[0].message}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
@@ -137,12 +137,12 @@ class FlowCapturePaymentViewModel @Inject constructor(
             }
         }
 
-    fun collectPinCash(pinForageEditText: ForagePINEditText) =
+    fun deferPaymentCaptureCash(pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
-            val response = ForageSDK().collectPinForDeferredCapture(
-                CollectPinParams(
+            val response = ForageSDK().deferPaymentCapture(
+                DeferPaymentCaptureParams(
                     foragePinEditText = pinForageEditText,
                     paymentRef = cashPaymentRef
                 )
@@ -150,15 +150,15 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
             when (response) {
                 is ForageApiResponse.Success -> {
-                    Log.d(TAG, "Collect Pin Cash Response: ${response.data}")
+                    Log.d(TAG, "Defer Capture Cash Response: ${response.data}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        cashResponse = "Successfully Cached Pin!"
+                        cashResponse = "Successfully Captured Pin!"
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Collect Pin Cash Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Defer Capture Cash Response: ${response.errors[0].message}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,

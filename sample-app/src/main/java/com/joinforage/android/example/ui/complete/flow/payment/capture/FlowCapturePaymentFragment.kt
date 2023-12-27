@@ -45,7 +45,7 @@ class FlowCapturePaymentFragment : BaseFragment<FragmentFlowCapturePaymentBindin
         }
 
         binding.collectPinSnap.setOnClickListener {
-            viewModel.collectPinSnap(
+            viewModel.deferPaymentCaptureSnap(
                 binding.snapPinEditText
             )
             it.context.hideKeyboard(it)
@@ -59,7 +59,7 @@ class FlowCapturePaymentFragment : BaseFragment<FragmentFlowCapturePaymentBindin
         }
 
         binding.collectPinCash.setOnClickListener {
-            viewModel.collectPinCash(
+            viewModel.deferPaymentCaptureCash(
                 binding.cashPinEditText
             )
             it.context.hideKeyboard(it)

@@ -22,7 +22,7 @@ internal interface PinCollector {
         encryptionKey: String
     ): ForageApiResponse<String>
 
-    suspend fun collectPinForDeferredCapture(
+    suspend fun submitDeferPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String

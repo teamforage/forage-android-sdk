@@ -215,7 +215,7 @@ internal class BTPinCollector(
         )
     }
 
-    override suspend fun collectPinForDeferredCapture(
+    override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
@@ -237,12 +237,12 @@ internal class BTPinCollector(
                 pin = pinForageEditText.getTextElement(),
                 card_number_token = cardToken
             )
-            path = collectPinPath(paymentRef)
+            path = deferCapturePaymentPath(paymentRef)
         }
-        val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.COLLECT_PIN)
+        val measurement = setupMeasurement(deferCapturePaymentPath(paymentRef), UserAction.DEFER_CAPTURE)
 
         logger.i(
-            "[BT] Sending pin cache to BasisTheory",
+            "[BT] Sending defer payment capture to BasisTheory",
             attributes = logAttributes
         )
 
@@ -261,7 +261,7 @@ internal class BTPinCollector(
                 val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse.toString())
                 val error = forageApiError.errors[0]
                 logger.e(
-                    "[BT] Received an error while submitting pin cache request to BasisTheory: $error.message",
+                    "[BT] Received an error while submitting defer payment capture request to BasisTheory: $error.message",
                     attributes = logAttributes
                 )
 
@@ -291,7 +291,7 @@ internal class BTPinCollector(
         }
         val btErrorResponse = response.exceptionOrNull()
         logger.e(
-            "[BT] Received BasisTheory API exception while caching pin: $btErrorResponse",
+            "[BT] Received BasisTheory API exception while calling deferPaymentCapture: $btErrorResponse",
             attributes = logAttributes
         )
 
@@ -379,7 +379,7 @@ internal class BTPinCollector(
         private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
 
-        private fun collectPinPath(paymentRef: String) =
+        private fun deferCapturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
     }
 }

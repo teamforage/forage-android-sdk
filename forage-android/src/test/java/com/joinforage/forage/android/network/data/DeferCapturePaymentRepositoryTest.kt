@@ -19,14 +19,13 @@ import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
-import me.jorgecastillo.hiroaki.matchers.times
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CollectPinRepositoryTest : MockServerSuite() {
-    private lateinit var repository: CollectPinRepository
+class DeferCapturePaymentRepositoryTest : MockServerSuite() {
+    private lateinit var repository: DeferCapturePaymentRepository
     private val pinCollector = TestPinCollector()
     private val testData = ExpectedData()
 
@@ -35,7 +34,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = CollectPinRepository(
+        repository = DeferCapturePaymentRepository(
             pinCollector = pinCollector,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
@@ -65,7 +64,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.collectPin(testData.paymentRef)
+        val response = repository.deferPaymentCapture(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -88,7 +87,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
             response = failureResponse
         )
 
-        val response = repository.collectPin(testData.paymentRef)
+        val response = repository.deferPaymentCapture(testData.paymentRef)
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -98,7 +97,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsFailedPayment()
 
-        val response = repository.collectPin(testData.paymentRef)
+        val response = repository.deferPaymentCapture(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -116,7 +115,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsFailedPaymentMethod()
 
-        val response = repository.collectPin(testData.paymentRef)
+        val response = repository.deferPaymentCapture(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -147,7 +146,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
             response = ForageApiResponse.Failure(listOf(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
         )
 
-        val response = repository.collectPin(testData.paymentRef)
+        val response = repository.deferPaymentCapture(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -170,7 +169,7 @@ class CollectPinRepositoryTest : MockServerSuite() {
             response = ForageApiResponse.Success("")
         )
 
-        val response = repository.collectPin(testData.paymentRef)
+        val response = repository.deferPaymentCapture(testData.paymentRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {

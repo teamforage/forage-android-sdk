@@ -219,7 +219,7 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun collectPinForDeferredCapture(
+    override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
@@ -240,7 +240,7 @@ internal class VGSPinCollector(
         vgsCollect.bindView(pinForageEditText.getTextInputEditText())
         val inputField = pinForageEditText.getTextInputEditText()
 
-        val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.COLLECT_PIN)
+        val measurement = setupMeasurement(collectPinPath(paymentRef), UserAction.DEFER_CAPTURE)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
@@ -267,21 +267,21 @@ internal class VGSPinCollector(
                         // Attempt to see if this error is a Forage error
                         try {
                             logger.e(
-                                "[VGS] Received an error while submitting pin cache request to VGS: ${response.body}",
+                                "[VGS] Received an error while submitting defer payment capture request to VGS: ${response.body}",
                                 attributes = logAttributes
                             )
                             returnForageError(response, measurement, continuation)
                             return
                         } catch (_: JSONException) { }
                         logger.e(
-                            "[VGS] Received an unknown error while submitting pin cache request to VGS: ${response.body}",
+                            "[VGS] Received an unknown error while submitting defer payment capture request to VGS: ${response.body}",
                             attributes = logAttributes
                         )
                         returnVgsError(response, measurement, continuation)
                     }
                     null -> {
                         logger.e(
-                            "[VGS] Received an unknown error while submitting pin cache request to VGS",
+                            "[VGS] Received an unknown error while submitting defer payment capture request to VGS",
                             attributes = logAttributes
                         )
                         returnUnknownError(measurement, continuation)
@@ -305,7 +305,7 @@ internal class VGSPinCollector(
             .build()
 
         logger.i(
-            "[VGS] Sending pin cache to VGS",
+            "[VGS] Sending defer payment capture to VGS",
             attributes = logAttributes
         )
 

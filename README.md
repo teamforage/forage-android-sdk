@@ -13,7 +13,7 @@
 - [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
 - [Performing a balance check](#performing-a-balance-check)
 - [Capturing a payment](#capturing-a-payment)
-- [Collecting the pin for a payment](#collecting-the-pin-for-a-payment)
+- [Submitting the pin for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the Sample App](#running-the-sample-app)
 - [Dependencies](#dependencies)
@@ -28,7 +28,7 @@ In addition to [UI components](#ui-components), the SDK provides APIs for:
 1. [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
 2. [Performing a balance check](#performing-a-balance-check)
 3. [Capturing a payment](#capturing-a-payment)
-4. [Collecting the pin for a payment](#collecting-the-pin-for-a-payment)
+4. [Submitting the pin for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
 
 Read on for installation instructions and details about the APIs.
 
@@ -625,7 +625,7 @@ class PaymentCaptureViewModel @Inject constructor(
 It is the `funding_type` on a [Payment object](#step-0-create-a-payment-object)
 where you indicate whether a `Payment` will capture (SNAP or EBT Cash).
 
-## Collecting the PIN for a deferred EBT payment
+## Submitting the PIN for a deferred payment
 
 ### Step 0: Create a `Payment` object
 
@@ -647,33 +647,33 @@ Please reference [Step 2 of Performing a Balance Check](#step-2-customizing-fora
 
 Please reference [Step 3 of Performing a Balance Check](#step-3-call-setforageconfig)
 
-### Step 4: Collect the pin for the EBT payment
+### Step 4: Submit the pin for the deferred EBT payment
 
-The ForageSDK provides a method to collect a customer's PIN for an EBT payment and defer the capture of the payment to the server.
+The ForageSDK provides a method to submit a customer's PIN for an EBT payment and defer the capture of the payment to the server.
 
 ```kotlin
-data class CollectPinParams(
+data class DeferPaymentCaptureParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String
 )
 
-suspend fun collectPinForDeferredCapture(
-    params: CollectPinParams
+suspend fun deferPaymentCapture(
+    params: DeferPaymentCaptureParams
 ): ForageApiResponse<String>
 ```
 
 #### Parameter definitions
 
-- `CollectPinParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
-- `CollectPinParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
+- `DeferPaymentCaptureParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
+- `DeferPaymentCaptureParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
 
 #### Example
 
 ```kotlin
 @AndroidEntryPoint
-class PinCollectFragment : Fragment() {
-    private val viewModel: PinCollectViewModel by viewModels()
-    private var _binding: PinCollectFragmentBinding? = null
+class DeferPaymentCaptureFragment : Fragment() {
+    private val viewModel: DeferPaymentCaptureViewModel by viewModels()
+    private var _binding: DeferPaymentCaptureFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -682,7 +682,7 @@ class PinCollectFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // establish bindings to ForagePINEditText
-        _binding = PinCollectFragmentBinding.inflate(inflater, container, false)
+        _binding = DeferPaymentCaptureFragmentBinding.inflate(inflater, container, false)
         val snapEditText = binding.snapPinEditText
         val cashEditText = binding.cashPinEditText
 
@@ -702,22 +702,22 @@ class PinCollectFragment : Fragment() {
 
 ```kotlin
 @HiltViewModel
-class PinCollectViewModel @Inject constructor(
+class DeferPaymentCaptureViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val moshi: Moshi
 ) : ViewModel() {
     private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    // internal so that PinCollectFragment can access these values
+    // internal so that DeferPaymentCaptureFragment can access these values
     val snapPaymentRef = args.snapPaymentRef
     val cashPaymentRef = args.cashPaymentRef
     val merchantID = args.merchantID
     val sessionToken = args.sessionToken
 
-    fun collectPin(pinForageEditText: ForagePINEditText, paymentRef: String) =
+    fun deferPaymentCapture(pinForageEditText: ForagePINEditText, paymentRef: String) =
         viewModelScope.launch {
-            val response = ForageSDK().collectPinForDeferredCapture(
-                CollectPinParams(
+            val response = ForageSDK().deferPaymentCapture(
+                DeferPaymentCaptureParams(
                     foragePinEditText = pinForageEditText,
                     paymentRef = paymentRef
                 )

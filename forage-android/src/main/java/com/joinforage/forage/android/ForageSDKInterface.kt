@@ -68,19 +68,19 @@ internal interface ForageSDKInterface {
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
 
     /**
-     * Collect a customer's PIN for an EBT payment and defer the capture of the payment to the server
+     * Capture a customer's PIN for an EBT payment and defer the capture of the payment to the server
      *
-     * @param params The parameters required for pin collection, including
+     * @param params The parameters required for pin capture, including
      * reference to a ForagePINEditText and a Payment ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the
-     * PIN collection. On success, returns `Nothing`.
+     * PIN capture. On success, returns `Nothing`.
      * On failure, provides a detailed error response.
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    suspend fun collectPinForDeferredCapture(params: CollectPinParams): ForageApiResponse<String>
+    suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String>
 }
 
 /**
@@ -125,13 +125,14 @@ data class CapturePaymentParams(
 )
 
 /**
- * Data class representing the parameters required for collecting the PIN for an EBT payment.
+ * Data class representing the parameters required for capturing the PIN for a deferred EBT payment.
+ * The EBT payment will then be confirmed through a request from the server.
  *
  * @property foragePinEditText A UI ForagePINEditText UI component. Importantly,
  * you must have called .setForageConfig() already
  * @property paymentRef A reference to the intended payment transaction.
  */
-data class CollectPinParams(
+data class DeferPaymentCaptureParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String
 )

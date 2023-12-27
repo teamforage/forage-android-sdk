@@ -14,7 +14,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
-import com.joinforage.forage.android.network.data.CollectPinRepository
+import com.joinforage.forage.android.network.data.DeferCapturePaymentRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
@@ -270,19 +270,19 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Collect a customer's PIN for an EBT payment and defer the capture of the payment to the server
+     * Capture a customer's PIN for an EBT payment and defer the capture of the payment to the server
      *
-     * @param params The parameters required for pin collection, including
+     * @param params The parameters required for pin capture, including
      * reference to a ForagePINEditText and a Payment ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the
-     * PIN collection. On success, returns `Nothing`.
+     * PIN capture. On success, returns `Nothing`.
      * On failure, provides a detailed error response.
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    override suspend fun collectPinForDeferredCapture(params: CollectPinParams): ForageApiResponse<String> {
+    override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
         val config = EnvConfig.fromSessionToken(sessionToken)
@@ -290,14 +290,14 @@ class ForageSDK : ForageSDKInterface {
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
         logger.i(
-            "[HTTP] Submitting pin cache request for Payment $paymentRef",
+            "[HTTP] Submitting defer capture request for Payment $paymentRef",
             attributes = mapOf(
                 "merchant_ref" to merchantId,
                 "payment_ref" to paymentRef
             )
         )
 
-        return CollectPinRepository(
+        return DeferCapturePaymentRepository(
             pinCollector = foragePinEditText.getCollector(
                 merchantId
             ),
@@ -328,7 +328,7 @@ class ForageSDK : ForageSDKInterface {
                 httpUrl = config.baseUrl,
                 logger = logger
             )
-        ).collectPin(
+        ).deferPaymentCapture(
             paymentRef = paymentRef
         )
     }

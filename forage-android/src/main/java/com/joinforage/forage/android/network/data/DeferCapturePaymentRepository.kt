@@ -9,13 +9,13 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 
-internal class CollectPinRepository(
+internal class DeferCapturePaymentRepository(
     private val pinCollector: PinCollector,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val paymentService: PaymentService
 ) {
-    suspend fun collectPin(paymentRef: String): ForageApiResponse<String> {
+    suspend fun deferPaymentCapture(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> getPaymentMethodFromPayment(
                 paymentRef = paymentRef,
@@ -47,7 +47,7 @@ internal class CollectPinRepository(
         encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
-            is ForageApiResponse.Success -> submitCollectPin(
+            is ForageApiResponse.Success -> submitDeferPaymentCapture(
                 paymentRef = paymentRef,
                 cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                 encryptionKey = encryptionKey
@@ -56,12 +56,12 @@ internal class CollectPinRepository(
         }
     }
 
-    private suspend fun submitCollectPin(
+    private suspend fun submitDeferPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        return pinCollector.collectPinForDeferredCapture(
+        return pinCollector.submitDeferPaymentCapture(
             paymentRef = paymentRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey
