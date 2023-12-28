@@ -111,14 +111,6 @@ class FlowBalanceFragment : Fragment() {
             binding.error.text = it
         }
 
-        viewModel.isNextVisible.observe(viewLifecycleOwner) {
-            if (it == null || !it) {
-                binding.nextButton.visibility = View.GONE
-            } else {
-                binding.nextButton.visibility = View.VISIBLE
-            }
-        }
-
         return root
     }
 
