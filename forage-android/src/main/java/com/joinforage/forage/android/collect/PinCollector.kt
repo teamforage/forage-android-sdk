@@ -10,13 +10,19 @@ internal object CollectorConstants {
 }
 
 internal interface PinCollector {
-    suspend fun collectPinForBalanceCheck(
+    suspend fun submitBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String>
 
-    suspend fun collectPinForCapturePayment(
+    suspend fun submitPaymentCapture(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String
+    ): ForageApiResponse<String>
+
+    suspend fun submitDeferPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String

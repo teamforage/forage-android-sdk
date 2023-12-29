@@ -1,6 +1,5 @@
 package com.joinforage.android.example.ui.complete.flow.payment.capture
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.base.BaseViewModel
 import com.joinforage.android.example.ui.complete.flow.payment.capture.model.FlowCapturePaymentUIState
 import com.joinforage.forage.android.CapturePaymentParams
+import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -41,7 +41,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
     val uiState: LiveData<FlowCapturePaymentUIState> = _uiState
 
-    fun captureSnapAmount(context: Context, pinForageEditText: ForagePINEditText) =
+    fun captureSnapAmount(pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
@@ -73,7 +73,39 @@ class FlowCapturePaymentViewModel @Inject constructor(
             }
         }
 
-    fun captureCashAmount(context: Context, pinForageEditText: ForagePINEditText) =
+    fun deferPaymentCaptureSnap(pinForageEditText: ForagePINEditText) =
+        viewModelScope.launch {
+            _uiState.value = _uiState.value!!.copy(isLoading = true)
+
+            val response = ForageSDK().deferPaymentCapture(
+                DeferPaymentCaptureParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentRef = snapPaymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    Log.d(TAG, "Defer Capture Snap Response: ${response.data}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        snapResponse = "deferPaymentCapture: success"
+                    )
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Defer Capture Snap Response: ${response.errors[0].message}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        snapResponse = response.errors[0].message,
+                        snapResponseError = response.errors[0].toString()
+                    )
+                }
+            }
+        }
+
+    fun captureCashAmount(pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
             _uiState.value = _uiState.value!!.copy(isLoading = true)
 
@@ -95,6 +127,38 @@ class FlowCapturePaymentViewModel @Inject constructor(
                 }
                 is ForageApiResponse.Failure -> {
                     Log.d(TAG, "Capture Cash Payment Response: ${response.errors[0].message}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        cashResponse = response.errors[0].message,
+                        cashResponseError = response.errors[0].toString()
+                    )
+                }
+            }
+        }
+
+    fun deferPaymentCaptureCash(pinForageEditText: ForagePINEditText) =
+        viewModelScope.launch {
+            _uiState.value = _uiState.value!!.copy(isLoading = true)
+
+            val response = ForageSDK().deferPaymentCapture(
+                DeferPaymentCaptureParams(
+                    foragePinEditText = pinForageEditText,
+                    paymentRef = cashPaymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    Log.d(TAG, "Defer Capture Cash Response: ${response.data}")
+
+                    _uiState.value = _uiState.value!!.copy(
+                        isLoading = false,
+                        cashResponse = "deferPaymentCapture: success"
+                    )
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.d(TAG, "Defer Capture Cash Response: ${response.errors[0].message}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,

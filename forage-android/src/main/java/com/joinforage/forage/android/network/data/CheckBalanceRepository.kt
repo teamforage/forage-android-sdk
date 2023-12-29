@@ -42,7 +42,7 @@ internal class CheckBalanceRepository(
         encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
-            is ForageApiResponse.Success -> collectPinToCheckBalance(
+            is ForageApiResponse.Success -> submitBalanceCheck(
                 paymentMethodRef = paymentMethodRef,
                 cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                 encryptionKey = encryptionKey
@@ -51,12 +51,12 @@ internal class CheckBalanceRepository(
         }
     }
 
-    private suspend fun collectPinToCheckBalance(
+    private suspend fun submitBalanceCheck(
         paymentMethodRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        val response = pinCollector.collectPinForBalanceCheck(
+        val response = pinCollector.submitBalanceCheck(
             paymentMethodRef = paymentMethodRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey

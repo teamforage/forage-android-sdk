@@ -47,7 +47,7 @@ internal interface ForageSDKInterface {
      * On success, returns an object with `snap` and `cash` fields, whose values
      * indicate the balance of each tender as of now
      *
-     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String>
@@ -62,10 +62,25 @@ internal interface ForageSDKInterface {
      * payment capture. On success, returns a confirmation of the transaction.
      * On failure, provides a detailed error response.
      *
-     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
+
+    /**
+     * Capture a customer's PIN for an EBT payment and defer the capture of the payment to the server
+     *
+     * @param params The parameters required for pin capture, including
+     * reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * PIN capture. On success, returns `Nothing`.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String>
 }
 
 /**
@@ -105,6 +120,19 @@ data class CheckBalanceParams(
  * @property paymentRef A reference to the intended payment transaction.
  */
 data class CapturePaymentParams(
+    val foragePinEditText: ForagePINEditText,
+    val paymentRef: String
+)
+
+/**
+ * Data class representing the parameters required for capturing the PIN for a deferred EBT payment.
+ * The EBT payment will then be confirmed through a request from the server.
+ *
+ * @property foragePinEditText A UI ForagePINEditText UI component. Importantly,
+ * you must have called .setForageConfig() already
+ * @property paymentRef A reference to the intended payment transaction.
+ */
+data class DeferPaymentCaptureParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String
 )

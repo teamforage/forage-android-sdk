@@ -14,6 +14,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
+import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
@@ -266,5 +267,69 @@ class ForageSDK : ForageSDKInterface {
         measurement.setEventOutcome(outcome).logResult()
 
         return response
+    }
+
+    /**
+     * Capture a customer's PIN for an EBT payment and defer the capture of the payment to the server
+     *
+     * @param params The parameters required for pin capture, including
+     * reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * PIN capture. On success, returns `Nothing`.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
+        val (foragePinEditText, paymentRef) = params
+        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
+        val config = EnvConfig.fromSessionToken(sessionToken)
+
+        // TODO: replace Log.getInstance() with Log() in future PR
+        val logger = Log.getInstance()
+        logger.i(
+            "[HTTP] Submitting defer capture request for Payment $paymentRef",
+            attributes = mapOf(
+                "merchant_ref" to merchantId,
+                "payment_ref" to paymentRef
+            )
+        )
+
+        return DeferPaymentCaptureRepository(
+            pinCollector = foragePinEditText.getCollector(
+                merchantId
+            ),
+            encryptionKeyService = EncryptionKeyService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            ),
+            paymentService = PaymentService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            ),
+            paymentMethodService = PaymentMethodService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    sessionToken,
+                    merchantId,
+                    traceId = logger.getTraceIdValue()
+                ),
+                httpUrl = config.baseUrl,
+                logger = logger
+            )
+        ).deferPaymentCapture(
+            paymentRef = paymentRef
+        )
     }
 }

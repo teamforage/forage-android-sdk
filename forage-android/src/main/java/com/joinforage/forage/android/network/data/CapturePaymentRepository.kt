@@ -57,7 +57,7 @@ internal class CapturePaymentRepository(
         encryptionKey: String
     ): ForageApiResponse<String> {
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
-            is ForageApiResponse.Success -> collectPinToCapturePayment(
+            is ForageApiResponse.Success -> submitPaymentCapture(
                 paymentRef = paymentRef,
                 cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                 encryptionKey = encryptionKey
@@ -66,12 +66,12 @@ internal class CapturePaymentRepository(
         }
     }
 
-    private suspend fun collectPinToCapturePayment(
+    private suspend fun submitPaymentCapture(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String
     ): ForageApiResponse<String> {
-        val response = pinCollector.collectPinForCapturePayment(
+        val response = pinCollector.submitPaymentCapture(
             paymentRef = paymentRef,
             cardToken = cardToken,
             encryptionKey = encryptionKey
