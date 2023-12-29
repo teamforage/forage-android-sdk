@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
+import com.google.android.material.textfield.TextInputEditText
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.core.model.state.FieldState
@@ -96,7 +97,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     // up into separate focus and blur listeners. This requires
                     // that we pass a single listener to VGS on init that uses
                     // mutable references to listeners so that setting the focus
-                    // would not remove the blur listener and vice versea
+                    // would not remove the blur listener and vice versa
                     _internalEditText.setOnFocusChangeListener { _, hasFocus ->
                         manager.changeFocus(hasFocus)
                     }
@@ -124,6 +125,10 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     }
 
     override fun getTextElement(): TextElement {
+        throw RuntimeException("Unimplemented for this vault!")
+    }
+
+    override fun getForageTextElement(): TextInputEditText {
         throw RuntimeException("Unimplemented for this vault!")
     }
 

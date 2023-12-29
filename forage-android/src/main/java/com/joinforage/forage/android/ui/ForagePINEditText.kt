@@ -31,6 +31,7 @@ class ForagePINEditText @JvmOverloads constructor(
     private val _linearLayout: LinearLayout
     private val btVaultWrapper: BTVaultWrapper
     private val vgsVaultWrapper: VGSVaultWrapper
+    private val forageVaultWrapper: ForageVaultWrapper
 
     /**
      * The `vault` property acts as an abstraction for the actual code
@@ -76,9 +77,11 @@ class ForagePINEditText @JvmOverloads constructor(
                     // whether to use BT or VGS. So, below we are hedging
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
                     vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
+                    forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
                     // ensure both wrappers init with the
                     // same typeface (or the attributes)
                     btVaultWrapper.typeface = vgsVaultWrapper.typeface
+                    forageVaultWrapper.typeface = vgsVaultWrapper.typeface
 
                     val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementWidth, ViewGroup.LayoutParams.MATCH_PARENT)
                     val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -106,12 +109,14 @@ class ForagePINEditText @JvmOverloads constructor(
         LDManager.initialize(context.applicationContext as Application, ldConfig)
 
         // decide on a vault provider and the corresponding vault wrapper
-        val vaultType = LDManager.getVaultProvider(logger)
-        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
-            btVaultWrapper
-        } else {
-            vgsVaultWrapper
-        }
+//        val vaultType = LDManager.getVaultProvider(logger)
+//        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
+//            btVaultWrapper
+//        } else {
+//            vgsVaultWrapper
+//        }
+
+        _SET_ONLY_vault = forageVaultWrapper
 
         _linearLayout.addView(vault.getUnderlying())
         _linearLayout.addView(getLogoImageViewLayout(context))

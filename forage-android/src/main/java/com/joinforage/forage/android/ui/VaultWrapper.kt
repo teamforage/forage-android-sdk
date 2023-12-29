@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
+import android.widget.EditText
 import android.widget.FrameLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.core.element.SimpleElementListener
@@ -38,6 +39,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun getUnderlying(): View
     abstract fun getVGSEditText(): VGSEditText
     abstract fun getTextElement(): TextElement
+    abstract fun getForageTextElement(): EditText
 
     fun getThemeAccentColor(context: Context): Int {
         val outValue = TypedValue()
