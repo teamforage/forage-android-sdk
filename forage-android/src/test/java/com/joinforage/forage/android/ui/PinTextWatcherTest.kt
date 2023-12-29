@@ -8,9 +8,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class AfterTextChangedEventTest {
+class PinTextWatcherTest {
     @Test
-    fun `correctly passes the formatted text to the callback`() {
+    fun `ensure afterTextChanged event is fired correctly`() {
         val editText = EditText(ApplicationProvider.getApplicationContext())
         val watcher = PinTextWatcher(editText)
         editText.addTextChangedListener(watcher)
