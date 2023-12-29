@@ -56,12 +56,6 @@ class FlowBalanceViewModel @Inject constructor(
 
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _isNextVisible = MutableLiveData<Boolean>().apply {
-        value = false
-    }
-
-    val isNextVisible: LiveData<Boolean> = _isNextVisible
-
     @OptIn(ExperimentalStdlibApi::class)
     fun checkBalance(context: Context, pinForageEditText: ForagePINEditText) =
         viewModelScope.launch {
@@ -90,7 +84,6 @@ class FlowBalanceViewModel @Inject constructor(
                         _snap.value = "SNAP: ${result.snap}"
                         _nonSnap.value = "NON SNAP: ${result.cash}"
                         _isLoading.value = false
-                        _isNextVisible.value = true
                     }
                 }
                 is ForageApiResponse.Failure -> {
