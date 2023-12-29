@@ -70,15 +70,15 @@ class ForagePINEditText @JvmOverloads constructor(
 
                     // at this point in time, we do not know the environment and
                     // we are operating and thus do not know whether to add
-                    // BTVaultWrapper or VGSVaultWrapper to the UI.
-                    // But that's OK. We can hedge and instantiate both of them
+                    // BTVaultWrapper, VGSVaultWrapper, or ForageVaultWrapper to the UI.
+                    // But that's OK. We can hedge and instantiate all of them.
                     // Then, within setForageConfig, once we know the environment
                     // and are thus able to initial LaunchDarkly and find out
-                    // whether to use BT or VGS. So, below we are hedging
+                    // whether to use BT or VGS. So, below we are hedging.
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
                     vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
                     forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
-                    // ensure both wrappers init with the
+                    // ensure all wrappers init with the
                     // same typeface (or the attributes)
                     btVaultWrapper.typeface = vgsVaultWrapper.typeface
                     forageVaultWrapper.typeface = vgsVaultWrapper.typeface
@@ -109,14 +109,12 @@ class ForagePINEditText @JvmOverloads constructor(
         LDManager.initialize(context.applicationContext as Application, ldConfig)
 
         // decide on a vault provider and the corresponding vault wrapper
-//        val vaultType = LDManager.getVaultProvider(logger)
-//        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
-//            btVaultWrapper
-//        } else {
-//            vgsVaultWrapper
-//        }
-
-        _SET_ONLY_vault = forageVaultWrapper
+        val vaultType = LDManager.getVaultProvider(logger)
+        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
+            btVaultWrapper
+        } else {
+            vgsVaultWrapper
+        }
 
         _linearLayout.addView(vault.getUnderlying())
         _linearLayout.addView(getLogoImageViewLayout(context))

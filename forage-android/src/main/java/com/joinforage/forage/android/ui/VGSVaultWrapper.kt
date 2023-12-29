@@ -8,9 +8,9 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
-import com.google.android.material.textfield.TextInputEditText
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.core.model.state.FieldState
@@ -128,7 +128,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
         throw RuntimeException("Unimplemented for this vault!")
     }
 
-    override fun getForageTextElement(): TextInputEditText {
+    override fun getForageTextElement(): EditText {
         throw RuntimeException("Unimplemented for this vault!")
     }
 

@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.text.InputFilter
 import android.text.InputType
-import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -13,14 +13,9 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
-
-//TODO: MAKE SURE THAT WE DON'T NEED TO DO THE SAME THING WE DID IN THE PAN
-//TODO: BY CREATING THE FUNCTION restartFocusChangeListener
 
 internal class ForageVaultWrapper @JvmOverloads constructor(
     context: Context,
@@ -63,52 +58,54 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
                                 inputHeight
                             )
 
-//                        setTextIsSelectable(false)
-//                        isSingleLine = true
-//
-//                        if (textColor != Color.BLACK) {
-//                            setTextColor(textColor)
-//                        }
-//
-//                        if (textSize != -1f) {
-//                            setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-//                        }
-//
-//                        // make the keyboard digits only instead of QWERTY.
-//                        inputType = InputType.TYPE_CLASS_NUMBER
-//                        keyListener = DigitsKeyListener.getInstance("0123456789")
-//
-//                        gravity = Gravity.CENTER
-//                        hint = getString(R.styleable.ForagePINEditText_hint)
-//                        setHintTextColor(getColorStateList(R.styleable.ForagePINEditText_hintTextColor))
-//
-//                        val customBackground = GradientDrawable().apply {
-//                            setPaddingRelative(20, 20, 20, 20)
-//                            shape = GradientDrawable.RECTANGLE
-//                            cornerRadii = floatArrayOf(
-//                                boxCornerRadiusTopStart,
-//                                boxCornerRadiusTopStart,
-//                                boxCornerRadiusTopEnd,
-//                                boxCornerRadiusTopEnd,
-//                                boxCornerRadiusBottomStart,
-//                                boxCornerRadiusBottomStart,
-//                                boxCornerRadiusBottomEnd,
-//                                boxCornerRadiusBottomEnd
-//                            )
-//                            setStroke(5, boxStrokeColor)
-//                            setColor(boxBackgroundColor)
-//                        }
-//                        background = customBackground
+                        setTextIsSelectable(true)
+                        isSingleLine = true
+
+                        val maxLength = 4
+                        filters = arrayOf(InputFilter.LengthFilter(maxLength))
+
+                        if (textColor != Color.BLACK) {
+                            setTextColor(textColor)
+                        }
+
+                        if (textSize != -1f) {
+                            setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                        }
+
+                        inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+
+                        gravity = Gravity.CENTER
+                        hint = getString(R.styleable.ForagePINEditText_hint)
+                        setHintTextColor(getColorStateList(R.styleable.ForagePINEditText_hintTextColor))
+
+                        val customBackground = GradientDrawable().apply {
+                            setPaddingRelative(20, 20, 20, 20)
+                            shape = GradientDrawable.RECTANGLE
+                            cornerRadii = floatArrayOf(
+                                boxCornerRadiusTopStart,
+                                boxCornerRadiusTopStart,
+                                boxCornerRadiusTopEnd,
+                                boxCornerRadiusTopEnd,
+                                boxCornerRadiusBottomStart,
+                                boxCornerRadiusBottomStart,
+                                boxCornerRadiusBottomEnd,
+                                boxCornerRadiusBottomEnd
+                            )
+                            setStroke(5, boxStrokeColor)
+                            setColor(boxBackgroundColor)
+                        }
+                        background = customBackground
                     }
 
-//                    _textInputEditText.setOnFocusChangeListener { _, hasFocus ->
-//                        manager.changeFocus(hasFocus)
-//                    }
-//                    val pinTextWatcher = PinTextWatcher(_textInputEditText)
-//                    pinTextWatcher.onInputChangeEvent { isComplete, isEmpty ->
-//                        manager.handleChangeEvent(isComplete, isEmpty)
-//                    }
-//                    _textInputEditText.addTextChangedListener(pinTextWatcher)
+                    _editText.setOnFocusChangeListener { _, hasFocus ->
+                        manager.changeFocus(hasFocus)
+                    }
+                    val pinTextWatcher = PinTextWatcher(_editText)
+                    pinTextWatcher.onInputChangeEvent { isComplete, isEmpty ->
+                        manager.handleChangeEvent(isComplete, isEmpty)
+                    }
+                    _editText.addTextChangedListener(pinTextWatcher)
                 } finally {
                     recycle()
                 }

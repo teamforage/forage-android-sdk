@@ -8,10 +8,10 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
-import com.google.android.material.textfield.TextInputEditText
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
@@ -107,7 +107,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
         return _internalTextElement
     }
 
-    override fun getForageTextElement(): TextInputEditText {
+    override fun getForageTextElement(): EditText {
         throw RuntimeException("Unimplemented for this vault!")
     }
 
