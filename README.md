@@ -3,7 +3,6 @@
 ## Table of contents
 
 <!--ts-->
-
 - [Overview](#overview)
 - [Installation](#installation)
 - [UI Components](#ui-components)

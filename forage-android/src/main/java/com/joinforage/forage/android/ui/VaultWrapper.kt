@@ -1,19 +1,40 @@
 package com.joinforage.forage.android.ui
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.TypedArray
+import android.graphics.Color
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
+import com.joinforage.forage.android.getBoxCornerRadius
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
+
+internal data class ParsedStyles(
+    val textInputLayoutStyleAttribute: Int,
+    val boxStrokeColor: Int,
+    val boxBackgroundColor: Int,
+    val boxCornerRadiusTopStart: Float,
+    val boxCornerRadiusTopEnd: Float,
+    val boxCornerRadiusBottomStart: Float,
+    val boxCornerRadiusBottomEnd: Float,
+    val hint: String?,
+    val hintTextColor: ColorStateList?,
+    val inputWidth: Int,
+    val inputHeight: Int,
+    val textSize: Float,
+    val textColor: Int
+)
 
 internal abstract class VaultWrapper @JvmOverloads constructor(
     context: Context,
@@ -41,34 +62,36 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun getTextElement(): TextElement
     abstract fun getForageTextElement(): EditText
 
+    fun parseStyles(context: Context, attrs: AttributeSet?): ParsedStyles {
+        val defaultRadius = resources.getDimension(R.dimen.default_horizontal_field)
+        val typedArray: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText)
+        val boxCornerRadius = typedArray.getDimension(R.styleable.ForagePINEditText_boxCornerRadius, defaultRadius)
+
+        try {
+            return ParsedStyles(
+                textInputLayoutStyleAttribute = typedArray.getResourceId(R.styleable.ForagePINEditText_pinInputLayoutStyle, 0),
+                boxStrokeColor = typedArray.getColor(R.styleable.ForagePINEditText_pinBoxStrokeColor, getThemeAccentColor(context)),
+                boxBackgroundColor = typedArray.getColor(R.styleable.ForagePINEditText_boxBackgroundColor, Color.TRANSPARENT),
+                boxCornerRadiusTopStart = typedArray.getBoxCornerRadius(R.styleable.ForagePINEditText_boxCornerRadiusTopStart, boxCornerRadius),
+                boxCornerRadiusTopEnd = typedArray.getBoxCornerRadius(R.styleable.ForagePINEditText_boxCornerRadiusTopEnd, boxCornerRadius),
+                boxCornerRadiusBottomStart = typedArray.getBoxCornerRadius(R.styleable.ForagePINEditText_boxCornerRadiusBottomStart, boxCornerRadius),
+                boxCornerRadiusBottomEnd = typedArray.getBoxCornerRadius(R.styleable.ForagePINEditText_boxCornerRadiusBottomEnd, boxCornerRadius),
+                hint = typedArray.getString(R.styleable.ForagePINEditText_hint),
+                hintTextColor = typedArray.getColorStateList(R.styleable.ForagePINEditText_hintTextColor),
+                inputWidth = typedArray.getDimensionPixelSize(R.styleable.ForagePINEditText_inputWidth, ViewGroup.LayoutParams.MATCH_PARENT),
+                inputHeight = typedArray.getDimensionPixelSize(R.styleable.ForagePINEditText_inputHeight, ViewGroup.LayoutParams.WRAP_CONTENT),
+                textSize = typedArray.getDimension(R.styleable.ForagePINEditText_textSize, -1f),
+                textColor = typedArray.getColor(R.styleable.ForagePINEditText_textColor, Color.BLACK)
+            )
+        } finally {
+            typedArray.recycle()
+        }
+    }
+
     fun getThemeAccentColor(context: Context): Int {
         val outValue = TypedValue()
         context.theme.resolveAttribute(android.R.attr.colorAccent, outValue, true)
         return outValue.data
-    }
-
-    fun TypedArray.getBoxCornerRadiusBottomStart(boxCornerRadius: Float): Float {
-        val boxCornerRadiusBottomStart =
-            getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadiusBottomStart, 0f)
-        return if (boxCornerRadiusBottomStart == 0f) boxCornerRadius else boxCornerRadiusBottomStart
-    }
-
-    fun TypedArray.getBoxCornerRadiusTopEnd(boxCornerRadius: Float): Float {
-        val boxCornerRadiusTopEnd =
-            getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadiusTopEnd, 0f)
-        return if (boxCornerRadiusTopEnd == 0f) boxCornerRadius else boxCornerRadiusTopEnd
-    }
-
-    fun TypedArray.getBoxCornerRadiusBottomEnd(boxCornerRadius: Float): Float {
-        val boxCornerRadiusBottomEnd =
-            getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadiusBottomEnd, 0f)
-        return if (boxCornerRadiusBottomEnd == 0f) boxCornerRadius else boxCornerRadiusBottomEnd
-    }
-
-    fun TypedArray.getBoxCornerRadiusTopStart(boxCornerRadius: Float): Float {
-        val boxCornerRadiusTopStart =
-            getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_boxCornerRadiusTopStart, 0f)
-        return if (boxCornerRadiusTopStart == 0f) boxCornerRadius else boxCornerRadiusTopStart
     }
 
     fun setOnFocusEventListener(l: SimpleElementListener) {

@@ -9,7 +9,6 @@ import android.text.InputType
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
@@ -29,33 +28,13 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
             .apply {
                 try {
-                    val textInputLayoutStyleAttribute =
-                        getResourceId(R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
-                    val boxStrokeColor = getColor(
-                        R.styleable.ForagePINEditText_pinBoxStrokeColor,
-                        getThemeAccentColor(context)
-                    )
-                    val boxBackgroundColor = getColor(R.styleable.ForagePINEditText_boxBackgroundColor, Color.TRANSPARENT)
+                    val parsedStyles = parseStyles(context, attrs)
 
-                    val textSize = getDimension(R.styleable.ForagePINEditText_textSize, -1f)
-                    val textColor = getColor(R.styleable.ForagePINEditText_textColor, Color.BLACK)
-
-                    val inputWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_inputWidth, ViewGroup.LayoutParams.MATCH_PARENT)
-                    val inputHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_inputHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
-
-                    val defRadius = resources.getDimension(com.joinforage.forage.android.R.dimen.default_horizontal_field)
-                    val boxCornerRadius =
-                        getDimension(R.styleable.ForagePINEditText_boxCornerRadius, defRadius)
-                    val boxCornerRadiusTopStart = getBoxCornerRadiusTopStart(boxCornerRadius)
-                    val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(boxCornerRadius)
-                    val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(boxCornerRadius)
-                    val boxCornerRadiusBottomEnd = getBoxCornerRadiusBottomEnd(boxCornerRadius)
-
-                    _editText = EditText(context, null, textInputLayoutStyleAttribute).apply {
+                    _editText = EditText(context, null, parsedStyles.textInputLayoutStyleAttribute).apply {
                         layoutParams =
                             LinearLayout.LayoutParams(
-                                inputWidth,
-                                inputHeight
+                                parsedStyles.inputWidth,
+                                parsedStyles.inputHeight
                             )
 
                         setTextIsSelectable(true)
@@ -64,36 +43,36 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
                         val maxLength = 4
                         filters = arrayOf(InputFilter.LengthFilter(maxLength))
 
-                        if (textColor != Color.BLACK) {
-                            setTextColor(textColor)
+                        if (parsedStyles.textColor != Color.BLACK) {
+                            setTextColor(parsedStyles.textColor)
                         }
 
-                        if (textSize != -1f) {
-                            setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                        if (parsedStyles.textSize != -1f) {
+                            setTextSize(TypedValue.COMPLEX_UNIT_PX, parsedStyles.textSize)
                         }
 
                         inputType =
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
 
                         gravity = Gravity.CENTER
-                        hint = getString(R.styleable.ForagePINEditText_hint)
-                        setHintTextColor(getColorStateList(R.styleable.ForagePINEditText_hintTextColor))
+                        hint = parsedStyles.hint
+                        setHintTextColor(parsedStyles.hintTextColor)
 
                         val customBackground = GradientDrawable().apply {
                             setPaddingRelative(20, 20, 20, 20)
                             shape = GradientDrawable.RECTANGLE
                             cornerRadii = floatArrayOf(
-                                boxCornerRadiusTopStart,
-                                boxCornerRadiusTopStart,
-                                boxCornerRadiusTopEnd,
-                                boxCornerRadiusTopEnd,
-                                boxCornerRadiusBottomStart,
-                                boxCornerRadiusBottomStart,
-                                boxCornerRadiusBottomEnd,
-                                boxCornerRadiusBottomEnd
+                                parsedStyles.boxCornerRadiusTopStart,
+                                parsedStyles.boxCornerRadiusTopStart,
+                                parsedStyles.boxCornerRadiusTopEnd,
+                                parsedStyles.boxCornerRadiusTopEnd,
+                                parsedStyles.boxCornerRadiusBottomStart,
+                                parsedStyles.boxCornerRadiusBottomStart,
+                                parsedStyles.boxCornerRadiusBottomEnd,
+                                parsedStyles.boxCornerRadiusBottomEnd
                             )
-                            setStroke(5, boxStrokeColor)
-                            setColor(boxBackgroundColor)
+                            setStroke(5, parsedStyles.boxStrokeColor)
+                            setColor(parsedStyles.boxBackgroundColor)
                         }
                         background = customBackground
                     }
