@@ -29,7 +29,7 @@ internal class VGSPinCollector(
     private val context: Context,
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
-) : PinCollector {
+) : PinCollector() {
     private val logger = Log.getInstance()
     private val vaultType = VaultType.VGS_VAULT_TYPE
 
@@ -313,6 +313,115 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
+    override suspend fun submitPosRefund(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String,
+        terminalId: String,
+        amount: String,
+        reason: String,
+        metadata: Map<String, Any>?
+    ): ForageApiResponse<String>  = suspendCoroutine { continuation ->
+        // TODO: Change the log attributes?
+        val logAttributes = mapOf(
+            "merchant_ref" to merchantAccount,
+            "payment_ref" to paymentRef
+        )
+
+        // If the PIN isn't valid (less than 4 numbers) then return a response here.
+        if (!pinForageEditText.getElementState().isComplete) {
+            returnIncompletePinError(logAttributes, continuation, logger)
+            return@suspendCoroutine
+        }
+
+        val vgsCollect = buildVGSCollect(context)
+        vgsCollect.bindView(pinForageEditText.getTextInputEditText())
+        val inputField = pinForageEditText.getTextInputEditText()
+        val measurement = setupMeasurement(posRefundPath(paymentRef), UserAction.REFUND)
+
+        vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
+            override fun onResponse(response: VGSResponse?) {
+                measurement.end()
+
+                vgsCollect.onDestroy()
+                inputField.setText("")
+
+                when (response) {
+                    is VGSResponse.SuccessResponse -> {
+                        measurement.setHttpStatusCode(response.code).logResult()
+
+                        logger.i(
+                            "[VGS] Received successful response from VGS",
+                            attributes = logAttributes
+                        )
+                        continuation.resumeWith(
+                            Result.success(
+                                ForageApiResponse.Success("")
+                            )
+                        )
+                    }
+                    is VGSResponse.ErrorResponse -> {
+                        // Attempt to see if this error is a Forage error
+                        try {
+                            logger.e(
+                                "[VGS] Received an error while submitting POS refund request to VGS: ${response.body}",
+                                attributes = logAttributes
+                            )
+                            returnForageError(response, measurement, continuation)
+                            return
+                        } catch (_: JSONException) { }
+                        logger.e(
+                            "[VGS] Received an unknown error while submitting POS refund request to VGS: ${response.body}",
+                            attributes = logAttributes
+                        )
+                        returnVgsError(response, measurement, continuation)
+                    }
+                    null -> {
+                        logger.e(
+                            "[VGS] Received an unknown error while submitting POS refund request to VGS",
+                            attributes = logAttributes
+                        )
+                        returnUnknownError(measurement, continuation)
+                    }
+                }
+            }
+        })
+
+        val metadataField = metadata?:mapOf()
+
+        val body = mapOf(
+            ForageConstants.RequestBody.CARD_NUMBER_TOKEN to cardToken,
+            ForageConstants.RequestBody.REASON to reason,
+            ForageConstants.RequestBody.AMOUNT to amount,
+            ForageConstants.RequestBody.METADATA to metadataField,
+            ForageConstants.RequestBody.POS_TERMINAL to mapOf(
+                ForageConstants.RequestBody.POS_TERMINAL to terminalId
+            )
+        )
+
+        val request: VGSRequest = VGSRequest.VGSRequestBuilder()
+            .setMethod(HTTPMethod.POST)
+            .setPath(posRefundPath(paymentRef))
+            .setCustomHeader(
+                buildHeaders(
+                    merchantAccount,
+                    encryptionKey,
+                    idempotencyKey = paymentRef,
+                    traceId = logger.getTraceIdValue()
+                )
+            )
+            .setCustomData(body)
+            .build()
+
+        logger.i(
+            "[VGS] Sending POS refund to VGS",
+            attributes = logAttributes
+        )
+
+        measurement.start()
+        vgsCollect.asyncSubmit(request)
+    }
+
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return encryptionKeys.vgsAlias
     }
@@ -353,20 +462,6 @@ internal class VGSPinCollector(
             val body = HashMap<String, String>()
             body[ForageConstants.RequestBody.CARD_NUMBER_TOKEN] = cardToken
             return body
-        }
-
-        private fun buildHeaders(
-            merchantAccount: String,
-            encryptionKey: String,
-            idempotencyKey: String = UUID.randomUUID().toString(),
-            traceId: String = ""
-        ): HashMap<String, String> {
-            val headers = HashMap<String, String>()
-            headers[ForageConstants.Headers.X_KEY] = encryptionKey
-            headers[ForageConstants.Headers.MERCHANT_ACCOUNT] = merchantAccount
-            headers[ForageConstants.Headers.IDEMPOTENCY_KEY] = idempotencyKey
-            headers[ForageConstants.Headers.TRACE_ID] = traceId
-            return headers
         }
 
         internal fun returnForageError(response: VGSResponse.ErrorResponse, measurement: NetworkMonitor, continuation: Continuation<ForageApiResponse<String>>) {
@@ -417,14 +512,5 @@ internal class VGSPinCollector(
                 )
             )
         }
-
-        private fun balancePath(paymentMethodRef: String) =
-            "/api/payment_methods/$paymentMethodRef/balance/"
-
-        private fun capturePaymentPath(paymentRef: String) =
-            "/api/payments/$paymentRef/capture/"
-
-        private fun deferPaymentCapturePath(paymentRef: String) =
-            "/api/payments/$paymentRef/collect_pin/"
     }
 }

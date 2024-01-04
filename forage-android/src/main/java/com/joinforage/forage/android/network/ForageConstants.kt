@@ -18,6 +18,11 @@ internal object ForageConstants {
 
     object RequestBody {
         const val CARD_NUMBER_TOKEN = "card_number_token"
+        const val REASON = "reason"
+        const val METADATA = "metadata"
+        const val POS_TERMINAL = "pos_terminal"
+        const val POS_TERMINAL_ID = "pos_terminal_id"
+        const val AMOUNT = "amount"
     }
 
     object PathSegment {
