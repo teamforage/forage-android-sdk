@@ -103,3 +103,17 @@ This project uses [Spotless](https://github.com/diffplug/spotless) to format the
 ### Optimizing SVGs
 
 We can run [avocado](https://github.com/alexjlockwood/avocado) command line tool to optimize the SVGs before importing them to the project.
+
+## Reference Documentation
+
+You may generate the reference documentation locally by running:
+
+```bash
+./gradlew dokkaHtml # generate reference-docs/
+npx http-serve reference-docs
+
+open http://localhost:8080
+
+# or alternatively
+open reference-docs/index.html # which sometimes has issues loading the navigation sidebar
+```
