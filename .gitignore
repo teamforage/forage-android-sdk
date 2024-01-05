@@ -16,3 +16,6 @@ local.properties
 SecretRingKey.gpg
 /buildSrc/build/
 *.jks
+
+# Dokka HTML documentation
+reference-docs/
