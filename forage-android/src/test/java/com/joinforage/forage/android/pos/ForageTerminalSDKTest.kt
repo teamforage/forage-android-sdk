@@ -9,7 +9,7 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,41 +55,35 @@ class ForageTerminalSDKTest {
     }
 
     @Test
-    fun testCheckBalance() {
-        runBlocking {
-            val params = CheckBalanceParams(
-                foragePinEditText = mockForagePinEditText,
-                paymentMethodRef = "paymentMethod1234"
-            )
-            val response = terminalSdk.checkBalance(params)
-            assertTrue(response is ForageApiResponse.Success)
-            assertTrue((response as ForageApiResponse.Success).data == "Success")
-        }
+    fun testCheckBalance() = runTest {
+        val params = CheckBalanceParams(
+            foragePinEditText = mockForagePinEditText,
+            paymentMethodRef = "paymentMethod1234"
+        )
+        val response = terminalSdk.checkBalance(params)
+        assertTrue(response is ForageApiResponse.Success)
+        assertTrue((response as ForageApiResponse.Success).data == "Success")
     }
 
     @Test
-    fun testCapturePayment() {
-        runBlocking {
-            val params = CapturePaymentParams(
-                foragePinEditText = mockForagePinEditText,
-                paymentRef = "payment1234"
-            )
-            val response = terminalSdk.capturePayment(params)
-            assertTrue(response is ForageApiResponse.Success)
-            assertTrue((response as ForageApiResponse.Success).data == "Success")
-        }
+    fun testCapturePayment() = runTest {
+        val params = CapturePaymentParams(
+            foragePinEditText = mockForagePinEditText,
+            paymentRef = "payment1234"
+        )
+        val response = terminalSdk.capturePayment(params)
+        assertTrue(response is ForageApiResponse.Success)
+        assertTrue((response as ForageApiResponse.Success).data == "Success")
     }
 
     @Test
-    fun testDeferPaymentCapture() {
-        runBlocking {
-            val params = DeferPaymentCaptureParams(
-                foragePinEditText = mockForagePinEditText,
-                paymentRef = "payment1234"
-            )
-            val response = terminalSdk.deferPaymentCapture(params)
-            assertTrue(response is ForageApiResponse.Success)
-            assertTrue((response as ForageApiResponse.Success).data == "Success")
-        }
+    fun testDeferPaymentCapture() = runTest {
+        val params = DeferPaymentCaptureParams(
+            foragePinEditText = mockForagePinEditText,
+            paymentRef = "payment1234"
+        )
+        val response = terminalSdk.deferPaymentCapture(params)
+        assertTrue(response is ForageApiResponse.Success)
+        assertTrue((response as ForageApiResponse.Success).data == "Success")
     }
 }
