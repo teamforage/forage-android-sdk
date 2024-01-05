@@ -1,0 +1,1 @@
+sourceset_dependencies='{":forage-android:dokkaHtml/debug":[],":forage-android:dokkaHtml/generatedByKspDebugKotlin":[],":forage-android:dokkaHtml/generatedByKspReleaseKotlin":[],":forage-android:dokkaHtml/main":[],":forage-android:dokkaHtml/release":[]}'
