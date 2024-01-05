@@ -1,8 +1,5 @@
 package com.joinforage.forage.android.pos
 
-import android.content.Context
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.core.app.ApplicationProvider
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
@@ -10,12 +7,13 @@ import com.joinforage.forage.android.ForageSDKInterface
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
-import junit.framework.TestCase.assertNotNull
+import com.joinforage.forage.android.ui.ForagePINEditText
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
 class MockForageSDK : ForageSDKInterface {
@@ -42,36 +40,56 @@ class MockForageSDK : ForageSDKInterface {
 
 @RunWith(RobolectricTestRunner::class)
 class ForageTerminalSDKTest {
-    private lateinit var context: Context
-    private lateinit var terminalSdk: ForageTerminalSDK
     private lateinit var mockForagePanEditText: ForagePANEditText
-
+    private lateinit var mockForagePinEditText: ForagePINEditText
+    private lateinit var terminalSdk: ForageTerminalSDK
 
     @Before
     fun setUp() {
-        context = ApplicationProvider.getApplicationContext()
-        mockForagePanEditText = ForagePANEditText(context)
-        launchFragmentInContainer<CatalogFragment>(themeResId = R.style.Theme_ForageAndroid)
+        // Use Mockito judiciously (mainly for mocking views)!
+        // Opt for dependency injection and inheritance over Mockito
+        mockForagePanEditText = mock(ForagePANEditText::class.java)
+        mockForagePinEditText = mock(ForagePINEditText::class.java)
 
         terminalSdk = ForageTerminalSDK(posTerminalId = "1234", forageSdk = MockForageSDK())
     }
 
     @Test
-    fun testInitialization() {
-        assertNotNull(terminalSdk)
-        assertTrue( "Does not throw!", true)
+    fun testCheckBalance() {
+        runBlocking {
+            val params = CheckBalanceParams(
+                foragePinEditText = mockForagePinEditText,
+                paymentMethodRef = "paymentMethod1234"
+            )
+            val response = terminalSdk.checkBalance(params)
+            assertTrue(response is ForageApiResponse.Success)
+            assertTrue((response as ForageApiResponse.Success).data == "Success")
+        }
     }
 
-    @Test(expected = NotImplementedError::class)
-    fun testCallsTokenizeCardNotApplicableMethod() {
+    @Test
+    fun testCapturePayment() {
         runBlocking {
-            terminalSdk.tokenizeEBTCard(
-                params = TokenizeEBTCardParams(
-                    foragePanEditText = mockForagePanEditText,
-                    customerId = "1234",
-                    reusable = true
-                )
+            val params = CapturePaymentParams(
+                foragePinEditText = mockForagePinEditText,
+                paymentRef = "payment1234"
             )
+            val response = terminalSdk.capturePayment(params)
+            assertTrue(response is ForageApiResponse.Success)
+            assertTrue((response as ForageApiResponse.Success).data == "Success")
+        }
+    }
+
+    @Test
+    fun testDeferPaymentCapture() {
+        runBlocking {
+            val params = DeferPaymentCaptureParams(
+                foragePinEditText = mockForagePinEditText,
+                paymentRef = "payment1234"
+            )
+            val response = terminalSdk.deferPaymentCapture(params)
+            assertTrue(response is ForageApiResponse.Success)
+            assertTrue((response as ForageApiResponse.Success).data == "Success")
         }
     }
 }
