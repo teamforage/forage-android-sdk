@@ -83,17 +83,16 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Checks the balance SNAP and EBT Cash balances of an EBT account via
-     * ForagePINEditText
+     * Checks the balance of a given PaymentMethod via ForagePINEditText
      *
-     * @param params The parameters required for tokenization, including
-     * reference to a ForagePINEditText and PaymentMethod ref
+     * @param params The parameters required for balance inquiries, including
+     * a reference to a ForagePINEditText and PaymentMethod ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
      * On success, returns an object with `snap` and `cash` fields, whose values
      * indicate the balance of each tender as of now
      *
-     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {

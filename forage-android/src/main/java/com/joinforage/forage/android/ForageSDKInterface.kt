@@ -18,8 +18,7 @@ class ForageConfigNotSetException(override val message: String) : IllegalStateEx
  * Use these methods in conjunction with the UI components ForagePANEditText
  * and ForagePINEditText.
  */
-internal interface ForageSDKInterface {
-
+interface ForageSDKInterface {
     /**
      * A method to securely tokenize an EBT card via ForagePANEditText
      *
@@ -37,11 +36,10 @@ internal interface ForageSDKInterface {
     suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String>
 
     /**
-     * Checks the balance SNAP and EBT Cash balances of an EBT account via
-     * ForagePINEditText
+     * Checks the balance of a given PaymentMethod via ForagePINEditText
      *
-     * @param params The parameters required for tokenization, including
-     * reference to a ForagePINEditText and PaymentMethod ref
+     * @param params The parameters required for balance inquiries, including
+     * a reference to a ForagePINEditText and PaymentMethod ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
      * On success, returns an object with `snap` and `cash` fields, whose values
