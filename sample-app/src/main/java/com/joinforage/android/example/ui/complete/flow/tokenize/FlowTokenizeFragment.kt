@@ -55,6 +55,7 @@ class FlowTokenizeFragment : Fragment() {
 
         val paymentRef: TextView = binding.paymentRef
         val cardLast4: TextView = binding.cardLast4
+        val reusable: TextView = binding.reusable
         val customerId: TextView = binding.customerId
         val isFocused: TextView = binding.isFocused
         val isComplete: TextView = binding.isComplete
@@ -86,12 +87,14 @@ class FlowTokenizeFragment : Fragment() {
                 true -> {
                     paymentRef.text = "ref:"
                     cardLast4.text = "last_4:"
+                    reusable.text = "reusable:"
                     customerId.text = "customer_id:"
                     binding.nextButton.visibility = View.GONE
                 }
                 else -> {
                     paymentRef.text = "ref: ${it.ref}"
                     cardLast4.text = "last_4: ${it.card?.last4}"
+                    reusable.text = "reusable: ${it.reusable}"
                     customerId.text = "customer_id: ${it?.customerId}"
                     binding.nextButton.visibility = View.VISIBLE
                 }

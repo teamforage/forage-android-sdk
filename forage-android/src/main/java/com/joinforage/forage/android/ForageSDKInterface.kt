@@ -90,13 +90,13 @@ internal interface ForageSDKInterface {
  * you must have called .setForageConfig() already
  * @property customerId A unique identifier associated with a customer. This is
  * required by FNS for fraud detection purposes
- * @property reusable Indicates whether the tokenized card can be reused for
- * multiple transactions.
+ * @property reusable Optional. Indicates whether the tokenized card can be
+ * reused for multiple transactions. Defaults to true if not specified.
  */
 data class TokenizeEBTCardParams(
     val foragePanEditText: ForagePANEditText,
     val customerId: String,
-    val reusable: Boolean?
+    val reusable: Boolean? = true
 )
 
 /**

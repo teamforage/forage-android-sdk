@@ -9,6 +9,7 @@ data class PaymentMethod(
     val type: String,
     val balance: Balance?,
     val card: Card?,
+    val reusable: Boolean,
     @Json(name = "customer_id")
     val customerId: String?
 )

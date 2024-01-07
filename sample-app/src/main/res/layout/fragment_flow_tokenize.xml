@@ -58,7 +58,7 @@
         tools:text="last_4: 1234" />
 
     <TextView
-        android:id="@+id/customerId"
+        android:id="@+id/reusable"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -69,6 +69,21 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardLast4"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="reusable: true" />
+
+    <TextView
+        android:id="@+id/customerId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reusable"
         app:layout_constraintVertical_bias="0.0"
         tools:text="user_id: android-test-customer-id" />
 
