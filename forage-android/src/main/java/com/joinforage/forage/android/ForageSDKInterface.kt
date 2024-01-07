@@ -18,7 +18,7 @@ class ForageConfigNotSetException(override val message: String) : IllegalStateEx
  * Use these methods in conjunction with the UI components ForagePANEditText
  * and ForagePINEditText.
  */
-interface ForageSDKInterface {
+internal interface ForageSDKInterface {
     /**
      * A method to securely tokenize an EBT card via ForagePANEditText
      *

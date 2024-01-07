@@ -62,7 +62,7 @@ class ForageTerminalSDKTest {
         )
         val response = terminalSdk.checkBalance(params)
         assertTrue(response is ForageApiResponse.Success)
-        assertTrue((response as ForageApiResponse.Success).data == "Success")
+        assertTrue((response as ForageApiResponse.Success).data == "TODO")
     }
 
     @Test

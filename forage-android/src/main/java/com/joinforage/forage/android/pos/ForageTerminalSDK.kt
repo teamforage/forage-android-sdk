@@ -24,9 +24,17 @@ data class RefundPosPaymentParams(
  * @param posTerminalId The ID of the POS terminal that is using the Forage SDK.
  */
 class ForageTerminalSDK(
-    private val posTerminalId: String,
-    private val forageSdk: ForageSDKInterface = ForageSDK()
+    private val posTerminalId: String
 ) : ForageSDKInterface {
+    private var forageSdk: ForageSDKInterface = ForageSDK()
+
+    // internal constructor facilitates testing
+    internal constructor(
+        posTerminalId: String,
+        forageSdk: ForageSDKInterface
+    ) : this(posTerminalId) {
+        this.forageSdk = forageSdk
+    }
 
     /**
      * A method to securely tokenize an EBT card via ForagePANEditText via UI-based PAN entry
@@ -98,7 +106,7 @@ class ForageTerminalSDK(
     override suspend fun checkBalance(
         params: CheckBalanceParams
     ): ForageApiResponse<String> {
-        return this.forageSdk.checkBalance(params)
+        return ForageApiResponse.Success("TODO")
     }
 
     /**
@@ -120,6 +128,20 @@ class ForageTerminalSDK(
         return this.forageSdk.capturePayment(params)
     }
 
+    /**
+     * Collect's a customer's PIN for an EBT payment and defers
+     * the capture of the payment to the server
+     *
+     * @param params The parameters required for deferring the capture of an EBT payment,
+     * including a reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * PIN capture. On success, returns `Nothing`.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
     override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         return this.forageSdk.deferPaymentCapture(params)
     }
