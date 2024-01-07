@@ -7,6 +7,7 @@ import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.ForageSDKInterface
 import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -27,13 +28,16 @@ class ForageTerminalSDK(
     private val posTerminalId: String
 ) : ForageSDKInterface {
     private var forageSdk: ForageSDKInterface = ForageSDK()
+    private var logger: Log = Log.getInstance()
 
     // internal constructor facilitates testing
     internal constructor(
         posTerminalId: String,
-        forageSdk: ForageSDKInterface
+        forageSdk: ForageSDKInterface,
+        logger: Log
     ) : this(posTerminalId) {
         this.forageSdk = forageSdk
+        this.logger = logger
     }
 
     /**
@@ -41,8 +45,8 @@ class ForageTerminalSDK(
      *
      * @param foragePanEditText A ForagePANEditText  UI component. Importantly,
      * you must have called .setForageConfig() already
-     * @param reusable Indicates whether the tokenized card can be reused for
-     * multiple transactions.
+     * @param reusable Optional. Indicates whether the tokenized card can be reused for
+     * multiple transactions. Defaults to true.
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
      * On success, returns a [PaymentMethod](https://docs.joinforage.app/reference/create-payment-method)
@@ -56,15 +60,27 @@ class ForageTerminalSDK(
         foragePanEditText: ForagePANEditText,
         reusable: Boolean = true
     ): ForageApiResponse<String> {
-        // TODO: implement me
-        return ForageApiResponse.Success("TODO")
+        logger.i(
+            "[POS] Tokenizing Payment Method via UI PAN entry",
+            attributes = mapOf(
+                "reusable" to reusable
+            )
+        )
+
+        return forageSdk.tokenizeEBTCard(
+            TokenizeEBTCardParams(
+                foragePanEditText = foragePanEditText,
+                reusable = reusable
+            )
+        )
     }
 
     /**
      * Tokenizes an EBT card using track 2 data from a magnetic card swipe.
      *
      * @param track2Data The track 2 data obtained from the magnetic stripe of the card.
-     * @param reusable Indicates whether the tokenized card can be reused for multiple transactions.
+     * @param reusable Optional. Indicates whether the tokenized card can be
+     * reused for multiple transactions. Defaults to true.
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
      * On success, returns a [PaymentMethod](https://docs.joinforage.app/reference/create-payment-method)
@@ -73,8 +89,15 @@ class ForageTerminalSDK(
      */
     suspend fun tokenizeEBTCard(
         track2Data: String,
-        reusable: Boolean
+        reusable: Boolean = true
     ): ForageApiResponse<String> {
+        logger.i(
+            "[POS] Tokenizing Payment Method via magnetic card swipe",
+            attributes = mapOf(
+                "reusable" to reusable
+            )
+        )
+
         return ForageApiResponse.Success("TODO")
     }
 
@@ -125,7 +148,7 @@ class ForageTerminalSDK(
     override suspend fun capturePayment(
         params: CapturePaymentParams
     ): ForageApiResponse<String> {
-        return this.forageSdk.capturePayment(params)
+        return forageSdk.capturePayment(params)
     }
 
     /**
@@ -143,7 +166,7 @@ class ForageTerminalSDK(
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
-        return this.forageSdk.deferPaymentCapture(params)
+        return forageSdk.deferPaymentCapture(params)
     }
 
     /**

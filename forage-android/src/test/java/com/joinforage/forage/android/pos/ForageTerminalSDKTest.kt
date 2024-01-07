@@ -5,9 +5,11 @@ import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDKInterface
 import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -43,6 +45,7 @@ class ForageTerminalSDKTest {
     private lateinit var mockForagePanEditText: ForagePANEditText
     private lateinit var mockForagePinEditText: ForagePINEditText
     private lateinit var terminalSdk: ForageTerminalSDK
+    private lateinit var mockLogger: MockLogger
 
     @Before
     fun setUp() {
@@ -51,7 +54,27 @@ class ForageTerminalSDKTest {
         mockForagePanEditText = mock(ForagePANEditText::class.java)
         mockForagePinEditText = mock(ForagePINEditText::class.java)
 
-        terminalSdk = ForageTerminalSDK(posTerminalId = "1234", forageSdk = MockForageSDK())
+        mockLogger = MockLogger()
+
+        terminalSdk = ForageTerminalSDK(
+            posTerminalId = "1234",
+            forageSdk = MockForageSDK(),
+            logger = mockLogger
+        )
+    }
+
+    @Test
+    fun `tokenize EBT card via UI-based PAN entry`() = runTest {
+        val response = terminalSdk.tokenizeEBTCard(
+            foragePanEditText = mockForagePanEditText,
+            reusable = true
+        )
+
+        val loggedMessage = mockLogger.infoLogs[0].getMessage()
+        assertEquals(loggedMessage, "[POS] Tokenizing Payment Method via UI PAN entry")
+
+        assertTrue(response is ForageApiResponse.Success)
+        assertTrue((response as ForageApiResponse.Success).data == "Success")
     }
 
     @Test

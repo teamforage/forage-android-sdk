@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.collect.VGSPinCollector
-import com.joinforage.forage.android.core.telemetry.metrics.MockLogger
 import com.joinforage.forage.android.core.telemetry.metrics.TestResponseMonitor
+import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
