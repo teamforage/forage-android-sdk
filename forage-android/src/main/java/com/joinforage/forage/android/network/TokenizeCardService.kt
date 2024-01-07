@@ -20,7 +20,7 @@ internal class TokenizeCardService(
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
-    suspend fun tokenizeCard(cardNumber: String, customerId: String, reusable: Boolean = true): ForageApiResponse<String> = try {
+    suspend fun tokenizeCard(cardNumber: String, customerId: String? = null, reusable: Boolean = true): ForageApiResponse<String> = try {
         logger.i(
             "[HTTP] POST request for Payment Method",
             attributes = mapOf(
@@ -33,7 +33,7 @@ internal class TokenizeCardService(
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 
-    private suspend fun tokenizeCardCoroutine(cardNumber: String, customerId: String, reusable: Boolean): ForageApiResponse<String> {
+    private suspend fun tokenizeCardCoroutine(cardNumber: String, customerId: String? = null, reusable: Boolean): ForageApiResponse<String> {
         val url = getTokenizeCardUrl()
 
         val requestBody =

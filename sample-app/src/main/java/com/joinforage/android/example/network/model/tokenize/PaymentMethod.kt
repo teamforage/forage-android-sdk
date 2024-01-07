@@ -11,5 +11,5 @@ data class PaymentMethod(
     val card: Card?,
     val reusable: Boolean,
     @Json(name = "customer_id")
-    val customerId: String?
+    val customerId: String? = null
 )

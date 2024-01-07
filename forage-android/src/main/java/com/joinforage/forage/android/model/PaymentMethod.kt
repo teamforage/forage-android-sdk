@@ -33,10 +33,10 @@ internal data class Balance(
 internal data class PaymentMethod(
     val ref: String,
     val type: String,
-    val customerId: String,
+    val customerId: String? = null,
     val balance: Balance?,
     val card: Card,
-    val reusable: Boolean?
+    val reusable: Boolean? = true
 ) {
     object ModelMapper {
         fun from(string: String): PaymentMethod {
@@ -44,7 +44,11 @@ internal data class PaymentMethod(
 
             val ref = jsonObject.getString("ref")
             val type = jsonObject.getString("type")
-            val customerId = jsonObject.getString("customer_id")
+            val customerId = if (jsonObject.has("customer_id")) {
+                jsonObject.getString("customer_id")
+            } else {
+                null
+            }
             var balance: Balance? = null
             if (!jsonObject.isNull("balance")) {
                 val parsedBalance = jsonObject.getJSONObject("balance")
