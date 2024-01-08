@@ -21,7 +21,6 @@ import com.verygoodsecurity.vgscollect.core.VgsCollectResponseListener
 import com.verygoodsecurity.vgscollect.core.model.network.VGSRequest
 import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
 import org.json.JSONException
-import java.util.UUID
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.suspendCoroutine
 
@@ -321,7 +320,7 @@ internal class VGSPinCollector(
         amount: String,
         reason: String,
         metadata: Map<String, Any>?
-    ): ForageApiResponse<String>  = suspendCoroutine { continuation ->
+    ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         // TODO: Change the log attributes?
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -387,7 +386,7 @@ internal class VGSPinCollector(
             }
         })
 
-        val metadataField = metadata?:mapOf()
+        val metadataField = metadata ?: mapOf()
 
         val body = mapOf(
             ForageConstants.RequestBody.CARD_NUMBER_TOKEN to cardToken,
