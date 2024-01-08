@@ -9,7 +9,7 @@ import me.jorgecastillo.hiroaki.models.success
 import me.jorgecastillo.hiroaki.whenever
 import okhttp3.mockwebserver.MockWebServer
 
-fun MockWebServer.givenCardToken(cardNumber: String, customerId: String, reusable: Boolean = true) = whenever(
+fun MockWebServer.givenPaymentMethod(cardNumber: String, customerId: String, reusable: Boolean = true) = whenever(
     method = Method.POST,
     sentToPath = "api/payment_methods/",
     jsonBody = json {
@@ -22,10 +22,30 @@ fun MockWebServer.givenCardToken(cardNumber: String, customerId: String, reusabl
     }
 )
 
+fun MockWebServer.givenPaymentMethod(cardNumber: String, reusable: Boolean = true) = whenever(
+    method = Method.POST,
+    sentToPath = "api/payment_methods/",
+    jsonBody = json {
+        "type" / "ebt"
+        "reusable" / reusable
+        "card" / json {
+            "number" / cardNumber
+        }
+    }
+)
+
 fun PotentialRequestChain.returnsPaymentMethodSuccessfully() = thenRespond(
     success(
         jsonBody = fileBody(
             "fixtures/payment/methods/successful_create_payment_method.json"
+        )
+    )
+)
+
+fun PotentialRequestChain.returnsMissingCustomerIdPaymentMethodSuccessfully() = thenRespond(
+    success(
+        jsonBody = fileBody(
+            "fixtures/payment/methods/successful_create_payment_method_without_customer_id.json"
         )
     )
 )

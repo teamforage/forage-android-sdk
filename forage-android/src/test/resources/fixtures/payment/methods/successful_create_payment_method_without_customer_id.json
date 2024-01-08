@@ -1,0 +1,12 @@
+{
+  "ref": "2f148fe399",
+  "type": "ebt",
+  "balance": null,
+  "card": {
+    "last_4": "7845",
+    "created": "2022-11-01T12:21:03.801119-07:00",
+    "token": "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+    "state": "PA"
+  },
+  "reusable": true
+}

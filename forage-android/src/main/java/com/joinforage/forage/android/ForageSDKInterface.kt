@@ -95,8 +95,8 @@ internal interface ForageSDKInterface {
  */
 data class TokenizeEBTCardParams(
     val foragePanEditText: ForagePANEditText,
-    val customerId: String,
-    val reusable: Boolean? = true
+    val customerId: String? = null,
+    val reusable: Boolean = true
 )
 
 /**

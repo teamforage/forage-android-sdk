@@ -262,8 +262,8 @@ The ForageSDK exposes the following function to collect the EBT card number:
 ```kotlin
     data class TokenizeEBTCardParams(
         val foragePANEditText: ForagePANEditText,
-        val customerId: String,
-        val reusable: Boolean
+        val customerId: String?,
+        val reusable: Boolean = true
     )
 
     suspend fun tokenizeEBTCard(
@@ -332,7 +332,7 @@ class TokenizeViewModel @Inject constructor(
                 reusable = true,
                 // NOTE: The following line is for testing purposes only and should not be used in production.
                 // Please replace this line with a real hashed customer ID value.
-                customerId = UUID.randomUUID().toString(),
+                customerId = "d0633e25eb5e069991e884fcb55f252f088af544c8be56b2388bc6d56d8032c9"
             )
         )
 
