@@ -374,13 +374,13 @@ internal class BTPinCollector(
             )
         }
 
-        fun balancePath(paymentMethodRef: String) =
+        private fun balancePath(paymentMethodRef: String) =
             "/api/payment_methods/$paymentMethodRef/balance/"
 
-        fun capturePaymentPath(paymentRef: String) =
+        private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
 
-        fun deferPaymentCapturePath(paymentRef: String) =
+        private fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
     }
 }

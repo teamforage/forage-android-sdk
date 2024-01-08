@@ -527,16 +527,16 @@ internal class VGSPinCollector(
             )
         }
 
-        internal fun balancePath(paymentMethodRef: String) =
+        private fun balancePath(paymentMethodRef: String) =
             "/api/payment_methods/$paymentMethodRef/balance/"
 
-        internal fun capturePaymentPath(paymentRef: String) =
+        private fun capturePaymentPath(paymentRef: String) =
             "/api/payments/$paymentRef/capture/"
 
-        internal fun deferPaymentCapturePath(paymentRef: String) =
+        private fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
 
-        internal fun posRefundPath(paymentRef: String) =
+        private fun posRefundPath(paymentRef: String) =
             "/api/payments/$paymentRef/refunds/?type=pos"
     }
 }
