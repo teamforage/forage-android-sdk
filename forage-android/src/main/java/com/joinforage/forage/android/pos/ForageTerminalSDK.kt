@@ -12,7 +12,7 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
-data class RefundPosPaymentParams(
+data class RefundPaymentParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String,
     val amount: Float,
@@ -21,8 +21,7 @@ data class RefundPosPaymentParams(
 )
 
 /**
- * Instantiating a ForageTerminalSDK starts a connection with Forage’s servers.
- * @param posTerminalId The ID of the POS terminal that is using the Forage SDK.
+ * @param posTerminalId The unique string that identifies the POS Terminal.
  */
 class ForageTerminalSDK(
     private val posTerminalId: String
@@ -106,8 +105,8 @@ class ForageTerminalSDK(
     /**
      * TODO: add comment here
      */
-    suspend fun refundPosPayment(
-        params: RefundPosPaymentParams
+    suspend fun refundPayment(
+        params: RefundPaymentParams
     ): ForageApiResponse<String> {
         return ForageApiResponse.Success("TODO")
     }
