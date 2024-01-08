@@ -55,8 +55,7 @@ class FlowTokenizeViewModel @Inject constructor(
         val response = ForageSDK().tokenizeEBTCard(
             TokenizeEBTCardParams(
                 foragePanEditText = foragePanEditText,
-                customerId = "android-test-customer-id",
-                reusable = true
+                customerId = "android-test-customer-id"
             )
         )
 
