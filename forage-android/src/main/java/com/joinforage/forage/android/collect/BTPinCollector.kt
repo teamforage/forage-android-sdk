@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.collect
 
-import androidx.core.os.trace
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.basistheory.android.view.TextElement

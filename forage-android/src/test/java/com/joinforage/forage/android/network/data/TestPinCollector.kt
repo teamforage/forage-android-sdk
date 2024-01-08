@@ -11,13 +11,15 @@ import com.joinforage.forage.android.network.model.ForageError
 /**
  * Fake test implementation of PinCollector that could be used to replace VGS on tests
  */
-internal class TestPinCollector : PinCollector {
+internal class TestPinCollector : PinCollector() {
     private var submitBalanceCheckResponses =
         HashMap<CheckBalanceWrapper, ForageApiResponse<String>>()
     private var submitPaymentCaptureResponses =
         HashMap<CapturePaymentWrapper, ForageApiResponse<String>>()
     private var submitCollectPinResponses =
         HashMap<DeferPaymentCaptureWrapper, ForageApiResponse<String>>()
+    private var submitPosRefundResponses =
+        HashMap<SubmitPosRefundWrapper, ForageApiResponse<String>>()
 
     override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
@@ -59,6 +61,29 @@ internal class TestPinCollector : PinCollector {
                 paymentRef = paymentRef,
                 cardToken = cardToken,
                 encryptionKey = encryptionKey
+            ),
+            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+        )
+    }
+
+    override suspend fun submitPosRefund(
+        paymentRef: String,
+        cardToken: String,
+        encryptionKey: String,
+        terminalId: String,
+        amount: String,
+        reason: String,
+        metadata: Map<String, Any>?
+    ): ForageApiResponse<String> {
+        return submitPosRefundResponses.getOrDefault(
+            SubmitPosRefundWrapper(
+                paymentRef,
+                cardToken,
+                encryptionKey,
+                terminalId,
+                amount,
+                reason,
+                metadata
             ),
             ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
         )
@@ -144,6 +169,16 @@ internal class TestPinCollector : PinCollector {
         val paymentRef: String,
         val cardToken: String,
         val encryptionKey: String
+    )
+
+    private data class SubmitPosRefundWrapper(
+        val paymentRef: String,
+        val cardToken: String,
+        val encryptionKey: String,
+        val terminalId: String,
+        val amount: String,
+        val reason: String,
+        val metadata: Map<String, Any>?
     )
 
     companion object {
