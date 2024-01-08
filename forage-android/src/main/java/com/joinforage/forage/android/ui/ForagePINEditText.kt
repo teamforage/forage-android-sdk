@@ -31,6 +31,7 @@ class ForagePINEditText @JvmOverloads constructor(
     private val _linearLayout: LinearLayout
     private val btVaultWrapper: BTVaultWrapper
     private val vgsVaultWrapper: VGSVaultWrapper
+    private val forageVaultWrapper: ForageVaultWrapper
 
     /**
      * The `vault` property acts as an abstraction for the actual code
@@ -69,16 +70,18 @@ class ForagePINEditText @JvmOverloads constructor(
 
                     // at this point in time, we do not know the environment and
                     // we are operating and thus do not know whether to add
-                    // BTVaultWrapper or VGSVaultWrapper to the UI.
-                    // But that's OK. We can hedge and instantiate both of them
+                    // BTVaultWrapper, VGSVaultWrapper, or ForageVaultWrapper to the UI.
+                    // But that's OK. We can hedge and instantiate all of them.
                     // Then, within setForageConfig, once we know the environment
                     // and are thus able to initial LaunchDarkly and find out
-                    // whether to use BT or VGS. So, below we are hedging
+                    // whether to use BT or VGS. So, below we are hedging.
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
                     vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
-                    // ensure both wrappers init with the
+                    forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
+                    // ensure all wrappers init with the
                     // same typeface (or the attributes)
                     btVaultWrapper.typeface = vgsVaultWrapper.typeface
+                    forageVaultWrapper.typeface = vgsVaultWrapper.typeface
 
                     val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementWidth, ViewGroup.LayoutParams.MATCH_PARENT)
                     val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementHeight, ViewGroup.LayoutParams.WRAP_CONTENT)

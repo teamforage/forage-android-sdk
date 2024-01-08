@@ -1,5 +1,6 @@
 package com.joinforage.forage.android
 
+import android.content.res.TypedArray
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.SQSError
@@ -29,4 +30,9 @@ internal fun sqsMessageToError(sqsError: SQSError): ForageApiResponse.Failure {
 
 internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
     return this.addPathSegment("")
+}
+
+internal fun TypedArray.getBoxCornerRadius(styleIndex: Int, defaultBoxCornerRadius: Float): Float {
+    val styledBoxCornerRadius = getDimension(styleIndex, 0f)
+    return if (styledBoxCornerRadius == 0f) defaultBoxCornerRadius else styledBoxCornerRadius
 }
