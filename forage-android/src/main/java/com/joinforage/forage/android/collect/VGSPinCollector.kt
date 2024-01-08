@@ -21,6 +21,7 @@ import com.verygoodsecurity.vgscollect.core.VgsCollectResponseListener
 import com.verygoodsecurity.vgscollect.core.model.network.VGSRequest
 import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
 import org.json.JSONException
+import java.util.UUID
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.suspendCoroutine
 
@@ -28,7 +29,7 @@ internal class VGSPinCollector(
     private val context: Context,
     private val pinForageEditText: ForagePINEditText,
     private val merchantAccount: String
-) : PinCollector() {
+) : PinCollector {
     private val logger = Log.getInstance()
     private val vaultType = VaultType.VGS_VAULT_TYPE
 
@@ -312,7 +313,7 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun submitPosRefund(
+    suspend fun submitPosRefund(
         paymentRef: String,
         cardToken: String,
         encryptionKey: String,
@@ -463,6 +464,20 @@ internal class VGSPinCollector(
             return body
         }
 
+        private fun buildHeaders(
+            merchantAccount: String,
+            encryptionKey: String,
+            idempotencyKey: String = UUID.randomUUID().toString(),
+            traceId: String = ""
+        ): HashMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers[ForageConstants.Headers.X_KEY] = encryptionKey
+            headers[ForageConstants.Headers.MERCHANT_ACCOUNT] = merchantAccount
+            headers[ForageConstants.Headers.IDEMPOTENCY_KEY] = idempotencyKey
+            headers[ForageConstants.Headers.TRACE_ID] = traceId
+            return headers
+        }
+
         internal fun returnForageError(response: VGSResponse.ErrorResponse, measurement: NetworkMonitor, continuation: Continuation<ForageApiResponse<String>>) {
             val forageApiError = ForageApiError.ForageApiErrorMapper.from(response.toString())
             val error = forageApiError.errors[0]
@@ -511,5 +526,17 @@ internal class VGSPinCollector(
                 )
             )
         }
+
+        internal fun balancePath(paymentMethodRef: String) =
+            "/api/payment_methods/$paymentMethodRef/balance/"
+
+        internal fun capturePaymentPath(paymentRef: String) =
+            "/api/payments/$paymentRef/capture/"
+
+        internal fun deferPaymentCapturePath(paymentRef: String) =
+            "/api/payments/$paymentRef/collect_pin/"
+
+        internal fun posRefundPath(paymentRef: String) =
+            "/api/payments/$paymentRef/refunds/?type=pos"
     }
 }
