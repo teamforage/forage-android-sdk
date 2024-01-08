@@ -43,7 +43,7 @@ internal interface ForageSDKInterface {
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
      * On success, returns an object with `snap` and `cash` fields, whose values
-     * indicate the balance of each tender as of now
+     * indicate the current balance of each tender as of now
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().

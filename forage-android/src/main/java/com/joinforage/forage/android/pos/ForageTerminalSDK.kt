@@ -41,7 +41,8 @@ class ForageTerminalSDK(
     }
 
     /**
-     * A method to securely tokenize an EBT card via ForagePANEditText via UI-based PAN entry
+     * Securely tokenize a customer's card information
+     * using a ForagePANEditText via UI-based PAN entry
      *
      * @param foragePanEditText A ForagePANEditText  UI component. Importantly,
      * you must have called .setForageConfig() already
@@ -56,7 +57,7 @@ class ForageTerminalSDK(
      * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    suspend fun tokenizeEBTCard(
+    suspend fun tokenizeCard(
         foragePanEditText: ForagePANEditText,
         reusable: Boolean = true
     ): ForageApiResponse<String> {
@@ -76,9 +77,10 @@ class ForageTerminalSDK(
     }
 
     /**
-     * Tokenizes an EBT card using track 2 data from a magnetic card swipe.
+     * Securely tokenizes a customer's card information
+     * using Track 2 data from a magnetic card swipe.
      *
-     * @param track2Data The track 2 data obtained from the magnetic stripe of the card.
+     * @param track2Data The Track 2 data obtained from the magnetic stripe of the card.
      * @param reusable Optional. Indicates whether the tokenized card can be
      * reused for multiple transactions. Defaults to true.
      *
@@ -87,7 +89,7 @@ class ForageTerminalSDK(
      * token which can be securely stored and used for subsequent transactions. On failure,
      * returns a detailed error response for proper handling.
      */
-    suspend fun tokenizeEBTCard(
+    suspend fun tokenizeCard(
         track2Data: String,
         reusable: Boolean = true
     ): ForageApiResponse<String> {
@@ -110,18 +112,15 @@ class ForageTerminalSDK(
         return ForageApiResponse.Success("TODO")
     }
 
-    // ======= Same as online-only Forage SDK below =======
-
     /**
-     * Checks the balance SNAP and EBT Cash balances of an EBT account via
-     * ForagePINEditText
+     * Checks the balance of a given PaymentMethod using a ForagePINEditText
      *
-     * @param params The parameters required for tokenization, including
-     * reference to a ForagePINEditText and PaymentMethod ref
+     * @param params The parameters required for balance inquiries, including
+     * a reference to a ForagePINEditText and PaymentMethod ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
-     * On success, returns an object with `snap` and `cash` fields, whose values
-     * indicate the balance of each tender as of now
+     * On success, returns an object with `snap` (SNAP) and `cash` (EBT Cash) fields, whose values
+     * indicate the current balance of each respective tender.
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
@@ -132,8 +131,10 @@ class ForageTerminalSDK(
         return ForageApiResponse.Success("TODO")
     }
 
+    // ======= Same as online-only Forage SDK below =======
+
     /**
-     * Captures a Forage Payment associated with an EBT card
+     * Captures a Forage Payment associated with an EBT card using a customer's EBT card PIN.
      *
      * @param params The parameters required for payment capture, including
      * reference to a ForagePINEditText and a Payment ref
@@ -153,7 +154,7 @@ class ForageTerminalSDK(
 
     /**
      * Collect's a customer's PIN for an EBT payment and defers
-     * the capture of the payment to the server
+     * the capture of the payment to the server.
      *
      * @param params The parameters required for deferring the capture of an EBT payment,
      * including a reference to a ForagePINEditText and a Payment ref

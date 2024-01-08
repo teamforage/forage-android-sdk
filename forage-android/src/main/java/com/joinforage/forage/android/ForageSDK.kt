@@ -83,14 +83,14 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Checks the balance of a given PaymentMethod via ForagePINEditText
+     * Checks the balance of a given PaymentMethod using a ForagePINEditText
      *
      * @param params The parameters required for balance inquiries, including
      * a reference to a ForagePINEditText and PaymentMethod ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
-     * On success, returns an object with `snap` and `cash` fields, whose values
-     * indicate the balance of each tender as of now
+     * On success, returns an object with `snap` (SNAP) and `cash` (EBT Cash) fields, whose values
+     * indicate the current balance of each respective tender
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().

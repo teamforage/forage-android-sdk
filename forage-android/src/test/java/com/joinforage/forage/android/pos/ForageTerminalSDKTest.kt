@@ -65,7 +65,7 @@ class ForageTerminalSDKTest {
 
     @Test
     fun `tokenize EBT card via UI-based PAN entry`() = runTest {
-        val response = terminalSdk.tokenizeEBTCard(
+        val response = terminalSdk.tokenizeCard(
             foragePanEditText = mockForagePanEditText,
             reusable = true
         )
