@@ -264,7 +264,7 @@ The ForageSDK exposes the following function to collect the EBT card number:
     data class TokenizeEBTCardParams(
         val foragePANEditText: ForagePANEditText,
         val customerId: String?,
-        val reusable: Boolean?
+        val reusable: Boolean = true
     )
 
     suspend fun tokenizeEBTCard(
