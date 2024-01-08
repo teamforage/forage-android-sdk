@@ -1,0 +1,189 @@
+package com.joinforage.forage.android.pos
+
+import com.joinforage.forage.android.CapturePaymentParams
+import com.joinforage.forage.android.CheckBalanceParams
+import com.joinforage.forage.android.DeferPaymentCaptureParams
+import com.joinforage.forage.android.ForageConfigNotSetException
+import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.ForageSDKInterface
+import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.ui.ForagePANEditText
+import com.joinforage.forage.android.ui.ForagePINEditText
+
+data class RefundPaymentParams(
+    val foragePinEditText: ForagePINEditText,
+    val paymentRef: String,
+    val amount: Float,
+    val reason: String,
+    val metadata: Map<String, String>? = null
+)
+
+/**
+ * @param posTerminalId The unique string that identifies the POS Terminal.
+ */
+class ForageTerminalSDK(
+    private val posTerminalId: String
+) : ForageSDKInterface {
+    private var forageSdk: ForageSDKInterface = ForageSDK()
+    private var logger: Log = Log.getInstance()
+
+    // internal constructor facilitates testing
+    internal constructor(
+        posTerminalId: String,
+        forageSdk: ForageSDKInterface,
+        logger: Log
+    ) : this(posTerminalId) {
+        this.forageSdk = forageSdk
+        this.logger = logger
+    }
+
+    /**
+     * Securely tokenize a customer's card information
+     * using a ForagePANEditText via UI-based PAN entry
+     *
+     * @param foragePanEditText A ForagePANEditText UI component. Importantly,
+     * you must have called .setForageConfig() already
+     * @param reusable Optional. Indicates whether the tokenized card can be reused for
+     * multiple transactions. Defaults to true.
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the operation.
+     * On success, returns a [PaymentMethod](https://docs.joinforage.app/reference/create-payment-method)
+     * token which can be securely stored and used for subsequent transactions. On failure,
+     * returns a detailed error response for proper handling.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePANEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    suspend fun tokenizeCard(
+        foragePanEditText: ForagePANEditText,
+        reusable: Boolean = true
+    ): ForageApiResponse<String> {
+        logger.i(
+            "[POS] Tokenizing Payment Method via UI PAN entry",
+            attributes = mapOf(
+                "reusable" to reusable
+            )
+        )
+
+        return forageSdk.tokenizeEBTCard(
+            TokenizeEBTCardParams(
+                foragePanEditText = foragePanEditText,
+                reusable = reusable
+            )
+        )
+    }
+
+    /**
+     * Securely tokenizes a customer's card information
+     * using Track 2 data from a magnetic card swipe.
+     *
+     * @param track2Data The Track 2 data obtained from the magnetic stripe of the card.
+     * @param reusable Optional. Indicates whether the tokenized card can be
+     * reused for multiple transactions. Defaults to true.
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the operation.
+     * On success, returns a [PaymentMethod](https://docs.joinforage.app/reference/create-payment-method)
+     * token which can be securely stored and used for subsequent transactions. On failure,
+     * returns a detailed error response for proper handling.
+     */
+    suspend fun tokenizeCard(
+        track2Data: String,
+        reusable: Boolean = true
+    ): ForageApiResponse<String> {
+        logger.i(
+            "[POS] Tokenizing Payment Method via magnetic card swipe",
+            attributes = mapOf(
+                "reusable" to reusable
+            )
+        )
+
+        return ForageApiResponse.Success("TODO")
+    }
+
+    /**
+     * TODO: add comment here
+     */
+    suspend fun refundPayment(
+        params: RefundPaymentParams
+    ): ForageApiResponse<String> {
+        return ForageApiResponse.Success("TODO")
+    }
+
+    /**
+     * Checks the balance of a given PaymentMethod using a ForagePINEditText
+     *
+     * @param params The parameters required for balance inquiries, including
+     * a reference to a ForagePINEditText and PaymentMethod ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the operation.
+     * On success, returns an object with `snap` (SNAP) and `cash` (EBT Cash) fields, whose values
+     * indicate the current balance of each respective tender.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun checkBalance(
+        params: CheckBalanceParams
+    ): ForageApiResponse<String> {
+        return ForageApiResponse.Success("TODO")
+    }
+
+    // ======= Same as online-only Forage SDK below =======
+
+    /**
+     * Captures a Forage Payment associated with an EBT card using a customer's EBT card PIN.
+     *
+     * @param params The parameters required for payment capture, including
+     * reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * payment capture. On success, returns a confirmation of the transaction.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun capturePayment(
+        params: CapturePaymentParams
+    ): ForageApiResponse<String> {
+        return forageSdk.capturePayment(params)
+    }
+
+    /**
+     * Collect's a customer's PIN for an EBT payment and defers
+     * the capture of the payment to the server.
+     *
+     * @param params The parameters required for deferring the capture of an EBT payment,
+     * including a reference to a ForagePINEditText and a Payment ref
+     *
+     * @return A ForageAPIResponse indicating the success or failure of the
+     * PIN capture. On success, returns `Nothing`.
+     * On failure, provides a detailed error response.
+     *
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
+        return forageSdk.deferPaymentCapture(params)
+    }
+
+    /**
+     * Use other `tokenizeEBTCard` methods with different signatures instead.
+     *
+     * @throws NotImplementedError
+     */
+    @Deprecated(
+        message = "This method is not applicable to the Forage Terminal SDK. Use the other tokenizeEBTCard methods.",
+        level = DeprecationLevel.ERROR
+    )
+    override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
+        throw NotImplementedError(
+            """
+            This method is not applicable to the Forage Terminal SDK.
+            Use the other tokenizeEBTCard methods.
+            """.trimIndent()
+        )
+    }
+}

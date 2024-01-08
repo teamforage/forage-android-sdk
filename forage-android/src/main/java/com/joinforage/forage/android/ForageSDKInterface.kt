@@ -19,7 +19,6 @@ class ForageConfigNotSetException(override val message: String) : IllegalStateEx
  * and ForagePINEditText.
  */
 internal interface ForageSDKInterface {
-
     /**
      * A method to securely tokenize an EBT card via ForagePANEditText
      *
@@ -37,15 +36,14 @@ internal interface ForageSDKInterface {
     suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String>
 
     /**
-     * Checks the balance SNAP and EBT Cash balances of an EBT account via
-     * ForagePINEditText
+     * Checks the balance of a given PaymentMethod via ForagePINEditText
      *
-     * @param params The parameters required for tokenization, including
-     * reference to a ForagePINEditText and PaymentMethod ref
+     * @param params The parameters required for balance inquiries, including
+     * a reference to a ForagePINEditText and PaymentMethod ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the operation.
      * On success, returns an object with `snap` and `cash` fields, whose values
-     * indicate the balance of each tender as of now
+     * indicate the current balance of each tender as of now
      *
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
@@ -68,10 +66,11 @@ internal interface ForageSDKInterface {
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
 
     /**
-     * Capture a customer's PIN for an EBT payment and defer the capture of the payment to the server
+     * Collect's a customer's PIN for an EBT payment and defers the
+     * capture of the payment to the server
      *
      * @param params The parameters required for pin capture, including
-     * reference to a ForagePINEditText and a Payment ref
+     * a reference to a ForagePINEditText and a Payment ref
      *
      * @return A ForageAPIResponse indicating the success or failure of the
      * PIN capture. On success, returns `Nothing`.
