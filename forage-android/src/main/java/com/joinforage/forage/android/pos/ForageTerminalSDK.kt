@@ -44,7 +44,7 @@ class ForageTerminalSDK(
      * Securely tokenize a customer's card information
      * using a ForagePANEditText via UI-based PAN entry
      *
-     * @param foragePanEditText A ForagePANEditText  UI component. Importantly,
+     * @param foragePanEditText A ForagePANEditText UI component. Importantly,
      * you must have called .setForageConfig() already
      * @param reusable Optional. Indicates whether the tokenized card can be reused for
      * multiple transactions. Defaults to true.
