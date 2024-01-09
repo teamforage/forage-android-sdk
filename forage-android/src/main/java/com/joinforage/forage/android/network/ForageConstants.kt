@@ -21,7 +21,7 @@ internal object ForageConstants {
         const val REASON = "reason"
         const val METADATA = "metadata"
         const val POS_TERMINAL = "pos_terminal"
-        const val POS_TERMINAL_ID = "pos_terminal_id"
+        const val PROVIDER_TERMINAL_ID = "provider_terminal_id"
         const val AMOUNT = "amount"
     }
 

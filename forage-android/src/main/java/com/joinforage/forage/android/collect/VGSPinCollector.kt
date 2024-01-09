@@ -395,7 +395,7 @@ internal class VGSPinCollector(
             ForageConstants.RequestBody.AMOUNT to amount,
             ForageConstants.RequestBody.METADATA to metadataField,
             ForageConstants.RequestBody.POS_TERMINAL to mapOf(
-                ForageConstants.RequestBody.POS_TERMINAL to terminalId
+                ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to terminalId
             )
         )
 
