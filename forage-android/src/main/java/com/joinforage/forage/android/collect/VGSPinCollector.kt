@@ -37,10 +37,9 @@ internal class VGSPinCollector(
         return vaultType
     }
 
-    override suspend fun submitBalanceCheck(
+    override suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -111,11 +110,11 @@ internal class VGSPinCollector(
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
-                    encryptionKey,
+                    vaultRequestParams.encryptionKey,
                     traceId = logger.getTraceIdValue()
                 )
             )
-            .setCustomData(buildRequestBody(cardToken))
+            .setCustomData(buildRequestBody(vaultRequestParams))
             .build()
 
         logger.i(
@@ -127,10 +126,9 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun submitPaymentCapture(
+    override suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -202,12 +200,12 @@ internal class VGSPinCollector(
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
-                    encryptionKey,
+                    vaultRequestParams.encryptionKey,
                     idempotencyKey = paymentRef,
                     traceId = logger.getTraceIdValue()
                 )
             )
-            .setCustomData(buildRequestBody(cardToken))
+            .setCustomData(buildRequestBody(vaultRequestParams))
             .build()
 
         logger.i(
@@ -219,10 +217,9 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun submitDeferPaymentCapture(
+    override suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -296,12 +293,12 @@ internal class VGSPinCollector(
             .setCustomHeader(
                 buildHeaders(
                     merchantAccount,
-                    encryptionKey,
+                    vaultRequestParams.encryptionKey,
                     idempotencyKey = paymentRef,
                     traceId = logger.getTraceIdValue()
                 )
             )
-            .setCustomData(buildRequestBody(cardToken))
+            .setCustomData(buildRequestBody(vaultRequestParams))
             .build()
 
         logger.i(
@@ -349,10 +346,25 @@ internal class VGSPinCollector(
                 .create()
         }
 
-        private fun buildRequestBody(cardToken: String): HashMap<String, String> {
-            val body = HashMap<String, String>()
-            body[ForageConstants.RequestBody.CARD_NUMBER_TOKEN] = cardToken
+        internal fun buildRequestBody(requestBodyParams: BaseVaultRequestParams): HashMap<String, Any> {
+            return when (requestBodyParams) {
+                is PosVaultRequestParams -> buildPosRequestBody(requestBodyParams)
+                else -> buildBaseRequestBody(requestBodyParams)
+            }
+        }
+
+        private fun buildPosRequestBody(posRequestBodyParams: PosVaultRequestParams): HashMap<String, Any> {
+            val body = buildBaseRequestBody(posRequestBodyParams)
+            body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
+                ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to posRequestBodyParams.posTerminalId
+            )
             return body
+        }
+
+        private fun buildBaseRequestBody(params: BaseVaultRequestParams): HashMap<String, Any> {
+            return hashMapOf(
+                ForageConstants.RequestBody.CARD_NUMBER_TOKEN to params.cardNumberToken
+            )
         }
 
         private fun buildHeaders(

@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.collect.BaseVaultRequestParams
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
@@ -49,22 +50,22 @@ internal class DeferPaymentCaptureRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> submitDeferPaymentCapture(
                 paymentRef = paymentRef,
-                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
-                encryptionKey = encryptionKey
+                vaultRequestParams = BaseVaultRequestParams(
+                    cardNumberToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
+                    encryptionKey = encryptionKey
+                )
             )
             else -> response
         }
     }
 
-    private suspend fun submitDeferPaymentCapture(
+    private suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String> {
         return pinCollector.submitDeferPaymentCapture(
             paymentRef = paymentRef,
-            cardToken = cardToken,
-            encryptionKey = encryptionKey
+            vaultRequestParams
         )
     }
 

@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.collect.BaseVaultRequestParams
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
@@ -82,8 +83,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         pinCollector.setCollectPinResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
         )
 
@@ -141,8 +141,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         pinCollector.setCollectPinResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Failure(listOf(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
         )
 
@@ -164,8 +163,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setCollectPinResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success("")
         )
 
@@ -185,8 +183,10 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private data class ExpectedData(
         val bearerToken: String = "AbCaccesstokenXyz",
         val paymentRef: String = "6ae6a45ff1",
-        val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-        val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
+        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
+            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
+        ),
         val merchantAccount: String = "1234567",
         val paymentMethod: String = "1f148fe399"
     )

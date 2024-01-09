@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.LDManager
+import com.joinforage.forage.android.collect.BaseVaultRequestParams
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
@@ -59,8 +60,12 @@ internal class CapturePaymentRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> submitPaymentCapture(
                 paymentRef = paymentRef,
-                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
-                encryptionKey = encryptionKey
+                vaultRequestParams = BaseVaultRequestParams(
+                    cardNumberToken = pinCollector.parseVaultToken(
+                        PaymentMethod.ModelMapper.from(response.data)
+                    ),
+                    encryptionKey = encryptionKey
+                )
             )
             else -> response
         }
@@ -68,13 +73,11 @@ internal class CapturePaymentRepository(
 
     private suspend fun submitPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val response = pinCollector.submitPaymentCapture(
             paymentRef = paymentRef,
-            cardToken = cardToken,
-            encryptionKey = encryptionKey
+            vaultRequestParams
         )
 
         return when (response) {

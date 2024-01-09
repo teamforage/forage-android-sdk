@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.LDManager
+import com.joinforage.forage.android.collect.BaseVaultRequestParams
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
@@ -44,22 +45,22 @@ internal class CheckBalanceRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> submitBalanceCheck(
                 paymentMethodRef = paymentMethodRef,
-                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
-                encryptionKey = encryptionKey
+                vaultRequestParams = BaseVaultRequestParams(
+                    cardNumberToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
+                    encryptionKey = encryptionKey
+                )
             )
             else -> response
         }
     }
 
-    private suspend fun submitBalanceCheck(
+    private suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String> {
         val response = pinCollector.submitBalanceCheck(
             paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken,
-            encryptionKey = encryptionKey
+            vaultRequestParams = vaultRequestParams
         )
 
         return when (response) {
@@ -138,7 +139,7 @@ internal class CheckBalanceRepository(
             }
 
             val index = attempt - 1
-            var intervalTime: Long = if (index < pollingIntervals.size) {
+            val intervalTime: Long = if (index < pollingIntervals.size) {
                 pollingIntervals[index]
             } else {
                 1000L

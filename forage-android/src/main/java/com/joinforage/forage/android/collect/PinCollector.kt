@@ -9,23 +9,31 @@ internal object CollectorConstants {
     const val TOKEN_DELIMITER = ","
 }
 
+internal open class BaseVaultRequestParams(
+    val cardNumberToken: String,
+    val encryptionKey: String
+)
+
+internal class PosVaultRequestParams(
+    cardNumberToken: String,
+    encryptionKey: String,
+    val posTerminalId: String
+) : BaseVaultRequestParams(cardNumberToken, encryptionKey)
+
 internal interface PinCollector {
-    suspend fun submitBalanceCheck(
+    suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String>
 
-    suspend fun submitPaymentCapture(
+    suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String>
 
-    suspend fun submitDeferPaymentCapture(
+    suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: T
     ): ForageApiResponse<String>
 
     fun parseEncryptionKey(
