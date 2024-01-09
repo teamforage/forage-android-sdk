@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.collect.BaseVaultRequestParams
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment

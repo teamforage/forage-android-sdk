@@ -12,6 +12,7 @@ import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
+import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError

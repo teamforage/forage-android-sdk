@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.LDManager
-import com.joinforage.forage.android.collect.BaseVaultRequestParams
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
