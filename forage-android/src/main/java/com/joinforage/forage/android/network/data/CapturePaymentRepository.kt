@@ -70,9 +70,9 @@ internal class CapturePaymentRepository(
         }
     }
 
-    private suspend fun submitPaymentCapture(
+    private suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: BaseVaultRequestParams
+        vaultRequestParams: T
     ): ForageApiResponse<String> {
         val response = pinCollector.submitPaymentCapture(
             paymentRef = paymentRef,
