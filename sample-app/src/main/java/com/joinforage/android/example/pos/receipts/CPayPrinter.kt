@@ -6,7 +6,6 @@ import com.pos.sdk.printer.param.MultipleTextPrintItemParam
 import com.pos.sdk.printer.param.PrintItemAlign
 import com.pos.sdk.printer.param.TextPrintItemParam
 
-
 // TODO: write tests for the classes and methods in this file
 //  as they are business logic and are straightforward to test
 

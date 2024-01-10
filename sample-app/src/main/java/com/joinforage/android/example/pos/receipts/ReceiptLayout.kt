@@ -70,7 +70,6 @@ internal class ReceiptLayout(
         internal fun cashPaymentAndWithdrawalReceipt(): Nothing = TODO("implement me!!!")
         internal fun snapPaymentReceipt(): Nothing = TODO("implement me!!!")
 
-
         // these are static receipt layouts occasionally useful for
         // developing and testing
         internal val EmptyReceiptLayout = ReceiptLayout(
