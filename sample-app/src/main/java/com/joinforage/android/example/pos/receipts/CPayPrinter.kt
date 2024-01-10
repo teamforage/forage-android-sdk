@@ -1,6 +1,7 @@
 package com.joinforage.android.example.pos.receipts
 
 import android.os.Bundle
+import android.util.Log
 import com.pos.sdk.printer.PrinterDevice
 import com.pos.sdk.printer.param.MultipleTextPrintItemParam
 import com.pos.sdk.printer.param.PrintItemAlign
@@ -26,7 +27,7 @@ internal class CPayPrinter(private val cpayPrinter: PrinterDevice) {
     }
     fun print() {
         val state = cpayPrinter.printSync(Bundle())
-        println("result is ${state.stateCode},msg is ${state.stateMsg}")
+        Log.i("CPay SDK", "result is ${state.stateCode},msg is ${state.stateMsg}")
     }
 }
 

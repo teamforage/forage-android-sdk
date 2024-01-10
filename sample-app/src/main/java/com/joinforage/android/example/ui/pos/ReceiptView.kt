@@ -145,7 +145,6 @@ class ReceiptView(
             addView(receiptDisplay)
         }
         addView(scrollableContent)
-        println("constructor was called!!")
     }
 
     internal fun setReceiptLayout(newReceiptLayout: ReceiptLayout) {

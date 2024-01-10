@@ -1,6 +1,7 @@
 package com.joinforage.android.example.ui.pos
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,11 +39,11 @@ class POSFragment : Fragment() {
             requireContext(),
             object : ResultCallback<DeviceManager> {
                 override fun onFinish(deviceManager: DeviceManager) {
-                    println("onFinish success!")
+                    Log.i("CPay SDK", "DeviceManager created successfully")
                 }
 
                 override fun onError(i: Int, s: String) {
-                    println("onError: $i,$s")
+                    Log.i("CPay SDK", "Failed to create DeviceManager: $i,$s")
                 }
             }
         )
