@@ -12,11 +12,9 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.model.Balance
-import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
-import com.joinforage.forage.android.network.OkHttpClientBuilder
-import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.mock.ExpectedData
+import com.joinforage.forage.android.mock.createMockCheckBalanceRepository
+import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +23,6 @@ import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import me.jorgecastillo.hiroaki.matchers.times
 import me.jorgecastillo.hiroaki.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 
@@ -40,29 +37,9 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = CheckBalanceRepository(
+        repository = createMockCheckBalanceRepository(
             pinCollector = pinCollector,
-            encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
-            paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
-                ),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
-            messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
-                ),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
+            server = server,
             logger = logger
         )
     }
@@ -105,9 +82,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             vaultRequestParams = testData.vaultRequestParams,
-            ForageApiResponse.Success(
-                getMessageResponse(testData.contentId)
-            )
+            ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
 
         server.givenContentId(testData.contentId).returnsUnauthorized()
@@ -127,9 +102,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             vaultRequestParams = testData.vaultRequestParams,
-            ForageApiResponse.Success(
-                getMessageResponse(testData.contentId)
-            )
+            ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
         server.givenContentId(testData.contentId)
             .returnsFailed()
@@ -151,9 +124,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             vaultRequestParams = testData.vaultRequestParams,
-            ForageApiResponse.Success(
-                getMessageResponse(testData.contentId)
-            )
+            ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
         server.givenContentId(testData.contentId)
             .returnsMessageCompletedSuccessfully()
@@ -179,9 +150,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
             vaultRequestParams = testData.vaultRequestParams,
-            ForageApiResponse.Success(
-                getMessageResponse(testData.contentId)
-            )
+            ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
 
         repeat(MAX_ATTEMPTS) {
@@ -209,29 +178,5 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
     companion object {
         private const val MAX_ATTEMPTS = 10
-        fun getMessageResponse(contentId: String): String {
-            return JSONObject().apply {
-                put("content_id", contentId)
-                put("message_type", "0200")
-                put("status", "sent_to_proxy")
-                put("failed", false)
-                put("errors", emptyList<String>())
-            }.toString()
-        }
     }
-
-    private data class ExpectedData(
-        val bearerToken: String = "AbCaccesstokenXyz",
-        val paymentMethodRef: String = "1f148fe399",
-        val merchantAccount: String = "1234567",
-        val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65",
-        val balance: Balance = Balance(
-            snap = "100.00",
-            cash = "100.00"
-        ),
-        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
-            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
-        )
-    )
 }

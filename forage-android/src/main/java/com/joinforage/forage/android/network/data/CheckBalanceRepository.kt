@@ -12,6 +12,7 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.pos.PosVaultRequestParams
 import com.joinforage.forage.android.sqsMessageToError
 import kotlinx.coroutines.delay
 
@@ -22,7 +23,6 @@ internal class CheckBalanceRepository(
     private val messageStatusService: MessageStatusService,
     private val logger: Log
 ) {
-
     suspend fun checkBalance(
         paymentMethodRef: String
     ): ForageApiResponse<String> {
@@ -32,6 +32,19 @@ internal class CheckBalanceRepository(
                 encryptionKey = pinCollector.parseEncryptionKey(
                     EncryptionKeys.ModelMapper.from(response.data)
                 )
+            )
+            else -> response
+        }
+    }
+
+    suspend fun posCheckBalance(paymentMethodRef: String, posTerminalId: String): ForageApiResponse<String> {
+        return when (val response = encryptionKeyService.getEncryptionKey()) {
+            is ForageApiResponse.Success -> posGetTokenFromPaymentMethod(
+                paymentMethodRef = paymentMethodRef,
+                encryptionKey = pinCollector.parseEncryptionKey(
+                    EncryptionKeys.ModelMapper.from(response.data)
+                ),
+                posTerminalId = posTerminalId
             )
             else -> response
         }
@@ -47,6 +60,28 @@ internal class CheckBalanceRepository(
                 vaultRequestParams = BaseVaultRequestParams(
                     cardNumberToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
                     encryptionKey = encryptionKey
+                )
+            )
+            else -> response
+        }
+    }
+
+    private suspend fun posGetTokenFromPaymentMethod(
+        paymentMethodRef: String,
+        encryptionKey: String,
+        posTerminalId: String
+    ): ForageApiResponse<String> {
+        return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
+            is ForageApiResponse.Success -> submitBalanceCheck(
+                paymentMethodRef = paymentMethodRef,
+                vaultRequestParams = PosVaultRequestParams(
+                    cardNumberToken = pinCollector.parseVaultToken(
+                        PaymentMethod.ModelMapper.from(
+                            response.data
+                        )
+                    ),
+                    encryptionKey = encryptionKey,
+                    posTerminalId = posTerminalId
                 )
             )
             else -> response
