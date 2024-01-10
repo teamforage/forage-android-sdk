@@ -39,9 +39,9 @@ internal class VGSPinCollector(
         return vaultType
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
+    override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -128,9 +128,9 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
+    override suspend fun submitPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -219,9 +219,9 @@ internal class VGSPinCollector(
         vgsCollect.asyncSubmit(request)
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
+    override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,

@@ -34,9 +34,9 @@ internal class BTPinCollector(
         return vaultType
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
+    override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -123,9 +123,9 @@ internal class BTPinCollector(
         )
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
+    override suspend fun submitPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -214,9 +214,9 @@ internal class BTPinCollector(
         )
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
+    override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,

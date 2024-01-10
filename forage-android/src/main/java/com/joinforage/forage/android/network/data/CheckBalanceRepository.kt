@@ -53,9 +53,9 @@ internal class CheckBalanceRepository(
         }
     }
 
-    private suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
+    private suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val response = pinCollector.submitBalanceCheck(
             paymentMethodRef = paymentMethodRef,

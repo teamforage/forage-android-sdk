@@ -19,9 +19,9 @@ internal class TestPinCollector : PinCollector {
     private var submitCollectPinResponses =
         HashMap<DeferPaymentCaptureWrapper, ForageApiResponse<String>>()
 
-    override suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
+    override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return submitBalanceCheckResponses.getOrDefault(
             CheckBalanceWrapper(
@@ -32,9 +32,9 @@ internal class TestPinCollector : PinCollector {
         )
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
+    override suspend fun submitPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return submitPaymentCaptureResponses.getOrDefault(
             CapturePaymentWrapper(
@@ -45,9 +45,9 @@ internal class TestPinCollector : PinCollector {
         )
     }
 
-    override suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
+    override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return submitCollectPinResponses.getOrDefault(
             DeferPaymentCaptureWrapper(

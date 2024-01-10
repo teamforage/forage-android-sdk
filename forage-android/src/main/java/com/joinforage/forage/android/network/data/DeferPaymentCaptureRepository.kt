@@ -58,9 +58,9 @@ internal class DeferPaymentCaptureRepository(
         }
     }
 
-    private suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
+    private suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return pinCollector.submitDeferPaymentCapture(
             paymentRef = paymentRef,

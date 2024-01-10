@@ -11,19 +11,19 @@ internal object CollectorConstants {
 }
 
 internal interface PinCollector {
-    suspend fun <T : BaseVaultRequestParams>submitBalanceCheck(
+    suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String>
 
-    suspend fun <T : BaseVaultRequestParams>submitPaymentCapture(
+    suspend fun submitPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String>
 
-    suspend fun <T : BaseVaultRequestParams>submitDeferPaymentCapture(
+    suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        vaultRequestParams: T
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String>
 
     fun parseEncryptionKey(
