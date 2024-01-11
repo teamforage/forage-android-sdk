@@ -21,14 +21,12 @@ internal class TestPinCollector : PinCollector {
 
     override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return submitBalanceCheckResponses.getOrDefault(
             CheckBalanceWrapper(
                 paymentMethodRef,
-                cardToken,
-                encryptionKey
+                vaultRequestParams
             ),
             ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
         )
@@ -36,14 +34,12 @@ internal class TestPinCollector : PinCollector {
 
     override suspend fun submitPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return submitPaymentCaptureResponses.getOrDefault(
             CapturePaymentWrapper(
                 paymentRef = paymentRef,
-                cardToken = cardToken,
-                encryptionKey = encryptionKey
+                vaultRequestParams
             ),
             ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
         )
@@ -51,14 +47,12 @@ internal class TestPinCollector : PinCollector {
 
     override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         return submitCollectPinResponses.getOrDefault(
             DeferPaymentCaptureWrapper(
                 paymentRef = paymentRef,
-                cardToken = cardToken,
-                encryptionKey = encryptionKey
+                vaultRequestParams
             ),
             ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
         )
@@ -82,15 +76,13 @@ internal class TestPinCollector : PinCollector {
 
     fun setBalanceCheckResponse(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String,
+        vaultRequestParams: BaseVaultRequestParams,
         response: ForageApiResponse<String>
     ) {
         submitBalanceCheckResponses[
             CheckBalanceWrapper(
                 paymentMethodRef,
-                cardToken,
-                encryptionKey
+                vaultRequestParams
             )
         ] =
             response
@@ -98,15 +90,13 @@ internal class TestPinCollector : PinCollector {
 
     fun setCapturePaymentResponse(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String,
+        vaultRequestParams: BaseVaultRequestParams,
         response: ForageApiResponse<String>
     ) {
         submitPaymentCaptureResponses[
             CapturePaymentWrapper(
                 paymentRef,
-                cardToken,
-                encryptionKey
+                vaultRequestParams
             )
         ] =
             response
@@ -114,15 +104,13 @@ internal class TestPinCollector : PinCollector {
 
     fun setCollectPinResponse(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String,
+        vaultRequestParams: BaseVaultRequestParams,
         response: ForageApiResponse<String>
     ) {
         submitCollectPinResponses[
             DeferPaymentCaptureWrapper(
                 paymentRef,
-                cardToken,
-                encryptionKey
+                vaultRequestParams
             )
         ] =
             response
@@ -130,20 +118,17 @@ internal class TestPinCollector : PinCollector {
 
     private data class CheckBalanceWrapper(
         val paymentMethodRef: String,
-        val cardToken: String,
-        val encryptionKey: String
+        val vaultRequestParams: BaseVaultRequestParams
     )
 
     private data class CapturePaymentWrapper(
         val paymentRef: String,
-        val cardToken: String,
-        val encryptionKey: String
+        val vaultRequestParams: BaseVaultRequestParams
     )
 
     private data class DeferPaymentCaptureWrapper(
         val paymentRef: String,
-        val cardToken: String,
-        val encryptionKey: String
+        val vaultRequestParams: BaseVaultRequestParams
     )
 
     companion object {

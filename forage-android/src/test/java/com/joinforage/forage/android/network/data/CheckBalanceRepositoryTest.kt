@@ -88,8 +88,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
         )
 
@@ -105,8 +104,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(
                 getMessageResponse(testData.contentId)
             )
@@ -128,8 +126,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(
                 getMessageResponse(testData.contentId)
             )
@@ -153,8 +150,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(
                 getMessageResponse(testData.contentId)
             )
@@ -182,8 +178,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setBalanceCheckResponse(
             paymentMethodRef = testData.paymentMethodRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(
                 getMessageResponse(testData.contentId)
             )
@@ -228,13 +223,15 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     private data class ExpectedData(
         val bearerToken: String = "AbCaccesstokenXyz",
         val paymentMethodRef: String = "1f148fe399",
-        val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-        val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
         val merchantAccount: String = "1234567",
         val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65",
         val balance: Balance = Balance(
             snap = "100.00",
             cash = "100.00"
+        ),
+        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
+            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
         )
     )
 }

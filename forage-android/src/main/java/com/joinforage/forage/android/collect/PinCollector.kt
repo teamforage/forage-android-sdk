@@ -3,6 +3,7 @@ package com.joinforage.forage.android.collect
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 
 internal object CollectorConstants {
@@ -12,20 +13,17 @@ internal object CollectorConstants {
 internal interface PinCollector {
     suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String>
 
     suspend fun submitPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String>
 
     suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String>
 
     fun parseEncryptionKey(

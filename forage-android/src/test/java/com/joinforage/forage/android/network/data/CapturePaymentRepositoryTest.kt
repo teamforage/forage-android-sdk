@@ -96,12 +96,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
         pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
         )
 
@@ -117,8 +116,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
                 TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
             )
@@ -183,8 +181,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
                 TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
             )
@@ -213,8 +210,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
                 TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
             )
@@ -253,8 +249,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             .returnsMessageCompletedSuccessfully()
         pinCollector.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
                 TestPinCollector.sendToProxyResponse(testData.contentId)
             )
@@ -281,8 +276,10 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     private data class ExpectedData(
         val bearerToken: String = "AbCaccesstokenXyz",
         val paymentRef: String = "6ae6a45ff1",
-        val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-        val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
+        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
+            "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+            "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
+        ),
         val merchantAccount: String = "1234567",
         val contentId: String = "36058ff7-0e9d-4025-94cd-80ef04a3bb1c",
         val paymentMethod: String = "1f148fe399"

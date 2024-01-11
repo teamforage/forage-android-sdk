@@ -44,8 +44,10 @@ internal class CheckBalanceRepository(
         return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> submitBalanceCheck(
                 paymentMethodRef = paymentMethodRef,
-                cardToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
-                encryptionKey = encryptionKey
+                vaultRequestParams = BaseVaultRequestParams(
+                    cardNumberToken = pinCollector.parseVaultToken(PaymentMethod.ModelMapper.from(response.data)),
+                    encryptionKey = encryptionKey
+                )
             )
             else -> response
         }
@@ -53,13 +55,11 @@ internal class CheckBalanceRepository(
 
     private suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val response = pinCollector.submitBalanceCheck(
             paymentMethodRef = paymentMethodRef,
-            cardToken = cardToken,
-            encryptionKey = encryptionKey
+            vaultRequestParams = vaultRequestParams
         )
 
         return when (response) {
@@ -138,7 +138,7 @@ internal class CheckBalanceRepository(
             }
 
             val index = attempt - 1
-            var intervalTime: Long = if (index < pollingIntervals.size) {
+            val intervalTime: Long = if (index < pollingIntervals.size) {
                 pollingIntervals[index]
             } else {
                 1000L

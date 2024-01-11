@@ -12,6 +12,7 @@ import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
+import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -35,8 +36,7 @@ internal class BTPinCollector(
 
     override suspend fun submitBalanceCheck(
         paymentMethodRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -52,10 +52,10 @@ internal class BTPinCollector(
         val measurement = setupMeasurement(balancePath(paymentMethodRef), UserAction.BALANCE)
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = buildHeaders(encryptionKey, merchantAccount, traceId = logger.getTraceIdValue())
+            headers = buildHeaders(vaultRequestParams.encryptionKey, merchantAccount, traceId = logger.getTraceIdValue())
             body = ProxyRequestObject(
                 pin = pinForageEditText.getTextElement(),
-                card_number_token = cardToken
+                card_number_token = vaultRequestParams.cardNumberToken
             )
             path = balancePath(paymentMethodRef)
         }
@@ -125,8 +125,7 @@ internal class BTPinCollector(
 
     override suspend fun submitPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -142,10 +141,10 @@ internal class BTPinCollector(
         val measurement = setupMeasurement(capturePaymentPath(paymentRef), UserAction.CAPTURE)
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = buildHeaders(encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
+            headers = buildHeaders(vaultRequestParams.encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
             body = ProxyRequestObject(
                 pin = pinForageEditText.getTextElement(),
-                card_number_token = cardToken
+                card_number_token = vaultRequestParams.cardNumberToken
             )
             path = capturePaymentPath(paymentRef)
         }
@@ -217,8 +216,7 @@ internal class BTPinCollector(
 
     override suspend fun submitDeferPaymentCapture(
         paymentRef: String,
-        cardToken: String,
-        encryptionKey: String
+        vaultRequestParams: BaseVaultRequestParams
     ): ForageApiResponse<String> {
         val logAttributes = mapOf(
             "merchant_ref" to merchantAccount,
@@ -232,10 +230,15 @@ internal class BTPinCollector(
         val bt = buildBt()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = buildHeaders(encryptionKey, merchantAccount, paymentRef, traceId = logger.getTraceIdValue())
+            headers = buildHeaders(
+                vaultRequestParams.encryptionKey,
+                merchantAccount,
+                paymentRef,
+                traceId = logger.getTraceIdValue()
+            )
             body = ProxyRequestObject(
                 pin = pinForageEditText.getTextElement(),
-                card_number_token = cardToken
+                card_number_token = vaultRequestParams.cardNumberToken
             )
             path = deferPaymentCapturePath(paymentRef)
         }
