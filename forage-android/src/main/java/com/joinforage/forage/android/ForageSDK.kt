@@ -242,7 +242,11 @@ class ForageSDK : ForageSDKInterface {
     ) {
         private val config = EnvConfig.fromSessionToken(sessionToken)
         private val okHttpClient by lazy {
-            OkHttpClientBuilder.provideOkHttpClient(sessionToken, merchantId, logger.getTraceIdValue())
+            OkHttpClientBuilder.provideOkHttpClient(
+                bearerToken = sessionToken,
+                merchantAccount = merchantId,
+                traceId = logger.getTraceIdValue()
+            )
         }
         private val encryptionKeyService by lazy { createEncryptionKeyService() }
         private val paymentMethodService by lazy { createPaymentMethodService() }
