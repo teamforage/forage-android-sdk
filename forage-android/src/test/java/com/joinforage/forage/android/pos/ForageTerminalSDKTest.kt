@@ -39,28 +39,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.robolectric.RobolectricTestRunner
 
-class MockForageSDK : ForageSDKInterface {
-    override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
-        return ForageApiResponse.Success("Success")
-    }
-
-    override suspend fun checkBalance(
-        params: CheckBalanceParams
-    ): ForageApiResponse<String> {
-        return ForageApiResponse.Success("Success")
-    }
-
-    override suspend fun capturePayment(
-        params: CapturePaymentParams
-    ): ForageApiResponse<String> {
-        return ForageApiResponse.Success("Success")
-    }
-
-    override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
-        return ForageApiResponse.Success("Success")
-    }
-}
-
 internal class MockServiceFactory(
     private val mockPinCollector: TestPinCollector,
     private val server: MockWebServer,
