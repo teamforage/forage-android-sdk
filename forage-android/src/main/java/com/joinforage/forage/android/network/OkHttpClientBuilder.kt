@@ -5,8 +5,8 @@ import okhttp3.OkHttpClient
 
 internal object OkHttpClientBuilder {
     fun provideOkHttpClient(
-        bearerToken: String,
-        merchantAccount: String? = null,
+        sessionToken: String,
+        merchantId: String? = null,
         idempotencyKey: String? = null,
         traceId: String? = null
     ): OkHttpClient {
@@ -17,12 +17,12 @@ internal object OkHttpClientBuilder {
                         .newBuilder()
                         .addHeader(
                             ForageConstants.Headers.AUTHORIZATION,
-                            "${ForageConstants.Headers.BEARER} $bearerToken"
+                            "${ForageConstants.Headers.BEARER} $sessionToken"
                         ).run {
-                            merchantAccount?.let {
+                            merchantId?.let {
                                 addHeader(
                                     ForageConstants.Headers.MERCHANT_ACCOUNT,
-                                    merchantAccount
+                                    merchantId
                                 )
                             }
                                 ?: this

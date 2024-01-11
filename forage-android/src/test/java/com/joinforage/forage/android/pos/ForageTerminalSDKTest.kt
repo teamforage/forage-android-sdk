@@ -8,15 +8,22 @@ import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
+import com.joinforage.forage.android.fixtures.givenPaymentMethod
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
+import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
-import com.joinforage.forage.android.mock.ExpectedData
+import com.joinforage.forage.android.mock.CheckBalanceExpectedData
 import com.joinforage.forage.android.mock.MockLogger
+import com.joinforage.forage.android.mock.TokenizeCardExpectedData
 import com.joinforage.forage.android.mock.createMockCheckBalanceRepository
+import com.joinforage.forage.android.mock.createMockTokenizeCardService
 import com.joinforage.forage.android.mock.getVaultMessageResponse
+import com.joinforage.forage.android.model.Card
+import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -49,6 +56,15 @@ internal class MockServiceFactory(
     merchantId,
     logger
 ) {
+    override fun createTokenizeCardService(idempotencyKey: String): TokenizeCardService {
+        return createMockTokenizeCardService(
+            server = server,
+            testData = TokenizeCardExpectedData(),
+            logger = logger,
+            idempotencyKey = idempotencyKey
+        )
+    }
+
     override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
         return createMockCheckBalanceRepository(
             pinCollector = mockPinCollector,
@@ -65,35 +81,66 @@ class ForageTerminalSDKTest : MockServerSuite() {
     private lateinit var terminalSdk: ForageTerminalSDK
     private lateinit var mockForageSdk: ForageSDK
     private lateinit var mockLogger: MockLogger
-    private val testData = ExpectedData()
+    private val tokenizeCardTestData = TokenizeCardExpectedData()
+    private val checkBalanceTestData = CheckBalanceExpectedData()
     private lateinit var mockPinCollector: TestPinCollector
 
     @Before
     fun setUp() {
         super.setup()
+
+        mockPinCollector = TestPinCollector()
+        mockLogger = MockLogger()
+
         // Use Mockito judiciously (mainly for mocking views)!
         // Opt for dependency injection and inheritance over Mockito
         mockForagePanEditText = mock(ForagePANEditText::class.java)
         mockForagePinEditText = mock(ForagePINEditText::class.java)
-
-        mockLogger = MockLogger()
-
-        mockPinCollector = TestPinCollector()
+        mockForageSdk = mock(ForageSDK::class.java)
         `when`(mockForagePinEditText.getForageConfig()).thenReturn(
             ForageConfig(
-                merchantId = testData.merchantAccount,
-                sessionToken = testData.bearerToken
+                merchantId = checkBalanceTestData.merchantId,
+                sessionToken = checkBalanceTestData.sessionToken
             )
         )
         `when`(mockForagePinEditText.getCollector(anyString())).thenReturn(mockPinCollector)
-
-        mockForageSdk = mock(ForageSDK::class.java)
 
         terminalSdk = ForageTerminalSDK(
             posTerminalId = "1234",
             forageSdk = mockForageSdk,
             createLogger = { mockLogger }
         )
+    }
+
+    @Test
+    fun `tokenize EBT card with Track 2 data successfully`() = runTest {
+        server.givenPaymentMethod(
+            PosPaymentMethodRequestBody(
+                track2Data = tokenizeCardTestData.track2Data,
+                reusable = true
+            )
+        ).returnsPaymentMethodSuccessfully()
+
+        val paymentMethodResponse = executeTokenizeCardWithTrack2Data()
+        assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
+        val response =
+            PaymentMethod.ModelMapper.from((paymentMethodResponse as ForageApiResponse.Success).data)
+        assertThat(response).isEqualTo(
+            PaymentMethod(
+                ref = "1f148fe399",
+                type = "ebt",
+                balance = null,
+                card = Card(
+                    last4 = "7845",
+                    token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
+                ),
+                customerId = "test-android-customer-id",
+                reusable = true
+            )
+        )
+
+        val loggedMessage = mockLogger.infoLogs[0].getMessage()
+        assertEquals(loggedMessage, "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data")
     }
 
     @Test
@@ -126,19 +173,19 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
         mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.posVaultRequestParams,
-            ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
+            paymentMethodRef = checkBalanceTestData.paymentMethodRef,
+            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
+            ForageApiResponse.Success(getVaultMessageResponse(checkBalanceTestData.contentId))
         )
-        server.givenContentId(testData.contentId)
+        server.givenContentId(checkBalanceTestData.contentId)
             .returnsMessageCompletedSuccessfully()
 
         val response = executeCheckBalance()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         val successResponse = response as ForageApiResponse.Success
-        assertThat(successResponse.data).contains(testData.balance.cash)
-        assertThat(successResponse.data).contains(testData.balance.snap)
+        assertThat(successResponse.data).contains(checkBalanceTestData.balance.cash)
+        assertThat(successResponse.data).contains(checkBalanceTestData.balance.snap)
 
         // assert telemetry events are reported as expected!
         val loggedMessage = mockLogger.infoLogs[0].getMessage()
@@ -161,8 +208,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
         mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.posVaultRequestParams,
+            paymentMethodRef = checkBalanceTestData.paymentMethodRef,
+            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
             response = failureResponse
         )
 
@@ -172,13 +219,13 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertThat(response).isEqualTo(failureResponse)
     }
 
-    fun `POS checkBalance should report metrics upon failure`() = runTest() {
+    fun `POS checkBalance should report metrics upon failure`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
         mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.posVaultRequestParams,
+            paymentMethodRef = checkBalanceTestData.paymentMethodRef,
+            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
             response = failureResponse
         )
 
@@ -253,9 +300,36 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertTrue((response as ForageApiResponse.Success).data == "Success")
     }
 
+    private suspend fun executeTokenizeCardWithTrack2Data(): ForageApiResponse<String> {
+        val terminalSdk = ForageTerminalSDK(
+            posTerminalId = checkBalanceTestData.posVaultRequestParams.posTerminalId,
+            forageSdk = ForageSDK(),
+            createLogger = { mockLogger },
+            createServiceFactory = { sessionToken: String, merchantId: String, logger: Log ->
+                MockServiceFactory(
+                    mockPinCollector = mockPinCollector,
+                    server = server,
+                    logger = logger,
+                    sessionToken = sessionToken,
+                    merchantId = merchantId
+                )
+            }
+        )
+        return terminalSdk.tokenizeCard(
+            PosTokenizeCardParams(
+                forageConfig = ForageConfig(
+                    merchantId = checkBalanceTestData.merchantId,
+                    sessionToken = checkBalanceTestData.sessionToken
+                ),
+                track2Data = tokenizeCardTestData.track2Data,
+                reusable = true
+            )
+        )
+    }
+
     private suspend fun executeCheckBalance(): ForageApiResponse<String> {
         val terminalSdk = ForageTerminalSDK(
-            posTerminalId = testData.posVaultRequestParams.posTerminalId,
+            posTerminalId = checkBalanceTestData.posVaultRequestParams.posTerminalId,
             forageSdk = ForageSDK(),
             createLogger = { mockLogger },
             createServiceFactory = { sessionToken: String, merchantId: String, logger: Log ->

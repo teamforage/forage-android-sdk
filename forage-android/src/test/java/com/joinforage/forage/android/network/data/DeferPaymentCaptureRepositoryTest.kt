@@ -44,7 +44,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
+                    merchantId = testData.merchantAccount
                 ),
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger
@@ -52,7 +52,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
+                    merchantId = testData.merchantAccount
                 ),
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger

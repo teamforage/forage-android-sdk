@@ -6,11 +6,12 @@ import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMet
 import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
+import com.joinforage.forage.android.mock.TokenizeCardExpectedData
+import com.joinforage.forage.android.mock.createMockTokenizeCardService
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.Method
@@ -27,22 +28,18 @@ import java.util.UUID
 class TokenizeCardServiceTest : MockServerSuite() {
     private lateinit var tokenizeCardService: TokenizeCardService
     private lateinit var idempotencyKey: String
-    private val testData = ExpectedData()
+    private val testData = TokenizeCardExpectedData()
 
     @Before
     override fun setup() {
         super.setup()
 
         idempotencyKey = UUID.randomUUID().toString()
-
-        tokenizeCardService = TokenizeCardService(
-            okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                testData.bearerToken,
-                testData.merchantAccount,
-                idempotencyKey
-            ),
-            httpUrl = server.url("").toUrl().toString(),
-            logger = Log.getSilentInstance()
+        tokenizeCardService = createMockTokenizeCardService(
+            server = server,
+            testData = testData,
+            logger = Log.getSilentInstance(),
+            idempotencyKey = idempotencyKey
         )
     }
 
@@ -57,8 +54,8 @@ class TokenizeCardServiceTest : MockServerSuite() {
             times = times(1),
             method = Method.POST,
             headers = headers(
-                "Authorization" to "Bearer ${testData.bearerToken}",
-                "Merchant-Account" to testData.merchantAccount,
+                "Authorization" to "Bearer ${testData.sessionToken}",
+                "Merchant-Account" to testData.merchantId,
                 "IDEMPOTENCY-KEY" to idempotencyKey
             )
         )
@@ -159,13 +156,4 @@ class TokenizeCardServiceTest : MockServerSuite() {
             ForageError(400, "cannot_parse_request_body", "EBT Cards must be 16-19 digits long!")
         )
     }
-
-    private data class ExpectedData(
-        val merchantAccount: String = "12345678",
-        val bearerToken: String = "AbCaccesstokenXyz",
-        val cardNumber: String = "5076801234567845",
-        val customerId: String = "test-android-customer-id",
-        val reusable: Boolean = false,
-        val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId)
-    )
 }

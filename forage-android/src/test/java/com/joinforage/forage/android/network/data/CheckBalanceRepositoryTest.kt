@@ -12,7 +12,7 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.mock.ExpectedData
+import com.joinforage.forage.android.mock.CheckBalanceExpectedData
 import com.joinforage.forage.android.mock.createMockCheckBalanceRepository
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -30,7 +30,7 @@ import org.junit.Test
 class CheckBalanceRepositoryTest : MockServerSuite() {
     private lateinit var repository: CheckBalanceRepository
     private val pinCollector = TestPinCollector()
-    private val testData = ExpectedData()
+    private val testData = CheckBalanceExpectedData()
 
     @Before
     override fun setup() {
