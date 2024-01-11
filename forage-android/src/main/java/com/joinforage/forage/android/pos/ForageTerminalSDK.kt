@@ -37,13 +37,13 @@ class ForageTerminalSDK(
         )
     }
 
-    private var forageSdk: ForageSDKInterface = ForageSDK()
+    private var forageSdk: ForageSDK = ForageSDK()
     private var createLogger: () -> Log = { Log.getInstance() }
 
     // internal constructor facilitates testing
     internal constructor(
         posTerminalId: String,
-        forageSdk: ForageSDKInterface,
+        forageSdk: ForageSDK,
         createLogger: () -> Log,
         createServiceFactory: ((String, String, Log) -> ForageSDK.ServiceFactory)? = null
     ) : this(posTerminalId) {
@@ -91,7 +91,7 @@ class ForageTerminalSDK(
         )
         if (tokenizationResponse is ForageApiResponse.Failure) {
             logger.e(
-                "[POS] tokenizeCard failed on Terminal $posTerminalId ${tokenizationResponse.errors[0]}",
+                "[POS] tokenizeCard failed on Terminal $posTerminalId: ${tokenizationResponse.errors[0]}",
                 attributes = mapOf(
                     "pos_terminal_id" to posTerminalId
                 )
@@ -154,9 +154,8 @@ class ForageTerminalSDK(
         params: CheckBalanceParams
     ): ForageApiResponse<String> {
         val logger = createLogger()
-        val forageSdkInstance = forageSdk as ForageSDK
         val (foragePinEditText, paymentMethodRef) = params
-        val (merchantId, sessionToken) = forageSdkInstance._getForageConfigOrThrow(foragePinEditText)
+        val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         logger.i(
@@ -183,11 +182,11 @@ class ForageTerminalSDK(
             paymentMethodRef = paymentMethodRef,
             posTerminalId = posTerminalId
         )
-        forageSdkInstance.processApiResponseForMetrics(balanceResponse, measurement)
+        forageSdk.processApiResponseForMetrics(balanceResponse, measurement)
 
         if (balanceResponse is ForageApiResponse.Failure) {
             logger.e(
-                "[POS] checkBalance failed for PaymentMethod $paymentMethodRef on Terminal $posTerminalId ${balanceResponse.errors[0]}",
+                "[POS] checkBalance failed for PaymentMethod $paymentMethodRef on Terminal $posTerminalId: ${balanceResponse.errors[0]}",
                 attributes = mapOf(
                     "payment_method_ref" to paymentMethodRef,
                     "pos_terminal_id" to posTerminalId
@@ -230,7 +229,7 @@ class ForageTerminalSDK(
 
         if (captureResponse is ForageApiResponse.Failure) {
             logger.e(
-                "[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId ${captureResponse.errors[0]}",
+                "[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId: ${captureResponse.errors[0]}",
                 attributes = mapOf(
                     "payment" to paymentRef,
                     "pos_terminal_id" to posTerminalId
@@ -268,7 +267,7 @@ class ForageTerminalSDK(
 
         if (deferCaptureResponse is ForageApiResponse.Failure) {
             logger.e(
-                "[POS] deferPaymentCapture failed for Payment $paymentRef on Terminal $posTerminalId ${deferCaptureResponse.errors[0]}",
+                "[POS] deferPaymentCapture failed for Payment $paymentRef on Terminal $posTerminalId: ${deferCaptureResponse.errors[0]}",
                 attributes = mapOf(
                     "payment_ref" to paymentRef,
                     "pos_terminal_id" to posTerminalId
