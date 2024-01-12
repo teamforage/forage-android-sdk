@@ -12,6 +12,7 @@ import com.joinforage.forage.android.fixtures.givenPaymentMethod
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
+import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
@@ -154,7 +155,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 track2Data = tokenizeCardTestData.track2Data,
                 reusable = true
             )
-        ).returnsPaymentMethodSuccessfully()
+        ).returnsMissingCustomerIdPaymentMethodSuccessfully()
 
         val paymentMethodResponse = executeTokenizeCardWithTrack2Data(
             track2Data = tokenizeCardTestData.track2Data,
@@ -165,15 +166,15 @@ class ForageTerminalSDKTest : MockServerSuite() {
             PaymentMethod.ModelMapper.from((paymentMethodResponse as ForageApiResponse.Success).data)
         assertThat(response).isEqualTo(
             PaymentMethod(
-                ref = "1f148fe399",
+                ref = "2f148fe399",
                 type = "ebt",
                 balance = null,
                 card = Card(
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
                 ),
-                customerId = "test-android-customer-id",
-                reusable = true
+                reusable = true,
+                customerId = null
             )
         )
 
