@@ -21,7 +21,16 @@ import com.joinforage.forage.android.ui.ForageConfig
 import java.util.UUID
 
 /**
- * An instance of the ForageSDK
+ * Entry point to the Forage SDK.
+ *
+ * A [ForageSDK] instance interacts with the Forage API.
+ *
+ * You need an instance of the ForageSDK to perform operations like:
+ *
+ * * [capturePayment]
+ * * [checkBalance]
+ * * [deferPaymentCapture]
+ * * [tokenizeEBTCard]
  */
 class ForageSDK : ForageSDKInterface {
 
@@ -47,13 +56,10 @@ class ForageSDK : ForageSDKInterface {
     /**
      * Tokenizes an EBT Card via a [ForagePANEditText][com.joinforage.forage.android.ui.ForagePANEditText] Element.
      *
-     * @param TokenizeEBTCardParams A model that passes a [`foragePanEditText`][com.joinforage.forage.android.ui.ForagePANEditText] instance, `customerId`, and `reusable` as the [TokenizeEBTCardParams] that Forage uses to tokenize an EBT Card.
-     * @return A [ForageApiResponse] object. 
-     *
-     * On success, the object includes a `ref` token that represents an instance of a Forage [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods#paymentmethod-object). You can store the token for future transactions, like to [`checkBalance`](checkBalance) or to [create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) in Forage's database. 
-     *
-     * On failure, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue.   
+     * @param TokenizeEBTCardParams A model that passes a [`foragePanEditText`][com.joinforage.forage.android.ui.ForagePANEditText] instance, `customerId`, and `reusable` boolean as the [TokenizeEBTCardParams] that Forage uses to tokenize an EBT Card.
      * @throws [ForageConfigNotSetException] If the [ForageConfig] is not set for the provided `foragePanEditText`.
+     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information on error handling
+     * @return A [ForageApiResponse] object. On success, the object includes a `ref` token that represents an instance of a Forage [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods#paymentmethod-object). You can store the token for future transactions, like to [`checkBalance`](checkBalance) or to [create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) in Forage's database. On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue.
      */
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
@@ -87,15 +93,13 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Checks the balance of an EBT Card via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * Checks the balance of a previously created [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
-     * @param CheckBalanceParams A model that passes a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a `paymentMethodRef`, found in the response from a call to [tokenizeEBTCard] or the [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method) endpoint, as the [CheckBalanceParams] that Forage uses to check the balance of an EBT Card. 
-     * @return A [ForageApiResponse] object. 
-     * 
-     * On success, the object includes `snap` and `cash` fields that indicate the EBT Card's current SNAP and EBT Cash balances.  
-     * 
-     * On failure, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue. 
+     * @param CheckBalanceParams A model that passes a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a `paymentMethodRef`, found in the response from a call to [tokenizeEBTCard] or the [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method) endpoint, as the [CheckBalanceParams].
      * @throws [ForageConfigNotSetException] If the [ForageConfig] is not set for the provided `foragePinEditText`.
+     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information on error handling.
+     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions) to trigger balance inquiry exceptions during testing.
+     * @return A [ForageApiResponse] object. On success, the object includes `snap` and `cash` fields that indicate the EBT Card's current SNAP and EBT Cash balances. On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue.
      */
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
@@ -173,15 +177,13 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Captures a payment via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * Immediately captures a payment via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
-     * @param CapturePaymentParams A model that passes a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a `paymentRef`, returned by the [Create a Payment](https://docs.joinforage.app/reference/create-a-payment) endpoint, as the [CapturePaymentParams] that Forage uses to capture a payment. 
-     * @return A [ForageApiResponse] object. 
-     * 
-     * On success, the object confirms the transaction. 
-     * 
-     * On failure, the object includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue. 
+     * @param CapturePaymentParams A model that passes a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a `paymentRef`, returned by the [Create a Payment](https://docs.joinforage.app/reference/create-a-payment) endpoint, as the [CapturePaymentParams] that Forage uses to capture a payment.
      * @throws [ForageConfigNotSetException] If the [ForageConfig] is not set for the provided `foragePinEditText`.
+     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information on error handling.
+     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions) to trigger payment capture exceptions during testing.
+     * @return A [ForageApiResponse] object. On success, the object confirms the transaction. The response includes a Forage [`Payment`](https://docs.joinforage.app/reference/payments) object. On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue.
      */
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
@@ -273,17 +275,11 @@ class ForageSDK : ForageSDKInterface {
      *
      * @param DeferPaymentCaptureParams A model that passes a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a `paymentRef`, returned by the [Create a Payment](https://docs.joinforage.app/reference/create-a-payment) endpoint, as the [DeferPaymentCaptureParams].
      *
-     * @return A [ForageApiResponse] object. 
-     * 
-     * On success, the object returns `Nothing`. 
-     * 
-     * On failure, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue. 
-     * @throws [ForageConfigNotSetException] If the [ForageConfig] is not set for the provided `foragePinEditText`. 
-     *
-     * @see 
-     * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side) for the related step-by-step guide.
-     *
-     * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment) for the related endpoint.
+     * @throws [ForageConfigNotSetException] If the [ForageConfig] is not set for the provided `foragePinEditText`.
+     * @see * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side) for the related step-by-step guide.
+     * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment) for the API endpoint to call after [deferPaymentCapture].
+     * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information on error handling.
+     * @return A [ForageApiResponse] object. On success, the object returns `Nothing`. On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to troubleshoot the issue.
      */
     override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
