@@ -157,7 +157,6 @@ class ForageTerminalSDK(
         val (foragePinEditText, paymentMethodRef) = params
         val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
 
-        // TODO: replace Log.getInstance() with Log() in future PR
         logger.i(
             "[POS] Called checkBalance for PaymentMethod $paymentMethodRef",
             attributes = mapOf(
