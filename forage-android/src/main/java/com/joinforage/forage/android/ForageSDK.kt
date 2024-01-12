@@ -19,7 +19,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
-import java.util.UUID
 
 /**
  * A class implementation of ForageSDKInterface
@@ -55,7 +54,6 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText)
-        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -67,16 +65,10 @@ class ForageSDK : ForageSDKInterface {
             )
         )
 
-        return TokenizeCardService(
-            okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                sessionToken,
-                merchantId,
-                idempotencyKey = UUID.randomUUID().toString(),
-                traceId = logger.getTraceIdValue()
-            ),
-            httpUrl = config.baseUrl,
-            logger = logger
-        ).tokenizeCard(
+        val tokenizeCardService = ServiceFactory(sessionToken, merchantId, logger)
+            .createTokenizeCardService()
+
+        return tokenizeCardService.tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
             reusable = reusable ?: true
@@ -243,8 +235,8 @@ class ForageSDK : ForageSDKInterface {
         private val config = EnvConfig.fromSessionToken(sessionToken)
         private val okHttpClient by lazy {
             OkHttpClientBuilder.provideOkHttpClient(
-                bearerToken = sessionToken,
-                merchantAccount = merchantId,
+                sessionToken = sessionToken,
+                merchantId = merchantId,
                 traceId = logger.getTraceIdValue()
             )
         }
@@ -252,6 +244,12 @@ class ForageSDK : ForageSDKInterface {
         private val paymentMethodService by lazy { createPaymentMethodService() }
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
+
+        open fun createTokenizeCardService() = TokenizeCardService(
+            config.baseUrl,
+            okHttpClient,
+            logger
+        )
 
         open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
             return CheckBalanceRepository(

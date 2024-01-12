@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.fixtures
 
+import com.joinforage.forage.android.pos.PosPaymentMethodRequestBody
 import me.jorgecastillo.hiroaki.Method
 import me.jorgecastillo.hiroaki.models.PotentialRequestChain
 import me.jorgecastillo.hiroaki.models.error
@@ -9,7 +10,7 @@ import me.jorgecastillo.hiroaki.models.success
 import me.jorgecastillo.hiroaki.whenever
 import okhttp3.mockwebserver.MockWebServer
 
-fun MockWebServer.givenPaymentMethod(cardNumber: String, customerId: String, reusable: Boolean = true) = whenever(
+internal fun MockWebServer.givenPaymentMethod(cardNumber: String, customerId: String, reusable: Boolean = true) = whenever(
     method = Method.POST,
     sentToPath = "api/payment_methods/",
     jsonBody = json {
@@ -22,7 +23,7 @@ fun MockWebServer.givenPaymentMethod(cardNumber: String, customerId: String, reu
     }
 )
 
-fun MockWebServer.givenPaymentMethod(cardNumber: String, reusable: Boolean = true) = whenever(
+internal fun MockWebServer.givenPaymentMethod(cardNumber: String, reusable: Boolean = true) = whenever(
     method = Method.POST,
     sentToPath = "api/payment_methods/",
     jsonBody = json {
@@ -34,7 +35,19 @@ fun MockWebServer.givenPaymentMethod(cardNumber: String, reusable: Boolean = tru
     }
 )
 
-fun PotentialRequestChain.returnsPaymentMethodSuccessfully() = thenRespond(
+internal fun MockWebServer.givenPaymentMethod(posPaymentMethodRequestBody: PosPaymentMethodRequestBody) = whenever(
+    method = Method.POST,
+    sentToPath = "api/payment_methods/",
+    jsonBody = json {
+        "type" / "ebt"
+        "reusable" / posPaymentMethodRequestBody.reusable
+        "card" / json {
+            "track_2_data" / posPaymentMethodRequestBody.track2Data
+        }
+    }
+)
+
+internal fun PotentialRequestChain.returnsPaymentMethodSuccessfully() = thenRespond(
     success(
         jsonBody = fileBody(
             "fixtures/payment/methods/successful_create_payment_method.json"
@@ -42,7 +55,7 @@ fun PotentialRequestChain.returnsPaymentMethodSuccessfully() = thenRespond(
     )
 )
 
-fun PotentialRequestChain.returnsMissingCustomerIdPaymentMethodSuccessfully() = thenRespond(
+internal fun PotentialRequestChain.returnsMissingCustomerIdPaymentMethodSuccessfully() = thenRespond(
     success(
         jsonBody = fileBody(
             "fixtures/payment/methods/successful_create_payment_method_without_customer_id.json"
@@ -50,7 +63,7 @@ fun PotentialRequestChain.returnsMissingCustomerIdPaymentMethodSuccessfully() = 
     )
 )
 
-fun PotentialRequestChain.returnsNonReusablePaymentMethodSuccessfully() = thenRespond(
+internal fun PotentialRequestChain.returnsNonReusablePaymentMethodSuccessfully() = thenRespond(
     success(
         jsonBody = fileBody(
             "fixtures/payment/methods/successful_create_nonreusable_payment_method.json"
@@ -58,7 +71,7 @@ fun PotentialRequestChain.returnsNonReusablePaymentMethodSuccessfully() = thenRe
     )
 )
 
-fun PotentialRequestChain.returnsPaymentMethodFailed() = thenRespond(
+internal fun PotentialRequestChain.returnsPaymentMethodFailed() = thenRespond(
     error(
         400,
         jsonBody = fileBody(
