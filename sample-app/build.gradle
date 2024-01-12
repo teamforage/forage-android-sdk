@@ -81,6 +81,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
 
     implementation 'com.google.dagger:hilt-android:2.44'
+    implementation files('libs/CpaySDKLibV4.0.9_20230420.jar')
     kapt 'com.google.dagger:hilt-compiler:2.44'
 
     // Used only for doing requests from the sample app, not a requirement for the ForageSDK
