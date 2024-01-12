@@ -19,14 +19,12 @@ import org.json.JSONObject
 internal fun createMockTokenizeCardService(
     server: MockWebServer,
     testData: TokenizeCardExpectedData,
-    logger: Log,
-    idempotencyKey: String
+    logger: Log
 ): TokenizeCardService {
     return TokenizeCardService(
         okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = testData.sessionToken,
-            testData.merchantId,
-            idempotencyKey = idempotencyKey
+            merchantId = testData.merchantId
         ),
         httpUrl = server.url("").toUrl().toString(),
         logger = logger

@@ -12,7 +12,6 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
-import java.util.UUID
 
 /**
  * ForageTerminalSDK is the entry point for **in-store POS Terminal** transactions.
@@ -128,9 +127,7 @@ class ForageTerminalSDK(
 
         val (merchantId, sessionToken) = forageConfig
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
-        val tokenizeCardService = serviceFactory.createTokenizeCardService(
-            idempotencyKey = UUID.randomUUID().toString()
-        )
+        val tokenizeCardService = serviceFactory.createTokenizeCardService()
 
         return tokenizeCardService.tokenizePosCard(
             track2Data = track2Data,

@@ -19,7 +19,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
-import java.util.UUID
 
 /**
  * A class implementation of ForageSDKInterface
@@ -67,9 +66,7 @@ class ForageSDK : ForageSDKInterface {
         )
 
         val tokenizeCardService = ServiceFactory(sessionToken, merchantId, logger)
-            .createTokenizeCardService(
-                idempotencyKey = UUID.randomUUID().toString()
-            )
+            .createTokenizeCardService()
 
         return tokenizeCardService.tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
@@ -248,15 +245,10 @@ class ForageSDK : ForageSDKInterface {
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
 
-        open fun createTokenizeCardService(idempotencyKey: String) = TokenizeCardService(
+        open fun createTokenizeCardService() = TokenizeCardService(
             config.baseUrl,
-            OkHttpClientBuilder.provideOkHttpClient(
-                sessionToken = sessionToken,
-                merchantId = merchantId,
-                idempotencyKey = idempotencyKey,
-                traceId = logger.getTraceIdValue()
-            ),
-            logger = logger
+            okHttpClient,
+            logger
         )
 
         open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {

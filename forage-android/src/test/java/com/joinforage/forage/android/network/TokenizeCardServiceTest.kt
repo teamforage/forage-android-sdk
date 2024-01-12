@@ -18,6 +18,7 @@ import me.jorgecastillo.hiroaki.Method
 import me.jorgecastillo.hiroaki.headers
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import me.jorgecastillo.hiroaki.matchers.times
+import me.jorgecastillo.hiroaki.models.json
 import me.jorgecastillo.hiroaki.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -27,24 +28,21 @@ import java.util.UUID
 @OptIn(ExperimentalCoroutinesApi::class)
 class TokenizeCardServiceTest : MockServerSuite() {
     private lateinit var tokenizeCardService: TokenizeCardService
-    private lateinit var idempotencyKey: String
     private val testData = TokenizeCardExpectedData()
 
     @Before
     override fun setup() {
         super.setup()
 
-        idempotencyKey = UUID.randomUUID().toString()
         tokenizeCardService = createMockTokenizeCardService(
             server = server,
             testData = testData,
-            logger = Log.getSilentInstance(),
-            idempotencyKey = idempotencyKey
+            logger = Log.getSilentInstance()
         )
     }
 
     @Test
-    fun `it should send the correct headers to tokenize the card`() = runTest {
+    fun `it should send the correct headers + body to tokenize the card`() = runTest {
         val testCustomerId = UUID.randomUUID().toString()
         server.givenPaymentMethod(testData.cardNumber, testCustomerId).returnsPaymentMethodSuccessfully()
 
@@ -55,9 +53,16 @@ class TokenizeCardServiceTest : MockServerSuite() {
             method = Method.POST,
             headers = headers(
                 "Authorization" to "Bearer ${testData.sessionToken}",
-                "Merchant-Account" to testData.merchantId,
-                "IDEMPOTENCY-KEY" to idempotencyKey
-            )
+                "Merchant-Account" to testData.merchantId
+            ),
+            jsonBody = json {
+                "type" / "ebt"
+                "reusable" / true
+                "card" / json {
+                    "number" / testData.cardNumber
+                }
+                "customer_id" / testCustomerId
+            }
         )
     }
 

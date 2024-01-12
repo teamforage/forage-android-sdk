@@ -10,9 +10,9 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * excluding the start and stop sentinels and any LRC characters.
  *
  * @property forageConfig The configuration details required to authenticate with the Forage API.
- * @param track2Data The information encoded on Track 2 of the EBT Card’s magnetic stripe,
+ * @property track2Data The information encoded on Track 2 of the EBT Card’s magnetic stripe,
  * excluding the start and stop sentinels and any LRC characters.
- * @param reusable Optional. Indicates whether the tokenized card can be
+ * @property reusable Optional. Indicates whether the tokenized card can be
  * reused for multiple transactions. Defaults to true.
  */
 data class PosTokenizeCardParams(

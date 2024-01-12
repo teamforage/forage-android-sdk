@@ -34,7 +34,12 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
+import me.jorgecastillo.hiroaki.Method
+import me.jorgecastillo.hiroaki.headers
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
+import me.jorgecastillo.hiroaki.matchers.times
+import me.jorgecastillo.hiroaki.models.json
+import me.jorgecastillo.hiroaki.verify
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -56,12 +61,11 @@ internal class MockServiceFactory(
     merchantId,
     logger
 ) {
-    override fun createTokenizeCardService(idempotencyKey: String): TokenizeCardService {
+    override fun createTokenizeCardService(): TokenizeCardService {
         return createMockTokenizeCardService(
             server = server,
             testData = TokenizeCardExpectedData(),
-            logger = logger,
-            idempotencyKey = idempotencyKey
+            logger = logger
         )
     }
 
@@ -113,6 +117,37 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
+    fun `should send the correct headers + body to tokenize the card`() = runTest {
+        server.givenPaymentMethod(
+            PosPaymentMethodRequestBody(
+                track2Data = tokenizeCardTestData.track2Data,
+                reusable = false
+            )
+        ).returnsPaymentMethodSuccessfully()
+
+        executeTokenizeCardWithTrack2Data(
+            track2Data = tokenizeCardTestData.track2Data,
+            reusable = false
+        )
+
+        server.verify("api/payment_methods/").called(
+            times = times(1),
+            method = Method.POST,
+            headers = headers(
+                "Authorization" to "Bearer ${tokenizeCardTestData.sessionToken}",
+                "Merchant-Account" to tokenizeCardTestData.merchantId
+            ),
+            jsonBody = json {
+                "type" / "ebt"
+                "reusable" / false
+                "card" / json {
+                    "track_2_data" / tokenizeCardTestData.track2Data
+                }
+            }
+        )
+    }
+
+    @Test
     fun `tokenize EBT card with Track 2 data successfully`() = runTest {
         server.givenPaymentMethod(
             PosPaymentMethodRequestBody(
@@ -121,7 +156,10 @@ class ForageTerminalSDKTest : MockServerSuite() {
             )
         ).returnsPaymentMethodSuccessfully()
 
-        val paymentMethodResponse = executeTokenizeCardWithTrack2Data()
+        val paymentMethodResponse = executeTokenizeCardWithTrack2Data(
+            track2Data = tokenizeCardTestData.track2Data,
+            reusable = true
+        )
         assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         val response =
             PaymentMethod.ModelMapper.from((paymentMethodResponse as ForageApiResponse.Success).data)
@@ -300,7 +338,10 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertTrue((response as ForageApiResponse.Success).data == "Success")
     }
 
-    private suspend fun executeTokenizeCardWithTrack2Data(): ForageApiResponse<String> {
+    private suspend fun executeTokenizeCardWithTrack2Data(
+        track2Data: String,
+        reusable: Boolean
+    ): ForageApiResponse<String> {
         val terminalSdk = ForageTerminalSDK(
             posTerminalId = checkBalanceTestData.posVaultRequestParams.posTerminalId,
             forageSdk = ForageSDK(),
@@ -321,8 +362,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
                     merchantId = checkBalanceTestData.merchantId,
                     sessionToken = checkBalanceTestData.sessionToken
                 ),
-                track2Data = tokenizeCardTestData.track2Data,
-                reusable = true
+                track2Data = track2Data,
+                reusable = reusable
             )
         )
     }
