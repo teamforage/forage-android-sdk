@@ -18,7 +18,7 @@ import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
-import java.util.UUID
+import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
  * Entry point to the Forage SDK.
@@ -34,7 +34,7 @@ import java.util.UUID
  * * [Capture a payment immediately][capturePayment]
  */
 class ForageSDK : ForageSDKInterface {
-
+  
     /**
      * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
      * ForageConfig is not set.
@@ -43,7 +43,7 @@ class ForageSDK : ForageSDKInterface {
      * @return The ForageConfig associated with the ForageElement
      * @throws ForageConfigNotSetException If the ForageConfig is not set for the ForageElement
      */
-    private fun <T : ElementState> _getForageConfigOrThrow(element: AbstractForageElement<T>): ForageConfig {
+    internal fun <T : ElementState> _getForageConfigOrThrow(element: AbstractForageElement<T>): ForageConfig {
         val context = element.getForageConfig()
         return context ?: throw ForageConfigNotSetException(
             """
@@ -81,7 +81,6 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText)
-        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -93,16 +92,10 @@ class ForageSDK : ForageSDKInterface {
             )
         )
 
-        return TokenizeCardService(
-            okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                sessionToken,
-                merchantId,
-                idempotencyKey = UUID.randomUUID().toString(),
-                traceId = logger.getTraceIdValue()
-            ),
-            httpUrl = config.baseUrl,
-            logger = logger
-        ).tokenizeCard(
+        val tokenizeCardService = ServiceFactory(sessionToken, merchantId, logger)
+            .createTokenizeCardService()
+
+        return tokenizeCardService.tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
             reusable = reusable ?: true
@@ -138,7 +131,6 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
-        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -160,53 +152,13 @@ class ForageSDK : ForageSDKInterface {
         measurement.start()
         // ------------------------------------------------------
 
-        val response = CheckBalanceRepository(
-            pinCollector = foragePinEditText.getCollector(
-                merchantId
-            ),
-            encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            logger = logger
-        ).checkBalance(
+        val balanceCheckService = ServiceFactory(sessionToken, merchantId, logger)
+            .createCheckBalanceRepository(foragePinEditText)
+        val response = balanceCheckService.checkBalance(
             paymentMethodRef = paymentMethodRef
         )
-        measurement.end()
+        processApiResponseForMetrics(response, measurement)
 
-        val outcome = if (response is ForageApiResponse.Failure) {
-            if (response.errors.isNotEmpty()) {
-                measurement.setForageErrorCode(response.errors[0].code)
-            }
-            EventOutcome.FAILURE
-        } else {
-            EventOutcome.SUCCESS
-        }
-
-        measurement.setEventOutcome(outcome).logResult()
         return response
     }
 
@@ -241,7 +193,6 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
-        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -263,62 +214,12 @@ class ForageSDK : ForageSDKInterface {
         measurement.start()
         // ------------------------------------------------------
 
-        val response = CapturePaymentRepository(
-            pinCollector = foragePinEditText.getCollector(
-                merchantId
-            ),
-            encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            paymentService = PaymentService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            logger = logger
-        ).capturePayment(
+        val capturePaymentService = ServiceFactory(sessionToken, merchantId, logger)
+            .createCapturePaymentRepository(foragePinEditText)
+        val response = capturePaymentService.capturePayment(
             paymentRef = paymentRef
         )
-        measurement.end()
-
-        val outcome = if (response is ForageApiResponse.Failure) {
-            if (response.errors.isNotEmpty()) {
-                measurement.setForageErrorCode(response.errors[0].code)
-            }
-            EventOutcome.FAILURE
-        } else {
-            EventOutcome.SUCCESS
-        }
-
-        measurement.setEventOutcome(outcome).logResult()
+        processApiResponseForMetrics(response, measurement)
 
         return response
     }
@@ -355,7 +256,6 @@ class ForageSDK : ForageSDKInterface {
     override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText)
-        val config = EnvConfig.fromSessionToken(sessionToken)
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
@@ -367,39 +267,94 @@ class ForageSDK : ForageSDKInterface {
             )
         )
 
-        return DeferPaymentCaptureRepository(
-            pinCollector = foragePinEditText.getCollector(
-                merchantId
-            ),
-            encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            paymentService = PaymentService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            ),
-            paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    sessionToken,
-                    merchantId,
-                    traceId = logger.getTraceIdValue()
-                ),
-                httpUrl = config.baseUrl,
-                logger = logger
-            )
-        ).deferPaymentCapture(
+        val deferPaymentCaptureService = ServiceFactory(sessionToken, merchantId, logger)
+            .createDeferPaymentCaptureRepository(foragePinEditText)
+        return deferPaymentCaptureService.deferPaymentCapture(
             paymentRef = paymentRef
         )
+    }
+
+    /**
+     * Determines the outcome of a Forage API response,
+     * to report the measurement to the Telemetry service.
+     *
+     * This involves stopping the measurement timer,
+     * marking the Metrics event as a success or failure,
+     * and if the event is a failure, setting the Forage error code.
+     */
+    internal fun processApiResponseForMetrics(
+        apiResponse: ForageApiResponse<String>,
+        measurement: CustomerPerceivedResponseMonitor
+    ) {
+        measurement.end()
+        val outcome = if (apiResponse is ForageApiResponse.Failure) {
+            if (apiResponse.errors.isNotEmpty()) {
+                measurement.setForageErrorCode(apiResponse.errors[0].code)
+            }
+            EventOutcome.FAILURE
+        } else {
+            EventOutcome.SUCCESS
+        }
+        measurement.setEventOutcome(outcome).logResult()
+    }
+
+    internal open class ServiceFactory(
+        private val sessionToken: String,
+        private val merchantId: String,
+        private val logger: Log
+    ) {
+        private val config = EnvConfig.fromSessionToken(sessionToken)
+        private val okHttpClient by lazy {
+            OkHttpClientBuilder.provideOkHttpClient(
+                sessionToken = sessionToken,
+                merchantId = merchantId,
+                traceId = logger.getTraceIdValue()
+            )
+        }
+        private val encryptionKeyService by lazy { createEncryptionKeyService() }
+        private val paymentMethodService by lazy { createPaymentMethodService() }
+        private val paymentService by lazy { createPaymentService() }
+        private val messageStatusService by lazy { createMessageStatusService() }
+
+        open fun createTokenizeCardService() = TokenizeCardService(
+            config.baseUrl,
+            okHttpClient,
+            logger
+        )
+
+        open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
+            return CheckBalanceRepository(
+                pinCollector = foragePinEditText.getCollector(merchantId),
+                encryptionKeyService = encryptionKeyService,
+                paymentMethodService = paymentMethodService,
+                messageStatusService = messageStatusService,
+                logger = logger
+            )
+        }
+
+        open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
+            return CapturePaymentRepository(
+                pinCollector = foragePinEditText.getCollector(merchantId),
+                encryptionKeyService = encryptionKeyService,
+                paymentService = paymentService,
+                paymentMethodService = paymentMethodService,
+                messageStatusService = messageStatusService,
+                logger = logger
+            )
+        }
+
+        open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
+            return DeferPaymentCaptureRepository(
+                pinCollector = foragePinEditText.getCollector(merchantId),
+                encryptionKeyService = encryptionKeyService,
+                paymentService = paymentService,
+                paymentMethodService = paymentMethodService
+            )
+        }
+
+        private fun createEncryptionKeyService() = EncryptionKeyService(config.baseUrl, okHttpClient, logger)
+        private fun createPaymentMethodService() = PaymentMethodService(config.baseUrl, okHttpClient, logger)
+        private fun createPaymentService() = PaymentService(config.baseUrl, okHttpClient, logger)
+        private fun createMessageStatusService() = MessageStatusService(config.baseUrl, okHttpClient, logger)
     }
 }

@@ -44,7 +44,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
             paymentService = PaymentService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
+                    merchantId = testData.merchantAccount
                 ),
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger
@@ -52,7 +52,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
             paymentMethodService = PaymentMethodService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                     testData.bearerToken,
-                    merchantAccount = testData.merchantAccount
+                    merchantId = testData.merchantAccount
                 ),
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger
@@ -82,8 +82,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         pinCollector.setCollectPinResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
         )
 
@@ -141,8 +140,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         pinCollector.setCollectPinResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Failure(listOf(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
         )
 
@@ -164,8 +162,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         pinCollector.setCollectPinResponse(
             paymentRef = testData.paymentRef,
-            cardToken = testData.cardToken,
-            encryptionKey = testData.encryptionKey,
+            vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success("")
         )
 
@@ -185,8 +182,10 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private data class ExpectedData(
         val bearerToken: String = "AbCaccesstokenXyz",
         val paymentRef: String = "6ae6a45ff1",
-        val cardToken: String = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-        val encryptionKey: String = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
+        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
+            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
+        ),
         val merchantAccount: String = "1234567",
         val paymentMethod: String = "1f148fe399"
     )
