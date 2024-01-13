@@ -34,7 +34,6 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * * [Capture a payment immediately][capturePayment]
  */
 class ForageSDK : ForageSDKInterface {
-  
     /**
      * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
      * ForageConfig is not set.
