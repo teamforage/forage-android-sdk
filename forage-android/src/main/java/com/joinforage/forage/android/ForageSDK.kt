@@ -27,11 +27,11 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  *
  * You need an instance of the ForageSDK to perform operations like:
  *
- * * [Tokenize card information][tokenizeEBTCard]
- * * [Check the balance of a card][checkBalance]
- * * [Collect a customer's card PIN for a payment and defer
+ * * [Tokenizing card information][tokenizeEBTCard]
+ * * [Checking the balance of a card][checkBalance]
+ * * [Collecting a customer's card PIN for a payment and deferring
  * the capture of the payment to the server][deferPaymentCapture]
- * * [Capture a payment immediately][capturePayment]
+ * * [Capturing a payment immediately][capturePayment]
  */
 class ForageSDK : ForageSDKInterface {
     /**
