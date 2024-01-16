@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material3.Text
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import com.joinforage.android.example.databinding.FragmentPosBinding
@@ -12,7 +13,6 @@ import com.joinforage.android.example.pos.receipts.ReceiptLayout
 import com.pos.sdk.DeviceManager
 import com.pos.sdk.DevicesFactory
 import com.pos.sdk.callback.ResultCallback
-import androidx.compose.material3.Text
 
 class POSFragment : Fragment() {
     private var _binding: FragmentPosBinding? = null
