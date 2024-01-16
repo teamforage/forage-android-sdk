@@ -46,6 +46,16 @@ internal data class SQSError(
             )
         }
     }
+
+    fun toForageError(): ForageApiResponse.Failure {
+        val forageError = ForageError(
+            httpStatusCode = statusCode,
+            code = forageCode,
+            message = message,
+            details = details
+        )
+        return ForageApiResponse.Failure(listOf(forageError))
+    }
 }
 
 internal data class Message(

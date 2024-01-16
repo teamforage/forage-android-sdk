@@ -6,6 +6,7 @@ import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
@@ -52,12 +53,15 @@ internal fun createMockCheckBalanceRepository(
             httpUrl = server.url("").toUrl().toString(),
             logger = logger
         ),
-        messageStatusService = MessageStatusService(
-            okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                testData.sessionToken,
-                merchantId = testData.merchantId
+        pollingService = PollingService(
+            messageStatusService = MessageStatusService(
+                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                    testData.sessionToken,
+                    merchantId = testData.merchantId
+                ),
+                httpUrl = server.url("").toUrl().toString(),
+                logger = logger
             ),
-            httpUrl = server.url("").toUrl().toString(),
             logger = logger
         ),
         logger = logger

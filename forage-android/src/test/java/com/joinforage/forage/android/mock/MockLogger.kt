@@ -27,6 +27,8 @@ internal class MockLogger : Log {
     val warnLogs: MutableList<LogEntry> = mutableListOf()
     val errorLogs: MutableList<LogEntry> = mutableListOf()
 
+    private val cumulativeAttributes = mutableMapOf<String, Any?>()
+
     override fun initializeDD(context: Context, config: ForageConfig) {
         return
     }
@@ -36,15 +38,20 @@ internal class MockLogger : Log {
     }
 
     override fun i(msg: String, attributes: Map<String, Any?>) {
-        infoLogs.add(LogEntry(msg, attributes))
+        infoLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
     }
 
     override fun w(msg: String, attributes: Map<String, Any?>) {
-        warnLogs.add(LogEntry(msg, attributes))
+        warnLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
     }
 
     override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
-        errorLogs.add(LogEntry(msg, attributes))
+        errorLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
+    }
+
+    override fun addAttribute(key: String, value: Any?): Log {
+        cumulativeAttributes[key] = value
+        return this
     }
 
     override fun getTraceIdValue(): String {

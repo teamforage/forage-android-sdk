@@ -1,29 +1,22 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
+import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.sqsMessageToError
-import kotlinx.coroutines.delay
 
 internal class CapturePaymentRepository(
     private val pinCollector: PinCollector,
     private val encryptionKeyService: EncryptionKeyService,
-    private val messageStatusService: MessageStatusService,
+    private val pollingService: PollingService,
     private val paymentService: PaymentService,
-    private val paymentMethodService: PaymentMethodService,
-    private val logger: Log
+    private val paymentMethodService: PaymentMethodService
 ) {
     suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
         return when (val response = encryptionKeyService.getEncryptionKey()) {
@@ -94,93 +87,19 @@ internal class CapturePaymentRepository(
         contentId: String,
         paymentRef: String
     ): ForageApiResponse<String> {
-        var attempt = 1
-        val pollingIntervals = LDManager.getPollingIntervals(logger)
-
-        while (true) {
-            logger.i(
-                "[HTTP] Polling for balance check response for Payment $paymentRef",
-                attributes = mapOf(
-                    "payment_ref" to paymentRef,
-                    "content_id" to contentId
-                )
-            )
-
-            when (val response = messageStatusService.getStatus(contentId)) {
-                is ForageApiResponse.Success -> {
-                    val paymentMessage = Message.ModelMapper.from(response.data)
-
-                    if (paymentMessage.status == "completed") {
-                        if (paymentMessage.failed) {
-                            val error = paymentMessage.errors[0]
-                            logger.e(
-                                "[HTTP] Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
-                                attributes = mapOf(
-                                    "payment_ref" to paymentRef,
-                                    "content_id" to contentId
-                                )
-                            )
-
-                            return sqsMessageToError(error)
-                        }
-                        break
-                    }
-
-                    if (paymentMessage.failed) {
-                        val error = paymentMessage.errors[0]
-                        logger.e(
-                            "[HTTP] Received response ${error.statusCode} for capture request of Payment $paymentRef with message: ${error.message}",
-                            attributes = mapOf(
-                                "payment_ref" to paymentRef,
-                                "content_id" to contentId
-                            )
-                        )
-
-                        return sqsMessageToError(error)
-                    }
-                }
-                else -> {
-                    return response
-                }
-            }
-
-            if (attempt == MAX_ATTEMPTS) {
-                logger.e(
-                    "[HTTP] Max polling attempts reached for capture request of Payment $paymentRef",
-                    attributes = mapOf(
-                        "payment_ref" to paymentRef,
-                        "content_id" to contentId
-                    )
-                )
-
-                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
-            }
-
-            val index = attempt - 1
-            var intervalTime: Long = if (index < pollingIntervals.size) {
-                pollingIntervals[index]
-            } else {
-                1000L
-            }
-
-            attempt += 1
-            delay(intervalTime + getJitterAmount())
-        }
-
-        logger.i(
-            "[HTTP] Polling for capture request response succeeded for Payment $paymentRef",
-            attributes = mapOf(
-                "payment_ref" to paymentRef,
-                "content_id" to contentId
-            )
+        val pollingResponse = pollingService.execute(
+            contentId = contentId,
+            operationDescription = "payment capture of Payment $paymentRef"
         )
-
-        return paymentService.getPayment(paymentRef = paymentRef)
+        return when (pollingResponse) {
+            is ForageApiResponse.Success -> {
+                paymentService.getPayment(paymentRef = paymentRef)
+            }
+            else -> pollingResponse
+        }
     }
 
     companion object {
-        private const val MAX_ATTEMPTS = 10
-
         private fun ForageApiResponse<String>.getStringResponse() = when (this) {
             is ForageApiResponse.Failure -> this.errors[0].message
             is ForageApiResponse.Success -> this.data

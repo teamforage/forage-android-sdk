@@ -21,6 +21,7 @@ import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
+import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,12 +51,15 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
-            messageStatusService = MessageStatusService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantId = testData.merchantAccount
+            pollingService = PollingService(
+                messageStatusService = MessageStatusService(
+                    okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
+                        testData.bearerToken,
+                        merchantId = testData.merchantAccount
+                    ),
+                    httpUrl = server.url("").toUrl().toString(),
+                    logger = logger
                 ),
-                httpUrl = server.url("").toUrl().toString(),
                 logger = logger
             ),
             paymentService = PaymentService(
@@ -73,8 +77,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
                 ),
                 httpUrl = server.url("").toUrl().toString(),
                 logger = logger
-            ),
-            logger = logger
+            )
         )
     }
 

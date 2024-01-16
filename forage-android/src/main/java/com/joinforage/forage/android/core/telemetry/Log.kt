@@ -18,6 +18,8 @@ internal interface Log {
     fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
     fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap())
     fun getTraceIdValue(): String
+    fun addAttribute(key: String, value: Any?): Log
+
     companion object {
         private const val LOGGER_NAME = "ForageSDK"
         private const val SERVICE_NAME = "android-sdk"
@@ -90,27 +92,27 @@ internal interface Log {
                 }
                 return traceId as String
             }
+
+            override fun addAttribute(key: String, value: Any?): Log {
+                logger?.addAttribute(key, value)
+                return this
+            }
         }
 
         private val SILENT = object : Log {
-            override fun initializeDD(context: Context, config: ForageConfig) {
-            }
+            override fun initializeDD(context: Context, config: ForageConfig) {}
 
-            override fun d(msg: String, attributes: Map<String, Any?>) {
-            }
+            override fun d(msg: String, attributes: Map<String, Any?>) {}
 
-            override fun i(msg: String, attributes: Map<String, Any?>) {
-            }
+            override fun i(msg: String, attributes: Map<String, Any?>) {}
 
-            override fun w(msg: String, attributes: Map<String, Any?>) {
-            }
+            override fun w(msg: String, attributes: Map<String, Any?>) {}
 
-            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
-            }
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {}
 
-            override fun getTraceIdValue(): String {
-                return ""
-            }
+            override fun getTraceIdValue(): String { return "" }
+
+            override fun addAttribute(key: String, value: Any?) = this
         }
 
         private fun generateTraceId(): String {
