@@ -11,6 +11,7 @@ import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
+import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
@@ -83,13 +84,9 @@ class ForageSDK : ForageSDKInterface {
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
-        logger.i(
-            "[HTTP] Tokenizing Payment Method",
-            attributes = mapOf(
-                "merchant_ref" to merchantId,
-                "customer_id" to customerId
-            )
-        )
+            .addAttribute("merchant_ref", merchantId)
+            .addAttribute("customer_id", customerId)
+        logger.i("[ForageSDK] Tokenizing Payment Method")
 
         val tokenizeCardService = ServiceFactory(sessionToken, merchantId, logger)
             .createTokenizeCardService()
@@ -133,13 +130,9 @@ class ForageSDK : ForageSDKInterface {
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
-        logger.i(
-            "[HTTP] Submitting balance check for Payment Method $paymentMethodRef",
-            attributes = mapOf(
-                "merchant_ref" to merchantId,
-                "payment_method_ref" to paymentMethodRef
-            )
-        )
+            .addAttribute("merchant_ref", merchantId)
+            .addAttribute("payment_method_ref", paymentMethodRef)
+        logger.i("[ForageSDK] Called checkBalance for Payment Method $paymentMethodRef")
 
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
@@ -195,13 +188,9 @@ class ForageSDK : ForageSDKInterface {
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
-        logger.i(
-            "[HTTP] Submitting capture request for Payment $paymentRef",
-            attributes = mapOf(
-                "merchant_ref" to merchantId,
-                "payment_ref" to paymentRef
-            )
-        )
+            .addAttribute("merchant_ref", merchantId)
+            .addAttribute("payment_ref", paymentRef)
+        logger.i("[ForageSDK] Called capturePayment for Payment $paymentRef")
 
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
@@ -258,13 +247,9 @@ class ForageSDK : ForageSDKInterface {
 
         // TODO: replace Log.getInstance() with Log() in future PR
         val logger = Log.getInstance()
-        logger.i(
-            "[HTTP] Submitting defer capture request for Payment $paymentRef",
-            attributes = mapOf(
-                "merchant_ref" to merchantId,
-                "payment_ref" to paymentRef
-            )
-        )
+            .addAttribute("merchant_ref", merchantId)
+            .addAttribute("payment_ref", paymentRef)
+        logger.i("[ForageSDK] Called deferPaymentCapture for Payment $paymentRef")
 
         val deferPaymentCaptureService = ServiceFactory(sessionToken, merchantId, logger)
             .createDeferPaymentCaptureRepository(foragePinEditText)
@@ -314,6 +299,7 @@ class ForageSDK : ForageSDKInterface {
         private val paymentMethodService by lazy { createPaymentMethodService() }
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
+        private val pollingService by lazy { createPollingService() }
 
         open fun createTokenizeCardService() = TokenizeCardService(
             config.baseUrl,
@@ -326,7 +312,7 @@ class ForageSDK : ForageSDKInterface {
                 pinCollector = foragePinEditText.getCollector(merchantId),
                 encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
-                messageStatusService = messageStatusService,
+                pollingService = pollingService,
                 logger = logger
             )
         }
@@ -337,8 +323,7 @@ class ForageSDK : ForageSDKInterface {
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
-                messageStatusService = messageStatusService,
-                logger = logger
+                pollingService = pollingService
             )
         }
 
@@ -355,5 +340,9 @@ class ForageSDK : ForageSDKInterface {
         private fun createPaymentMethodService() = PaymentMethodService(config.baseUrl, okHttpClient, logger)
         private fun createPaymentService() = PaymentService(config.baseUrl, okHttpClient, logger)
         private fun createMessageStatusService() = MessageStatusService(config.baseUrl, okHttpClient, logger)
+        private fun createPollingService() = PollingService(
+            messageStatusService = messageStatusService,
+            logger = logger
+        )
     }
 }

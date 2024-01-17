@@ -1,26 +1,21 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.PaymentMethodService
+import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.Message
 import com.joinforage.forage.android.pos.PosVaultRequestParams
-import com.joinforage.forage.android.sqsMessageToError
-import kotlinx.coroutines.delay
 
 internal class CheckBalanceRepository(
     private val pinCollector: PinCollector,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
-    private val messageStatusService: MessageStatusService,
+    private val pollingService: PollingService,
     private val logger: Log
 ) {
     suspend fun checkBalance(
@@ -110,88 +105,17 @@ internal class CheckBalanceRepository(
         contentId: String,
         paymentMethodRef: String
     ): ForageApiResponse<String> {
-        var attempt = 1
-        val pollingIntervals = LDManager.getPollingIntervals(logger)
+        logger.addAttribute("content_id", contentId)
 
-        while (true) {
-            logger.i(
-                "[HTTP] Polling for balance check response for Payment Method $paymentMethodRef",
-                attributes = mapOf(
-                    "payment_method_ref" to paymentMethodRef,
-                    "content_id" to contentId
-                )
-            )
-
-            when (val response = messageStatusService.getStatus(contentId)) {
-                is ForageApiResponse.Success -> {
-                    val balanceMessage = Message.ModelMapper.from(response.data)
-
-                    if (balanceMessage.status == "completed") {
-                        if (balanceMessage.failed) {
-                            val error = balanceMessage.errors[0]
-                            logger.e(
-                                "[HTTP] Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
-                                attributes = mapOf(
-                                    "payment_method_ref" to paymentMethodRef,
-                                    "content_id" to contentId
-                                )
-                            )
-
-                            return sqsMessageToError(error)
-                        }
-                        break
-                    }
-
-                    if (balanceMessage.failed) {
-                        val error = balanceMessage.errors[0]
-                        logger.e(
-                            "[HTTP] Received response ${error.statusCode} for balance check of Payment Method $paymentMethodRef with message: ${error.message}",
-                            attributes = mapOf(
-                                "payment_method_ref" to paymentMethodRef,
-                                "content_id" to contentId
-                            )
-                        )
-
-                        return sqsMessageToError(error)
-                    }
-                }
-                else -> {
-                    return response
-                }
-            }
-
-            if (attempt == MAX_ATTEMPTS) {
-                logger.e(
-                    "[HTTP] Max polling attempts reached for balance check of Payment Method $paymentMethodRef",
-                    attributes = mapOf(
-                        "payment_method_ref" to paymentMethodRef,
-                        "content_id" to contentId
-                    )
-                )
-
-                return ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
-            }
-
-            val index = attempt - 1
-            val intervalTime: Long = if (index < pollingIntervals.size) {
-                pollingIntervals[index]
-            } else {
-                1000L
-            }
-
-            attempt += 1
-            delay(intervalTime + getJitterAmount())
+        val pollingResponse = pollingService.execute(
+            contentId = contentId,
+            operationDescription = "balance check of Payment Method $paymentMethodRef"
+        )
+        if (pollingResponse is ForageApiResponse.Failure) {
+            return pollingResponse
         }
 
-        logger.i(
-            "[HTTP] Polling for balance check response succeeded for Payment Method $paymentMethodRef",
-            attributes = mapOf(
-                "payment_method_ref" to paymentMethodRef,
-                "content_id" to contentId
-            )
-        )
-
-        return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
+        return when (val paymentMethodResponse = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> {
                 logger.i(
                     "[HTTP] Received updated balance information for Payment Method $paymentMethodRef",
@@ -200,16 +124,14 @@ internal class CheckBalanceRepository(
                         "content_id" to contentId
                     )
                 )
-                val paymentMethod = PaymentMethod.ModelMapper.from(response.data)
+                val paymentMethod = PaymentMethod.ModelMapper.from(paymentMethodResponse.data)
                 return ForageApiResponse.Success(paymentMethod.balance.toString())
             }
-            else -> response
+            else -> paymentMethodResponse
         }
     }
 
     companion object {
-        private const val MAX_ATTEMPTS = 10
-
         private fun ForageApiResponse<String>.getStringResponse() = when (this) {
             is ForageApiResponse.Failure -> this.errors[0].message
             is ForageApiResponse.Success -> this.data
