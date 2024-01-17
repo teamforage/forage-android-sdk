@@ -3,14 +3,13 @@ package com.joinforage.forage.android.collect
 import android.content.Context
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.StopgapGlobalState
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
-import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.PosVaultProxyRequest
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
@@ -23,10 +22,12 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class VgsPinSubmitter(
     context: Context,
-    foragePinEditText: ForagePINEditText
+    foragePinEditText: ForagePINEditText,
+    logger: Log
 ) : AbstractVaultSubmitter<VGSResponse?>(
     context = context,
     foragePinEditText = foragePinEditText,
+    logger = logger,
     vaultType = VaultType.VGS_VAULT_TYPE
 ) {
     override suspend fun submitProxyRequest(
@@ -75,27 +76,6 @@ internal class VgsPinSubmitter(
             return VGSCollect.Builder(context, VAULT_ID)
                 .setEnvironment(VGS_ENVIRONMENT)
                 .create()
-        }
-
-        internal fun buildRequestBody(vaultProxyRequest: VaultProxyRequest): HashMap<String, Any> {
-            return when (vaultProxyRequest) {
-                is PosVaultProxyRequest -> buildPosRequestBody(vaultProxyRequest)
-                else -> buildBaseRequestBody(vaultProxyRequest)
-            }
-        }
-
-        private fun buildPosRequestBody(vaultProxyRequest: PosVaultProxyRequest): HashMap<String, Any> {
-            val body = buildBaseRequestBody(vaultProxyRequest)
-            body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
-                ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to vaultProxyRequest.posTerminalId
-            )
-            return body
-        }
-
-        private fun buildBaseRequestBody(vaultProxyRequest: VaultProxyRequest): HashMap<String, Any> {
-            return hashMapOf(
-                ForageConstants.RequestBody.CARD_NUMBER_TOKEN to vaultProxyRequest.vaultToken
-            )
         }
     }
 

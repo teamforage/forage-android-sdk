@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
@@ -61,6 +62,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun getVGSEditText(): VGSEditText
     abstract fun getTextElement(): TextElement
     abstract fun getForageTextElement(): EditText
+    abstract fun getVaultType(): VaultType
 
     fun parseStyles(context: Context, attrs: AttributeSet?): ParsedStyles {
         val defaultRadius = resources.getDimension(R.dimen.default_horizontal_field)

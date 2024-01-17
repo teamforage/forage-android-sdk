@@ -10,6 +10,14 @@ internal object CollectorConstants {
     const val TOKEN_DELIMITER = ","
 }
 
+@Deprecated(
+    message = "Use VaultSubmitter instead",
+    replaceWith = ReplaceWith(
+        expression = "VaultSubmitter",
+        imports = ["com.joinforage.forage.android.collect.VaultSubmitter"]
+    ),
+    level = DeprecationLevel.WARNING
+)
 internal interface PinCollector {
     suspend fun submitBalanceCheck(
         paymentMethodRef: String,

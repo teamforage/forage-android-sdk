@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.joinforage.forage.android.network.ForageConstants
 import com.verygoodsecurity.vgscollect.core.model.state.FieldState
@@ -114,6 +115,10 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     recycle()
                 }
             }
+    }
+
+    override fun getVaultType(): VaultType {
+        return VaultType.VGS_VAULT_TYPE
     }
 
     override fun clearText() {

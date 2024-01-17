@@ -1,5 +1,6 @@
 package com.joinforage.forage.android
 
+import com.joinforage.forage.android.collect.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
@@ -17,6 +18,8 @@ import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.pos.PosRefundPaymentRepository
+import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -300,6 +303,7 @@ class ForageSDK : ForageSDKInterface {
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
         private val pollingService by lazy { createPollingService() }
+        private val posRefundService by lazy { PosRefundService(config.baseUrl, logger, okHttpClient) }
 
         open fun createTokenizeCardService() = TokenizeCardService(
             config.baseUrl,
@@ -336,6 +340,22 @@ class ForageSDK : ForageSDKInterface {
             )
         }
 
+        open fun createRefundPaymentRepository(foragePinEditText: ForagePINEditText): PosRefundPaymentRepository {
+            return PosRefundPaymentRepository(
+                vaultSubmitter = createVaultSubmitter(foragePinEditText),
+                encryptionKeyService = encryptionKeyService,
+                paymentMethodService = paymentMethodService,
+                paymentService = paymentService,
+                pollingService = pollingService,
+                logger = logger,
+                refundService = posRefundService
+            )
+        }
+
+        private fun createVaultSubmitter(foragePinEditText: ForagePINEditText) = AbstractVaultSubmitter.create(
+            foragePinEditText = foragePinEditText,
+            logger = logger
+        )
         private fun createEncryptionKeyService() = EncryptionKeyService(config.baseUrl, okHttpClient, logger)
         private fun createPaymentMethodService() = PaymentMethodService(config.baseUrl, okHttpClient, logger)
         private fun createPaymentService() = PaymentService(config.baseUrl, okHttpClient, logger)

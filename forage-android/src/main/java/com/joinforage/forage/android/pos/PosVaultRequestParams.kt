@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.pos
 
-import com.joinforage.forage.android.collect.VaultProxyRequest
+import com.joinforage.forage.android.collect.VaultSubmitterParams
 import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 
 internal data class PosVaultRequestParams(
@@ -17,20 +17,27 @@ internal data class PosVaultRequestParams(
     }
 }
 
-internal data class PosVaultProxyRequest(
-    override val headers: Map<String, String>,
-    override val path: String,
-    override val vaultToken: String,
+internal data class PosBalanceVaultSubmitterParams(
+    val baseVaultSubmitterParams: VaultSubmitterParams,
     val posTerminalId: String
-) : VaultProxyRequest(
-    headers = headers,
-    path = path,
-    vaultToken = vaultToken
-) {
-    fun setPosTerminalId(posTerminalId: String) = PosVaultProxyRequest(
-        headers = headers,
-        path = path,
-        vaultToken = vaultToken,
-        posTerminalId = posTerminalId
-    )
-}
+) : VaultSubmitterParams(
+    encryptionKeys = baseVaultSubmitterParams.encryptionKeys,
+    idempotencyKey = baseVaultSubmitterParams.idempotencyKey,
+    merchantId = baseVaultSubmitterParams.merchantId,
+    path = baseVaultSubmitterParams.path,
+    paymentMethod = baseVaultSubmitterParams.paymentMethod,
+    userAction = baseVaultSubmitterParams.userAction
+)
+
+internal data class PosRefundVaultSubmitterParams(
+    val baseVaultSubmitterParams: VaultSubmitterParams,
+    val posTerminalId: String,
+    val refundParams: RefundPaymentParams
+) : VaultSubmitterParams(
+    encryptionKeys = baseVaultSubmitterParams.encryptionKeys,
+    idempotencyKey = baseVaultSubmitterParams.idempotencyKey,
+    merchantId = baseVaultSubmitterParams.merchantId,
+    path = baseVaultSubmitterParams.path,
+    paymentMethod = baseVaultSubmitterParams.paymentMethod,
+    userAction = baseVaultSubmitterParams.userAction
+)

@@ -179,7 +179,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
 
         val loggedMessage = mockLogger.infoLogs[0].getMessage()
-        assertEquals(loggedMessage, "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data")
+        assertEquals(loggedMessage, "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal 1234")
     }
 
     @Test
@@ -199,7 +199,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
 
         val loggedMessage = mockLogger.infoLogs[0].getMessage()
-        assertEquals(loggedMessage, "[POS] Tokenizing Payment Method via UI PAN entry")
+        assertEquals(loggedMessage, "[POS] Tokenizing Payment Method via UI PAN entry on Terminal 1234")
 
         assertTrue(response is ForageApiResponse.Success)
         assertTrue((response as ForageApiResponse.Success).data == "Success")
@@ -228,7 +228,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
 
         // assert telemetry events are reported as expected!
         val loggedMessage = mockLogger.infoLogs[0].getMessage()
-        assertEquals(loggedMessage, "[POS] Called checkBalance for PaymentMethod 1f148fe399")
+        assertEquals("[POS] Called checkBalance for PaymentMethod 1f148fe399 on Terminal pos-terminal-id-123", loggedMessage)
 
         val metricsLog = mockLogger.infoLogs.last()
         assert(metricsLog.getMessage().contains("[Metrics] Customer perceived response time"))
@@ -344,7 +344,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         reusable: Boolean
     ): ForageApiResponse<String> {
         val terminalSdk = ForageTerminalSDK(
-            posTerminalId = checkBalanceTestData.posVaultRequestParams.posTerminalId,
+            posTerminalId = "1234",
             forageSdk = ForageSDK(),
             createLogger = { mockLogger },
             createServiceFactory = { sessionToken: String, merchantId: String, logger: Log ->
