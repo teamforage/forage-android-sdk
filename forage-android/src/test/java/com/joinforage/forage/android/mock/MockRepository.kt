@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.mock
 
+import com.joinforage.forage.android.collect.VaultSubmitter
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.Balance
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -10,7 +11,6 @@ import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
-import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import com.joinforage.forage.android.pos.PosVaultRequestParams
 import okhttp3.mockwebserver.MockWebServer
@@ -32,14 +32,14 @@ internal fun createMockTokenizeCardService(
     )
 }
 internal fun createMockCheckBalanceRepository(
-    pinCollector: TestPinCollector,
+    vaultSubmitter: VaultSubmitter,
     server: MockWebServer,
     logger: Log
 ): CheckBalanceRepository {
     val testData = CheckBalanceExpectedData()
 
     return CheckBalanceRepository(
-        pinCollector = pinCollector,
+        vaultSubmitter = vaultSubmitter,
         encryptionKeyService = EncryptionKeyService(
             okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.sessionToken),
             httpUrl = server.url("").toUrl().toString(),

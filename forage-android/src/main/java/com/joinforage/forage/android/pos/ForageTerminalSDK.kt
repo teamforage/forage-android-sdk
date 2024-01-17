@@ -203,7 +203,7 @@ class ForageTerminalSDK(
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vault = foragePinEditText.getVaultSubmitter().getVaultType(),
             vaultAction = UserAction.BALANCE,
             logger
         )

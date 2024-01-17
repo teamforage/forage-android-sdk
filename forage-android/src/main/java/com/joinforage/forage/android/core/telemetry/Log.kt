@@ -112,7 +112,7 @@ internal interface Log {
 
             override fun getTraceIdValue(): String { return "" }
 
-            override fun addAttribute(key: String, value: Any?) = this
+            override fun addAttribute(key: String, value: Any?): Log { return this }
         }
 
         private fun generateTraceId(): String {

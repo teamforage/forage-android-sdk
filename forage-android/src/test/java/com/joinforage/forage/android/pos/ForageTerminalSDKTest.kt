@@ -26,7 +26,7 @@ import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
-import com.joinforage.forage.android.network.data.TestPinCollector
+import com.joinforage.forage.android.network.data.TestVaultSubmitter
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForageConfig
@@ -52,7 +52,7 @@ import org.mockito.Mockito.`when`
 import org.robolectric.RobolectricTestRunner
 
 internal class MockServiceFactory(
-    private val mockPinCollector: TestPinCollector,
+    private val mockVaultSubmitter: TestVaultSubmitter,
     private val server: MockWebServer,
     private val logger: Log,
     sessionToken: String,
@@ -72,7 +72,7 @@ internal class MockServiceFactory(
 
     override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
         return createMockCheckBalanceRepository(
-            pinCollector = mockPinCollector,
+            vaultSubmitter = mockVaultSubmitter,
             server = server,
             logger = logger
         )
@@ -88,13 +88,13 @@ class ForageTerminalSDKTest : MockServerSuite() {
     private lateinit var mockLogger: MockLogger
     private val tokenizeCardTestData = TokenizeCardExpectedData()
     private val checkBalanceTestData = CheckBalanceExpectedData()
-    private lateinit var mockPinCollector: TestPinCollector
+    private lateinit var mockVaultSubmitter: TestVaultSubmitter
 
     @Before
     fun setUp() {
         super.setup()
 
-        mockPinCollector = TestPinCollector()
+        mockVaultSubmitter = TestVaultSubmitter()
         mockLogger = MockLogger()
 
         // Use Mockito judiciously (mainly for mocking views)!
@@ -108,7 +108,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 sessionToken = checkBalanceTestData.sessionToken
             )
         )
-        `when`(mockForagePinEditText.getCollector(anyString())).thenReturn(mockPinCollector)
+        `when`(mockForagePinEditText.getVaultSubmitter()).thenReturn(mockVaultSubmitter)
 
         terminalSdk = ForageTerminalSDK(
             posTerminalId = "1234",
@@ -211,9 +211,10 @@ class ForageTerminalSDKTest : MockServerSuite() {
         // Get Payment Method is called twice!
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
-        mockPinCollector.setBalanceCheckResponse(
+        mockVaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${checkBalanceTestData.paymentMethodRef}/balance/",
+            merchantId = checkBalanceTestData.merchantId,
             paymentMethodRef = checkBalanceTestData.paymentMethodRef,
-            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
             ForageApiResponse.Success(getVaultMessageResponse(checkBalanceTestData.contentId))
         )
         server.givenContentId(checkBalanceTestData.contentId)
@@ -246,9 +247,10 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
-        mockPinCollector.setBalanceCheckResponse(
+        mockVaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${checkBalanceTestData.paymentMethodRef}/balance/",
+            merchantId = checkBalanceTestData.merchantId,
             paymentMethodRef = checkBalanceTestData.paymentMethodRef,
-            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
             response = failureResponse
         )
 
@@ -262,9 +264,10 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
-        mockPinCollector.setBalanceCheckResponse(
+        mockVaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${checkBalanceTestData.paymentMethodRef}/balance/",
+            merchantId = checkBalanceTestData.merchantId,
             paymentMethodRef = checkBalanceTestData.paymentMethodRef,
-            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
             response = failureResponse
         )
 
@@ -349,7 +352,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             createLogger = { mockLogger },
             createServiceFactory = { sessionToken: String, merchantId: String, logger: Log ->
                 MockServiceFactory(
-                    mockPinCollector = mockPinCollector,
+                    mockVaultSubmitter = mockVaultSubmitter,
                     server = server,
                     logger = logger,
                     sessionToken = sessionToken,
@@ -376,7 +379,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             createLogger = { mockLogger },
             createServiceFactory = { sessionToken: String, merchantId: String, logger: Log ->
                 MockServiceFactory(
-                    mockPinCollector = mockPinCollector,
+                    mockVaultSubmitter = mockVaultSubmitter,
                     server = server,
                     logger = logger,
                     sessionToken = sessionToken,

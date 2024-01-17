@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.collect.BTPinCollector
+import com.joinforage.forage.android.collect.BasisTheoryPinSubmitter
 import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class BTPinCollectorTest() : MockServerSuite() {
+class BasisTheorySubmitterTest() : MockServerSuite() {
     @Test
     fun `it should return the invalid PIN error`() = runTest {
         val mockLogger = MockLogger()
@@ -20,7 +20,7 @@ class BTPinCollectorTest() : MockServerSuite() {
             listOf(ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN."))
         )
 
-        val response = BTPinCollector.returnIncompletePinError(emptyMap(), mockLogger)
+        val response = BasisTheoryPinSubmitter.returnIncompletePinError(emptyMap(), mockLogger)
 
         assertThat(response).isEqualTo(expectedResponse)
         // THIS IS JUST A CHECK TO ENSURE THAT MOCK LOGGER WAS CALLED!

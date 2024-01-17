@@ -36,7 +36,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class CapturePaymentRepositoryTest : MockServerSuite() {
     private lateinit var repository: CapturePaymentRepository
-    private val pinCollector = TestPinCollector()
+    private val vaultSubmitter = TestVaultSubmitter()
     private val testData = ExpectedData()
 
     @Before
@@ -45,7 +45,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
 
         val logger = Log.getSilentInstance()
         repository = CapturePaymentRepository(
-            pinCollector = pinCollector,
+            vaultSubmitter = vaultSubmitter,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
                 httpUrl = server.url("").toUrl().toString(),
@@ -101,7 +101,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
 
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
-        pinCollector.setCapturePaymentResponse(
+        vaultSubmitter.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
@@ -117,11 +117,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCapturePaymentResponse(
+        vaultSubmitter.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
+                TestVaultSubmitter.sendToProxyResponse(ExpectedData().contentId)
             )
         )
 
@@ -182,11 +182,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCapturePaymentResponse(
+        vaultSubmitter.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
+                TestVaultSubmitter.sendToProxyResponse(ExpectedData().contentId)
             )
         )
 
@@ -211,11 +211,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCapturePaymentResponse(
+        vaultSubmitter.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
+                TestVaultSubmitter.sendToProxyResponse(ExpectedData().contentId)
             )
         )
 
@@ -250,11 +250,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenContentId(testData.contentId)
             .returnsMessageCompletedSuccessfully()
-        pinCollector.setCapturePaymentResponse(
+        vaultSubmitter.setCapturePaymentResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(testData.contentId)
+                TestVaultSubmitter.sendToProxyResponse(testData.contentId)
             )
         )
 

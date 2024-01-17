@@ -26,7 +26,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private lateinit var repository: DeferPaymentCaptureRepository
-    private val pinCollector = TestPinCollector()
+    private val vaultSubmitter = TestVaultSubmitter()
     private val testData = ExpectedData()
 
     @Before
@@ -35,7 +35,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         val logger = Log.getSilentInstance()
         repository = DeferPaymentCaptureRepository(
-            pinCollector = pinCollector,
+            vaultSubmitter = vaultSubmitter,
             encryptionKeyService = EncryptionKeyService(
                 okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
                 httpUrl = server.url("").toUrl().toString(),
@@ -80,7 +80,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
-        pinCollector.setCollectPinResponse(
+        vaultSubmitter.setCollectPinResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
@@ -138,7 +138,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         val expectedForageCode = "permission_denied"
         val expectedStatusCode = 401
 
-        pinCollector.setCollectPinResponse(
+        vaultSubmitter.setCollectPinResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Failure(listOf(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
@@ -160,7 +160,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinResponse(
+        vaultSubmitter.setCollectPinResponse(
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success("")

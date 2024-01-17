@@ -12,9 +12,9 @@ import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.collect.BTPinCollector
-import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.collect.VGSPinCollector
+import com.joinforage.forage.android.collect.BasisTheoryPinSubmitter
+import com.joinforage.forage.android.collect.VaultSubmitter
+import com.joinforage.forage.android.collect.VgsPinSubmitter
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
@@ -148,19 +148,16 @@ class ForagePINEditText @JvmOverloads constructor(
         return vault.manager.getState()
     }
 
-    internal fun getCollector(
-        merchantAccount: String
-    ): PinCollector {
+    internal fun getVaultSubmitter(): VaultSubmitter {
         if (vault is BTVaultWrapper) {
-            return BTPinCollector(
-                this,
-                merchantAccount
+            return BasisTheoryPinSubmitter(
+                context = context,
+                foragePinEditText = this,
             )
         }
-        return VGSPinCollector(
-            context,
-            this,
-            merchantAccount
+        return VgsPinSubmitter(
+            context = context,
+            foragePinEditText = this
         )
     }
 

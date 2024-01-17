@@ -140,7 +140,7 @@ class ForageSDK : ForageSDKInterface {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vault = foragePinEditText.getVaultSubmitter().getVaultType(),
             vaultAction = UserAction.BALANCE,
             logger
         )
@@ -150,6 +150,7 @@ class ForageSDK : ForageSDKInterface {
         val balanceCheckService = ServiceFactory(sessionToken, merchantId, logger)
             .createCheckBalanceRepository(foragePinEditText)
         val response = balanceCheckService.checkBalance(
+            merchantId = merchantId,
             paymentMethodRef = paymentMethodRef
         )
         processApiResponseForMetrics(response, measurement)
@@ -198,7 +199,7 @@ class ForageSDK : ForageSDKInterface {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vault = foragePinEditText.getVaultSubmitter().getVaultType(),
             vaultAction = UserAction.CAPTURE,
             logger
         )
@@ -313,7 +314,7 @@ class ForageSDK : ForageSDKInterface {
 
         open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
             return CheckBalanceRepository(
-                pinCollector = foragePinEditText.getCollector(merchantId),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(),
                 encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
                 pollingService = pollingService,
@@ -323,7 +324,7 @@ class ForageSDK : ForageSDKInterface {
 
         open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
             return CapturePaymentRepository(
-                pinCollector = foragePinEditText.getCollector(merchantId),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
@@ -333,7 +334,7 @@ class ForageSDK : ForageSDKInterface {
 
         open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
             return DeferPaymentCaptureRepository(
-                pinCollector = foragePinEditText.getCollector(merchantId),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService

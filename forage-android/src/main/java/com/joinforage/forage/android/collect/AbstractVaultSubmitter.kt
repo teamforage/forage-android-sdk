@@ -141,14 +141,14 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         val vaultError = toVaultErrorOrNull(vaultResponse)
         if (vaultError != null) {
             val forageErr = parseVaultError(vaultResponse)
-            logger.e("[$vaultType] Received error from $vaultType: $forageErr")
+            logger.e("[$vaultType] Received vault error from $vaultType: $forageErr")
             return vaultError
         }
 
         val forageApiErrorResponse = toForageErrorOrNull(vaultResponse)
         if (forageApiErrorResponse != null) {
             val firstError = forageApiErrorResponse.errors[0]
-            logger.e("[$vaultType] Received error from $vaultType: $firstError")
+            logger.e("[$vaultType] Received Forage error from $vaultType: $firstError")
             return forageApiErrorResponse
         }
 

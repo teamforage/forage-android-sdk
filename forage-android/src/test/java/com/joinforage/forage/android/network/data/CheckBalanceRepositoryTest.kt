@@ -29,7 +29,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class CheckBalanceRepositoryTest : MockServerSuite() {
     private lateinit var repository: CheckBalanceRepository
-    private val pinCollector = TestPinCollector()
+    private val vaultSubmitter = TestVaultSubmitter()
     private val testData = CheckBalanceExpectedData()
 
     @Before
@@ -38,7 +38,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         val logger = Log.getSilentInstance()
         repository = createMockCheckBalanceRepository(
-            pinCollector = pinCollector,
+            vaultSubmitter = vaultSubmitter,
             server = server,
             logger = logger
         )
@@ -48,7 +48,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(
+            merchantId = testData.merchantId,
+            paymentMethodRef = testData.paymentMethodRef
+        )
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -63,13 +66,17 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
 
-        pinCollector.setBalanceCheckResponse(
+        vaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${testData.paymentMethodRef}/balance/",
+            merchantId = testData.merchantId,
             paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.vaultRequestParams,
             response = failureResponse
         )
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(
+            merchantId = testData.merchantId,
+            paymentMethodRef = testData.paymentMethodRef
+        )
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -79,15 +86,19 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        pinCollector.setBalanceCheckResponse(
+        vaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${testData.paymentMethodRef}/balance/",
+            merchantId = testData.merchantId,
             paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
 
         server.givenContentId(testData.contentId).returnsUnauthorized()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(
+            merchantId = testData.merchantId,
+            paymentMethodRef = testData.paymentMethodRef
+        )
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -99,15 +110,19 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the get message returns failed`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setBalanceCheckResponse(
+        vaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${testData.paymentMethodRef}/balance/",
+            merchantId = testData.merchantId,
             paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
+            response = ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
         server.givenContentId(testData.contentId)
             .returnsFailed()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(
+            merchantId = testData.merchantId,
+            paymentMethodRef = testData.paymentMethodRef
+        )
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -121,15 +136,19 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         // Get Payment Method is called twice!
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
-        pinCollector.setBalanceCheckResponse(
+        vaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${testData.paymentMethodRef}/balance/",
+            merchantId = testData.merchantId,
             paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
         server.givenContentId(testData.contentId)
             .returnsMessageCompletedSuccessfully()
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(
+            merchantId = testData.merchantId,
+            paymentMethodRef = testData.paymentMethodRef
+        )
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
@@ -147,9 +166,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     fun `it should return an error when it reaches the max attempts`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setBalanceCheckResponse(
+        vaultSubmitter.setBalanceCheckResponse(
+            httpPath = "/api/payment_methods/${testData.paymentMethodRef}/balance/",
+            merchantId = testData.merchantId,
             paymentMethodRef = testData.paymentMethodRef,
-            vaultRequestParams = testData.vaultRequestParams,
             ForageApiResponse.Success(getVaultMessageResponse(testData.contentId))
         )
 
@@ -158,7 +178,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
                 .returnsSendToProxy()
         }
 
-        val response = repository.checkBalance(testData.paymentMethodRef)
+        val response = repository.checkBalance(
+            merchantId = testData.merchantId,
+            paymentMethodRef = testData.paymentMethodRef
+        )
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
