@@ -86,7 +86,7 @@ class ForageSDK : ForageSDKInterface {
         val logger = Log.getInstance()
             .addAttribute("merchant_ref", merchantId)
             .addAttribute("customer_id", customerId)
-        logger.i("[Android SDK] Tokenizing Payment Method")
+        logger.i("[ForageSDK] Tokenizing Payment Method")
 
         val tokenizeCardService = ServiceFactory(sessionToken, merchantId, logger)
             .createTokenizeCardService()
@@ -132,7 +132,7 @@ class ForageSDK : ForageSDKInterface {
         val logger = Log.getInstance()
             .addAttribute("merchant_ref", merchantId)
             .addAttribute("payment_method_ref", paymentMethodRef)
-        logger.i("[Android SDK] Called checkBalance for Payment Method $paymentMethodRef")
+        logger.i("[ForageSDK] Called checkBalance for Payment Method $paymentMethodRef")
 
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
@@ -190,6 +190,7 @@ class ForageSDK : ForageSDKInterface {
         val logger = Log.getInstance()
             .addAttribute("merchant_ref", merchantId)
             .addAttribute("payment_ref", paymentRef)
+        logger.i("[ForageSDK] Called capturePayment for Payment $paymentRef")
 
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
@@ -248,7 +249,7 @@ class ForageSDK : ForageSDKInterface {
         val logger = Log.getInstance()
             .addAttribute("merchant_ref", merchantId)
             .addAttribute("payment_ref", paymentRef)
-        logger.i("[Android SDK] Called deferPaymentCapture for Payment $paymentRef")
+        logger.i("[ForageSDK] Called deferPaymentCapture for Payment $paymentRef")
 
         val deferPaymentCaptureService = ServiceFactory(sessionToken, merchantId, logger)
             .createDeferPaymentCaptureRepository(foragePinEditText)
