@@ -25,12 +25,12 @@ fun ActionSelectionScreen(
     onBalanceButtonClicked: () -> Unit,
     onPaymentButtonClicked: () -> Unit,
     onRefundButtonClicked: () -> Unit,
-    onVoidButtonClicked: () -> Unit,
+    onVoidButtonClicked: () -> Unit
 ) {
-    Surface (
+    Surface(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column (
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -41,7 +41,7 @@ fun ActionSelectionScreen(
                     Text("Merchant FNS: ${merchantDetails?.fns ?: "Unknown"}")
                 }
             }
-            Column (
+            Column(
                 modifier = Modifier.padding(48.dp)
             ) {
                 Button(onClick = onBalanceButtonClicked, modifier = Modifier.fillMaxWidth()) {
@@ -75,7 +75,7 @@ fun ActionSelectionScreenPreview() {
         onBackButtonClicked = {},
         onBalanceButtonClicked = {},
         onPaymentButtonClicked = {},
-        onRefundButtonClicked = {}) {
+        onRefundButtonClicked = {}
+    ) {
     }
-    
 }

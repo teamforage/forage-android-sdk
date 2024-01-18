@@ -35,26 +35,26 @@ fun MerchantSetupScreen(
     terminalId: String,
     merchantId: String,
     merchantDetailsState: MerchantDetailsState,
-    onSaveButtonClicked: (String) -> Unit,
+    onSaveButtonClicked: (String) -> Unit
 ) {
     var merchantIdInput by rememberSaveable {
         mutableStateOf(merchantId)
     }
 
-    var error = when (merchantDetailsState) {
+    val error = when (merchantDetailsState) {
         is MerchantDetailsState.Idle -> null
         is MerchantDetailsState.Success -> null
         is MerchantDetailsState.Loading -> null
         is MerchantDetailsState.Error -> merchantDetailsState.error
     }
 
-    Column (
+    Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
         Column {
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -63,7 +63,7 @@ fun MerchantSetupScreen(
                 Text(terminalId)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()

@@ -30,7 +30,7 @@ import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 
 enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
-    ActionSelectionScreen(title = R.string.title_pos_action_selection),
+    ActionSelectionScreen(title = R.string.title_pos_action_selection)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +80,7 @@ fun POSComposeApp(
                         viewModel.setMerchantId(it, onSuccess = {
                             navController.navigate(POSScreen.ActionSelectionScreen.name)
                         })
-                    },
+                    }
                 )
             }
             composable(route = POSScreen.ActionSelectionScreen.name) {
@@ -96,7 +96,8 @@ fun POSComposeApp(
                     },
                     onBalanceButtonClicked = { /*TODO*/ },
                     onPaymentButtonClicked = { /*TODO*/ },
-                    onRefundButtonClicked = { /*TODO*/ }) {
+                    onRefundButtonClicked = { /*TODO*/ }
+                ) {
                 }
             }
         }

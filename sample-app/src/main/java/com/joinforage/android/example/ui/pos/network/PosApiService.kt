@@ -28,7 +28,7 @@ interface PosApiService {
 }
 
 object PosApi {
-    val retrofitService : PosApiService by lazy {
+    val retrofitService: PosApiService by lazy {
         retrofit.create(PosApiService::class.java)
     }
 }
