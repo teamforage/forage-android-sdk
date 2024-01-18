@@ -26,14 +26,10 @@ class POSFragment : Fragment() {
         _binding = FragmentPosBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val receiptView = ReceiptView(requireContext())
-        receiptView.setReceiptLayout(ReceiptLayout.ExampleReceipt)
-        binding.mainPosLayout.addView(receiptView)
-
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Text(text = "Hello from Compose!")
+                POSComposeApp()
             }
         }
 
