@@ -89,12 +89,15 @@ dependencies {
 
     implementation 'com.google.dagger:hilt-android:2.44'
     implementation files('libs/CpaySDKLibV4.0.9_20230420.jar')
-    implementation 'androidx.activity:activity-compose:1.8.2'
-    implementation 'androidx.compose.ui:ui-android:1.5.4'
-    implementation "androidx.compose.material3:material3:1.1.2"
-    implementation 'androidx.navigation:navigation-compose:2.7.6'
-    debugImplementation 'androidx.compose.ui:ui-tooling:1.5.4'
     kapt 'com.google.dagger:hilt-compiler:2.44'
+
+    // Compose
+    implementation 'androidx.compose.ui:ui-android:1.5.4'
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    implementation 'androidx.navigation:navigation-compose:2.7.6'
+    implementation "androidx.compose.material3:material3:1.1.2"
+    implementation 'androidx.compose.ui:ui-tooling:1.5.4'
+    debugImplementation 'androidx.compose.ui:ui-tooling-preview:1.5.4'
 
     // Used only for doing requests from the sample app, not a requirement for the ForageSDK
     // Retrofit + Moshi to create the Payment Object
