@@ -1,6 +1,5 @@
 package com.joinforage.android.example.ui.pos
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.pos.data.Merchant
@@ -41,30 +40,9 @@ class POSViewModel : ViewModel() {
                 onSuccess()
                 MerchantDetailsState.Success(result)
             } catch (e: HttpException) {
-                Log.i("POSViewModel", e.response()?.errorBody().toString())
                 MerchantDetailsState.Error(e.toString())
             }
             _uiState.update { it.copy(merchantDetailsState = merchantDetailsState) }
         }
     }
-
-//    private fun getMerchantInfo(merchantId: String, onSuccess: () -> Unit) {
-//        viewModelScope.launch {
-//            _uiState.update { currentState ->
-//                currentState.copy(merchantDetailsState = MerchantDetailsState.Loading)
-//            }
-//            try {
-//                val result = PosApi.retrofitService.getMerchantInfo(merchantId)
-//                _uiState.update { currentState ->
-//                    currentState.copy(merchantDetailsState = MerchantDetailsState.Success(result))
-//                }
-//                onSuccess()
-//            } catch (e: IOException) {
-//                _uiState.update { currentState ->
-//                    currentState.copy(merchantDetailsState = MerchantDetailsState.Error)
-//                }
-//                throw e
-//            }
-//        }
-//    }
 }
