@@ -12,7 +12,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
-import com.verygoodsecurity.vgscollect.core.HTTPMethod
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
     ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
@@ -74,7 +73,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         )
         proxyResponseMonitor
             .setPath(path)
-            .setMethod(HTTPMethod.POST.toString())
+            .setMethod("POST")
             .start()
 
         val vaultProxyRequest = buildProxyRequest(
@@ -126,15 +125,14 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())
         .setToken(vaultToken)
 
+    // PaymentMethod.card.token is in the comma-separated format <vgs-token>,<basis-theory-token>
     protected fun pickVaultTokenByIndex(paymentMethod: PaymentMethod, index: Int): String? {
         val tokensString = paymentMethod.card.token
         val tokensList = tokensString.split(TOKEN_DELIMITER)
 
-        // VGS is always the first token in the string
         val noTokenStoredInVault = tokensList.size <= index
         if (noTokenStoredInVault) return null
 
-        // grab BasisTheory token
         return tokensList[index]
     }
 
