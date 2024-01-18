@@ -78,12 +78,8 @@ class ForageTerminalSDK(
         reusable: Boolean = true
     ): ForageApiResponse<String> {
         val logger = createLogger()
-        logger.i(
-            "[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId",
-            attributes = mapOf(
-                "reusable" to reusable
-            )
-        )
+        logger.addAttribute("reusable", reusable)
+        logger.i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
 
         val tokenizationResponse = forageSdk.tokenizeEBTCard(
             TokenizeEBTCardParams(
@@ -92,12 +88,7 @@ class ForageTerminalSDK(
             )
         )
         if (tokenizationResponse is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] tokenizeCard failed on Terminal $posTerminalId: ${tokenizationResponse.errors[0]}",
-                attributes = mapOf(
-                    "pos_terminal_id" to posTerminalId
-                )
-            )
+            logger.e("[POS] tokenizeCard failed on Terminal $posTerminalId: ${tokenizationResponse.errors[0]}")
         }
         return tokenizationResponse
     }
@@ -118,13 +109,10 @@ class ForageTerminalSDK(
     suspend fun tokenizeCard(params: PosTokenizeCardParams): ForageApiResponse<String> {
         val (forageConfig, track2Data, reusable) = params
         val logger = createLogger()
-        logger.i(
-            "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId",
-            attributes = mapOf(
-                "merchant_ref" to forageConfig.merchantId,
-                "reusable" to reusable
-            )
-        )
+        logger.addAttribute("reusable", reusable)
+            .addAttribute("merchant_ref", forageConfig.merchantId)
+
+        logger.i("[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId")
 
         val (merchantId, sessionToken) = forageConfig
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
@@ -207,13 +195,10 @@ class ForageTerminalSDK(
         val (foragePinEditText, paymentMethodRef) = params
         val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
 
-        logger.i(
-            "[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId",
-            attributes = mapOf(
-                "merchant_ref" to merchantId,
-                "payment_method_ref" to paymentMethodRef
-            )
-        )
+        logger.addAttribute("merchant_ref", merchantId)
+            .addAttribute("payment_method_ref", paymentMethodRef)
+
+        logger.i("[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId")
 
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
@@ -265,26 +250,15 @@ class ForageTerminalSDK(
     override suspend fun capturePayment(
         params: CapturePaymentParams
     ): ForageApiResponse<String> {
-        val logger = createLogger()
         val (_, paymentRef) = params
 
-        logger.i(
-            "[POS] Called capturePayment for Payment $paymentRef",
-            attributes = mapOf(
-                "payment_method_ref" to paymentRef
-            )
-        )
+        val logger = createLogger().addAttribute("payment_ref", paymentRef)
+        logger.i("[POS] Called capturePayment for Payment $paymentRef")
 
         val captureResponse = forageSdk.capturePayment(params)
 
         if (captureResponse is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId: ${captureResponse.errors[0]}",
-                attributes = mapOf(
-                    "payment" to paymentRef,
-                    "pos_terminal_id" to posTerminalId
-                )
-            )
+            logger.e("[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId: ${captureResponse.errors[0]}")
         }
         return captureResponse
     }
@@ -305,25 +279,15 @@ class ForageTerminalSDK(
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
-        val logger = createLogger()
         val (_, paymentRef) = params
-        logger.i(
-            "[POS] Called deferPaymentCapture for Payment $paymentRef",
-            attributes = mapOf(
-                "payment_ref" to paymentRef
-            )
-        )
+
+        val logger = createLogger().addAttribute("payment_ref", paymentRef)
+        logger.i("[POS] Called deferPaymentCapture for Payment $paymentRef")
 
         val deferCaptureResponse = forageSdk.deferPaymentCapture(params)
 
         if (deferCaptureResponse is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] deferPaymentCapture failed for Payment $paymentRef on Terminal $posTerminalId: ${deferCaptureResponse.errors[0]}",
-                attributes = mapOf(
-                    "payment_ref" to paymentRef,
-                    "pos_terminal_id" to posTerminalId
-                )
-            )
+            logger.e("[POS] deferPaymentCapture failed for Payment $paymentRef on Terminal $posTerminalId: ${deferCaptureResponse.errors[0]}")
         }
         return deferCaptureResponse
     }
