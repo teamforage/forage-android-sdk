@@ -1,9 +1,9 @@
 package com.joinforage.android.example.ui.pos.data
 
-import javax.annotation.Nullable
+import com.joinforage.android.example.ui.pos.MerchantDetailsState
 
 data class POSUIState (
     val merchantId: String = "",
     val cardPAN: String = "",
-    val merchantInfo: Merchant? = null,
+    val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
 )

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.joinforage.android.example.pos.receipts.ReceiptLayout
-import com.joinforage.android.example.ui.pos.ReceiptView
+import com.joinforage.android.example.ui.pos.ui.ReceiptView
 
 @Composable
 fun ReceiptPreviewScreen() {
