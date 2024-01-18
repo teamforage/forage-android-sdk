@@ -70,24 +70,15 @@ internal class BasisTheoryPinSubmitter(
     }
 
     override fun toForageSuccessOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Success<String>? {
-        // for Basis Theory, a failed response is a Basis Theory Api Error
-        // and doesn't have anything to do with Forage
-        if (vaultResponse.isFailure) return null
-
-        val forageResponse = vaultResponse.getOrNull().toString()
-        return try {
-            // converting the response to a ForageApiError should throw
-            // if forageResponse was Successful
-            ForageApiError.ForageApiErrorMapper.from(forageResponse)
-
-            // if it does NOT throw, then it's a ForageApiError
-            // so we return null here
+        // The caller should have already performed the error checks.
+        // We add these error checks as a safeguard, just in case.
+        if (toVaultErrorOrNull(vaultResponse) != null ||
+            toForageErrorOrNull(vaultResponse) != null
+        ) {
             return null
-        } catch (_: JSONException) {
-            // if it DOES throw, then it was not a ForageApiError so
-            // is it can only be a successful response!
-            ForageApiResponse.Success(forageResponse)
         }
+
+        return ForageApiResponse.Success(vaultResponse.getOrNull().toString())
     }
 
     override fun toForageErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {

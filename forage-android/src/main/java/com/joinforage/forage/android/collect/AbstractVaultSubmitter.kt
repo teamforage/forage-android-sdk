@@ -142,11 +142,11 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             return UnknownErrorApiResponse
         }
 
-        val vaultApiError = toVaultErrorOrNull(vaultResponse)
-        if (vaultApiError != null) {
+        val vaultError = toVaultErrorOrNull(vaultResponse)
+        if (vaultError != null) {
             val forageErr = parseVaultError(vaultResponse)
             logger.e("[$vaultType] Received error from $vaultType: $forageErr")
-            return vaultApiError
+            return vaultError
         }
 
         val forageApiErrorResponse = toForageErrorOrNull(vaultResponse)
@@ -161,6 +161,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             logger.i("[$vaultType] Received successful response from $vaultType")
             return forageApiSuccess
         }
+        logger.e("[$vaultType] Received malformed response from $vaultType")
 
         return UnknownErrorApiResponse
     }

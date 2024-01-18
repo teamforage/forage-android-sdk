@@ -34,13 +34,11 @@ internal class VgsPinSubmitter(
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val vgsCollect = buildVGSCollect(context)
         vgsCollect.bindView(foragePinEditText.getTextInputEditText())
-        val vgsInputField = foragePinEditText.getTextInputEditText()
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
-                // VGS wants us to call onDestroy, unlike Basis Theory
+                // Clear all information collected before by VGSCollect
                 vgsCollect.onDestroy()
-                vgsInputField.setText("")
 
                 continuation.resumeWith(
                     Result.success(vaultToForageResponse(response))
@@ -145,9 +143,20 @@ internal class VgsPinSubmitter(
         }
     }
 
+    /**
+     * @pre toVaultErrorOrNull(vaultResponse) == null && toForageErrorOrNull(vaultResponse) == null
+     */
     override fun toForageSuccessOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Success<String>? {
         if (vaultResponse == null) return null
         if (vaultResponse is VGSResponse.ErrorResponse) return null
+
+        // The caller should have already performed the error checks.
+        // We add these error checks as a safeguard, just in case.
+        if (toVaultErrorOrNull(vaultResponse) != null ||
+            toForageErrorOrNull(vaultResponse) != null
+        ) {
+            return null
+        }
 
         val successResponse = vaultResponse as VGSResponse.SuccessResponse
         return ForageApiResponse.Success(successResponse.body.toString())
