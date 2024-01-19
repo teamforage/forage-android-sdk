@@ -93,6 +93,19 @@ class StrictForEmptyInputTest {
         assertThat(state.validationError).isEqualTo(TooLongEbtPanError)
         assertThat(state.derivedCardInfo).isEqualTo(DerivedCardInfoDto(USState.MAINE))
     }
+
+    @Test
+    fun `cardNumber is the shared ND-SD card number`() {
+        val longMaineNumber: String = "5081321111111111" // North Dakota/South Dakota is 508132
+        val manager = PanElementStateManager.forEmptyInput()
+        manager.handleChangeEvent(longMaineNumber)
+        val state = manager.getState()
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+        assertThat(state.validationError).isNull()
+        assertThat(state.derivedCardInfo).isEqualTo(DerivedCardInfoDto(USState.SOUTH_DAKOTA))
+    }
 }
 
 class DEV_ONLY_IntegrationTests {
