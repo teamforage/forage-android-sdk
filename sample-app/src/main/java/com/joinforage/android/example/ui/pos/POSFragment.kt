@@ -5,9 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import com.joinforage.android.example.databinding.FragmentPosBinding
-import com.joinforage.android.example.pos.receipts.ReceiptLayout
 import com.pos.sdk.DeviceManager
 import com.pos.sdk.DevicesFactory
 import com.pos.sdk.callback.ResultCallback
@@ -24,9 +24,12 @@ class POSFragment : Fragment() {
         _binding = FragmentPosBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val receiptView = ReceiptView(requireContext())
-        receiptView.setReceiptLayout(ReceiptLayout.ExampleReceipt)
-        binding.mainPosLayout.addView(receiptView)
+        binding.composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                POSComposeApp()
+            }
+        }
 
         return root
     }

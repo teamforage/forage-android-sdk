@@ -1,4 +1,4 @@
-package com.joinforage.android.example.ui.pos
+package com.joinforage.android.example.ui.pos.ui
 
 import android.content.Context
 import android.graphics.Paint

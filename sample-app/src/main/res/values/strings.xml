@@ -26,4 +26,7 @@
     <string name="defer_capture_snap">Defer SNAP</string>
     <string name="capture_cash">Capture EBT Cash</string>
     <string name="defer_capture_cash">Defer EBT Cash</string>
+    <string name="title_pos_merchant_setup">Merchant Setup</string>
+    <string name="title_pos_action_selection">Select an Action</string>
+    <string name="pos_back_button">Back</string>
 </resources>
