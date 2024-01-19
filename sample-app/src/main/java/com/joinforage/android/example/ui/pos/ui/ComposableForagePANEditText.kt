@@ -20,7 +20,7 @@ fun ComposableForagePANEditText(merchantId: String) {
                 )
                 this.requestFocus()
             }
-        },
+        }
     )
 }
 

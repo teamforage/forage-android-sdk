@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 fun BalanceInquiryScreen(
     onManualEntryButtonClicked: () -> Unit,
     onSwipeButtonClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

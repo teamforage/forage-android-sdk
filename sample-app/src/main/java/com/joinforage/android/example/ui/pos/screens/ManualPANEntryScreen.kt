@@ -18,7 +18,7 @@ import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
 fun ManualPANEntryScreen(
     merchantId: String,
     onSubmitButtonClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
