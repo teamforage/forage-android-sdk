@@ -1,5 +1,6 @@
 package com.joinforage.android.example.ui.pos
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +33,7 @@ import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.BalanceInquiryScreen
 import com.joinforage.android.example.ui.pos.screens.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
+import com.joinforage.forage.android.ui.ForagePANEditText
 
 enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
@@ -47,6 +52,10 @@ fun POSComposeApp(
     val currentScreen = POSScreen.valueOf(
         backStackEntry?.destination?.route ?: POSScreen.MerchantSetupScreen.name
     )
+
+    var panElement: ForagePANEditText? by rememberSaveable {
+        mutableStateOf(null)
+    }
 
     Scaffold(
         topBar = {
@@ -116,8 +125,18 @@ fun POSComposeApp(
             composable(route = POSScreen.ManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
                     merchantId = uiState.merchantId,
-                    onSubmitButtonClicked = { /*TODO*/ },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) }
+                    onSubmitButtonClicked = {
+                        if (panElement != null) {
+                            viewModel.tokenizeEBTCard(panElement as ForagePANEditText, onSuccess = {
+                                if (it?.ref != null) {
+                                    Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                }
+                            })
+                        }
+                    },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) },
+                    tokenizedCardData = uiState.tokenizationResult?.toString(),
+                    withPanElementReference = { panElement = it }
                 )
             }
         }

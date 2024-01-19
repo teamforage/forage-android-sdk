@@ -8,7 +8,10 @@ import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePANEditText
 
 @Composable
-fun ComposableForagePANEditText(merchantId: String) {
+fun ComposableForagePANEditText(
+    merchantId: String,
+    withPanElementReference: (element: ForagePANEditText) -> Unit
+) {
     AndroidView(
         factory = { context ->
             ForagePANEditText(context).apply {
@@ -19,6 +22,7 @@ fun ComposableForagePANEditText(merchantId: String) {
                     )
                 )
                 this.requestFocus()
+                withPanElementReference(this)
             }
         }
     )
@@ -27,5 +31,8 @@ fun ComposableForagePANEditText(merchantId: String) {
 @Preview
 @Composable
 fun ComposableForagePANEditTextPreview() {
-    ComposableForagePANEditText(merchantId = "")
+    ComposableForagePANEditText(
+        merchantId = "",
+        withPanElementReference = {}
+    )
 }
