@@ -10,7 +10,7 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 
 private const val BASE_URL = "https://api.dev.joinforage.app"
-private const val AUTH_TOKEN = "AUTH_TOKEN"
+const val AUTH_TOKEN = "AUTH_TOKEN"
 
 private val moshi = Moshi.Builder()
     .addLast(KotlinJsonAdapterFactory())

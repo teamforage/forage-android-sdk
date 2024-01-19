@@ -26,11 +26,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
+import com.joinforage.android.example.ui.pos.screens.BalanceInquiryScreen
+import com.joinforage.android.example.ui.pos.screens.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 
 enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
-    ActionSelectionScreen(title = R.string.title_pos_action_selection)
+    ActionSelectionScreen(title = R.string.title_pos_action_selection),
+    BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
+    ManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,11 +98,27 @@ fun POSComposeApp(
                     onBackButtonClicked = {
                         navController.popBackStack(POSScreen.MerchantSetupScreen.name, inclusive = false)
                     },
-                    onBalanceButtonClicked = { /*TODO*/ },
+                    onBalanceButtonClicked = {
+                        navController.navigate(POSScreen.BalanceInquiryScreen.name)
+                    },
                     onPaymentButtonClicked = { /*TODO*/ },
                     onRefundButtonClicked = { /*TODO*/ }
                 ) {
                 }
+            }
+            composable(route = POSScreen.BalanceInquiryScreen.name) {
+                BalanceInquiryScreen(
+                    onManualEntryButtonClicked = { navController.navigate(POSScreen.ManualPANEntryScreen.name) },
+                    onSwipeButtonClicked = { /*TODO*/ },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
+            }
+            composable(route = POSScreen.ManualPANEntryScreen.name) {
+                ManualPANEntryScreen(
+                    merchantId = uiState.merchantId,
+                    onSubmitButtonClicked = { /*TODO*/ },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) }
+                )
             }
         }
     }
