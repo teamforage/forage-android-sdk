@@ -164,6 +164,10 @@ class ForagePINEditText @JvmOverloads constructor(
         )
     }
 
+    internal fun getVaultType(): VaultType {
+        return vault.getVaultType()
+    }
+
     internal fun getTextInputEditText(): VGSEditText {
         return vault.getVGSEditText()
     }

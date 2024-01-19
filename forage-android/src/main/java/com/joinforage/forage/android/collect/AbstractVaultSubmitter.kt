@@ -11,43 +11,40 @@ import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
+import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
     ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
 )
 
+internal open class VaultSubmitterParams(
+    open val encryptionKeys: EncryptionKeys,
+    open val idempotencyKey: String,
+    open val merchantId: String,
+    open val path: String,
+    open val paymentMethod: PaymentMethod,
+    open val userAction: UserAction
+)
+
 internal interface VaultSubmitter {
-    suspend fun submit(
-        encryptionKeys: EncryptionKeys,
-        idempotencyKey: String,
-        merchantId: String,
-        path: String,
-        paymentMethod: PaymentMethod,
-        userAction: UserAction
-    ): ForageApiResponse<String>
+    suspend fun submit(params: VaultSubmitterParams): ForageApiResponse<String>
 
     fun getVaultType(): VaultType
 }
 
 internal abstract class AbstractVaultSubmitter<VaultResponse>(
-    protected val foragePinEditText: ForagePINEditText,
-    protected val logger: Log = Log.getInstance(),
     protected val context: Context,
+    protected val foragePinEditText: ForagePINEditText,
+    protected val logger: Log,
     private val vaultType: VaultType
 ) : VaultSubmitter {
     // interface methods
-    override suspend fun submit(
-        encryptionKeys: EncryptionKeys,
-        idempotencyKey: String,
-        merchantId: String,
-        path: String,
-        paymentMethod: PaymentMethod,
-        userAction: UserAction
-    ): ForageApiResponse<String> {
-        logger.addAttribute("payment_method_ref", paymentMethod.ref)
-            .addAttribute("merchant_ref", merchantId)
-        logger.i("[$vaultType] Sending $userAction request to $vaultType")
+    override suspend fun submit(params: VaultSubmitterParams): ForageApiResponse<String> {
+        logger.addAttribute("payment_method_ref", params.paymentMethod.ref)
+            .addAttribute("merchant_ref", params.merchantId)
+        logger.i("[$vaultType] Sending ${params.userAction} request to $vaultType")
 
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
         if (!foragePinEditText.getElementState().isComplete) {
@@ -55,8 +52,8 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             return IncompletePinError
         }
 
-        val vaultToken = getVaultToken(paymentMethod)
-        val encryptionKey = parseEncryptionKey(encryptionKeys)
+        val vaultToken = getVaultToken(params.paymentMethod)
+        val encryptionKey = parseEncryptionKey(params.encryptionKeys)
 
         // if a vault provider is missing a token, we will
         // gracefully fail here
@@ -68,21 +65,22 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         // ========= USED FOR REPORTING IMPORTANT METRICS =========
         val proxyResponseMonitor = VaultProxyResponseMonitor(
             vault = vaultType,
-            userAction = userAction,
+            userAction = params.userAction,
             metricsLogger = logger
         )
         proxyResponseMonitor
-            .setPath(path)
+            .setPath(params.path)
             .setMethod("POST")
             .start()
+        // ==========================================================
 
         val vaultProxyRequest = buildProxyRequest(
+            params = params,
             encryptionKey = encryptionKey,
-            idempotencyKey = idempotencyKey,
-            merchantId = merchantId,
             vaultToken = vaultToken
-        ).setPath(path)
-        val forageResponse = submitProxyRequest(vaultProxyRequest = vaultProxyRequest)
+        ).setPath(params.path).setParams(params)
+
+        val forageResponse = submitProxyRequest(vaultProxyRequest)
         proxyResponseMonitor.end()
 
         // FNS requirement to clear the PIN after each submission
@@ -93,7 +91,6 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             is ForageApiResponse.Failure -> forageResponse.errors[0].httpStatusCode
         }
         proxyResponseMonitor.setHttpStatusCode(httpStatusCode).logResult()
-        // ==========================================================
 
         return forageResponse
     }
@@ -114,14 +111,13 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
 
     // concrete methods
     protected open fun buildProxyRequest(
+        params: VaultSubmitterParams,
         encryptionKey: String,
-        idempotencyKey: String,
-        merchantId: String,
         vaultToken: String
     ) = VaultProxyRequest.emptyRequest()
         .setHeader(ForageConstants.Headers.X_KEY, encryptionKey)
-        .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, merchantId)
-        .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, idempotencyKey)
+        .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, params.merchantId)
+        .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, params.idempotencyKey)
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())
         .setToken(vaultToken)
 
@@ -166,7 +162,60 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         return UnknownErrorApiResponse
     }
 
+    protected fun buildRequestBody(vaultProxyRequest: VaultProxyRequest): HashMap<String, Any> {
+        val baseRequestBody = buildBaseRequestBody(vaultProxyRequest)
+        return when (vaultProxyRequest.params) {
+            is PosBalanceVaultSubmitterParams -> buildPosBalanceCheckRequestBody(baseRequestBody, vaultProxyRequest.params)
+            is PosRefundVaultSubmitterParams -> buildPosRefundRequestBody(baseRequestBody, vaultProxyRequest.params)
+            else -> baseRequestBody
+        }
+    }
+
+    private fun buildPosRefundRequestBody(
+        body: HashMap<String, Any>,
+        posParams: PosRefundVaultSubmitterParams
+    ): HashMap<String, Any> {
+        body[ForageConstants.RequestBody.AMOUNT] = posParams.refundParams.amount
+        body[ForageConstants.RequestBody.REASON] = posParams.refundParams.reason
+        body[ForageConstants.RequestBody.METADATA] = posParams.refundParams.metadata ?: HashMap<String, String>()
+        body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
+            ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to posParams.posTerminalId
+        )
+        return body
+    }
+
+    private fun buildPosBalanceCheckRequestBody(
+        body: HashMap<String, Any>,
+        posParams: PosBalanceVaultSubmitterParams
+    ): HashMap<String, Any> {
+        body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
+            ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to posParams.posTerminalId
+        )
+        return body
+    }
+
+    private fun buildBaseRequestBody(vaultProxyRequest: VaultProxyRequest): HashMap<String, Any> {
+        return hashMapOf(
+            ForageConstants.RequestBody.CARD_NUMBER_TOKEN to vaultProxyRequest.vaultToken
+        )
+    }
+
     internal companion object {
+        internal fun create(foragePinEditText: ForagePINEditText, logger: Log): VaultSubmitter {
+            if (foragePinEditText.getVaultType() == VaultType.BT_VAULT_TYPE) {
+                return BasisTheoryPinSubmitter(
+                    context = foragePinEditText.context,
+                    foragePinEditText = foragePinEditText,
+                    logger = logger
+                )
+            }
+            return VgsPinSubmitter(
+                context = foragePinEditText.context,
+                foragePinEditText = foragePinEditText,
+                logger = logger
+            )
+        }
+
         const val TOKEN_DELIMITER = ","
 
         internal fun balancePath(paymentMethodRef: String) =
@@ -177,5 +226,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
 
         internal fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
+
+        internal fun refundPaymentPath(paymentRef: String) = "/api/payments/$paymentRef/refunds/"
     }
 }

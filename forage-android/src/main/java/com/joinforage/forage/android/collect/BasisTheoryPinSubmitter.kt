@@ -5,6 +5,7 @@ import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.StopgapGlobalState
+import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
@@ -19,10 +20,12 @@ internal typealias BasisTheoryResponse = Result<Any?>
 
 internal class BasisTheoryPinSubmitter(
     context: Context,
-    foragePinEditText: ForagePINEditText
+    foragePinEditText: ForagePINEditText,
+    logger: Log
 ) : AbstractVaultSubmitter<BasisTheoryResponse>(
     context = context,
     foragePinEditText = foragePinEditText,
+    logger = logger,
     vaultType = VaultType.BT_VAULT_TYPE
 ) {
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
@@ -32,15 +35,13 @@ internal class BasisTheoryPinSubmitter(
     // Basis Theory requires a few extra headers beyond the
     // common headers to make proxy requests
     override fun buildProxyRequest(
+        params: VaultSubmitterParams,
         encryptionKey: String,
-        idempotencyKey: String,
-        merchantId: String,
         vaultToken: String
     ) = super
         .buildProxyRequest(
+            params = params,
             encryptionKey = encryptionKey,
-            idempotencyKey = idempotencyKey,
-            merchantId = merchantId,
             vaultToken = vaultToken
         )
         .setHeader(ForageConstants.Headers.BT_PROXY_KEY, PROXY_ID)

@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
@@ -93,6 +94,10 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                     recycle()
                 }
             }
+    }
+
+    override fun getVaultType(): VaultType {
+        return VaultType.BT_VAULT_TYPE
     }
 
     override fun clearText() {

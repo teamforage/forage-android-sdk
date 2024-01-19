@@ -18,6 +18,11 @@ internal object ForageConstants {
 
     object RequestBody {
         const val CARD_NUMBER_TOKEN = "card_number_token"
+
+        // POS-only
+        const val REASON = "reason"
+        const val METADATA = "metadata"
+        const val AMOUNT = "amount"
         const val POS_TERMINAL = "pos_terminal"
         const val PROVIDER_TERMINAL_ID = "provider_terminal_id"
     }
@@ -29,6 +34,7 @@ internal object ForageConstants {
         const val PAYMENT_METHODS = "payment_methods"
         const val MESSAGE = "message"
         const val PAYMENTS = "payments"
+        const val REFUNDS = "refunds"
     }
 
     object VGS {
