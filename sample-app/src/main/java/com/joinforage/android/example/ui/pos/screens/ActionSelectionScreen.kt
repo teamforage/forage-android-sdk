@@ -48,15 +48,15 @@ fun ActionSelectionScreen(
                     Text("Balance Inquiry")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onPaymentButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onPaymentButtonClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
                     Text("Create a Payment / Purchase")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onRefundButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onRefundButtonClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
                     Text("Make a Refund / Return")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onVoidButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onVoidButtonClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
                     Text("Void / Reverse a Transaction")
                 }
             }
