@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos
 
+import com.joinforage.forage.android.collect.VaultProxyRequest
 import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 
 internal data class PosVaultRequestParams(
@@ -14,4 +15,22 @@ internal data class PosVaultRequestParams(
     override fun hashCode(): Int {
         return super.hashCode() + posTerminalId.hashCode()
     }
+}
+
+internal data class PosVaultProxyRequest(
+    override val headers: Map<String, String>,
+    override val path: String,
+    override val vaultToken: String,
+    val posTerminalId: String
+) : VaultProxyRequest(
+    headers = headers,
+    path = path,
+    vaultToken = vaultToken
+) {
+    fun setPosTerminalId(posTerminalId: String) = PosVaultProxyRequest(
+        headers = headers,
+        path = path,
+        vaultToken = vaultToken,
+        posTerminalId = posTerminalId
+    )
 }

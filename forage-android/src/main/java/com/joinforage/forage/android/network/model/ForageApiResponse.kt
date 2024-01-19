@@ -2,10 +2,20 @@ package com.joinforage.forage.android.network.model
 
 import org.json.JSONObject
 
+internal val UnknownErrorApiResponse = ForageApiResponse.Failure.fromError(
+    ForageError(500, "unknown_server_error", "Unknown Server Error")
+)
+
 sealed class ForageApiResponse<out T> {
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
-    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>()
+    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
+        companion object {
+            fun fromError(error: ForageError): Failure {
+                return Failure(listOf(error))
+            }
+        }
+    }
 }
 
 // Learn more about `ForageError`s [here](https://docs.joinforage.app/reference/forage-js-errors#forageerror)
