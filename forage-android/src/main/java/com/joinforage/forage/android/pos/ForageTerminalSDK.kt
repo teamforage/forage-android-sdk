@@ -133,14 +133,14 @@ class ForageTerminalSDK(
      * * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
      * * unpack to troubleshoot the issue.
      *
-     * @param params The [RefundPaymentParams] parameters required for refunding a Payment.
+     * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
      * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    suspend fun refundPayment(params: RefundPaymentParams): ForageApiResponse<String> {
+    suspend fun refundPayment(params: PosRefundPaymentParams): ForageApiResponse<String> {
         val logger = createLogger()
-        val (amount, foragePinEditText, _, paymentRef, reason) = params
+        val (amount, foragePinEditText, paymentRef, reason) = params
         val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
 
         logger

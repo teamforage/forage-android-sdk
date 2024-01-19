@@ -32,7 +32,7 @@ internal data class PosBalanceVaultSubmitterParams(
 internal data class PosRefundVaultSubmitterParams(
     val baseVaultSubmitterParams: VaultSubmitterParams,
     val posTerminalId: String,
-    val refundParams: RefundPaymentParams
+    val refundParams: PosRefundPaymentParams
 ) : VaultSubmitterParams(
     encryptionKeys = baseVaultSubmitterParams.encryptionKeys,
     idempotencyKey = baseVaultSubmitterParams.idempotencyKey,
