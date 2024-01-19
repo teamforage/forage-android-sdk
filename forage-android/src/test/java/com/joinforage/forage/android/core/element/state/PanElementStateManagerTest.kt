@@ -104,7 +104,7 @@ class StrictForEmptyInputTest {
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
-        assertThat(state.derivedCardInfo).isEqualTo(DerivedCardInfoDto(USState.NORTH_DAKOTA_SOUTH_DAKOTA))
+        assertThat(state.derivedCardInfo).isEqualTo(DerivedCardInfoDto(USState.SOUTH_DAKOTA))
     }
 }
 
