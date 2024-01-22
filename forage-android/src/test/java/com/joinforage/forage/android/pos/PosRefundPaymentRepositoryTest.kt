@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos
 
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
@@ -35,7 +36,7 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
     private lateinit var repository: PosRefundPaymentRepository
 
     private lateinit var mockServiceFactory: MockServiceFactory
-    private val mockVaultSubmitter = MockVaultSubmitter()
+    private val mockVaultSubmitter = MockVaultSubmitter(VaultType.FORAGE_VAULT_TYPE)
     private val expectedData = MockServiceFactory.ExpectedData
     private lateinit var mockForagePinEditText: ForagePINEditText
 
@@ -63,7 +64,8 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
                 amount = 1.0f,
                 reason = "I feel like refunding!",
                 metadata = hashMapOf("meta" to "verse", "my_store_location_id" to "123456")
-            )
+            ),
+            sessionToken = expectedData.sessionToken
         )
     }
 

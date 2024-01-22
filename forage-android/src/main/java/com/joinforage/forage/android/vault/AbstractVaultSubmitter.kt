@@ -25,6 +25,7 @@ internal open class VaultSubmitterParams(
     open val merchantId: String,
     open val path: String,
     open val paymentMethod: PaymentMethod,
+    open val sessionToken: String,
     open val userAction: UserAction
 )
 
@@ -132,7 +133,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())
         .setToken(vaultToken)
 
-    // PaymentMethod.card.token is in the comma-separated format <vgs-token>,<basis-theory-token>
+    // PaymentMethod.card.token is in the comma-separated format <vgs-token>,<basis-theory-token>,<forage-token>
     protected fun pickVaultTokenByIndex(paymentMethod: PaymentMethod, index: Int): String? {
         val tokensString = paymentMethod.card.token
         val tokensList = tokensString.split(TOKEN_DELIMITER)
@@ -213,14 +214,22 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
 
     internal companion object {
         internal fun create(foragePinEditText: ForagePINEditText, logger: Log): VaultSubmitter {
-            if (foragePinEditText.getVaultType() == VaultType.BT_VAULT_TYPE) {
+            val vaultType = foragePinEditText.getVaultType()
+            if (vaultType == VaultType.BT_VAULT_TYPE) {
                 return BasisTheoryPinSubmitter(
                     context = foragePinEditText.context,
                     foragePinEditText = foragePinEditText,
                     logger = logger
                 )
             }
-            return VgsPinSubmitter(
+            if (vaultType == VaultType.VGS_VAULT_TYPE) {
+                return VgsPinSubmitter(
+                    context = foragePinEditText.context,
+                    foragePinEditText = foragePinEditText,
+                    logger = logger
+                )
+            }
+            return ForagePinSubmitter(
                 context = foragePinEditText.context,
                 foragePinEditText = foragePinEditText,
                 logger = logger

@@ -24,7 +24,8 @@ internal class DeferPaymentRefundRepository(
      */
     suspend fun deferPaymentRefund(
         merchantId: String,
-        paymentRef: String
+        paymentRef: String,
+        sessionToken: String
     ): ForageApiResponse<String> {
         val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
@@ -46,7 +47,8 @@ internal class DeferPaymentRefundRepository(
                 merchantId = merchantId,
                 path = AbstractVaultSubmitter.deferPaymentRefundPath(paymentRef),
                 paymentMethod = paymentMethod,
-                userAction = UserAction.DEFER_REFUND
+                userAction = UserAction.DEFER_REFUND,
+                sessionToken = sessionToken
             )
         )
     }

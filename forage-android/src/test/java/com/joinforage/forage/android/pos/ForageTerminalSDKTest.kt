@@ -65,7 +65,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         super.setup()
 
         mockLogger = MockLogger()
-        vaultSubmitter = MockVaultSubmitter()
+        vaultSubmitter = MockVaultSubmitter(VaultType.FORAGE_VAULT_TYPE)
         // Use Mockito judiciously (mainly for mocking views)!
         // Opt for dependency injection and inheritance over Mockito
         mockForagePanEditText = mock(ForagePANEditText::class.java)
@@ -193,7 +193,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         val attributes = mockLogger.getMetricsLog().getAttributes()
 
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("balance")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("customer_perceived_response")
         assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
@@ -233,7 +233,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertMetricsLog()
         val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("balance")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("customer_perceived_response")
         assertThat(attributes.getValue("event_outcome").toString()).isEqualTo("failure")
@@ -242,7 +242,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
-    fun `POS refundPayment succeeds`() = runTest() {
+    fun `POS refundPayment succeeds`() = runTest {
         mockSuccessfulPosRefund(
             mockVaultSubmitter = vaultSubmitter,
             server = server
@@ -271,7 +271,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertMetricsLog()
         val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("refund")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("customer_perceived_response")
         assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
@@ -298,7 +298,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertMetricsLog()
         val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("refund")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("customer_perceived_response")
         assertThat(attributes.getValue("event_outcome").toString()).isEqualTo("failure")
@@ -332,7 +332,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     fun `POS illegal vault exception`() = runTest {
         val terminalSdk = createMockTerminalSdk()
 
-        val expectedLogSubstring = "because the vault type is not VGS"
+        val expectedLogSubstring = "because the vault type is not forage"
         `when`(mockForagePinEditText.getVaultType()).thenReturn(VaultType.BT_VAULT_TYPE)
         val balanceResponse = terminalSdk.checkBalance(
             CheckBalanceParams(
@@ -402,7 +402,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertMetricsLog()
         val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("defer_refund")
         assertThat(
             attributes.getValue("event_name").toString()
@@ -431,7 +431,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertMetricsLog()
         val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("defer_refund")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("customer_perceived_response")
         assertThat(attributes.getValue("event_outcome").toString()).isEqualTo("failure")

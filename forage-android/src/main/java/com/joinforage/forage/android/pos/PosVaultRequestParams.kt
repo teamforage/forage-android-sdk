@@ -26,7 +26,8 @@ internal data class PosBalanceVaultSubmitterParams(
     merchantId = baseVaultSubmitterParams.merchantId,
     path = baseVaultSubmitterParams.path,
     paymentMethod = baseVaultSubmitterParams.paymentMethod,
-    userAction = baseVaultSubmitterParams.userAction
+    userAction = baseVaultSubmitterParams.userAction,
+    sessionToken = baseVaultSubmitterParams.sessionToken
 )
 
 internal data class PosRefundVaultSubmitterParams(
@@ -39,5 +40,6 @@ internal data class PosRefundVaultSubmitterParams(
     merchantId = baseVaultSubmitterParams.merchantId,
     path = baseVaultSubmitterParams.path,
     paymentMethod = baseVaultSubmitterParams.paymentMethod,
-    userAction = baseVaultSubmitterParams.userAction
+    userAction = baseVaultSubmitterParams.userAction,
+    sessionToken = baseVaultSubmitterParams.sessionToken
 )

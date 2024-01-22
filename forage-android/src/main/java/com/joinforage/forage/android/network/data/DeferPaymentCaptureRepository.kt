@@ -24,7 +24,8 @@ internal class DeferPaymentCaptureRepository(
      */
     suspend fun deferPaymentCapture(
         merchantId: String,
-        paymentRef: String
+        paymentRef: String,
+        sessionToken: String
     ): ForageApiResponse<String> {
         val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
@@ -46,7 +47,8 @@ internal class DeferPaymentCaptureRepository(
                 merchantId = merchantId,
                 path = AbstractVaultSubmitter.deferPaymentCapturePath(paymentRef),
                 paymentMethod = paymentMethod,
-                userAction = UserAction.DEFER_CAPTURE
+                userAction = UserAction.DEFER_CAPTURE,
+                sessionToken = sessionToken
             )
         )
     }

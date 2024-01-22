@@ -49,7 +49,8 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             merchantId = "1234567",
             path = "/api/payments/abcdefg123/capture/",
             paymentMethod = mockPaymentMethod,
-            userAction = UserAction.CAPTURE
+            userAction = UserAction.CAPTURE,
+            sessionToken = "local_mock-session-token"
         )
     }
 
@@ -237,7 +238,8 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
                 path = "/api/payment_methods/abcdefg123/balance/",
                 paymentMethod = mockPaymentMethod,
                 // we cover BALANCE here instead of CAPTURE
-                userAction = UserAction.BALANCE
+                userAction = UserAction.BALANCE,
+                sessionToken = "local_mock-session-token"
             )
         )
 

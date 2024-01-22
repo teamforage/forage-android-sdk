@@ -24,12 +24,14 @@ internal class CheckBalanceRepository(
 ) {
     suspend fun checkBalance(
         merchantId: String,
+        sessionToken: String,
         paymentMethodRef: String,
         getVaultRequestParams: ((EncryptionKeys, PaymentMethod) -> VaultSubmitterParams) = { encryptionKeys, paymentMethod ->
             buildVaultRequestParams(
                 merchantId = merchantId,
                 encryptionKeys = encryptionKeys,
-                paymentMethod = paymentMethod
+                paymentMethod = paymentMethod,
+                sessionToken = sessionToken
             )
         }
     ): ForageApiResponse<String> {
@@ -72,17 +74,20 @@ internal class CheckBalanceRepository(
     suspend fun posCheckBalance(
         merchantId: String,
         paymentMethodRef: String,
-        posTerminalId: String
+        posTerminalId: String,
+        sessionToken: String
     ): ForageApiResponse<String> {
         return checkBalance(
             merchantId = merchantId,
             paymentMethodRef = paymentMethodRef,
+            sessionToken = sessionToken,
             getVaultRequestParams = { encryptionKeys, paymentMethod ->
                 PosBalanceVaultSubmitterParams(
                     baseVaultSubmitterParams = buildVaultRequestParams(
                         merchantId = merchantId,
                         encryptionKeys = encryptionKeys,
-                        paymentMethod = paymentMethod
+                        paymentMethod = paymentMethod,
+                        sessionToken = sessionToken
                     ),
                     posTerminalId = posTerminalId
                 )
@@ -93,7 +98,8 @@ internal class CheckBalanceRepository(
     private fun buildVaultRequestParams(
         merchantId: String,
         encryptionKeys: EncryptionKeys,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        sessionToken: String
     ): VaultSubmitterParams {
         return VaultSubmitterParams(
             encryptionKeys = encryptionKeys,
@@ -101,6 +107,7 @@ internal class CheckBalanceRepository(
             merchantId = merchantId,
             path = AbstractVaultSubmitter.balancePath(paymentMethod.ref),
             paymentMethod = paymentMethod,
+            sessionToken = sessionToken,
             userAction = UserAction.BALANCE
         )
     }

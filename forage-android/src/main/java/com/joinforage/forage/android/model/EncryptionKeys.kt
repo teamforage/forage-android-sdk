@@ -12,6 +12,7 @@ internal data class EncryptionKeys(
 
             val vgsAlias = jsonObject.getString("alias")
             val btAlias = jsonObject.getString("bt_alias")
+
             return EncryptionKeys(
                 vgsAlias = vgsAlias,
                 btAlias = btAlias

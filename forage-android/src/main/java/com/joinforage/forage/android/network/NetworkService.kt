@@ -4,6 +4,7 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.network.model.ForageApiError
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -30,19 +31,25 @@ internal abstract class NetworkService(
                             if (response.isSuccessful.not()) {
                                 val body = response.body
                                 if (body != null) {
-                                    val parsedError = ForageApiError.ForageApiErrorMapper.from(body.string())
-                                    val error = parsedError.errors[0]
-                                    logger.e("[HTTP] Received ${response.code} response from API ${parsedError.path} with message: ${error.message}")
-                                    continuation.resumeWith(
-                                        Result.success(
-                                            ForageApiResponse.Failure(listOf(ForageError(response.code, error.code, error.message)))
+                                    try {
+                                        val parsedError = ForageApiError.ForageApiErrorMapper.from(body.string())
+                                        val error = parsedError.errors[0]
+                                        logger.e("[HTTP] Received ${response.code} response from API ${parsedError.path} with message: ${error.message}")
+
+                                        continuation.resumeWith(
+                                            Result.success(
+                                                ForageApiResponse.Failure.fromError(ForageError(response.code, error.code, error.message))
+                                            )
                                         )
-                                    )
+                                    } catch (e: Exception) {
+                                        logger.e("[HTTP] Received malformed error response from API", throwable = e)
+                                        continuation.resumeWith(Result.failure(e))
+                                    }
                                 } else {
                                     logger.e("[HTTP] Received unknown response from API")
                                     continuation.resumeWith(
                                         Result.success(
-                                            ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Unknown Server Error")))
+                                            UnknownErrorApiResponse
                                         )
                                     )
                                 }

@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.ForageConfigNotSetException
@@ -111,8 +112,8 @@ class ForagePINEditText @JvmOverloads constructor(
         logger.initializeDD(context, forageConfig)
 
         if (isPos) {
-            // only use VGS (and soon Forage Vault) for POS traffic.
-            _SET_ONLY_vault = vgsVaultWrapper
+            // only use Forage Vault for POS traffic!
+            _SET_ONLY_vault = forageVaultWrapper
         } else {
             // initialize Launch Darkly singleton
             val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
@@ -170,6 +171,10 @@ class ForagePINEditText @JvmOverloads constructor(
 
     internal fun getTextElement(): TextElement {
         return vault.getTextElement()
+    }
+
+    internal fun getForageTextElement(): EditText {
+        return vault.getForageTextElement()
     }
 
     override fun setTextColor(textColor: Int) {
