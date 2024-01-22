@@ -23,7 +23,7 @@ private val retrofit = Retrofit.Builder()
 
 interface PosApiService {
     @Headers("Authorization: Bearer $AUTH_TOKEN")
-    @GET("api/merchants")
+    @GET("api/merchants/")
     suspend fun getMerchantInfo(@Header("Merchant-Account") merchantId: String): Merchant
 }
 
