@@ -5,13 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.network.model.tokenize.PaymentMethodJsonAdapter
+import com.joinforage.android.example.ui.pos.data.BalanceCheck
+import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.network.PosApi
+import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
+import com.joinforage.forage.android.ui.ForagePINEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +73,30 @@ class POSViewModel : ViewModel() {
                     val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod) }
                     onSuccess(tokenizedPaymentMethod)
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.e("POSViewModel", response.toString())
+                }
+            }
+        }
+    }
+
+    fun checkEBTCardBalance(foragePINEditText: ForagePINEditText, paymentMethodRef: String, onSuccess: (response: BalanceCheck?) -> Unit) {
+        viewModelScope.launch {
+            val response = ForageSDK().checkBalance(
+                CheckBalanceParams(
+                    foragePinEditText = foragePINEditText,
+                    paymentMethodRef = paymentMethodRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    val moshi = Moshi.Builder().build()
+                    val jsonAdapter: JsonAdapter<BalanceCheck> = BalanceCheckJsonAdapter(moshi)
+                    val balance = jsonAdapter.fromJson(response.data)
+                    _uiState.update { it.copy(balance = balance) }
+                    onSuccess(balance)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
