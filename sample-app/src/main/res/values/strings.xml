@@ -31,4 +31,5 @@
     <string name="pos_back_button">Back</string>
     <string name="title_pos_manual_pan_entry">Manual Card Entry</string>
     <string name="title_pos_balance_inquiry">Balance Inquiry</string>
+    <string name="pos_title_pin_entry">PIN Entry</string>
 </resources>
