@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.BalanceInquiryScreen
+import com.joinforage.android.example.ui.pos.screens.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.PINEntryScreen
@@ -42,7 +43,8 @@ enum class POSScreen(@StringRes val title: Int) {
     ActionSelectionScreen(title = R.string.title_pos_action_selection),
     BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
     BIManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
-    BIPINEntryScreen(title = R.string.pos_title_pin_entry)
+    BIPINEntryScreen(title = R.string.title_pos_pin_entry),
+    BIResultScreen(title = R.string.title_pos_balance_inquiry_result)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,7 +152,6 @@ fun POSComposeApp(
                 PINEntryScreen(
                     merchantId = uiState.merchantId,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
-                    balance = uiState.balance,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
                             viewModel.checkEBTCardBalance(
@@ -159,6 +160,7 @@ fun POSComposeApp(
                                 onSuccess = {
                                     if (it != null) {
                                         Log.i("POSComposeApp", "Successfully checked balance of EBT card: $it")
+                                        navController.navigate(POSScreen.BIResultScreen.name)
                                     }
                                 }
                             )
@@ -166,6 +168,13 @@ fun POSComposeApp(
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIManualPANEntryScreen.name, inclusive = false) },
                     withPinElementReference = { pinElement = it }
+                )
+            }
+            composable(route = POSScreen.BIResultScreen.name) {
+                BalanceResultScreen(
+                    balance = uiState.balance,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BIPINEntryScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
         }
