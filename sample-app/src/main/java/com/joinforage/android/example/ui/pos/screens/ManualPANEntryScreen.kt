@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,7 +18,6 @@ import com.joinforage.forage.android.ui.ForagePANEditText
 @Composable
 fun ManualPANEntryScreen(
     merchantId: String,
-    tokenizedCardData: String?,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     withPanElementReference: (element: ForagePANEditText) -> Unit
@@ -44,17 +41,6 @@ fun ManualPANEntryScreen(
                 Text("Submit")
             }
             Spacer(modifier = Modifier.height(16.dp))
-            if (tokenizedCardData != null) {
-                Card(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Column {
-                        Text("—— temporary info for dev ——")
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(tokenizedCardData)
-                    }
-                }
-            }
         }
         Button(onClick = onBackButtonClicked) {
             Text("Back")
@@ -67,7 +53,6 @@ fun ManualPANEntryScreen(
 fun ManualPANEntryScreenPreview() {
     ManualPANEntryScreen(
         merchantId = "",
-        tokenizedCardData = "",
         onSubmitButtonClicked = {},
         onBackButtonClicked = {},
         withPanElementReference = {}
