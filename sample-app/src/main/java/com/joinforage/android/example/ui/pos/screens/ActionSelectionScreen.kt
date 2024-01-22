@@ -48,7 +48,7 @@ fun ActionSelectionScreen(
                     Text("Balance Inquiry")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onPaymentButtonClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
+                Button(onClick = onPaymentButtonClicked, modifier = Modifier.fillMaxWidth()) {
                     Text("Create a Payment / Purchase")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
