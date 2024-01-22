@@ -41,8 +41,8 @@ enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
     ActionSelectionScreen(title = R.string.title_pos_action_selection),
     BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
-    ManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
-    PINEntryScreen(title = R.string.pos_title_pin_entry)
+    BIManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
+    BIPINEntryScreen(title = R.string.pos_title_pin_entry)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,12 +124,12 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BalanceInquiryScreen.name) {
                 BalanceInquiryScreen(
-                    onManualEntryButtonClicked = { navController.navigate(POSScreen.ManualPANEntryScreen.name) },
+                    onManualEntryButtonClicked = { navController.navigate(POSScreen.BIManualPANEntryScreen.name) },
                     onSwipeButtonClicked = { /*TODO*/ },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
-            composable(route = POSScreen.ManualPANEntryScreen.name) {
+            composable(route = POSScreen.BIManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
                     merchantId = uiState.merchantId,
                     onSubmitButtonClicked = {
@@ -137,7 +137,7 @@ fun POSComposeApp(
                             viewModel.tokenizeEBTCard(panElement as ForagePANEditText, onSuccess = {
                                 if (it?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
-                                    navController.navigate(POSScreen.PINEntryScreen.name)
+                                    navController.navigate(POSScreen.BIPINEntryScreen.name)
                                 }
                             })
                         }
@@ -146,7 +146,7 @@ fun POSComposeApp(
                     withPanElementReference = { panElement = it }
                 )
             }
-            composable(route = POSScreen.PINEntryScreen.name) {
+            composable(route = POSScreen.BIPINEntryScreen.name) {
                 PINEntryScreen(
                     merchantId = uiState.merchantId,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
@@ -164,7 +164,7 @@ fun POSComposeApp(
                             )
                         }
                     },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.ManualPANEntryScreen.name, inclusive = false) },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BIManualPANEntryScreen.name, inclusive = false) },
                     withPinElementReference = { pinElement = it }
                 )
             }
