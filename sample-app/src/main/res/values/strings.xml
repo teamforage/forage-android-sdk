@@ -33,4 +33,5 @@
     <string name="title_pos_balance_inquiry">Balance Inquiry</string>
     <string name="title_pos_pin_entry">PIN Entry</string>
     <string name="title_pos_balance_inquiry_result">Balance Inquiry</string>
+    <string name="title_pos_payment_type_selection_screen">Create a Payment / Purchase</string>
 </resources>
