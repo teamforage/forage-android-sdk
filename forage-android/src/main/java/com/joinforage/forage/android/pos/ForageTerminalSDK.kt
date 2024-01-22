@@ -140,7 +140,7 @@ class ForageTerminalSDK(
      */
     suspend fun refundPayment(params: PosRefundPaymentParams): ForageApiResponse<String> {
         val logger = createLogger()
-        val (amount, foragePinEditText, paymentRef, reason) = params
+        val (foragePinEditText, paymentRef, amount, reason) = params
         val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
 
         logger
