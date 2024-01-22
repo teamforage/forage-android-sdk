@@ -144,7 +144,7 @@ fun POSComposeApp(
             composable(route = POSScreen.PINEntryScreen.name) {
                 PINEntryScreen(
                     tokenizedPaymentMethod = uiState.tokenizedPaymentMethod,
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.ManualPANEntryScreen.name, inclusive = false)}
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.ManualPANEntryScreen.name, inclusive = false) }
                 )
             }
         }
