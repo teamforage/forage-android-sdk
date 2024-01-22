@@ -35,6 +35,7 @@ import com.joinforage.android.example.ui.pos.screens.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.PINEntryScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
+import com.joinforage.forage.android.ui.ForagePINEditText
 
 enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
@@ -56,6 +57,10 @@ fun POSComposeApp(
     )
 
     var panElement: ForagePANEditText? by rememberSaveable {
+        mutableStateOf(null)
+    }
+
+    var pinElement: ForagePINEditText? by rememberSaveable {
         mutableStateOf(null)
     }
 
@@ -143,8 +148,24 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PINEntryScreen.name) {
                 PINEntryScreen(
-                    tokenizedPaymentMethod = uiState.tokenizedPaymentMethod,
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.ManualPANEntryScreen.name, inclusive = false) }
+                    merchantId = uiState.merchantId,
+                    paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
+                    balance = uiState.balance,
+                    onSubmitButtonClicked = {
+                        if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
+                            viewModel.checkEBTCardBalance(
+                                pinElement as ForagePINEditText,
+                                paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
+                                onSuccess = {
+                                    if (it != null) {
+                                        Log.i("POSComposeApp", "Successfully checked balance of EBT card: ${it.toString()}")
+                                    }
+                                }
+                            )
+                        }
+                    },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.ManualPANEntryScreen.name, inclusive = false) },
+                    withPinElementReference = { pinElement = it }
                 )
             }
         }
