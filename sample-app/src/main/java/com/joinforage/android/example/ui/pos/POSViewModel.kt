@@ -67,7 +67,7 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<PaymentMethod> = PaymentMethodJsonAdapter(moshi)
                     val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(tokenizationResult = tokenizedPaymentMethod) }
+                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod) }
                     onSuccess(tokenizedPaymentMethod)
                 }
                 is ForageApiResponse.Failure -> {
