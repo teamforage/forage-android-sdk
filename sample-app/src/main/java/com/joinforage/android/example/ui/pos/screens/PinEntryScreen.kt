@@ -2,19 +2,13 @@ package com.joinforage.android.example.ui.pos.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -22,7 +16,6 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 fun PINEntryScreen(
     merchantId: String,
     paymentMethodRef: String?,
-    balance: BalanceCheck?,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     withPinElementReference: (element: ForagePINEditText) -> Unit
@@ -44,23 +37,12 @@ fun PINEntryScreen(
                 Button(onClick = onSubmitButtonClicked) {
                     Text("Submit")
                 }
-                if (balance != null) {
-                    Card(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Column {
-                            Text("—— temporary info for dev ——")
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(balance.toString())
-                        }
-                    }
-                }
             } else {
                 Text("There was an issue adding your card")
             }
         }
         Button(onClick = onBackButtonClicked) {
-            if (balance != null) {
+            if (paymentMethodRef != null) {
                 Text("Back")
             } else {
                 Text("Try Again")
@@ -75,7 +57,6 @@ fun PINEntryScreenPreview() {
     PINEntryScreen(
         merchantId = "",
         paymentMethodRef = "",
-        balance = null,
         onSubmitButtonClicked = {},
         onBackButtonClicked = {},
         withPinElementReference = {}
