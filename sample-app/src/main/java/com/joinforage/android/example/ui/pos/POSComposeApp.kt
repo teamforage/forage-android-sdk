@@ -30,11 +30,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
-import com.joinforage.android.example.ui.pos.screens.BalanceInquiryScreen
-import com.joinforage.android.example.ui.pos.screens.BalanceResultScreen
-import com.joinforage.android.example.ui.pos.screens.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
-import com.joinforage.android.example.ui.pos.screens.PINEntryScreen
+import com.joinforage.android.example.ui.pos.screens.balance.BalanceInquiryScreen
+import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
+import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
+import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
+import com.joinforage.android.example.ui.pos.screens.shared.PINEntryScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -44,7 +45,8 @@ enum class POSScreen(@StringRes val title: Int) {
     BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
     BIManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
     BIPINEntryScreen(title = R.string.title_pos_pin_entry),
-    BIResultScreen(title = R.string.title_pos_balance_inquiry_result)
+    BIResultScreen(title = R.string.title_pos_balance_inquiry_result),
+    PaymentTypeSelectionScreen(title = R.string.title_pos_payment_type_selection_screen)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,10 +121,10 @@ fun POSComposeApp(
                     onBalanceButtonClicked = {
                         navController.navigate(POSScreen.BalanceInquiryScreen.name)
                     },
-                    onPaymentButtonClicked = { /*TODO*/ },
-                    onRefundButtonClicked = { /*TODO*/ }
-                ) {
-                }
+                    onPaymentButtonClicked = { navController.navigate(POSScreen.PaymentTypeSelectionScreen.name) },
+                    onRefundButtonClicked = { /*TODO*/ },
+                    onVoidButtonClicked = { /*TODO*/ }
+                )
             }
             composable(route = POSScreen.BalanceInquiryScreen.name) {
                 BalanceInquiryScreen(
@@ -175,6 +177,15 @@ fun POSComposeApp(
                     balance = uiState.balance,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
+            }
+            composable(route = POSScreen.PaymentTypeSelectionScreen.name) {
+                PaymentTypeSelectionScreen(
+                    onSnapPurchaseClicked = { /*TODO*/ },
+                    onCashPurchaseClicked = { /*TODO*/ },
+                    onCashWithdrawalClicked = { /*TODO*/ },
+                    onCashPurchaseCashbackClicked = { /*TODO*/ },
+                    onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
         }
