@@ -29,4 +29,6 @@
     <string name="title_pos_merchant_setup">Merchant Setup</string>
     <string name="title_pos_action_selection">Select an Action</string>
     <string name="pos_back_button">Back</string>
+    <string name="title_pos_manual_pan_entry">Manual Card Entry</string>
+    <string name="title_pos_balance_inquiry">Balance Inquiry</string>
 </resources>
