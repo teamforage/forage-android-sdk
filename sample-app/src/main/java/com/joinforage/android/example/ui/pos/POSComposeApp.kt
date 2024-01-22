@@ -158,7 +158,7 @@ fun POSComposeApp(
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
                                 onSuccess = {
                                     if (it != null) {
-                                        Log.i("POSComposeApp", "Successfully checked balance of EBT card: ${it.toString()}")
+                                        Log.i("POSComposeApp", "Successfully checked balance of EBT card: $it")
                                     }
                                 }
                             )
