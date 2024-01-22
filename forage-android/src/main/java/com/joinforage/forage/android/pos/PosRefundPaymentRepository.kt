@@ -29,7 +29,7 @@ internal class PosRefundPaymentRepository(
     suspend fun refundPayment(
         merchantId: String,
         posTerminalId: String,
-        refundParams: RefundPaymentParams
+        refundParams: PosRefundPaymentParams
     ): ForageApiResponse<String> {
         val paymentRef = refundParams.paymentRef
 
