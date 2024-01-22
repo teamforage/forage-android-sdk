@@ -33,13 +33,15 @@ import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.BalanceInquiryScreen
 import com.joinforage.android.example.ui.pos.screens.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
+import com.joinforage.android.example.ui.pos.screens.PINEntryScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
 
 enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
     ActionSelectionScreen(title = R.string.title_pos_action_selection),
     BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
-    ManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry)
+    ManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
+    PINEntryScreen(title = R.string.pos_title_pin_entry)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -130,13 +132,19 @@ fun POSComposeApp(
                             viewModel.tokenizeEBTCard(panElement as ForagePANEditText, onSuccess = {
                                 if (it?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                    navController.navigate(POSScreen.PINEntryScreen.name)
                                 }
                             })
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) },
-                    tokenizedCardData = uiState.tokenizationResult?.toString(),
                     withPanElementReference = { panElement = it }
+                )
+            }
+            composable(route = POSScreen.PINEntryScreen.name) {
+                PINEntryScreen(
+                    tokenizedPaymentMethod = uiState.tokenizedPaymentMethod,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.ManualPANEntryScreen.name, inclusive = false)}
                 )
             }
         }
