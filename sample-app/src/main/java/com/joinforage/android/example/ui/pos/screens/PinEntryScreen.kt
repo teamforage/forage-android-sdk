@@ -14,10 +14,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
+import com.joinforage.android.example.ui.pos.data.BalanceCheck
+import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
+import com.joinforage.forage.android.ui.ForagePINEditText
 
 @Composable
-fun PINEntryScreen(tokenizedPaymentMethod: PaymentMethod?, onBackButtonClicked: () -> Unit) {
+fun PINEntryScreen(
+    merchantId: String,
+    paymentMethodRef: String?,
+    balance: BalanceCheck?,
+    onSubmitButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit,
+    withPinElementReference: (element: ForagePINEditText) -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -26,18 +35,23 @@ fun PINEntryScreen(tokenizedPaymentMethod: PaymentMethod?, onBackButtonClicked: 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (tokenizedPaymentMethod != null) {
+            if (paymentMethodRef != null) {
                 Text("Enter your card PIN")
-                Text("—— PIN input will go here ——")
-
-                if (tokenizedPaymentMethod != null) {
+                ComposableForagePINEditText(
+                    merchantId = merchantId,
+                    withPinElementReference = withPinElementReference
+                )
+                Button(onClick = onSubmitButtonClicked) {
+                    Text("Submit")
+                }
+                if (balance != null) {
                     Card(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Column {
                             Text("—— temporary info for dev ——")
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text(tokenizedPaymentMethod.toString())
+                            Text(balance.toString())
                         }
                     }
                 }
@@ -46,7 +60,7 @@ fun PINEntryScreen(tokenizedPaymentMethod: PaymentMethod?, onBackButtonClicked: 
             }
         }
         Button(onClick = onBackButtonClicked) {
-            if (tokenizedPaymentMethod != null) {
+            if (balance != null) {
                 Text("Back")
             } else {
                 Text("Try Again")
@@ -59,7 +73,11 @@ fun PINEntryScreen(tokenizedPaymentMethod: PaymentMethod?, onBackButtonClicked: 
 @Composable
 fun PINEntryScreenPreview() {
     PINEntryScreen(
-        tokenizedPaymentMethod = null,
-        onBackButtonClicked = {}
+        merchantId = "",
+        paymentMethodRef = "",
+        balance = null,
+        onSubmitButtonClicked = {},
+        onBackButtonClicked = {},
+        withPinElementReference = {}
     )
 }
