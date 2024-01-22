@@ -6,5 +6,6 @@ import com.joinforage.android.example.ui.pos.MerchantDetailsState
 data class POSUIState(
     val merchantId: String = "",
     val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
-    val tokenizedPaymentMethod: PaymentMethod? = null
+    val tokenizedPaymentMethod: PaymentMethod? = null,
+    val balance: BalanceCheck? = null
 )
