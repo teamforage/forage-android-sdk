@@ -37,6 +37,13 @@ class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
 
+    private var terminalId: String? = null
+
+    fun setTerminalId(id: String) {
+        terminalId = id
+        _uiState.update { it.copy(terminalId = id) }
+    }
+
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
         getMerchantInfo(merchantId = merchantId, onSuccess)
