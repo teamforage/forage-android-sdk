@@ -97,7 +97,7 @@ fun POSComposeApp(
         ) {
             composable(route = POSScreen.MerchantSetupScreen.name) {
                 MerchantSetupScreen(
-                    terminalId = "fake terminal ID",
+                    terminalId = uiState.terminalId ?: "Unknown",
                     merchantId = uiState.merchantId,
                     merchantDetailsState = uiState.merchantDetailsState,
                     onSaveButtonClicked = {
