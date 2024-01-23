@@ -11,8 +11,6 @@ import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.network.PosApi
 import com.joinforage.forage.android.CheckBalanceParams
-import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
 import com.joinforage.forage.android.ui.ForagePANEditText
@@ -25,7 +23,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.util.UUID
 
 sealed interface MerchantDetailsState {
     object Idle : MerchantDetailsState
@@ -64,14 +61,14 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(foragePANEditText: ForagePANEditText, onSuccess: (data: PaymentMethod?) -> Unit) {
+    fun tokenizeEBTCard(foragePanEditText: ForagePANEditText, onSuccess: (data: PaymentMethod?) -> Unit) {
+        if (terminalId == null) {
+            throw Error("Invalid POS Terminal ID")
+        }
         viewModelScope.launch {
-            val response = ForageSDK().tokenizeEBTCard(
-                TokenizeEBTCardParams(
-                    foragePanEditText = foragePANEditText,
-                    reusable = true,
-                    customerId = UUID.randomUUID().toString()
-                )
+            val response = ForageTerminalSDK(terminalId!!).tokenizeCard(
+                foragePanEditText = foragePanEditText,
+                reusable = true
             )
 
             when (response) {
@@ -89,7 +86,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun checkEBTCardBalance(foragePINEditText: ForagePINEditText, paymentMethodRef: String, onSuccess: (response: BalanceCheck?) -> Unit) {
+    fun checkEBTCardBalance(foragePinEditText: ForagePINEditText, paymentMethodRef: String, onSuccess: (response: BalanceCheck?) -> Unit) {
         if (terminalId == null) {
             throw Error("Invalid POS Terminal ID")
         }
@@ -97,7 +94,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId!!).checkBalance(
                 CheckBalanceParams(
-                    foragePinEditText = foragePINEditText,
+                    foragePinEditText = foragePinEditText,
                     paymentMethodRef = paymentMethodRef
                 )
             )
