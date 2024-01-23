@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
@@ -23,7 +23,8 @@ import kotlin.coroutines.suspendCoroutine
 internal class VgsPinSubmitter(
     context: Context,
     foragePinEditText: ForagePINEditText,
-    logger: Log
+    logger: Log,
+    private val buildVaultProvider: (context: Context) -> VGSCollect = { buildVGSCollect(context) }
 ) : AbstractVaultSubmitter<VGSResponse?>(
     context = context,
     foragePinEditText = foragePinEditText,
@@ -33,7 +34,7 @@ internal class VgsPinSubmitter(
     override suspend fun submitProxyRequest(
         vaultProxyRequest: VaultProxyRequest
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
-        val vgsCollect = buildVGSCollect(context)
+        val vgsCollect = buildVaultProvider(context)
         vgsCollect.bindView(foragePinEditText.getTextInputEditText())
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
@@ -87,7 +88,7 @@ internal class VgsPinSubmitter(
         return try {
             // converting the response to a ForageApiError should throw
             // in the case of a VGS error
-            ForageApiError.ForageApiErrorMapper.from(errorResponse.toString())
+            ForageApiError.ForageApiErrorMapper.from(errorResponse.body ?: "")
 
             // if it does NOT throw, then it's a ForageApiError
             // so we return null
@@ -107,7 +108,7 @@ internal class VgsPinSubmitter(
         return try {
             // if the response is a ForageApiError, then this block
             // should not throw
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(errorResponse.toString())
+            val forageApiError = ForageApiError.ForageApiErrorMapper.from(errorResponse.body ?: "")
             val error = forageApiError.errors[0]
             ForageApiResponse.Failure.fromError(
                 ForageError(

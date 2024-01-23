@@ -1,6 +1,5 @@
 package com.joinforage.forage.android
 
-import com.joinforage.forage.android.collect.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
@@ -23,6 +22,7 @@ import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 
 /**
  * Entry point to the Forage SDK.

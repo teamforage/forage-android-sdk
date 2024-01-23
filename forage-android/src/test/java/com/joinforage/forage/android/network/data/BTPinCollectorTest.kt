@@ -1,9 +1,9 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.collect.BTPinCollector
 import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.vault.BTPinCollector
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite

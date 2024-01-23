@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest

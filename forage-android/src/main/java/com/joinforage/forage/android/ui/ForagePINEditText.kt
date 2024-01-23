@@ -12,14 +12,14 @@ import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.collect.BTPinCollector
-import com.joinforage.forage.android.collect.PinCollector
-import com.joinforage.forage.android.collect.VGSPinCollector
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.vault.BTPinCollector
+import com.joinforage.forage.android.vault.PinCollector
+import com.joinforage.forage.android.vault.VGSPinCollector
 import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 

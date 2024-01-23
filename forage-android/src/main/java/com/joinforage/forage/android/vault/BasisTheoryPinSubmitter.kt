@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.basistheory.android.service.BasisTheoryElements
@@ -21,7 +21,8 @@ internal typealias BasisTheoryResponse = Result<Any?>
 internal class BasisTheoryPinSubmitter(
     context: Context,
     foragePinEditText: ForagePINEditText,
-    logger: Log
+    logger: Log,
+    private val buildVaultProvider: () -> BasisTheoryElements = { buildBt() }
 ) : AbstractVaultSubmitter<BasisTheoryResponse>(
     context = context,
     foragePinEditText = foragePinEditText,
@@ -48,7 +49,7 @@ internal class BasisTheoryPinSubmitter(
         .setHeader(ForageConstants.Headers.CONTENT_TYPE, "application/json")
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
-        val bt = buildBt()
+        val bt = buildVaultProvider()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = vaultProxyRequest.headers

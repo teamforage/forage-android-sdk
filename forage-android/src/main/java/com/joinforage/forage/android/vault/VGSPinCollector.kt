@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType

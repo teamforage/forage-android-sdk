@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.model.EncryptionKeys
