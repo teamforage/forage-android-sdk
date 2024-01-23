@@ -46,7 +46,7 @@ class POSFragment : Fragment() {
             object : ResultCallback<DeviceManager> {
                 override fun onFinish(deviceManager: DeviceManager) {
                     Log.i("CPay SDK", "DeviceManager created successfully")
-                    val terminalId = deviceManager.systemDevice.getSystemInfo(SystemDevice.SystemInfoType.IMEI)
+                    val terminalId = deviceManager.systemDevice.getSystemInfo(SystemDevice.SystemInfoType.SN)
                     posViewModel.setTerminalId(terminalId)
                 }
 
