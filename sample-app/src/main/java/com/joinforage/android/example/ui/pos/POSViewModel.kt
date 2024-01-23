@@ -35,7 +35,7 @@ class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
 
-    private var terminalId: String? = null
+    private var terminalId: String? = "tempDevTerminalId"
 
     fun setTerminalId(id: String) {
         terminalId = id

@@ -52,7 +52,7 @@ enum class POSScreen(@StringRes val title: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun POSComposeApp(
-    viewModel: POSViewModel,
+    viewModel: POSViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -195,5 +195,5 @@ fun POSComposeApp(
 @Preview
 @Composable
 fun PosAppPreview() {
-    POSComposeApp(viewModel = viewModel())
+    POSComposeApp()
 }

@@ -4,7 +4,7 @@ import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.MerchantDetailsState
 
 data class POSUIState(
-    val terminalId: String? = null,
+    val terminalId: String? = "tempDevTerminalId",
     val merchantId: String = "",
     val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
     val tokenizedPaymentMethod: PaymentMethod? = null,
