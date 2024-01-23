@@ -52,7 +52,7 @@ enum class POSScreen(@StringRes val title: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun POSComposeApp(
-    viewModel: POSViewModel = viewModel(),
+    viewModel: POSViewModel,
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -97,7 +97,7 @@ fun POSComposeApp(
         ) {
             composable(route = POSScreen.MerchantSetupScreen.name) {
                 MerchantSetupScreen(
-                    terminalId = "fake terminal ID",
+                    terminalId = uiState.terminalId ?: "Unknown",
                     merchantId = uiState.merchantId,
                     merchantDetailsState = uiState.merchantDetailsState,
                     onSaveButtonClicked = {
@@ -195,5 +195,5 @@ fun POSComposeApp(
 @Preview
 @Composable
 fun PosAppPreview() {
-    POSComposeApp()
+    POSComposeApp(viewModel = viewModel())
 }
