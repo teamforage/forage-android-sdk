@@ -14,6 +14,7 @@ import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.pos.ForageTerminalSDK
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.squareup.moshi.JsonAdapter
@@ -89,8 +90,12 @@ class POSViewModel : ViewModel() {
     }
 
     fun checkEBTCardBalance(foragePINEditText: ForagePINEditText, paymentMethodRef: String, onSuccess: (response: BalanceCheck?) -> Unit) {
+        if (terminalId == null) {
+            throw Error("Invalid POS Terminal ID")
+        }
+
         viewModelScope.launch {
-            val response = ForageSDK().checkBalance(
+            val response = ForageTerminalSDK(terminalId!!).checkBalance(
                 CheckBalanceParams(
                     foragePinEditText = foragePINEditText,
                     paymentMethodRef = paymentMethodRef
