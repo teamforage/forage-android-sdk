@@ -1,4 +1,4 @@
-package com.joinforage.android.example.ui.pos.screens
+package com.joinforage.android.example.ui.pos.screens.shared
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
