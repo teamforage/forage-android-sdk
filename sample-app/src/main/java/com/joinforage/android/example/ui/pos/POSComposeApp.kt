@@ -37,6 +37,7 @@ import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceInquiryScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
+import com.joinforage.android.example.ui.pos.screens.shared.MagSwipePANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PINEntryScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
@@ -47,6 +48,7 @@ enum class POSScreen(@StringRes val title: Int) {
     ActionSelectionScreen(title = R.string.title_pos_action_selection),
     BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
     BIManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
+    BIMagSwipePANEntryScreen(title = R.string.title_pos_mag_swipe_pan_entry),
     BIPINEntryScreen(title = R.string.title_pos_pin_entry),
     BIResultScreen(title = R.string.title_pos_balance_inquiry_result),
     PaymentTypeSelectionScreen(title = R.string.title_pos_payment_type_selection_screen)
@@ -137,7 +139,7 @@ fun POSComposeApp(
             composable(route = POSScreen.BalanceInquiryScreen.name) {
                 BalanceInquiryScreen(
                     onManualEntryButtonClicked = { navController.navigate(POSScreen.BIManualPANEntryScreen.name) },
-                    onSwipeButtonClicked = { /*TODO*/ },
+                    onSwipeButtonClicked = { navController.navigate(POSScreen.BIMagSwipePANEntryScreen.name) },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
@@ -160,6 +162,21 @@ fun POSComposeApp(
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) },
                     withPanElementReference = { panElement = it }
+                )
+            }
+            composable(route = POSScreen.BIMagSwipePANEntryScreen.name) {
+                MagSwipePANEntryScreen(
+                    onLaunch = {
+                        k9SDK.listenForMagneticCardSwipe { track2Data ->
+                            viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) {
+                                if (it?.ref != null) {
+                                    Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                    navController.navigate(POSScreen.BIPINEntryScreen.name)
+                                }
+                            }
+                        }
+                    },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {

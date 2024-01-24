@@ -30,6 +30,7 @@
     <string name="title_pos_action_selection">Select an Action</string>
     <string name="pos_back_button">Back</string>
     <string name="title_pos_manual_pan_entry">Manual Card Entry</string>
+    <string name="title_pos_mag_swipe_pan_entry">Swipe Card Entry</string>
     <string name="title_pos_balance_inquiry">Balance Inquiry</string>
     <string name="title_pos_pin_entry">PIN Entry</string>
     <string name="title_pos_balance_inquiry_result">Balance Inquiry</string>

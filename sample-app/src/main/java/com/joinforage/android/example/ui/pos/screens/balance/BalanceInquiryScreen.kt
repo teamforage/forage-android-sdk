@@ -27,7 +27,7 @@ fun BalanceInquiryScreen(
             Button(onClick = onManualEntryButtonClicked) {
                 Text("Manually Enter Card Number")
             }
-            Button(onClick = onSwipeButtonClicked, enabled = false) {
+            Button(onClick = onSwipeButtonClicked) {
                 Text("Swipe Card")
             }
         }
