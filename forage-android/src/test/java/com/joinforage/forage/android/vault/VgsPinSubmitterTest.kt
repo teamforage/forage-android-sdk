@@ -13,7 +13,6 @@ import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.junit.Before
@@ -24,7 +23,6 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.anyOrNull
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class VgsPinSubmitterTest() : MockServerSuite() {
     private lateinit var mockLogger: MockLogger
     private lateinit var mockForagePinEditText: ForagePINEditText
@@ -135,7 +133,6 @@ class VgsPinSubmitterTest() : MockServerSuite() {
             ]
         }
         """.trimIndent()
-
         mockVgsCollectResponse(VGSResponse.ErrorResponse(errorCode = 400, rawResponse = responseStr))
 
         val result = vgsPinSubmitter.submitProxyRequest(VaultProxyRequest.emptyRequest())

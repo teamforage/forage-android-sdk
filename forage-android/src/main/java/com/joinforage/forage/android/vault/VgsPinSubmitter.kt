@@ -143,7 +143,7 @@ internal class VgsPinSubmitter(
         return ForageApiResponse.Success(successResponse.body.toString())
     }
 
-    override fun parseVaultError(vaultResponse: VGSResponse?): String {
+    override fun parseVaultErrorMessage(vaultResponse: VGSResponse?): String {
         return vaultResponse?.body.toString()
     }
 }

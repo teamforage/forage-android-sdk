@@ -110,7 +110,12 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
     internal abstract fun toVaultErrorOrNull(vaultResponse: VaultResponse): ForageApiResponse.Failure?
     internal abstract fun toForageErrorOrNull(vaultResponse: VaultResponse): ForageApiResponse.Failure?
     internal abstract fun toForageSuccessOrNull(vaultResponse: VaultResponse): ForageApiResponse.Success<String>?
-    internal abstract fun parseVaultError(vaultResponse: VaultResponse): String
+
+    /**
+     * @return A string containing the raw error details of the vault error.
+     * To be used for internal error reporting.
+     */
+    internal abstract fun parseVaultErrorMessage(vaultResponse: VaultResponse): String
 
     // concrete methods
     protected open fun buildProxyRequest(
@@ -143,7 +148,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
 
         val vaultError = toVaultErrorOrNull(vaultResponse)
         if (vaultError != null) {
-            val rawVaultError = parseVaultError(vaultResponse)
+            val rawVaultError = parseVaultErrorMessage(vaultResponse)
             logger.e("[$vaultType] Received error from $vaultType: $rawVaultError")
             return vaultError
         }
@@ -160,7 +165,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             logger.i("[$vaultType] Received successful response from $vaultType")
             return forageApiSuccess
         }
-        logger.e("[$vaultType] Received malformed response from $vaultType")
+        logger.e("[$vaultType] Received malformed response from $vaultType: $vaultResponse")
 
         return UnknownErrorApiResponse
     }
