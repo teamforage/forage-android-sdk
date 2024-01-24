@@ -31,18 +31,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
+import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.ui.pos.data.FundingType
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosTerminal
-import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
-import com.joinforage.android.example.ui.pos.screens.shared.PANMethodSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTSnapPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.shared.MagSwipePANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
+import com.joinforage.android.example.ui.pos.screens.shared.PANMethodSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PINEntryScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -250,7 +250,8 @@ fun POSComposeApp(
                 PANMethodSelectionScreen(
                     onManualEntryButtonClicked = { navController.navigate(POSScreen.PAYManualPANEntryScreen.name) },
                     onSwipeButtonClicked = { /*TODO*/ },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.PaymentTypeSelectionScreen.name, inclusive = false) })
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PaymentTypeSelectionScreen.name, inclusive = false) }
+                )
             }
             composable(route = POSScreen.PAYManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
@@ -263,7 +264,7 @@ fun POSComposeApp(
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
                                 onSuccess = {
-                                    Log.i("POSComposeApp", "payment method? — ${it.toString()}")
+                                    Log.i("POSComposeApp", "payment method? — $it")
                                     if (it?.ref != null) {
                                         Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
                                         navController.navigate(POSScreen.PaymentTypeSelectionScreen.name)
@@ -284,6 +285,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.payment?.ref != null) {
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
+                                terminalId = K9SDK().terminalId,
                                 paymentRef = uiState.payment!!.ref!!
                             )
                         }

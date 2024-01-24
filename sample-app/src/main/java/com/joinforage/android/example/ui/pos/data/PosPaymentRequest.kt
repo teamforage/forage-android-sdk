@@ -4,15 +4,6 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 
-val tempDevAddress = Address(
-    line1 = "",
-    line2 = "",
-    city = "",
-    state = "",
-    country = "",
-    zipcode = ""
-)
-
 @JsonClass(generateAdapter = true)
 data class PosPaymentRequest(
     val amount: Double,
@@ -26,10 +17,10 @@ data class PosPaymentRequest(
 enum class FundingType(val value: String) {
     EBTSnap(value = "ebt_snap"),
     EBTCash(value = "ebt_cash"),
-    CreditTPP(value = "credit_tpp"),
+    CreditTPP(value = "credit_tpp")
 }
 
 @JsonClass(generateAdapter = true)
 data class PosTerminal(
-    @Json(name = "provider_terminal_id") val providerTerminalId: String,
+    @Json(name = "provider_terminal_id") val providerTerminalId: String
 )

@@ -69,15 +69,16 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = PosApi.retrofitService.createPayment(
+                    authorization = uiState.value.sessionToken,
                     merchantId = merchantId,
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
                 _uiState.update { it.copy(payment = response) }
                 onSuccess(response)
-                Log.i("POSViewModel", "Create payment call succeeded: ${response.toString()}")
+                Log.i("POSViewModel", "Create payment call succeeded: $response")
             } catch (e: HttpException) {
-                Log.e("POSViewModel", "Create payment call failed: ${e.toString()}")
+                Log.e("POSViewModel", "Create payment call failed: $e")
             }
         }
     }
@@ -153,7 +154,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(foragePinEditText: ForagePINEditText, paymentRef: String) {
+    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).capturePayment(
                 CapturePaymentParams(
