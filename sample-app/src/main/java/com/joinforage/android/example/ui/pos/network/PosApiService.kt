@@ -7,10 +7,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Headers
 
 private const val BASE_URL = "https://api.dev.joinforage.app"
-const val AUTH_TOKEN = "AUTH_TOKEN"
 
 private val moshi = Moshi.Builder()
     .addLast(KotlinJsonAdapterFactory())
@@ -22,9 +20,11 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface PosApiService {
-    @Headers("Authorization: Bearer $AUTH_TOKEN")
     @GET("api/merchants/")
-    suspend fun getMerchantInfo(@Header("Merchant-Account") merchantId: String): Merchant
+    suspend fun getMerchantInfo(
+        @Header("Authorization") authorization: String,
+        @Header("Merchant-Account") merchantId: String
+    ): Merchant
 }
 
 object PosApi {
@@ -32,3 +32,4 @@ object PosApi {
         retrofit.create(PosApiService::class.java)
     }
 }
+fun formatAuthHeader(sessionToken: String) = "Bearer $sessionToken"

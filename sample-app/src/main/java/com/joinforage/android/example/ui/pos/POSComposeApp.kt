@@ -135,7 +135,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
-                    merchantId = uiState.merchantId,
+                    forageConfig = uiState.forageConfig,
                     onSubmitButtonClicked = {
                         if (panElement != null) {
                             viewModel.tokenizeEBTCard(panElement as ForagePANEditText, onSuccess = {
@@ -152,7 +152,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {
                 PINEntryScreen(
-                    merchantId = uiState.merchantId,
+                    forageConfig = uiState.forageConfig,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {

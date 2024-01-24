@@ -10,6 +10,7 @@ import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.network.PosApi
+import com.joinforage.android.example.ui.pos.network.formatAuthHeader
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
@@ -51,7 +52,10 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
             val merchantDetailsState = try {
-                val result = PosApi.retrofitService.getMerchantInfo(merchantId)
+                val result = PosApi.retrofitService.getMerchantInfo(
+                    formatAuthHeader(uiState.value.sessionToken),
+                    merchantId
+                )
                 onSuccess()
                 MerchantDetailsState.Success(result)
             } catch (e: HttpException) {
