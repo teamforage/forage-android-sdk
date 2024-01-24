@@ -3,37 +3,52 @@
 ## Table of contents
 
 <!--ts-->
+
 - [Overview](#overview)
 - [Installation](#installation)
-- [UI Components](#ui-components)
-  - [ForagePANEditText](#foragepanedittext)
-  - [ForagePINEditText](#foragepinedittext)
-  - [How to provide styles](/docs/styles.md)
-- [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
-- [Performing a balance check](#performing-a-balance-check)
-- [Capturing a payment](#capturing-a-payment)
-- [Submitting the PIN for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
+- [Forage Elements: UI Components](#forage-elements-ui-components)
+  - [`ForagePANEditText`](#foragepanedittext)
+  - [`ForagePINEditText`](#foragepinedittext)
+  - [How to style Forage Elements](#how-to-style-forage-elements)
+    - [Styling options](#styling-options)
+- [Configure Forage](#configure-forage)
+- [Create a Forage instance](#create-a-forage-instance)
+- [Payment operations](#payment-operations)
+  - [Tokenize a card](#tokenize-a-card)
+    - [`ForageSDK()`](#foragesdk-1)
+    - [`ForageTerminalSDK()`](#forageterminalsdk-1)
+  - [Check a card's balance](#check-a-cards-balance)
+  - [Collect a customer's card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
+  - [Capture a payment immediately](#capture-a-payment-immediately)
+  - [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
-- [Running the Sample App](#running-the-sample-app)
-- [Dependencies](#dependencies)
-<!--te-->
+- [Running the sample app](#running-the-sample-app)
+  - [Dependencies](#dependencies)
+  <!--te-->
 
 ## Overview
 
-This documentation explains how to integrate the Forage Android SDK to process EBT payments.
+This documentation explains how to integrate the Forage Android SDK to process online and/or Terminal POS payments.
 
-In addition to [UI components](#ui-components), the SDK provides APIs for:
+The SDK provides UI components known as Forage Elements and associated methods that perform payment operations.
 
-1. [Tokenizing an EBT Card](#tokenizing-an-ebt-card)
-2. [Performing a balance check](#performing-a-balance-check)
-3. [Capturing a payment](#capturing-a-payment)
-4. [Submitting the PIN for a deferred payment](#submitting-the-pin-for-a-deferred-payment)
+The [`ForagePANEditText`](#foragepanedittext) Element collects a customer’s card number. You need a `ForagePANEditText` instance to call the SDK method to [tokenize the card](#tokenize-a-card).
 
-Read on for installation instructions and details about the APIs.
+The [`ForagePINEditText`](#foragepinedittext) Element collects a customer’s card PIN. You need a `ForagePINEditText` instance to call the SDK methods that:
+
+- [Check the card's balance](#check-a-cards-balance)
+- [Collect the customer's card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
+- [Capture a payment immediately](#capture-a-payment-immediately)
+- [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
+
+### Step-by-step guides
+
+- [Forage Android SDK Quickstart (online-only)](https://docs.joinforage.app/docs/forage-android-quickstart)
+- [Forage Terminal POS Android SDK Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
 
 ## Installation
 
-To install the SDK, add this dependency to your module `build.gradle`
+To install the SDK, add this dependency to your module `build.gradle`:
 
 ```groovy
 plugins {
@@ -55,16 +70,20 @@ dependencies {
 }
 ```
 
-## UI Components
+## Forage Elements: UI Components
 
-The Android SDK exposes two text field components, collectively referred to as
-`ForageElement`s since they adhere to the [`ForageElement` interface](https://github.com/teamforage/forage-android-sdk/blob/6af970d657095e80ea5ce07f98b12ba031d6e649/forage-android/src/main/java/com/joinforage/forage/android/ui/ForageElement.kt#L15)
+A `ForageElement` is a secure, client-side entity that accepts and submits customer input for a transaction. These UI components adhere to the [`ForageElement` interface](https://github.com/teamforage/forage-android-sdk/blob/6af970d657095e80ea5ce07f98b12ba031d6e649/forage-android/src/main/java/com/joinforage/forage/android/ui/ForageElement.kt#L15).
 
-### ForagePANEditText
+The Android SDK includes:
 
-A UI text field component for a customer to enter their EBT card number. It is
-used to obtain a reusable or a single-use reference to a tokenized version of
-the customer's EBT card number (also referred to as the Primary Account Number).
+- `ForagePANEditText`: an Element for collecting an EBT Card Number
+- `ForagePANEditText`: an Element to collect an EBT Card PIN
+
+To use an Element, add it to a file in your app’s `/layout/` directory, as in the below examples.
+
+### `ForagePANEditText`
+
+A UI text field component for a customer to enter their card number. A `ForagePANEditText` Element is used to [tokenize a card number](#tokenize-a-card).
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -82,22 +101,14 @@ the customer's EBT card number (also referred to as the Primary Account Number).
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textColor="?android:attr/textColor"
-            android:textSize="?android:attr/textSize"
-            app:panBoxStrokeColor="?attr/panBoxStrokeColor"
-            app:panBoxStrokeWidthFocused="?attr/panBoxStrokeWidthFocused"
-            app:panBoxStrokeWidth="?attr/panBoxStrokeWidth"
-            app:cornerRadius="?attr/cornerRadius"
-            app:textInputLayoutStyle="?attr/textInputLayoutStyle" />
+    />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-### ForagePINEditText
+### `ForagePINEditText`
 
-A UI component for a customer to enter their EBT card PIN. It is used to check
-the associated SNAP and EBT Cash balances, or capture a payment, with
-[a tokenized EBT card number](#foragepanedittext).
+A UI component for a customer to enter their payment method PIN. A `ForagePINEditText` is used to [check the balance of the payment method](#check-a-cards-balance), [defer the capture of a payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server), or to [capture a payment immediately](#capture-a-payment-immediately).
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -115,360 +126,408 @@ the associated SNAP and EBT Cash balances, or capture a payment, with
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:elementWidth="match_parent"
-        app:elementHeight="wrap_content"
     />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-## Tokenizing an EBT Card
+### How to style Forage Elements
 
-### Step 1: Add the `ForagePANEditText` UI component
+Whether you’re styling a `ForagePINEditText` or a `ForagePANEditText` Element, the steps are the same. However, keep in mind that the available [customizable properties](#styling-options) differ depending on the Element type.
 
-First, you need to add `ForagePANEditText` to your layout file:
-
-```xml
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.joinforage.forage.android.ui.ForagePANEditText
-        android:id="@+id/tokenizeForagePanEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-
-```
-
-Since `ForagePANEditText` is currently not receiving any style from your theme, it should look like this:
-
-<img src="screenshots/forage_pan_edit_text_no_style.png" width="300" height="500">
-
-### Step 2: Customizing `ForagePANEditText`
-
-To provide a style to your `ForagePANEditText`, you need to include these two
-themes attributes on your `attrs.xml` file:
+After you've added an Element component file in your app’s `/layout/` directory, add a theme attribute for the Element to your `attrs.xml`. This example adds an attribute for the PAN Element called `tokenizeForagePANEditTextStyle`:
 
 ```xml
+<!-- attrs.xml -->
+
 <resources>
     ...
     <!-- Theme attribute for the ForagePANEditText on the tokenize fragment. -->
     <attr name="tokenizeForagePANEditTextStyle" format="reference" />
-    <attr name="tokenizeForageTextInputLayoutStyle" format="reference" />
     ...
 </resources>
 ```
 
-Now you can add the style to your `ForagePANEditText`:
+Then apply the attribute as a style tag in the Element component file, as in this example snippet:
 
 ```xml
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<!-- forage_pan_component.xml -->
 
-    <com.joinforage.forage.android.ui.ForagePANEditText
-        android:id="@+id/tokenizeForagePanEditText"
-        style="?tokenizeForagePANEditTextStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+<!-- abridged snippet, style tag only -->
+<com.joinforage.forage.android.ui.ForagePANEditText
+    style="?attr/tokenizeForagePANEditTextStyle"
+/>
 ```
 
-Here is the relevant part from the application theme that shows the styles that
-are assigned to the `ForagePANEditText`:
+Next, add an `<item>` tag for the style in `themes.xml`, as in the following example:
 
 ```xml
+<!-- themes.xml -->
+
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.Forageandroid" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <!-- base application theme -->
+    <style name="Theme.Forageandroid">
         ...
-        <!-- The ForagePanEditText shown in tokenize Fragment -->
+        <!-- The ForagePANEditText style -->
         <item name="tokenizeForagePANEditTextStyle">@style/TokenizeForagePANEditTextStyle</item>
-        <item name="tokenizeForageTextInputLayoutStyle">@style/TokenizeForageTextInputLayoutStyle</item>
         ...
     </style>
 </resources>
 ```
 
-Finally, here are the assigned styles:
+Finally, define the style’s properties in `styles.xml`. The below snippet specifies `boxStrokeWidth` and `boxStrokeColor` for the Element:
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<!-- styles.xml -->
+
 <resources>
     ...
-    <style name="DefaultForagePANEditTextStyle">
-        <!-- Default properties can be added here that will be applied to every ForagePANEditText. -->
-    </style>
-
     <!-- Style for the ForagePANEditText -->
-    <style name="TokenizeForagePANEditTextStyle" parent="DefaultForagePANEditTextStyle">
-        <item name="textInputLayoutStyle">@attr/tokenizeForageTextInputLayoutStyle</item>
-    </style>
-
-    <style name="TokenizeForageTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:hint">@string/tokenize_forage_edit_text_hint</item>
-        <item name="boxStrokeWidth">1dp</item>
-        <item name="boxStrokeColor">@color/mtrl_textinput_default_box_stroke_color</item>
+    <style name="TokenizeForagePANEditTextStyle">
+        <item name="panBoxStrokeColor">@color/pan_box_stroke_color</item>
+        <item name="panBoxStrokeWidth">1dp</item>
     </style>
     ...
 </resources>
 ```
 
-<img src="screenshots/forage_pan_some_examples.png" width="300" height="500">
+#### Styling options
 
-### Step 3: Call `setForageConfig()`
+`ForagePANEditText` and `ForagePINEditText` have different customizable properties.
 
-In order for ForageElements to work properly, you MUST call `setForageConfig`
-on your ForageElement.
+Consult the below tables for a comprehensive list of all styling options per Element.
 
-> ⚠️This should be the first method you invoke on a ForagePANEditText instance
-> before calling any other methods
+##### `ForagePANEditText` customizable attributes
+
+###### Box styles
+
+| Parameter                  | Part of View |
+| -------------------------- | ------------ |
+| `panBoxStrokeColor`        | Color        |
+| `cornerRadius`             | Dimension    |
+| `boxCornerTopEnd`          | Dimension    |
+| `boxCornerTopStart`        | Dimension    |
+| `boxCornerBottomStart`     | Dimension    |
+| `boxCornerBottomEnd`       | Dimension    |
+| `panBoxStrokeWidth`        | Dimension    |
+| `panBoxStrokeWidthFocused` | Dimension    |
+
+###### Text styles
+
+| Parameter              | Part of View |
+| ---------------------- | ------------ |
+| `android:textColor`    | Color        |
+| `android:textSize`     | Dimension    |
+| `textInputLayoutStyle` | Reference    |
+
+##### `ForagePINEditText` customizable attributes
+
+###### Box styles
+
+| Parameter                    | Part of View |
+| ---------------------------- | ------------ |
+| `boxBackgroundColor`         | Color        |
+| `pinBoxStrokeColor`          | Color        |
+| `boxCornerRadiusTopEnd`      | Dimension    |
+| `boxCornerRadiusTopStart`    | Dimension    |
+| `boxCornerRadiusBottomStart` | Dimension    |
+| `boxCornerRadiusBottomEnd`   | Dimension    |
+| `boxCornerRadius`            | Dimension    |
+
+###### Element styles
+
+| Parameter       | Part of View |
+| --------------- | ------------ |
+| `elementHeight` | Dimension    |
+| `elementWidth`  | Dimension    |
+
+###### Text styles
+
+| Parameter             | Part of View |
+| --------------------- | ------------ |
+| `hintTextColor`       | Color        |
+| `textColor`           | Color        |
+| `textSize`            | Dimension    |
+| `inputHeight`         | Dimension    |
+| `inputWidth`          | Dimension    |
+| `pinInputLayoutStyle` | Reference    |
+| `hint`                | String       |
+
+## Configure Forage
+
+### `setForageConfig()`
+
+⚠️ **In order for a `ForageElement` to work properly, you MUST call `setForageConfig()` before calling any other methods.**
+
+The call is the same for `ForagePINEditText` and `ForagePANEditText`.
+
+The following example calls `setForageConfig` on a `ForagePANEditText` Element:
 
 ```kotlin
-val tokenizeForagePanEditText = root?.findViewById<ForagePANEditText>(R.id.tokenizeForagePanEditText)
+val tokenizeForagePanEditText = root?.findViewById<ForagePANEditText>(
+    R.id.tokenizeForagePanEditText
+)
 tokenizeForagePanEditText.setForageConfig(
     ForageConfig(
-        sessionToken = 'sandbox_AbCsessiontokenXyz',
-        merchantID = '<your_fns_number>'
+        merchantId = "mid/<merchant_id>",
+        sessionToken = "<session_token>"
     )
 )
 ```
 
-#### Parameter Definitions
+#### `setForageConfig()` parameters
 
-- `ForageConfig.merchantID`: A unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants.
-- `ForageConfig.sessionToken`: A [session token](https://docs.joinforage.app/reference/create-session-token) that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the `/session_token/` endpoint.
+- `merchantID`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+- `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 
-### Step 4: Tokenize the EBT card number
+## Create a Forage instance
 
-The ForageSDK exposes the following function to collect the EBT card number:
+You can opt to create either an online-only or a POS Terminal Forage instance.
 
-```kotlin
-    data class TokenizeEBTCardParams(
-        val foragePANEditText: ForagePANEditText,
-        val customerId: String?,
-        val reusable: Boolean = true
-    )
+### `ForageSDK()`
 
-    suspend fun tokenizeEBTCard(
-        params: TokenizeEBTCardParams
-    ): ForageApiResponse<String>
-```
+`ForageSDK()` is the entry point to the Forage SDK. A `ForageSDK` instance interacts with the Forage API.
 
-#### Parameter definitions
-
-- `TokenizeEBTCardParams.foragePANEditText`: A reference to the the `ForagePANEditText` that you added to your view. This is needed to extract the card number text.
-- `TokenizeEBTCardParams.customerId`: A unique ID for the end customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
-- `TokenizeEBTCardParams.reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to true by default.
-
-#### Example
+To create a `ForageSDK` instance, call the constructor, as in the below snippet:
 
 ```kotlin
-// TokenizeFragment.kt
-@AndroidEntryPoint
-class TokenizeFragment : Fragment() {
-    private val viewModel: TokenizeViewModel by viewModels()
-    private var _binding: TokenizeFragmentBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // establish bindings to ForagePANEditText
-        _binding = TokenizeFragmentBinding.inflate(inflater, container, false)
-        val foragePANEditText: ForagePANEditText = binding.tokenizeForagePanEditText
-
-        // immediately call setForageConfig() on the binding
-        foragePANEditText.setForageConfig(
-            ForageConfig(
-                merchantId = viewModel.merchantAccount,
-                sessionToken = viewModel.bearer
-            )
-        )
-
-        // then freely call other methods on ForagePANEditText binding
-        foragePANEditText.requestFocus()
-    }
-}
+val forage = ForageSDK()
 ```
+
+You can then use the instance to call methods that perform payment operations. Refer to the [payment operations](#payment-operations) section for documentation on available functions.
+
+### `ForageTerminalSDK()`
+
+`ForageTerminalSDK()` is the entry point to the Forage Terminal SDK. A `ForageTerminalSDK` instance interacts with the Forage API.
+
+To create a `ForageTerminalSDK` instance, call the constructor, passing the `posTerminalId` as the only parameter, as in the following snippet:
+
+```kotlin
+val forage = ForageTerminalSDK(posTerminalId)
+```
+
+#### `ForageTerminalSDK()` parameters
+
+- `posTerminalId` (_required_): A string that uniquely identifies the POS Terminal used for a transaction.
+
+You can then use the instance to call methods that perform payment operations, as demonstrated in the following section.
+
+## Payment operations
+
+### Tokenize a card
+
+#### `ForageSDK`
+
+##### `tokenizeEBTCard(TokenizeEBTCardParams)`
+
+⚠️ **This method is online-only. It is only available to `ForageSDK()`.**
+
+This method tokenizes an EBT Card number via a [`ForagePANEditText`](#foragepanedittext) Element.
+
+On success, the object includes a `ref` token that represents an instance of a Forage [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods#paymentmethod-object). You can store the token for future transactions, like to [check a card's balance](#check-a-cards-balance) or to [create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) in Forage's database.
+
+On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin), the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
+
+```kotlin
+data class TokenizeEBTCardParams(
+    val foragePanEditText: ForagePANEditText,
+    val customerId: String?,
+    val reusable: Boolean = true
+)
+
+suspend fun tokenizeEBTCard(
+    params: TokenizeEBTCardParams
+): ForageApiResponse<String>
+```
+
+###### `TokenizeEBTCardParams`
+
+- `foragePANEditText` (_required_): A reference to the the `ForagePANEditText` Element that you added to your view. This is needed to extract the card number text.
+- `customerId`: A unique ID for the end customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
+- `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
+
+###### Example `tokenizeEBTCard()` request
 
 ```kotlin
 // TokenizeViewModel.kt
-@HiltViewModel
-class TokenizeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val moshi: Moshi
-) : ViewModel() {
-    private val args = TokenizeFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    // internal so that TokenizeFragment can access these values
-    val merchantID = args.merchantAccount
-    val sessionToken = args.sessionToken
+class TokenizeViewModel : ViewModel() {
+    val merchantId = "mid/<merchant_id>"
+    val sessionToken = "<session_token>"
 
     fun tokenizeEBTCard(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
-        _isLoading.value = true
-
         val response = ForageSDK().tokenizeEBTCard(
             TokenizeEBTCardParams(
-                foragePANEditText = foragePanEditText,
+                foragePanEditText = foragePanEditText,
                 reusable = true,
-                // NOTE: The following line is for testing purposes only and should not be used in production.
-                // Please replace this line with a real hashed customer ID value.
-                customerId = "d0633e25eb5e069991e884fcb55f252f088af544c8be56b2388bc6d56d8032c9"
+                customerId = "<hash_of_customer_id>"
             )
         )
 
         when (response) {
             is ForageApiResponse.Success -> {
-                val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
-                val paymentMethod = adapter.fromJson(response.data)
-
-                // (optional) do something with the ref
-                saveToPaymentMethodRefToMyAPI(paymentMethod.ref)
+                // parse response.data for the PaymentMethod object
             }
             is ForageApiResponse.Failure -> {
-                _error.value = response.message
+                // do something with error text (i.e. response.message)
             }
         }
-
-        _isLoading.value = false
     }
 }
-
 ```
 
-### Step 5 Persist the PaymentMethod ref in your wallet (if you passed `reusable = true`)
+#### `ForageTerminalSDK`
 
-If you offer customers a wallet to save their payment methods for future use,
-then you need to link the EBT PaymentMethod ref to that wallet. This will require
-passing the PaymentMethod's ref field to your API to store in your database
+##### Option 1: Tokenize a card via a Forage Element
 
-## Performing a balance check
+##### `tokenizeCard(foragePanEditText,reusable)`
 
-### Step 1: Add the `ForagePINEditText` UI component
+⚠️ **This method is POS-only. It is only available to `ForageTerminalSDK()`.**
 
-You need to add the `ForagePINEditText` component to your app to check a card's
-balance. Refer to the same instructions for [adding the `ForagePANEditText`](#step-1-add-the-foragepanedittext-ui-component)
-but change the component name from `ForagePANEditText` -> `ForagePINEditText`
+This method tokenizes a card number via a [`ForagePANEditText`](#foragepanedittext) Element.
 
-### Step 2: Customizing `ForagePINEditText`
+On success, the object includes a `ref` token that represents an instance of a Forage [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods#paymentmethod-object). You can store the token for future transactions, like to [check a card's balance](#check-a-cards-balance) or to [create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) in Forage's database.
 
-For this step, please refer to the same instructions for [customizing the `ForagePANEditText`](#step-2-customizing-foragepanedittext)
-but change the component name from `ForagePANEditText` -> `ForagePINEditText`
+On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin), the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
-### Step 3: Call `setForageConfig()`
+###### `tokenizeCard` parameters
 
-In order for ForageElements to work properly, you MUST call `setForageConfig`
-on your ForageElement.
+- `foragePanEditText` (_required_): A reference to the the `ForagePANEditText` Element that you added to your view. This is needed to extract the card number text.
+- `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
 
-> ⚠️This should be the first method you invoke on a ForagePINEditText instance
-> before calling any other methods
+###### Example `tokenizeCard()` request
 
 ```kotlin
-val tokenizeForagePinEditText = root?.findViewById<ForagePINEditText>(R.id.tokenizeForagePinEditText)
-tokenizeForagePinEditText.setForageConfig(
-    ForageConfig(
-        sessionToken = 'sandbox_AbCsessiontokenXyz',
-        merchantID = '<your_fns_number>'
-    )
+// TokenizeViewModel.kt
+class TokenizeViewMode : ViewModel() {
+    val merchantId = "mid/<merchant_id>"
+    val sessionToken = "<session_token>"
+
+    fun tokenizeCard(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
+
+        val response = ForageTerminalSDK().tokenizeCard(
+          foragePanEditText = foragePanEditText,
+          reusable = true
+        )
+
+        when (response) {
+            is ForageApiResponse.Success -> {
+                // parse response.data for the PaymentMethod object
+            }
+            is ForageApiResponse.Failure -> {
+                // do something with error text (i.e. response.message)
+            }
+        }
+    }
+}
+```
+
+##### Option 2: Tokenize a card via a magnetic card swipe
+
+##### `tokenizeCard(PosTokenizeCardParams)`
+
+⚠️ **This method is POS-only. It is only available to `ForageTerminalSDK()`.**
+
+To tokenize a card from a magnetic card swipe via a POS Terminal, call `tokenizeCard()` on a `ForageTerminalSDK()` instance, passing `PosTokenizeCardParams`.
+
+On success, the object includes a `ref` token that represents an instance of a Forage [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods#paymentmethod-object). You can store the token for future transactions, like to [check a card's balance](#check-a-cards-balance) or to [create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) in Forage's database.
+
+On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin), the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
+
+###### `PosTokenizeCardParams`
+
+```kotlin
+data class PosTokenizeCardParams(
+    val forageConfig: ForageConfig,
+    val track2Data: String,
+    val reusable: Boolean = true
 )
 ```
 
-#### Parameter Definitions
+- `forageConfig` (_required_): The configuration details required to authenticate with the Forage API.
+  - `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+  - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+- `track2data` (_required_): The information encoded on Track 2 of the EBT Card’s magnetic stripe, excluding the start and stop sentinels and any LRC characters.
+- `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
 
-- `ForageConfig.merchantID`: A unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants.
-- `ForageConfig.sessionToken`: A [session token](https://docs.joinforage.app/reference/create-session-token) that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the `/session_token/` endpoint.
+###### Example `tokenizeCard(PosTokenizeCardParams)` request
 
-### Step 4: Check the balance of the EBT Card
+```kotlin
+// TokenizePosViewModel.kt
 
-> **FNS requirements for balance inquiries**
->
-> FNS prohibits balance inquiries on sites and apps that offer guest checkout. Skip this section if your customers can opt for guest checkout.
->
-> If guest checkout is not an option, then it's up to you whether or not to add a balance inquiry feature. No FNS regulations apply.
+class TokenizePosViewModel : ViewModel() {
+    val merchantId = "mid/<merchant_id>"
+    val sessionToken = "<session_token>"
 
-The ForageSDK exposes the following function to check the balance of an EBT card:
+    fun tokenizePosCard(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
+
+        val response = ForageTerminalSDK().tokenizeCard(
+          PosTokenizeCardParams(
+            forageConfig = ForageConfig(
+              merchantId = merchantId,
+              sessionToken = sessionToken
+            ),
+            track2Data = "<read_track_2_data>" // "123456789123456789=123456789123",
+          // reusable = true
+          )
+        )
+
+        when (response) {
+            is ForageApiResponse.Success -> {
+                // parse response.data for the PaymentMethod object
+            }
+            is ForageApiResponse.Failure -> {
+                // do something with error text (i.e. response.message)
+            }
+        }
+    }
+}
+```
+
+### Check a card's balance
+
+✅ _The example code in this section uses a `ForageSDK` instance._ If you’re building a Forage Terminal integration, then call methods on a `ForageTerminalSDK` instance instead.
+
+⚠️ **FNS requirements for balance inquiries**
+
+FNS prohibits balance inquiries on sites and apps that offer guest checkout. Skip this section if your customers can opt for guest checkout.
+If guest checkout is not an option, then it's up to you whether or not to add a balance inquiry feature. No FNS regulations apply.
+
+#### `checkBalance(CheckBalanceParams)`
+
+This method checks the balance of a previously created [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) via a [ForagePINEditText](#foragepinedittext) Element.
+
+On success, the response object includes `snap` and `cash` fields that indicate the EBT Card's current SNAP and EBT Cash balances.
+
+On failure, for example in the case of [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14), the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
 ```kotlin
 data class CheckBalanceParams(
-    val foragePinEditText: ForagePINEditText,
-    val paymentMethodRef: String
+  val foragePinEditText: ForagePINEditText,
+  val paymentMethodRef: String
 )
 
-suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String>
+suspend fun checkBalance(
+  params: CheckBalanceParams
+): ForageApiResponse<String>
 ```
 
-#### Parameter definitions
+##### `CheckBalanceParams`
 
-- `CheckBalanceParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
-- `CheckBalanceParams.paymentMethodRef`: The `paymentMethodRef` parameter is a string ref of a [`PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method). Typically, this would be the ref received in the response of [Tokenizing an EBT Card](#tokenizing-an-ebt-card) Card.
+- `foragePinEditText`: A reference to a [`ForagePINEditText`](#foragepinedittext) component.
+- `paymentMethodRef`: A unique string identifier for a previously created `PaymentMethod` in Forage's database, found in the response from a call to [`tokenizeEBTCard`](#tokenizeebtcardparams), [`tokenizeCard`](#tokenizecard-parameters),or the [Create a `PaymentMethod` endpoint](https://docs.joinforage.app/reference/create-payment-method).
 
-#### Example
+##### Example `checkBalance()` request
 
-```kotlin
-// BalanceCheckFragment.kt
-@AndroidEntryPoint
-class BalanceCheckFragment : Fragment() {
-    private val viewModel: BalaceCheckViewModel by viewModels()
-    private var _binding: BalanceCheckFragmentBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // establish bindings to ForagePANEditText
-        _binding = BalanceCheckFragmentBinding.inflate(inflater, container, false)
-        val foragePINEditText: ForagePANEditText = binding.checkBalanceForagePinEditText
-
-        // immediately call setForageConfig() on the binding
-        foragePINEditText.setForageConfig(
-            ForageConfig(
-                merchantId = viewModel.merchantId,
-                sessionToken = viewModel.sessionToken
-            )
-        )
-
-        // then freely call other methods on ForagePANEditText binding
-        foragePINEditText.requestFocus()
-    }
-}
-```
+✅ _If you’re using the Forage Terminal SDK, then update `ForageSDK()` in the example below to `ForageTerminalSDK()`._
 
 ```kotlin
 // BalanceCheckViewModel.kt
-@HiltViewModel
-class BalanceCheckViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val moshi: Moshi
-) : ViewModel() {
-    private val args = CheckBalanceFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    // internal so that BalanceCheckFragment can access these values
-    val paymentMethodRef = args.paymentMethodRef
+class BalanceCheckViewModel : ViewModel() {
+    val paymentMethodRef = "020xlaldfh"
 
     fun checkBalance(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-        _isLoading.value = true
-
         val response = ForageSDK().checkBalance(
             CheckBalanceParams(
                 foragePinEditText = foragePinEditText,
@@ -478,54 +537,91 @@ class BalanceCheckViewModel @Inject constructor(
 
         when (response) {
             is ForageApiResponse.Success -> {
-                println(response.data)
-
-                val adapter: JsonAdapter<BalanceResponse> =
-                    moshi.adapter(BalanceResponse::class.java)
-
-                val result = adapter.fromJson(response.data)
-
-                if (result != null) {
-                    _snap.value = "SNAP: ${result.snap}"
-                    _cash.value = "CASH: ${result.cash}"
-                    _isLoading.value = false
-                    _isNextVisible.value = true
-                }
+                // response.data will have a .snap and a .cash value
             }
             is ForageApiResponse.Failure -> {
-                _isLoading.value = false
-                _error.value = response.message
+                // do something with error text (i.e. response.message)
             }
         }
     }
 }
 ```
 
-## Capturing a payment
+### Collect a customer's card PIN for a payment and defer the capture of the payment to the server
 
-### Step 0: Create a `Payment` object
+✅ _The example code in this section uses a `ForageSDK` instance._ If you’re building a Forage Terminal integration, then call methods on a `ForageTerminalSDK` instance instead.
 
-Send a `POST` request to Forage's `/payments/` endpoint [to create a
-`Payment` object](https://docs.joinforage.app/reference/create-a-payment).
-You need the `ref` of the `Payment` within the `/payments` response for Step 3.
+📘 Check out the [Forage guide to deferred payment capture](https://docs.joinforage.app/docs/capture-ebt-payments-server-side) for step-by-step instructions.
 
-### Step 1: Add the `ForagePINEditText` UI component
+#### `deferPaymentCapture(DeferPaymentCaptureParams)`
 
-As with [performing a balance check](#performing-a-balance-check), you will need
-to add a `ForagePINEditText` to your UI. Please reference
-[Step 1 of Performing a Balance Check](#step-1-add-the-foragepinedittext-ui-component)
+This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers payment capture to the server.
 
-### Step 2: Customizing `ForagePINEditText`
+On success, the response object returns `Nothing`.
 
-Please reference [Step 2 of Performing a Balance Check](#step-2-customizing-foragepinedittext)
+On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
-### Step 3: Call `setForageConfig()`
+```kotlin
+data class DeferPaymentCaptureParams(
+    val foragePinEditText: ForagePINEditText,
+    val paymentRef: String
+)
 
-Please reference [Step 3 of Performing a Balance Check](#step-3-call-setforageconfig)
+suspend fun deferPaymentCapture(
+    params: DeferPaymentCaptureParams
+): ForageApiResponse<String>
+```
 
-### Step 4: Capture the EBT payment
+##### `DeferPaymentCaptureParams`
 
-The ForageSDK exposes the following function to capture an EBT payment:
+- `foragePinEditText`: A reference to a [`ForagePINEditText`](#foragepinedittext) component.
+- `paymentRef`: A unique string identifier for a previously created `Payment` in Forage's database, returned by the [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+
+##### Example `deferPaymentCapture()` request
+
+✅ _If you’re using the Forage Terminal SDK, then update `ForageSDK()` in the example below to `ForageTerminalSDK()`._
+
+```kotlin
+class DeferPaymentCaptureViewModel  : ViewModel() {
+    val snapPaymentRef = "s0alzle0fal"
+    val cashPaymentRef = "d0alsdkfla0"
+    val merchantId = "mid/<merchant_id>"
+    val sessionToken = "<session_token>"
+
+    fun deferPaymentCapture(foragePinEditText: ForagePINEditText, paymentRef: String) =
+        viewModelScope.launch {
+            val response = ForageSDK().deferPaymentCapture(
+                DeferPaymentCaptureParams(
+                    foragePinEditText = foragePinEditText,
+                    paymentRef = paymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    // there will be no financial affects upon success
+                    // you need to capture from the server to formally
+                    // capture the payment
+                }
+                is ForageApiResponse.Failure -> {
+                    // handle an error response here
+                }
+            }
+        }
+}
+```
+
+### Capture a payment immediately
+
+✅ _The example code in this section uses a `ForageSDK` instance._ If you’re building a Forage Terminal integration, then call methods on a `ForageTerminalSDK` instance instead.
+
+#### `capturePayment(CapturePaymentParams)`
+
+This method immediately captures a payment via a [`ForagePINEditText`](#foragepinedittext) Element.
+
+On success, the object confirms the transaction. The response includes a Forage [`Payment`](https://docs.joinforage.app/reference/payments) object.
+
+On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
 ```kotlin
 data class CapturePaymentParams(
@@ -534,69 +630,33 @@ data class CapturePaymentParams(
 )
 
 suspend fun capturePayment(
-    params: CapturePaymentParams
+  params: CapturePaymentParams
 ): ForageApiResponse<String>
 ```
 
-#### Parameter definitions
+##### `CapturePaymentParams`
 
-- `CapturePaymentParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
-- `CapturePaymentParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
+- `foragePinEditText`: A reference to a [`ForagePINEditText`](#foragepinedittext) component.
+- `paymentRef`: A unique string identifier for a previously created `Payment` in Forage's database, returned by the [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
 
-#### Example
+##### Example `capturePayment()` request
 
-```kotlin
-// PaymentCaptureFragment.kt
-@AndroidEntryPoint
-class PaymentCaptureFragment : Fragment() {
-    private val viewModel: PaymentCaptureViewModel by viewModels()
-    private var _binding: PaymentCaptureFragmentBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // establish bindings to ForagePINEditText
-        _binding = PaymentCaptureFragmentBinding.inflate(inflater, container, false)
-        val snapEditText = binding.snapPinEditText
-        val cashEditText = binding.cashPinEditText
-
-        // immediately call setForageConfig() on the binding
-        val forageConfig = ForageConfig(
-            merchantId = viewModel.merchantAccount,
-            sessionToken = viewModel.bearer
-        )
-        snapEditText.setForageConfig(forageConfig)
-        cashEditText.setForageConfig(forageConfig)
-
-        // then freely call other methods on ForagePINEditText binding
-        // ...
-    }
-}
-```
+✅ _If you’re using the Forage Terminal SDK, then update `ForageSDK()` in the example below to `ForageTerminalSDK()`._
 
 ```kotlin
 // PaymentCaptureViewModel.kt
-@HiltViewModel
-class PaymentCaptureViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val moshi: Moshi
-) : ViewModel() {
-    private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
-    // internal so that PaymentCaptureFragment can access these values
-    val snapPaymentRef = args.snapPaymentRef
-    val cashPaymentRef = args.cashPaymentRef
-    val merchantID = args.merchantID
-    val sessionToken = args.sessionToken
+class PaymentCaptureViewModel : ViewModel() {
+    val snapPaymentRef = "s0alzle0fal"
+    val cashPaymentRef = "d0alsdkfla0"
+    val merchantId = "mid/<merchant_id>"
+    val sessionToken = "<session_token>"
 
-    fun capturePayment(pinForageEditText: ForagePINEditText, paymentRef: String) =
+    fun capturePayment(foragePinEditText: ForagePINEditText, paymentRef: String) =
         viewModelScope.launch {
             val response = ForageSDK().capturePayment(
                 CapturePaymentParams(
-                    foragePinEditText = pinForageEditText,
+                    foragePinEditText = foragePinEditText,
                     paymentRef = paymentRef
                 )
             )
@@ -621,116 +681,74 @@ class PaymentCaptureViewModel @Inject constructor(
 }
 ```
 
-It is the `funding_type` on a [Payment object](#step-0-create-a-payment-object)
-where you indicate whether a `Payment` will capture (SNAP or EBT Cash).
+### Refund a payment (POS Terminal-only)
 
-## Submitting the PIN for a deferred payment
+#### `refundPayment(RefundPaymentParams)`
 
-### Step 0: Create a `Payment` object
+⚠️ **`refundPayment` is only available for POS, using the `ForageTerminalSDK`.**
 
-Send a `POST` request to Forage's `/payments/` endpoint [to create a
-`Payment` object](https://docs.joinforage.app/reference/create-a-payment).
-You need the `ref` of the `Payment` within the `/payments` response for Step 3.
+This method refunds a payment via a POS Terminal.
 
-### Step 1: Add the `ForagePINEditText` UI component
+On success, the response includes a Forage [`PaymentRefund`](https://docs.joinforage.app/reference/payment-refunds) object.
 
-As with [performing a balance check](#performing-a-balance-check), you will need
-to add a `ForagePINEditText` to your UI. Please reference
-[Step 1 of Performing a Balance Check](#step-1-add-the-foragepinedittext-ui-component)
-
-### Step 2: Customizing `ForagePINEditText`
-
-Please reference [Step 2 of Performing a Balance Check](#step-2-customizing-foragepinedittext)
-
-### Step 3: Call `setForageConfig()`
-
-Please reference [Step 3 of Performing a Balance Check](#step-3-call-setforageconfig)
-
-### Step 4: Submit the PIN for the deferred EBT payment
-
-The ForageSDK provides a method to submit a customer's PIN for an EBT payment and defer the capture of the payment to the server.
+On failure, for example in the case of [`ebt_error_61`](https://docs.joinforage.app/reference/errors#ebt_error_61), the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
 ```kotlin
-data class DeferPaymentCaptureParams(
+data class RefundPaymentParams(
     val foragePinEditText: ForagePINEditText,
-    val paymentRef: String
+    val paymentRef: String,
+    val amount: Float,
+    val reason: String,
+    val metadata: Map<String, String>? = null
 )
 
-suspend fun deferPaymentCapture(
-    params: DeferPaymentCaptureParams
+suspend fun refundPayment(
+    params: RefundPaymentParams
 ): ForageApiResponse<String>
 ```
 
-#### Parameter definitions
+##### `RefundPaymentParams`
 
-- `DeferPaymentCaptureParams.foragePinEditText`: A reference to a `ForagePINEditText` component.
-- `DeferPaymentCaptureParams.paymentRef`: The `paymentRef` parameter is a string identifier that refers to an instance in Forage's database of a [`Payment`](https://docs.joinforage.app/reference/create-a-payment)
+- `foragePinEditText`: A reference to a [`ForagePINEditText`](#foragepinedittext) component.
+- `paymentRef`: A unique string identifier for a previously created `Payment` in Forage's database, returned by the [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+- `amount`: A positive decimal number that represents how much of the original payment to refund in USD. Precision to the penny is supported. The minimum amount that can be refunded is `0.01`.
+- `reason`: A string that describes why the payment is to be refunded.
+- `metadata`: A set of optional, merchant-defined key-value pairs. For example, some merchants attach their credit card processor’s ID for the customer making the refund.
 
-#### Example
+##### Example `refundPayment` request
 
 ```kotlin
-@AndroidEntryPoint
-class DeferPaymentCaptureFragment : Fragment() {
-    private val viewModel: DeferPaymentCaptureViewModel by viewModels()
-    private var _binding: DeferPaymentCaptureFragmentBinding? = null
-    private val binding get() = _binding!!
+// PosRefundViewModel.kt
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // establish bindings to ForagePINEditText
-        _binding = DeferPaymentCaptureFragmentBinding.inflate(inflater, container, false)
-        val snapEditText = binding.snapPinEditText
-        val cashEditText = binding.cashPinEditText
+class PosRefundViewModel : ViewModel() {
+  var paymentRef: String  = ""
+  var amount: Float = 0.0
+  var reason: String = ""
+  var metadata: HashMap? = null
 
-        // immediately call setForageConfig() on the binding
-        val forageConfig = ForageConfig(
-            merchantId = viewModel.merchantAccount,
-            sessionToken = viewModel.bearer
-        )
-        snapEditText.setForageConfig(forageConfig)
-        cashEditText.setForageConfig(forageConfig)
 
-        // then freely call other methods on ForagePINEditText binding
-        // ...
+  fun refundPayment(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
+
+    val forageParams = ForageTerminalSDKParams(posTerminalId)
+    val forage = ForageTerminalSDK(forageParams)
+    val refundParams = RefundPaymentParams(
+      foragePinEditText,
+      paymentRef,
+      amount,
+      reason,
+      metadata,
+    )
+    val response = forage.refundPayment(refundParams)
+
+    when (response) {
+      is ForageApiResponse.Success -> {
+        // do something with response.data
+      }
+      is ForageApiResponse.Failure -> {
+        // do something with response.error
+      }
     }
-}
-```
-
-```kotlin
-@HiltViewModel
-class DeferPaymentCaptureViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val moshi: Moshi
-) : ViewModel() {
-    private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
-
-    // internal so that DeferPaymentCaptureFragment can access these values
-    val snapPaymentRef = args.snapPaymentRef
-    val cashPaymentRef = args.cashPaymentRef
-    val merchantID = args.merchantID
-    val sessionToken = args.sessionToken
-
-    fun deferPaymentCapture(pinForageEditText: ForagePINEditText, paymentRef: String) =
-        viewModelScope.launch {
-            val response = ForageSDK().deferPaymentCapture(
-                DeferPaymentCaptureParams(
-                    foragePinEditText = pinForageEditText,
-                    paymentRef = paymentRef
-                )
-            )
-
-            when (response) {
-                is ForageApiResponse.Success -> {
-                    // handle successful reponse
-                }
-                is ForageApiResponse.Failure -> {
-                    // handle error response
-                }
-            }
-        }
+  }
 }
 ```
 
@@ -749,20 +767,21 @@ sealed class ForageApiResponse<out T> {
 
 ## Running the Sample App
 
-The sample-app/ folder in this repository contains a very simple integration of the Forage SDK. To get it running,
+The sample-app/ folder in this repository contains a very simple integration of the Forage SDK. To get it running:
 
-1. [Download Android Studio](https://developer.android.com/studio)
-   1. The app was developed with Android Studio Electric Eel
-2. Open the forage-android-sdk project folder and wait for dependencies to download
-3. [Create a bearer token](https://docs.joinforage.app/recipes/generate-a-token) with `pinpad_only` scope
-4. Confirm your FNS number on the Forage dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/))
-5. Place your bearer token and FNS number in constants inside sample-app/java/com.joinforage.android.example/ui/complete.flow/tokens/model/TokensUIDefaultState.kt
-   1. The sample-app will prompt you for a bearer token and FNS number on the first page of the app, but takes defaults from this file location
-6. Choose the `prod` build variant since all builds [infer `prod` or `sandbox` from the auth token](#a-note-on-build-variants)
-7. Run the sample-app on your emulated device of choice
-8. Use any 16 to 19 digit card number starting with ["9999"](https://docs.joinforage.app/docs/test-ebt-cards#valid-ebt-test-card-numbers) to complete the payment flow
-   1. Invalid cards will still be accepted by the Forage Sandbox API
-   2. Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/test-ebt-cards#invalid-ebt-test-card-numbers)
+1. [Download Android Studio](https://developer.android.com/studio).
+   i. The app was developed with Android Studio Electric Eel.
+2. Clone this repo to your local machine.
+3. In Android Studio, open the cloned `forage-android-sdk` project folder
+   i. Android Studio will start downloading the Gradle dependencies. Wait for dependencies to download before moving forward.
+4. [Create a bearer token](https://docs.joinforage.app/recipes/generate-a-token) with `pinpad_only` scope.
+5. Confirm your FNS number on the Forage dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/)).
+6. Place your bearer token and FNS number in constants inside `sample-app/java/com.joinforage.android.example/ui/complete.flow/tokens/model/TokensUIDefaultState.kt`.
+   i. The sample-app will prompt you for a bearer token and FNS number on the first page of the app, but takes defaults from this file location.
+7. Run the sample-app on your emulated device of choice.
+8. Use any 16 to 19 digit card number starting with ["9999"](https://docs.joinforage.app/docs/test-ebt-cards#valid-ebt-test-card-numbers) to complete the payment flow.
+   i. Invalid cards will still be accepted by the Forage Sandbox API.
+   ii. Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/test-ebt-cards#invalid-ebt-test-card-numbers).
 
 ## Dependencies
 
@@ -772,3 +791,4 @@ The sample-app/ folder in this repository contains a very simple integration of 
   - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
   - [Basis-Theory-Android](https://github.com/Basis-Theory/basistheory-android) v2.5.0
   - [OkHttp](https://github.com/square/okhttp) v4.10.0
+  - [Launch Darkly](https://github.com/launchdarkly/android-client-sdk) v4.2.1
