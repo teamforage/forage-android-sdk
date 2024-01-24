@@ -35,4 +35,10 @@
     <string name="title_pos_pin_entry">PIN Entry</string>
     <string name="title_pos_balance_inquiry_result">Balance Inquiry</string>
     <string name="title_pos_payment_type_selection_screen">Create a Payment / Purchase</string>
+    <string name="title_pos_payment_snap_purchase_screen">Create a Payment / Purchase</string>
+    <string name="title_pos_payment_choose_pan_method">Create a Payment / Purchase</string>
+    <string name="title_pos_payment_manual_pan_entry">Manual Card Entry</string>
+    <string name="title_pos_payment_pin_entry">PIN Entry</string>
+    <string name="title_pos_payment_swipe_card_entry">Swipe Card Entry</string>
+    <string name="title_pos_payment_receipt">Payment Receipt</string>
 </resources>

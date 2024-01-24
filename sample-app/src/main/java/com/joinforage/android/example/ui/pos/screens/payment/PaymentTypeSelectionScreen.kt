@@ -38,7 +38,7 @@ fun PaymentTypeSelectionScreen(
         ) {
             Text("Select a transaction type", fontSize = 18.sp)
             Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = onSnapPurchaseClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
+            Button(onClick = onSnapPurchaseClicked, modifier = Modifier.fillMaxWidth()) {
                 Text("EBT SNAP Purchase")
             }
             Spacer(modifier = Modifier.height(4.dp))
