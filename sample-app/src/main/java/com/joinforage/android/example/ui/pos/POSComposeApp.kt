@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
+import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceInquiryScreen
@@ -68,6 +71,11 @@ fun POSComposeApp(
         mutableStateOf(null)
     }
 
+    val context = LocalContext.current
+    val k9SDK by remember {
+        mutableStateOf(K9SDK().init(context))
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,7 +105,7 @@ fun POSComposeApp(
         ) {
             composable(route = POSScreen.MerchantSetupScreen.name) {
                 MerchantSetupScreen(
-                    terminalId = uiState.terminalId ?: "Unknown",
+                    terminalId = k9SDK.terminalId,
                     merchantId = uiState.merchantId,
                     merchantDetailsState = uiState.merchantDetailsState,
                     onSaveButtonClicked = {
@@ -138,7 +146,10 @@ fun POSComposeApp(
                     forageConfig = uiState.forageConfig,
                     onSubmitButtonClicked = {
                         if (panElement != null) {
-                            viewModel.tokenizeEBTCard(panElement as ForagePANEditText, onSuccess = {
+                            viewModel.tokenizeEBTCard(
+                                panElement as ForagePANEditText,
+                                k9SDK.terminalId,
+                                onSuccess = {
                                 if (it?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
                                     navController.navigate(POSScreen.BIPINEntryScreen.name)
@@ -159,6 +170,7 @@ fun POSComposeApp(
                             viewModel.checkEBTCardBalance(
                                 pinElement as ForagePINEditText,
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
+                                k9SDK.terminalId,
                                 onSuccess = {
                                     if (it != null) {
                                         Log.i("POSComposeApp", "Successfully checked balance of EBT card: $it")
