@@ -13,11 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
+import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePANEditText
 
 @Composable
 fun ManualPANEntryScreen(
-    merchantId: String,
+    forageConfig: ForageConfig,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     withPanElementReference: (element: ForagePANEditText) -> Unit
@@ -33,7 +34,7 @@ fun ManualPANEntryScreen(
             Text("Manually enter your card number")
             Spacer(modifier = Modifier.height(8.dp))
             ComposableForagePANEditText(
-                merchantId,
+                forageConfig,
                 withPanElementReference = withPanElementReference
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -52,7 +53,7 @@ fun ManualPANEntryScreen(
 @Composable
 fun ManualPANEntryScreenPreview() {
     ManualPANEntryScreen(
-        merchantId = "",
+        forageConfig = ForageConfig("", ""),
         onSubmitButtonClicked = {},
         onBackButtonClicked = {},
         withPanElementReference = {}

@@ -10,11 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
+import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 @Composable
 fun PINEntryScreen(
-    merchantId: String,
+    forageConfig: ForageConfig,
     paymentMethodRef: String?,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
@@ -31,7 +32,7 @@ fun PINEntryScreen(
             if (paymentMethodRef != null) {
                 Text("Enter your card PIN")
                 ComposableForagePINEditText(
-                    merchantId = merchantId,
+                    forageConfig = forageConfig,
                     withPinElementReference = withPinElementReference
                 )
                 Button(onClick = onSubmitButtonClicked) {
@@ -55,7 +56,7 @@ fun PINEntryScreen(
 @Composable
 fun PINEntryScreenPreview() {
     PINEntryScreen(
-        merchantId = "",
+        forageConfig = ForageConfig("", ""),
         paymentMethodRef = "",
         onSubmitButtonClicked = {},
         onBackButtonClicked = {},
