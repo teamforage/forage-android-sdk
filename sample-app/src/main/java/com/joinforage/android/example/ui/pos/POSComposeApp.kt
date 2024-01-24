@@ -306,7 +306,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.serverPayment?.ref != null) {
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
-                                terminalId = K9SDK().terminalId,
+                                terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.serverPayment!!.ref!!,
                                 onSuccess = {
                                     if (it?.ref != null) {
