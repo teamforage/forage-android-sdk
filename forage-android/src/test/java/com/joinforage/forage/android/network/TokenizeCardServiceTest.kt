@@ -7,8 +7,6 @@ import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuc
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.mock.MockRepositoryFactory
-import com.joinforage.forage.android.mock.TokenizeCardExpectedData
-import com.joinforage.forage.android.mock.createMockTokenizeCardService
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -29,7 +27,7 @@ import java.util.UUID
 @OptIn(ExperimentalCoroutinesApi::class)
 class TokenizeCardServiceTest : MockServerSuite() {
     private lateinit var tokenizeCardService: TokenizeCardService
-    private val testData = TokenizeCardExpectedData()
+    private val testData = MockRepositoryFactory.ExpectedData
 
     @Before
     override fun setup() {

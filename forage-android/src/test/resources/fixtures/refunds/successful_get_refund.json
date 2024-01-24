@@ -1,0 +1,28 @@
+{
+  "ref": "refund123",
+  "payment_ref": "6ae6a45ff1",
+  "funding_type": "ebt_snap",
+  "amount": "1.00",
+  "reason": "I feel like it!",
+  "metadata": {
+    "meta": "verse",
+    "my_store_location_id": "123456"
+  },
+  "created": "2024-01-24T10:32:38.709135-08:00",
+  "updated": "2024-01-24T10:32:38.862584-08:00",
+  "status": "processing",
+  "last_processing_error": null,
+  "receipt": null,
+  "pos_terminal": {
+    "terminal_id": "terminal123",
+    "provider_terminal_id": "pos-terminal-123"
+  },
+  "external_order_id": null,
+  "message": {
+    "content_id": "4cd6ba76-15c4-477f-92b7-1e4b96ad3f47",
+    "message_type": "0200",
+    "status": "sent_to_proxy",
+    "failed": false,
+    "errors": []
+  }
+}

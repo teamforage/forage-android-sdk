@@ -16,10 +16,8 @@ import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMet
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
-import com.joinforage.forage.android.mock.CheckBalanceExpectedData
 import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.mock.MockRepositoryFactory
-import com.joinforage.forage.android.mock.TokenizeCardExpectedData
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
@@ -52,8 +50,8 @@ import org.robolectric.RobolectricTestRunner
 
 internal class MockServiceFactory(
     private val mockPinCollector: TestPinCollector,
-    private val server: MockWebServer,
-    private val logger: Log,
+    server: MockWebServer,
+    logger: Log,
     sessionToken: String,
     merchantId: String
 ) : ForageSDK.ServiceFactory(
@@ -63,7 +61,7 @@ internal class MockServiceFactory(
 ) {
     private val mockRepositoryFactory = MockRepositoryFactory(
         logger = logger,
-        server = server,
+        server = server
     )
 
     override fun createTokenizeCardService(): TokenizeCardService {
@@ -82,8 +80,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     private lateinit var terminalSdk: ForageTerminalSDK
     private lateinit var mockForageSdk: ForageSDK
     private lateinit var mockLogger: MockLogger
-    private val tokenizeCardTestData = TokenizeCardExpectedData()
-    private val checkBalanceTestData = CheckBalanceExpectedData()
+    private val expectedData = MockRepositoryFactory.ExpectedData
     private lateinit var mockPinCollector: TestPinCollector
 
     @Before
@@ -100,8 +97,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         mockForageSdk = mock(ForageSDK::class.java)
         `when`(mockForagePinEditText.getForageConfig()).thenReturn(
             ForageConfig(
-                merchantId = checkBalanceTestData.merchantId,
-                sessionToken = checkBalanceTestData.sessionToken
+                merchantId = expectedData.merchantId,
+                sessionToken = expectedData.sessionToken
             )
         )
         `when`(mockForagePinEditText.getCollector(anyString())).thenReturn(mockPinCollector)
@@ -117,13 +114,13 @@ class ForageTerminalSDKTest : MockServerSuite() {
     fun `should send the correct headers + body to tokenize the card`() = runTest {
         server.givenPaymentMethod(
             PosPaymentMethodRequestBody(
-                track2Data = tokenizeCardTestData.track2Data,
+                track2Data = expectedData.track2Data,
                 reusable = false
             )
         ).returnsPaymentMethodSuccessfully()
 
         executeTokenizeCardWithTrack2Data(
-            track2Data = tokenizeCardTestData.track2Data,
+            track2Data = expectedData.track2Data,
             reusable = false
         )
 
@@ -131,14 +128,14 @@ class ForageTerminalSDKTest : MockServerSuite() {
             times = times(1),
             method = Method.POST,
             headers = headers(
-                "Authorization" to "Bearer ${tokenizeCardTestData.sessionToken}",
-                "Merchant-Account" to tokenizeCardTestData.merchantId
+                "Authorization" to "Bearer ${expectedData.sessionToken}",
+                "Merchant-Account" to expectedData.merchantId
             ),
             jsonBody = json {
                 "type" / "ebt"
                 "reusable" / false
                 "card" / json {
-                    "track_2_data" / tokenizeCardTestData.track2Data
+                    "track_2_data" / expectedData.track2Data
                 }
             }
         )
@@ -148,13 +145,13 @@ class ForageTerminalSDKTest : MockServerSuite() {
     fun `tokenize EBT card with Track 2 data successfully`() = runTest {
         server.givenPaymentMethod(
             PosPaymentMethodRequestBody(
-                track2Data = tokenizeCardTestData.track2Data,
+                track2Data = expectedData.track2Data,
                 reusable = true
             )
         ).returnsMissingCustomerIdPaymentMethodSuccessfully()
 
         val paymentMethodResponse = executeTokenizeCardWithTrack2Data(
-            track2Data = tokenizeCardTestData.track2Data,
+            track2Data = expectedData.track2Data,
             reusable = true
         )
         assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
@@ -208,19 +205,19 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
         mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = checkBalanceTestData.paymentMethodRef,
-            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
-            ForageApiResponse.Success(getVaultMessageResponse(checkBalanceTestData.contentId))
+            paymentMethodRef = expectedData.paymentMethodRef,
+            vaultRequestParams = expectedData.posVaultRequestParams,
+            ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId))
         )
-        server.givenContentId(checkBalanceTestData.contentId)
+        server.givenContentId(expectedData.contentId)
             .returnsMessageCompletedSuccessfully()
 
         val response = executeCheckBalance()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         val successResponse = response as ForageApiResponse.Success
-        assertThat(successResponse.data).contains(checkBalanceTestData.balance.cash)
-        assertThat(successResponse.data).contains(checkBalanceTestData.balance.snap)
+        assertThat(successResponse.data).contains(expectedData.balance.cash)
+        assertThat(successResponse.data).contains(expectedData.balance.snap)
 
         // assert telemetry events are reported as expected!
         val loggedMessage = mockLogger.infoLogs[0].getMessage()
@@ -243,8 +240,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
         mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = checkBalanceTestData.paymentMethodRef,
-            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
+            paymentMethodRef = expectedData.paymentMethodRef,
+            vaultRequestParams = expectedData.posVaultRequestParams,
             response = failureResponse
         )
 
@@ -259,8 +256,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
         mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = checkBalanceTestData.paymentMethodRef,
-            vaultRequestParams = checkBalanceTestData.posVaultRequestParams,
+            paymentMethodRef = expectedData.paymentMethodRef,
+            vaultRequestParams = expectedData.posVaultRequestParams,
             response = failureResponse
         )
 
@@ -356,8 +353,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         return terminalSdk.tokenizeCard(
             PosTokenizeCardParams(
                 forageConfig = ForageConfig(
-                    merchantId = checkBalanceTestData.merchantId,
-                    sessionToken = checkBalanceTestData.sessionToken
+                    merchantId = expectedData.merchantId,
+                    sessionToken = expectedData.sessionToken
                 ),
                 track2Data = track2Data,
                 reusable = reusable
@@ -367,7 +364,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
 
     private suspend fun executeCheckBalance(): ForageApiResponse<String> {
         val terminalSdk = ForageTerminalSDK(
-            posTerminalId = checkBalanceTestData.posVaultRequestParams.posTerminalId,
+            posTerminalId = expectedData.posVaultRequestParams.posTerminalId,
             forageSdk = ForageSDK(),
             createLogger = { mockLogger },
             createServiceFactory = { sessionToken: String, merchantId: String, logger: Log ->

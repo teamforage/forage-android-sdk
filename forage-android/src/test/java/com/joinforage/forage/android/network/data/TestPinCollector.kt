@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -18,10 +17,18 @@ internal class TestVaultSubmitter(
         val merchantId: String,
         val path: String,
         val paymentMethodRef: String,
+        val idempotencyKey: String
     )
 
     private var responses =
         HashMap<RequestContainer, ForageApiResponse<String>>()
+
+    fun setSubmitResponse(
+        params: RequestContainer,
+        response: ForageApiResponse<String>
+    ) {
+        responses[params] = response
+    }
 
     override suspend fun submit(params: VaultSubmitterParams): ForageApiResponse<String> {
         return responses.getOrDefault(
@@ -29,14 +36,13 @@ internal class TestVaultSubmitter(
                 merchantId = params.merchantId,
                 path = params.path,
                 paymentMethodRef = params.paymentMethod.ref,
+                idempotencyKey = params.idempotencyKey
             ),
-            ForageApiResponse.Failure(
-                listOf(
-                    ForageError(
-                        500,
-                        "unknown_server_error",
-                        "Unknown Server Error"
-                    )
+            ForageApiResponse.Failure.fromError(
+                ForageError(
+                    500,
+                    "unknown_server_error",
+                    "Unknown Server Error"
                 )
             )
         )

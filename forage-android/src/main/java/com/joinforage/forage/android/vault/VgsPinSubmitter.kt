@@ -88,7 +88,7 @@ internal class VgsPinSubmitter(
         return try {
             // converting the response to a ForageApiError should throw
             // in the case of a VGS error
-            ForageApiError.ForageApiErrorMapper.from(errorResponse.body ?: "")
+            ForageApiError.ForageApiErrorMapper.from(errorResponse.body!!)
 
             // if it does NOT throw, then it's a ForageApiError
             // so we return null
@@ -108,7 +108,7 @@ internal class VgsPinSubmitter(
         return try {
             // if the response is a ForageApiError, then this block
             // should not throw
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(errorResponse.body ?: "")
+            val forageApiError = ForageApiError.ForageApiErrorMapper.from(errorResponse.body!!)
             val error = forageApiError.errors[0]
             ForageApiResponse.Failure.fromError(
                 ForageError(
