@@ -683,7 +683,7 @@ class PaymentCaptureViewModel : ViewModel() {
 
 ### Refund a payment (POS Terminal-only)
 
-#### `refundPayment(RefundPaymentParams)`
+#### `refundPayment(PosRefundPaymentParams)`
 
 ⚠️ **`refundPayment` is only available for POS, using the `ForageTerminalSDK`.**
 
@@ -694,7 +694,7 @@ On success, the response includes a Forage [`PaymentRefund`](https://docs.joinfo
 On failure, for example in the case of [`ebt_error_61`](https://docs.joinforage.app/reference/errors#ebt_error_61), the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
 ```kotlin
-data class RefundPaymentParams(
+data class PosRefundPaymentParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String,
     val amount: Float,
@@ -703,11 +703,11 @@ data class RefundPaymentParams(
 )
 
 suspend fun refundPayment(
-    params: RefundPaymentParams
+    params: PosRefundPaymentParams
 ): ForageApiResponse<String>
 ```
 
-##### `RefundPaymentParams`
+##### `PosRefundPaymentParams`
 
 - `foragePinEditText`: A reference to a [`ForagePINEditText`](#foragepinedittext) component.
 - `paymentRef`: A unique string identifier for a previously created `Payment` in Forage's database, returned by the [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
@@ -731,7 +731,7 @@ class PosRefundViewModel : ViewModel() {
 
     val forageParams = ForageTerminalSDKParams(posTerminalId)
     val forage = ForageTerminalSDK(forageParams)
-    val refundParams = RefundPaymentParams(
+    val refundParams = PosRefundPaymentParams(
       foragePinEditText,
       paymentRef,
       amount,
