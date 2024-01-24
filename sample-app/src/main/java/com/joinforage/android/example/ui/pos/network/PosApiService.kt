@@ -25,7 +25,6 @@ interface PosApiService {
         @Header("Authorization") authorization: String,
         @Header("Merchant-Account") merchantId: String
     ): Merchant
-
 }
 
 object PosApi {

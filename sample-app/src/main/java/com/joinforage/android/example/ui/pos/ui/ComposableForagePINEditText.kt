@@ -26,7 +26,7 @@ fun ComposableForagePINEditText(
 @Composable
 fun ComposableForagePINEditTextPreview() {
     ComposableForagePINEditText(
-        forageConfig = ForageConfig("",""),
+        forageConfig = ForageConfig("", ""),
         withPinElementReference = {}
     )
 }
