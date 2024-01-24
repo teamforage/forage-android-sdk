@@ -1,4 +1,4 @@
-package com.joinforage.android.example.ui.pos.screens.balance
+package com.joinforage.android.example.ui.pos.screens.shared
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun BalanceInquiryScreen(
+fun PANMethodSelectionScreen(
     onManualEntryButtonClicked: () -> Unit,
     onSwipeButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit
@@ -41,8 +41,8 @@ fun BalanceInquiryScreen(
 
 @Preview
 @Composable
-fun BalanceInquiryScreenPreview() {
-    BalanceInquiryScreen(
+fun PANMethodSelectionScreenPreview() {
+    PANMethodSelectionScreen(
         onManualEntryButtonClicked = {},
         onSwipeButtonClicked = {},
         onBackButtonClicked = {}
