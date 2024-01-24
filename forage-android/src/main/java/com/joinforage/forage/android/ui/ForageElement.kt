@@ -6,10 +6,21 @@ import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
 
 /**
- * Configuration details required by ForageElement to operate correctly
+ * The configuration details that Forage needs to create a functional [ForageElement].
  *
- * @property merchantId Your merchant FNS number
- * @property sessionToken A temporary token used for authenticate
+ * Pass a [ForageConfig] instance in a call to
+ * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] to
+ * configure an Element.
+ *
+ * @property merchantId Either a unique seven digit numeric string that
+ * [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues
+ * to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+ *
+ * @property sessionToken A short-lived token that authenticates front-end requests to Forage.
+ * To create one, send a server-side `POST` request from your backend to the
+ * [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+ *
+ * @constructor Creates an instance of the [ForageConfig] data class.
  */
 data class ForageConfig(
     val merchantId: String,
@@ -24,6 +35,13 @@ data class ForageConfig(
 interface ForageElement<T : ElementState> {
     var typeface: Typeface?
 
+    /**
+     * Sets the necessary [ForageConfig] configuration properties for a [ForageElement].
+     *
+     * [setForageConfig] must be called before any other methods can be executed on the Element.
+     *
+     * @param params A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
+     */
     fun setForageConfig(forageConfig: ForageConfig)
 
     fun clearText()
