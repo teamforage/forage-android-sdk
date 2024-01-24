@@ -3,14 +3,17 @@ package com.joinforage.android.example.ui.pos
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.network.model.tokenize.PaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
+import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.network.PosApi
 import com.joinforage.android.example.ui.pos.network.formatAuthHeader
+import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.util.UUID
 
 sealed interface MerchantDetailsState {
     object Idle : MerchantDetailsState
@@ -56,6 +60,25 @@ class POSViewModel : ViewModel() {
                 MerchantDetailsState.Error(e.toString())
             }
             _uiState.update { it.copy(merchantDetailsState = merchantDetailsState) }
+        }
+    }
+
+    fun createPayment(merchantId: String, payment: PosPaymentRequest, onSuccess: (response: PaymentResponse) -> Unit) {
+        val idempotencyKey = UUID.randomUUID().toString()
+
+        viewModelScope.launch {
+            try {
+                val response = PosApi.retrofitService.createPayment(
+                    merchantId = merchantId,
+                    idempotencyKey = idempotencyKey,
+                    payment = payment
+                )
+                _uiState.update { it.copy(payment = response) }
+                onSuccess(response)
+                Log.i("POSViewModel", "Create payment call succeeded: ${response.toString()}")
+            } catch (e: HttpException) {
+                Log.e("POSViewModel", "Create payment call failed: ${e.toString()}")
+            }
         }
     }
 
@@ -122,6 +145,26 @@ class POSViewModel : ViewModel() {
                     val balance = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(balance = balance) }
                     onSuccess(balance)
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.e("POSViewModel", response.toString())
+                }
+            }
+        }
+    }
+
+    fun capturePayment(foragePinEditText: ForagePINEditText, paymentRef: String) {
+        viewModelScope.launch {
+            val response = ForageTerminalSDK(terminalId).capturePayment(
+                CapturePaymentParams(
+                    foragePinEditText = foragePinEditText,
+                    paymentRef = paymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    Log.i("POSViewModel", response.toString())
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
