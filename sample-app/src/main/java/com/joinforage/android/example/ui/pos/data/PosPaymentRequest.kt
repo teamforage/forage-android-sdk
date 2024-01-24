@@ -3,7 +3,6 @@ package com.joinforage.android.example.ui.pos.data
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-
 @JsonClass(generateAdapter = true)
 data class PosPaymentRequest(
     val amount: Double,
