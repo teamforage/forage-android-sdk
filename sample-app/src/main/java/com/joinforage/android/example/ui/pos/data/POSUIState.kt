@@ -11,7 +11,9 @@ data class POSUIState(
     val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
     val tokenizedPaymentMethod: PaymentMethod? = null,
     val balance: BalanceCheck? = null,
-    val payment: PaymentResponse? = null
+    val localPayment: PosPaymentRequest? = null,
+    val serverPayment: PaymentResponse? = null,
+    val paymentResponse: PaymentResponse? = null
 ) {
     val forageConfig: ForageConfig
         get() = ForageConfig(merchantId, sessionToken)

@@ -39,6 +39,7 @@ import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTSnapPurchaseScreen
+import com.joinforage.android.example.ui.pos.screens.payment.PaymentResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.shared.MagSwipePANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
@@ -50,16 +51,18 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
     ActionSelectionScreen(title = R.string.title_pos_action_selection),
-    BalanceInquiryScreen(title = R.string.title_pos_balance_inquiry),
+    BIChoosePANMethodScreen(title = R.string.title_pos_balance_inquiry),
     BIManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
     BIMagSwipePANEntryScreen(title = R.string.title_pos_mag_swipe_pan_entry),
     BIPINEntryScreen(title = R.string.title_pos_pin_entry),
     BIResultScreen(title = R.string.title_pos_balance_inquiry_result),
-    PaymentTypeSelectionScreen(title = R.string.title_pos_payment_type_selection_screen),
+    PAYTransactionTypeSelectionScreen(title = R.string.title_pos_payment_type_selection_screen),
     PAYChoosePANMethodScreen(title = R.string.title_pos_payment_choose_pan_method),
     PAYManualPANEntryScreen(title = R.string.title_pos_payment_manual_pan_entry),
+    PAYMagSwipePANEntryScreen(title = R.string.title_pos_payment_swipe_card_entry),
     PAYSnapPurchaseScreen(title = R.string.title_pos_payment_snap_purchase_screen),
-    PAYPINEntryScreen(title = R.string.title_pos_payment_pin_entry)
+    PAYPINEntryScreen(title = R.string.title_pos_payment_pin_entry),
+    PAYResultScreen(title = R.string.title_pos_payment_receipt)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,13 +137,13 @@ fun POSComposeApp(
                         is MerchantDetailsState.Error -> null
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.MerchantSetupScreen.name, inclusive = false) },
-                    onBalanceButtonClicked = { navController.navigate(POSScreen.BalanceInquiryScreen.name) },
-                    onPaymentButtonClicked = { navController.navigate(POSScreen.PaymentTypeSelectionScreen.name) },
+                    onBalanceButtonClicked = { navController.navigate(POSScreen.BIChoosePANMethodScreen.name) },
+                    onPaymentButtonClicked = { navController.navigate(POSScreen.PAYTransactionTypeSelectionScreen.name) },
                     onRefundButtonClicked = { /*TODO*/ },
                     onVoidButtonClicked = { /*TODO*/ }
                 )
             }
-            composable(route = POSScreen.BalanceInquiryScreen.name) {
+            composable(route = POSScreen.BIChoosePANMethodScreen.name) {
                 PANMethodSelectionScreen(
                     onManualEntryButtonClicked = { navController.navigate(POSScreen.BIManualPANEntryScreen.name) },
                     onSwipeButtonClicked = { navController.navigate(POSScreen.BIMagSwipePANEntryScreen.name) },
@@ -164,7 +167,7 @@ fun POSComposeApp(
                             )
                         }
                     },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BIChoosePANMethodScreen.name, inclusive = false) },
                     withPanElementReference = { panElement = it }
                 )
             }
@@ -180,7 +183,7 @@ fun POSComposeApp(
                             }
                         }
                     },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) }
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BIChoosePANMethodScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {
@@ -213,7 +216,7 @@ fun POSComposeApp(
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
-            composable(route = POSScreen.PaymentTypeSelectionScreen.name) {
+            composable(route = POSScreen.PAYTransactionTypeSelectionScreen.name) {
                 PaymentTypeSelectionScreen(
                     onSnapPurchaseClicked = { navController.navigate(POSScreen.PAYSnapPurchaseScreen.name) },
                     onCashPurchaseClicked = { /*TODO*/ },
@@ -225,32 +228,25 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYSnapPurchaseScreen.name) {
                 EBTSnapPurchaseScreen(
                     onConfirmButtonClicked = { snapAmount ->
-                        if (uiState.tokenizedPaymentMethod?.ref == null) {
-                            navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false)
-                        } else {
-                            val payment = PosPaymentRequest(
-                                amount = snapAmount,
-                                description = "Testing POS certification app payments",
-                                fundingType = FundingType.EBTSnap.value,
-                                paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
-                                posTerminal = PosTerminal(providerTerminalId = k9SDK.terminalId),
-                                metadata = mapOf()
-                            )
-                            viewModel.createPayment(merchantId = uiState.merchantId, payment = payment, onSuccess = { paymentResponse ->
-                                if (paymentResponse.ref != null) {
-                                    navController.navigate(POSScreen.PAYPINEntryScreen.name)
-                                }
-                            })
-                        }
+                        val payment = PosPaymentRequest(
+                            amount = snapAmount,
+                            description = "Testing POS certification app payments (SNAP Purchase)",
+                            fundingType = FundingType.EBTSnap.value,
+                            paymentMethodRef = "",
+                            posTerminal = PosTerminal(providerTerminalId = k9SDK.terminalId),
+                            metadata = mapOf()
+                        )
+                        viewModel.setLocalPayment(payment = payment)
+                        navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
-                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PaymentTypeSelectionScreen.name, inclusive = false) }
+                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.PAYChoosePANMethodScreen.name) {
                 PANMethodSelectionScreen(
                     onManualEntryButtonClicked = { navController.navigate(POSScreen.PAYManualPANEntryScreen.name) },
-                    onSwipeButtonClicked = { /*TODO*/ },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.PaymentTypeSelectionScreen.name, inclusive = false) }
+                    onSwipeButtonClicked = { navController.navigate(POSScreen.PAYMagSwipePANEntryScreen.name) },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.PAYManualPANEntryScreen.name) {
@@ -263,11 +259,16 @@ fun POSComposeApp(
                             viewModel.tokenizeEBTCard(
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
-                                onSuccess = {
-                                    Log.i("POSComposeApp", "payment method? — $it")
-                                    if (it?.ref != null) {
-                                        Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
-                                        navController.navigate(POSScreen.PaymentTypeSelectionScreen.name)
+                                onSuccess = { tokenizedCard ->
+                                    Log.i("POSComposeApp", "payment method? — $tokenizedCard")
+                                    if (tokenizedCard?.ref != null && uiState.localPayment != null) {
+                                        Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $tokenizedCard.ref")
+                                        val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
+                                        viewModel.createPayment(payment = payment, merchantId = uiState.merchantId, onSuccess = { serverPayment ->
+                                            if (serverPayment.ref !== null) {
+                                                navController.navigate(POSScreen.PAYPINEntryScreen.name)
+                                            }
+                                        })
                                     }
                                 }
                             )
@@ -277,21 +278,51 @@ fun POSComposeApp(
                     withPanElementReference = { panElement = it }
                 )
             }
+            composable(route = POSScreen.PAYMagSwipePANEntryScreen.name) {
+                MagSwipePANEntryScreen(
+                    onLaunch = {
+                        k9SDK.listenForMagneticCardSwipe { track2Data ->
+                            viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) { tokenizedCard ->
+                                if (tokenizedCard?.ref != null) {
+                                    Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $tokenizedCard.ref")
+                                    val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
+                                    viewModel.createPayment(payment = payment, merchantId = uiState.merchantId, onSuccess = { serverPayment ->
+                                        if (serverPayment.ref !== null) {
+                                            navController.navigate(POSScreen.PAYPINEntryScreen.name)
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false) }
+                )
+            }
             composable(route = POSScreen.PAYPINEntryScreen.name) {
                 PINEntryScreen(
                     forageConfig = uiState.forageConfig,
-                    paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
+                    paymentMethodRef = uiState.serverPayment?.paymentMethod,
                     onSubmitButtonClicked = {
-                        if (pinElement != null && uiState.payment?.ref != null) {
+                        if (pinElement != null && uiState.serverPayment?.ref != null) {
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = K9SDK().terminalId,
-                                paymentRef = uiState.payment!!.ref!!
+                                paymentRef = uiState.serverPayment!!.ref!!,
+                                onSuccess = {
+                                    if (it?.ref != null) {
+                                        navController.navigate(POSScreen.PAYResultScreen.name)
+                                    }
+                                }
                             )
                         }
                     },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYSnapPurchaseScreen.name, inclusive = false) },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) },
                     withPinElementReference = { pinElement = it }
+                )
+            }
+            composable(route = POSScreen.PAYResultScreen.name) {
+                PaymentResultScreen(
+                    data = uiState.paymentResponse.toString()
                 )
             }
         }
