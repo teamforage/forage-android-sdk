@@ -36,13 +36,6 @@ class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
 
-    private var terminalId: String? = "tempDevTerminalId"
-
-    fun setTerminalId(id: String) {
-        terminalId = id
-        _uiState.update { it.copy(terminalId = id) }
-    }
-
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
         getMerchantInfo(merchantId = merchantId, onSuccess)
@@ -65,12 +58,9 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(foragePanEditText: ForagePANEditText, onSuccess: (data: PaymentMethod?) -> Unit) {
-        if (terminalId == null) {
-            throw Error("Invalid POS Terminal ID")
-        }
+    fun tokenizeEBTCard(foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PaymentMethod?) -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId!!).tokenizeCard(
+            val response = ForageTerminalSDK(terminalId).tokenizeCard(
                 foragePanEditText = foragePanEditText,
                 reusable = true
             )
@@ -90,13 +80,9 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun checkEBTCardBalance(foragePinEditText: ForagePINEditText, paymentMethodRef: String, onSuccess: (response: BalanceCheck?) -> Unit) {
-        if (terminalId == null) {
-            throw Error("Invalid POS Terminal ID")
-        }
-
+    fun checkEBTCardBalance(foragePinEditText: ForagePINEditText, paymentMethodRef: String, terminalId: String, onSuccess: (response: BalanceCheck?) -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId!!).checkBalance(
+            val response = ForageTerminalSDK(terminalId).checkBalance(
                 CheckBalanceParams(
                     foragePinEditText = foragePinEditText,
                     paymentMethodRef = paymentMethodRef

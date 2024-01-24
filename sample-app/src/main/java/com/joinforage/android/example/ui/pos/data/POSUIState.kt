@@ -5,7 +5,6 @@ import com.joinforage.android.example.ui.pos.MerchantDetailsState
 import com.joinforage.forage.android.ui.ForageConfig
 
 data class POSUIState(
-    val terminalId: String? = "tempDevTerminalId",
     val merchantId: String = "",
     val sessionToken: String = "<your_oath_or_session_token>", // <your_oath_or_session_token>,
     val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
