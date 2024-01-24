@@ -18,9 +18,8 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.mock.CheckBalanceExpectedData
 import com.joinforage.forage.android.mock.MockLogger
+import com.joinforage.forage.android.mock.MockRepositoryFactory
 import com.joinforage.forage.android.mock.TokenizeCardExpectedData
-import com.joinforage.forage.android.mock.createMockCheckBalanceRepository
-import com.joinforage.forage.android.mock.createMockTokenizeCardService
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
@@ -62,20 +61,17 @@ internal class MockServiceFactory(
     merchantId,
     logger
 ) {
+    private val mockRepositoryFactory = MockRepositoryFactory(
+        logger = logger,
+        server = server,
+    )
+
     override fun createTokenizeCardService(): TokenizeCardService {
-        return createMockTokenizeCardService(
-            server = server,
-            testData = TokenizeCardExpectedData(),
-            logger = logger
-        )
+        return mockRepositoryFactory.createTokenizeCardService()
     }
 
     override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
-        return createMockCheckBalanceRepository(
-            pinCollector = mockPinCollector,
-            server = server,
-            logger = logger
-        )
+        return mockRepositoryFactory.createCheckBalanceRepository(mockPinCollector)
     }
 }
 

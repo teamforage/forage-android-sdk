@@ -6,6 +6,7 @@ import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMet
 import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
+import com.joinforage.forage.android.mock.MockRepositoryFactory
 import com.joinforage.forage.android.mock.TokenizeCardExpectedData
 import com.joinforage.forage.android.mock.createMockTokenizeCardService
 import com.joinforage.forage.android.model.Card
@@ -34,11 +35,10 @@ class TokenizeCardServiceTest : MockServerSuite() {
     override fun setup() {
         super.setup()
 
-        tokenizeCardService = createMockTokenizeCardService(
-            server = server,
-            testData = testData,
-            logger = Log.getSilentInstance()
-        )
+        tokenizeCardService = MockRepositoryFactory(
+            logger = Log.getSilentInstance(),
+            server = server
+        ).createTokenizeCardService()
     }
 
     @Test

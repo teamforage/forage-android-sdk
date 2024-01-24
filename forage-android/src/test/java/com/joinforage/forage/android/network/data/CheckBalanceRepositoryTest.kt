@@ -13,7 +13,7 @@ import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.CheckBalanceExpectedData
-import com.joinforage.forage.android.mock.createMockCheckBalanceRepository
+import com.joinforage.forage.android.mock.MockRepositoryFactory
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -37,11 +37,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = createMockCheckBalanceRepository(
-            pinCollector = pinCollector,
-            server = server,
-            logger = logger
-        )
+        repository = MockRepositoryFactory(
+            logger = logger,
+            server = server
+        ).createCheckBalanceRepository(pinCollector)
     }
 
     @Test
