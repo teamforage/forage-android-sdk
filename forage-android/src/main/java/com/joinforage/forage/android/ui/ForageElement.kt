@@ -14,7 +14,9 @@ import com.joinforage.forage.android.core.element.state.ElementState
  *
  * @property merchantId Either a unique seven digit numeric string that
  * [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues
- * to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+ * to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding
+ * and can be retrieved from the dashboard.
+ * Accepted formats include: `mid/<merchant-id>`, `<fns-number>`.
  *
  * @property sessionToken A short-lived token that authenticates front-end requests to Forage.
  * To create one, send a server-side `POST` request from your backend to the
@@ -40,7 +42,7 @@ interface ForageElement<T : ElementState> {
      *
      * [setForageConfig] must be called before any other methods can be executed on the Element.
      *
-     * @param params A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
+     * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
     fun setForageConfig(forageConfig: ForageConfig)
 
