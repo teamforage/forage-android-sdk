@@ -166,16 +166,17 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIMagSwipePANEntryScreen.name) {
                 MagSwipePANEntryScreen(
-                    onLaunch = { k9SDK.listenForMagneticCardSwipe{ track2Data ->
-                        println("track2Data: $track2Data")
-                        viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) {
-                            if (it?.ref != null) {
-                                Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
-                                navController.navigate(POSScreen.BIPINEntryScreen.name)
+                    onLaunch = {
+                        k9SDK.listenForMagneticCardSwipe { track2Data ->
+                            viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) {
+                                if (it?.ref != null) {
+                                    Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                    navController.navigate(POSScreen.BIPINEntryScreen.name)
+                                }
                             }
                         }
-                    } },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) },
+                    },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {

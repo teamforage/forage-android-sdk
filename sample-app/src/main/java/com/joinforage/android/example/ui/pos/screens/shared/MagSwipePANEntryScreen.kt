@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun MagSwipePANEntryScreen(
     onLaunch: () -> Unit,
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         onLaunch()
@@ -37,6 +37,6 @@ fun MagSwipePANEntryScreen(
 fun MagSwipePANEntryScreenPreview() {
     MagSwipePANEntryScreen(
         onLaunch = {},
-        onBackButtonClicked = {},
+        onBackButtonClicked = {}
     )
 }
