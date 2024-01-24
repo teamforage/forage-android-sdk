@@ -21,6 +21,14 @@ data class PosPaymentRequest(
             posTerminal = PosTerminal(providerTerminalId = terminalId),
             metadata = mapOf()
         )
+        fun forEbtCashPayment(ebtCashAmount: Double, terminalId: String) = PosPaymentRequest(
+            amount = ebtCashAmount,
+            description = "Testing POS certification app payments (EBT Cash Purchase)",
+            fundingType = FundingType.EBTCash.value,
+            paymentMethodRef = "",
+            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            metadata = mapOf()
+        )
     }
 }
 

@@ -42,7 +42,7 @@ fun PaymentTypeSelectionScreen(
                 Text("EBT SNAP Purchase")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onCashPurchaseClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
+            Button(onClick = onCashPurchaseClicked, modifier = Modifier.fillMaxWidth()) {
                 Text("EBT Cash Purchase")
             }
             Spacer(modifier = Modifier.height(4.dp))

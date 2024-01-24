@@ -41,4 +41,5 @@
     <string name="title_pos_payment_pin_entry">PIN Entry</string>
     <string name="title_pos_payment_swipe_card_entry">Swipe Card Entry</string>
     <string name="title_pos_payment_receipt">Payment Receipt</string>
+    <string name="title_pos_payment_ebt_cash">Create a Payment / Purchase</string>
 </resources>
