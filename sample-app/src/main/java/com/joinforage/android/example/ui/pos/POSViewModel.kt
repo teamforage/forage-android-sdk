@@ -79,7 +79,7 @@ class POSViewModel : ViewModel() {
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
-                _uiState.update { it.copy(serverPayment = response) }
+                _uiState.update { it.copy(createPaymentResponse = response) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Create payment call succeeded: $response")
             } catch (e: HttpException) {
@@ -173,7 +173,7 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<PaymentResponse> = PaymentResponseJsonAdapter(moshi)
                     val paymentResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(paymentResponse = paymentResponse) }
+                    _uiState.update { it.copy(capturePaymentResponse = paymentResponse) }
                     onSuccess(paymentResponse)
                 }
                 is ForageApiResponse.Failure -> {

@@ -301,13 +301,13 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYPINEntryScreen.name) {
                 PINEntryScreen(
                     forageConfig = uiState.forageConfig,
-                    paymentMethodRef = uiState.serverPayment?.paymentMethod,
+                    paymentMethodRef = uiState.createPaymentResponse?.paymentMethod,
                     onSubmitButtonClicked = {
-                        if (pinElement != null && uiState.serverPayment?.ref != null) {
+                        if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
-                                paymentRef = uiState.serverPayment!!.ref!!,
+                                paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
                                     if (it?.ref != null) {
                                         navController.navigate(POSScreen.PAYResultScreen.name)
@@ -322,7 +322,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYResultScreen.name) {
                 PaymentResultScreen(
-                    data = uiState.paymentResponse.toString()
+                    data = uiState.capturePaymentResponse.toString()
                 )
             }
         }
