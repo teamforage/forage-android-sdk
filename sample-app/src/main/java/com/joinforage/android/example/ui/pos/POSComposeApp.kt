@@ -150,11 +150,12 @@ fun POSComposeApp(
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
                                 onSuccess = {
-                                if (it?.ref != null) {
-                                    Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
-                                    navController.navigate(POSScreen.BIPINEntryScreen.name)
+                                    if (it?.ref != null) {
+                                        Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                        navController.navigate(POSScreen.BIPINEntryScreen.name)
+                                    }
                                 }
-                            })
+                            )
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BalanceInquiryScreen.name, inclusive = false) },
