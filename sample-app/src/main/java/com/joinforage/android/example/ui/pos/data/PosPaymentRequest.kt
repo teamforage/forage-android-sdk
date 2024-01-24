@@ -11,7 +11,18 @@ data class PosPaymentRequest(
     val description: String,
     @Json(name = "pos_terminal") val posTerminal: PosTerminal,
     val metadata: Map<String, String>
-)
+) {
+    companion object {
+        fun forSnapPayment(snapAmount: Double, terminalId: String) = PosPaymentRequest(
+            amount = snapAmount,
+            description = "Testing POS certification app payments (SNAP Purchase)",
+            fundingType = FundingType.EBTSnap.value,
+            paymentMethodRef = "",
+            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            metadata = mapOf()
+        )
+    }
+}
 
 enum class FundingType(val value: String) {
     EBTSnap(value = "ebt_snap"),

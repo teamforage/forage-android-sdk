@@ -32,9 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
-import com.joinforage.android.example.ui.pos.data.FundingType
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
-import com.joinforage.android.example.ui.pos.data.PosTerminal
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
@@ -228,14 +226,7 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYSnapPurchaseScreen.name) {
                 EBTSnapPurchaseScreen(
                     onConfirmButtonClicked = { snapAmount ->
-                        val payment = PosPaymentRequest(
-                            amount = snapAmount,
-                            description = "Testing POS certification app payments (SNAP Purchase)",
-                            fundingType = FundingType.EBTSnap.value,
-                            paymentMethodRef = "",
-                            posTerminal = PosTerminal(providerTerminalId = k9SDK.terminalId),
-                            metadata = mapOf()
-                        )
+                        val payment = PosPaymentRequest.forSnapPayment(snapAmount, k9SDK.terminalId)
                         viewModel.setLocalPayment(payment = payment)
                         navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
