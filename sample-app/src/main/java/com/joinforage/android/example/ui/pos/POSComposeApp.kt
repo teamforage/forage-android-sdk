@@ -37,6 +37,7 @@ import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseScreen
+import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseWithCashBackScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTSnapPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
@@ -59,6 +60,7 @@ enum class POSScreen(@StringRes val title: Int) {
     PAYChoosePANMethodScreen(title = R.string.title_pos_payment_choose_pan_method),
     PAYSnapPurchaseScreen(title = R.string.title_pos_payment_snap_purchase_screen),
     PAYEBTCashPurchaseScreen(title = R.string.title_pos_payment_ebt_cash),
+    PAYEBTCashPurchaseWithCashBackScreen(title = R.string.title_pos_payment_with_cashback),
     PAYManualPANEntryScreen(title = R.string.title_pos_payment_manual_pan_entry),
     PAYMagSwipePANEntryScreen(title = R.string.title_pos_payment_swipe_card_entry),
     PAYPINEntryScreen(title = R.string.title_pos_payment_pin_entry),
@@ -221,7 +223,7 @@ fun POSComposeApp(
                     onSnapPurchaseClicked = { navController.navigate(POSScreen.PAYSnapPurchaseScreen.name) },
                     onCashPurchaseClicked = { navController.navigate(POSScreen.PAYEBTCashPurchaseScreen.name) },
                     onCashWithdrawalClicked = { /*TODO*/ },
-                    onCashPurchaseCashbackClicked = { /*TODO*/ },
+                    onCashPurchaseCashbackClicked = { navController.navigate(POSScreen.PAYEBTCashPurchaseWithCashBackScreen.name) },
                     onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
@@ -239,6 +241,16 @@ fun POSComposeApp(
                 EBTCashPurchaseScreen(
                     onConfirmButtonClicked = { ebtCashAmount ->
                         val payment = PosPaymentRequest.forEbtCashPayment(ebtCashAmount, k9SDK.terminalId)
+                        viewModel.setLocalPayment(payment)
+                        navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
+                    },
+                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
+                )
+            }
+            composable(route = POSScreen.PAYEBTCashPurchaseWithCashBackScreen.name) {
+                EBTCashPurchaseWithCashBackScreen(
+                    onConfirmButtonClicked = { ebtCashAmount, cashBackAmount ->
+                        val payment = PosPaymentRequest.forEbtCashPaymentWithCashBack(ebtCashAmount, cashBackAmount, k9SDK.terminalId)
                         viewModel.setLocalPayment(payment)
                         navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
