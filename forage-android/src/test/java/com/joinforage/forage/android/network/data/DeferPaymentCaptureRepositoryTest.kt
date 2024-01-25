@@ -103,7 +103,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should fail on pin collection`() = runTest {
+    fun `it should fail on Vault proxy PIN submission`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
@@ -125,7 +125,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should succeed`() = runTest {
+    fun `it should succeed with empty string response`() = runTest {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
@@ -137,7 +137,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
-                assertThat(true)
+                assertThat(response.data).isEqualTo("")
             }
             else -> {
                 assertThat(false)
