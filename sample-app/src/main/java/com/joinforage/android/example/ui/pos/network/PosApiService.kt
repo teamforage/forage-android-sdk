@@ -16,7 +16,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-
 private val moshi = Moshi.Builder()
     .addLast(KotlinJsonAdapterFactory())
     .build()
@@ -32,7 +31,7 @@ interface PosApiService {
     ): PaymentResponse
 
     companion object {
-        internal fun from(forageConfig: ForageConfig) : PosApiService {
+        internal fun from(forageConfig: ForageConfig): PosApiService {
             val commonHeadersInterceptor = Interceptor { chain ->
                 val newRequest = chain.request().newBuilder()
                     .addHeader("Authorization", "Bearer ${forageConfig.sessionToken}")
