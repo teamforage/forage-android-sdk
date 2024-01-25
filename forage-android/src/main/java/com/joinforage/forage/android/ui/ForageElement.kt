@@ -31,7 +31,9 @@ data class ForageConfig(
 
 /**
  * The interface that defines methods for configuring and interacting with a [ForageElement].
- * Both [ForagePANEditText] and [ForagePINEditText] adhere to this interface.
+ * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
+ * transaction.
+ * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
  *
  * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
  * that is used to render text within the ForageElement.
