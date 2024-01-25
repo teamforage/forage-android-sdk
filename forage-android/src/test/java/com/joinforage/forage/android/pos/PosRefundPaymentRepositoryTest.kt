@@ -8,16 +8,19 @@ import com.joinforage.forage.android.fixtures.givenPaymentAndRefundRef
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.givenPaymentRef
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
+import com.joinforage.forage.android.fixtures.returnsFailed
 import com.joinforage.forage.android.fixtures.returnsFailedPayment
 import com.joinforage.forage.android.fixtures.returnsFailedPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsFailedRefund
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
-import com.joinforage.forage.android.fixtures.returnsRefund
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.mock.MockRepositoryFactory
-import com.joinforage.forage.android.network.data.TestVaultSubmitter
+import com.joinforage.forage.android.mock.MOCK_VAULT_REFUND_RESPONSE
+import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.mock.mockSuccessfulPosRefund
+import com.joinforage.forage.android.network.data.MockVaultSubmitter
+import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -32,8 +35,10 @@ import org.mockito.Mockito.mock
 
 class PosRefundPaymentRepositoryTest : MockServerSuite() {
     private lateinit var repository: PosRefundPaymentRepository
-    private val vaultSubmitter = TestVaultSubmitter(VaultType.VGS_VAULT_TYPE)
-    private val expectedData = MockRepositoryFactory.ExpectedData
+
+    private lateinit var mockServiceFactory: MockServiceFactory
+    private val mockVaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE)
+    private val expectedData = MockServiceFactory.ExpectedData
     private lateinit var mockForagePinEditText: ForagePINEditText
 
     @Before
@@ -42,10 +47,13 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
 
         mockForagePinEditText = mock(ForagePINEditText::class.java)
         val logger = Log.getSilentInstance()
-        repository = MockRepositoryFactory(
+        mockServiceFactory = MockServiceFactory(
+            mockVaultSubmitter = mockVaultSubmitter,
+            mockPinCollector = TestPinCollector(),
             logger = logger,
             server = server
-        ).createPosRefundPaymentRepository(vaultSubmitter)
+        )
+        repository = mockServiceFactory.createRefundPaymentRepository(mockForagePinEditText)
     }
 
     private suspend fun executeRefundPayment(): ForageApiResponse<String> {
@@ -63,8 +71,8 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
     }
 
     private fun setVaultResponse(response: ForageApiResponse<String>) {
-        vaultSubmitter.setSubmitResponse(
-            params = TestVaultSubmitter.RequestContainer(
+        mockVaultSubmitter.setSubmitResponse(
+            params = MockVaultSubmitter.RequestContainer(
                 merchantId = expectedData.merchantId,
                 path = "/api/payments/${expectedData.paymentRef}/refunds/",
                 paymentMethodRef = expectedData.paymentMethodRef,
@@ -91,16 +99,18 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsFailedPayment()
 
-        val response = executeRefundPayment()
-
-        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val failureResponse = response as ForageApiResponse.Failure
         val expectedMessage = "Cannot find payment."
         val expectedForageCode = "not_found"
         val expectedStatusCode = 404
-        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
-        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
-        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+
+        val response = executeRefundPayment()
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+        val firstError = (response as ForageApiResponse.Failure).errors.first()
+
+        assertThat(firstError.message).isEqualTo(expectedMessage)
+        assertThat(firstError.code).isEqualTo(expectedForageCode)
+        assertThat(firstError.httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
     @Test
@@ -109,17 +119,18 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsFailedPaymentMethod()
 
-        val response = executeRefundPayment()
-
-        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val failureResponse = response as ForageApiResponse.Failure
         val expectedMessage = "EBT Card could not be found"
         val expectedForageCode = "not_found"
         val expectedStatusCode = 404
 
-        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
-        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
-        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+        val response = executeRefundPayment()
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+        val firstError = (response as ForageApiResponse.Failure).errors.first()
+
+        assertThat(firstError.message).isEqualTo(expectedMessage)
+        assertThat(firstError.code).isEqualTo(expectedForageCode)
+        assertThat(firstError.httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
     @Test
@@ -131,7 +142,7 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
             .returnsMessageCompletedSuccessfully()
         server.givenPaymentAndRefundRef().returnsFailedRefund()
 
-        setVaultResponse(ForageApiResponse.Success(mockVaultRefundResponse.trimIndent()))
+        setVaultResponse(ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE))
 
         val expectedMessage = "Refund with ref refund123 does not exist for current Merchant with FNS 1234567."
         val expectedCode = "resource_not_found"
@@ -140,8 +151,7 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         val response = executeRefundPayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val failureResponse = response as ForageApiResponse.Failure
-        val firstError = failureResponse.errors[0]
+        val firstError = (response as ForageApiResponse.Failure).errors.first()
         assertThat(firstError.message).isEqualTo(expectedMessage)
         assertThat(firstError.code).isEqualTo(expectedCode)
         assertThat(firstError.httpStatusCode).isEqualTo(expectedStatusCode)
@@ -165,22 +175,36 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         val response = executeRefundPayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val failureResponse = response as ForageApiResponse.Failure
-        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
-        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
-        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+        val firstError = (response as ForageApiResponse.Failure).errors.first()
+        assertThat(firstError.message).isEqualTo(expectedMessage)
+        assertThat(firstError.code).isEqualTo(expectedForageCode)
+        assertThat(firstError.httpStatusCode).isEqualTo(expectedStatusCode)
+    }
+
+    @Test
+    fun `it should fail when polling receives a failed SQS message`() = runTest {
+        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+        server.givenPaymentRef().returnsPayment()
+        server.givenPaymentMethodRef().returnsPaymentMethod()
+
+        setVaultResponse(ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE))
+
+        server.givenContentId(expectedData.contentId)
+            .returnsFailed()
+
+        val response = executeRefundPayment()
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+        val firstError = (response as ForageApiResponse.Failure).errors.first()
+
+        assertThat(firstError.httpStatusCode).isEqualTo(504)
+        assertThat(firstError.code).isEqualTo("ebt_error_91")
+        assertThat(firstError.message).contains("Authorizer not available (time-out) - Host Not Available")
     }
 
     @Test
     fun `it should succeed`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
-        server.givenPaymentRef().returnsPayment()
-        server.givenPaymentMethodRef().returnsPaymentMethod()
-        server.givenContentId(expectedData.contentId)
-            .returnsMessageCompletedSuccessfully()
-        server.givenPaymentAndRefundRef().returnsRefund()
-
-        setVaultResponse(ForageApiResponse.Success(mockVaultRefundResponse.trimIndent()))
+        mockSuccessfulPosRefund(mockVaultSubmitter = mockVaultSubmitter, server = server)
 
         val response = executeRefundPayment()
 
@@ -193,39 +217,5 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
                 assertThat(false)
             }
         }
-    }
-
-    companion object {
-        private val expectedData = MockRepositoryFactory.ExpectedData
-        private val mockVaultRefundResponse = """
-                {
-                  "ref": "${expectedData.refundRef}",
-                  "payment_ref": "${expectedData.paymentRef}",
-                  "funding_type": "ebt_snap",
-                  "amount": "1.00",
-                  "reason": "I feel like it!",
-                  "metadata": {
-                      "meta": "verse",
-                      "my_store_location_id": "123456"
-                  },
-                  "created": "2024-01-24T10:32:38.709135-08:00",
-                  "updated": "2024-01-24T10:32:38.862584-08:00",
-                  "status": "processing",
-                  "last_processing_error": null,
-                  "receipt": null,
-                  "pos_terminal": {
-                    "terminal_id": "terminal123",
-                    "provider_terminal_id": "pos-terminal-123"
-                  },
-                  "external_order_id": null,
-                  "message": {
-                    "content_id": "${expectedData.contentId}",
-                    "message_type": "0200",
-                    "status": "sent_to_proxy",
-                    "failed": false,
-                    "errors": []
-                  }
-                }
-        """.trimIndent()
     }
 }

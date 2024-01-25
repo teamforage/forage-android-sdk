@@ -1,14 +1,17 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
-import com.joinforage.forage.android.mock.MockRepositoryFactory
+import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.data.MockVaultSubmitter
+import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,13 +30,15 @@ import java.util.UUID
 @OptIn(ExperimentalCoroutinesApi::class)
 class TokenizeCardServiceTest : MockServerSuite() {
     private lateinit var tokenizeCardService: TokenizeCardService
-    private val testData = MockRepositoryFactory.ExpectedData
+    private val testData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
-        tokenizeCardService = MockRepositoryFactory(
+        tokenizeCardService = MockServiceFactory(
+            mockVaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE),
+            mockPinCollector = TestPinCollector(),
             logger = Log.getSilentInstance(),
             server = server
         ).createTokenizeCardService()

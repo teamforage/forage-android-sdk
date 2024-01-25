@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.mock
 
+import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.Balance
 import com.joinforage.forage.android.network.EncryptionKeyService
@@ -13,19 +14,25 @@ import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
+import com.joinforage.forage.android.network.data.MockVaultSubmitter
 import com.joinforage.forage.android.network.data.TestPinCollector
-import com.joinforage.forage.android.network.data.TestVaultSubmitter
-import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import com.joinforage.forage.android.pos.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.pos.PosVaultRequestParams
+import com.joinforage.forage.android.ui.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal class MockRepositoryFactory(
+internal class MockServiceFactory(
+    private val mockVaultSubmitter: MockVaultSubmitter,
+    private val mockPinCollector: TestPinCollector,
     private val logger: Log,
     private val server: MockWebServer
+) : ForageSDK.ServiceFactory(
+    sessionToken = ExpectedData.sessionToken,
+    merchantId = ExpectedData.merchantId,
+    logger = logger
 ) {
     object ExpectedData {
         const val sessionToken: String = "AbCaccesstokenXyz"
@@ -34,7 +41,6 @@ internal class MockRepositoryFactory(
         // card tokenization
         const val cardNumber: String = "5076801234567845"
         const val customerId: String = "test-android-customer-id"
-        val paymentMethodRequestBody: PaymentMethodRequestBody = PaymentMethodRequestBody(cardNumber = cardNumber, customerId = customerId)
 
         // PIN-related interactions
         const val paymentRef: String = "6ae6a45ff1"
@@ -53,6 +59,8 @@ internal class MockRepositoryFactory(
         const val posTerminalId: String = "pos-terminal-id-123"
         const val refundRef: String = "refund123"
         const val track2Data: String = "5077081212341234=491212012345"
+        const val refundAmount: Float = 1.23f
+        const val refundReason: String = "I feel like refunding this payment!"
         val posVaultRequestParams: PosVaultRequestParams = PosVaultRequestParams(
             cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
             encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
@@ -76,15 +84,15 @@ internal class MockRepositoryFactory(
 
     private fun emptyUrl() = server.url("").toUrl().toString()
 
-    fun createTokenizeCardService() = TokenizeCardService(
+    override fun createTokenizeCardService() = TokenizeCardService(
         okHttpClient = okHttpClient,
         httpUrl = emptyUrl(),
         logger = logger
     )
 
-    fun createCheckBalanceRepository(pinCollector: TestPinCollector): CheckBalanceRepository {
+    override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
         return CheckBalanceRepository(
-            pinCollector = pinCollector,
+            pinCollector = mockPinCollector,
             encryptionKeyService = encryptionKeyService,
             paymentMethodService = paymentMethodService,
             pollingService = pollingService,
@@ -92,9 +100,9 @@ internal class MockRepositoryFactory(
         )
     }
 
-    fun createCapturePaymentRepository(pinCollector: TestPinCollector): CapturePaymentRepository {
+    override fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
         return CapturePaymentRepository(
-            pinCollector = pinCollector,
+            pinCollector = mockPinCollector,
             encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService,
@@ -102,18 +110,18 @@ internal class MockRepositoryFactory(
         )
     }
 
-    fun createDeferPaymentCaptureRepository(pinCollector: TestPinCollector): DeferPaymentCaptureRepository {
+    override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
         return DeferPaymentCaptureRepository(
-            pinCollector = pinCollector,
+            pinCollector = mockPinCollector,
             encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService
         )
     }
 
-    fun createPosRefundPaymentRepository(vaultSubmitter: TestVaultSubmitter): PosRefundPaymentRepository {
+    override fun createRefundPaymentRepository(foragePinEditText: ForagePINEditText): PosRefundPaymentRepository {
         return PosRefundPaymentRepository(
-            vaultSubmitter = vaultSubmitter,
+            vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
             paymentMethodService = paymentMethodService,
             paymentService = paymentService,

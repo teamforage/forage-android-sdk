@@ -2,7 +2,7 @@
   "ref": "refund123",
   "payment_ref": "6ae6a45ff1",
   "funding_type": "ebt_snap",
-  "amount": "1.00",
+  "amount": "1.23",
   "reason": "I feel like it!",
   "metadata": {
     "meta": "verse",

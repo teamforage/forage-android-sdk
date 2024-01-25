@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
@@ -10,31 +11,35 @@ import com.joinforage.forage.android.fixtures.returnsFailedPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.mock.MockRepositoryFactory
+import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.ui.ForagePINEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private lateinit var repository: DeferPaymentCaptureRepository
     private val pinCollector = TestPinCollector()
-    private val testData = MockRepositoryFactory.ExpectedData
+    private val testData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = MockRepositoryFactory(
+        repository = MockServiceFactory(
+            mockVaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE),
+            mockPinCollector = pinCollector,
             logger = logger,
             server = server
-        ).createDeferPaymentCaptureRepository(pinCollector)
+        ).createDeferPaymentCaptureRepository(mock(ForagePINEditText::class.java))
     }
 
     @Test

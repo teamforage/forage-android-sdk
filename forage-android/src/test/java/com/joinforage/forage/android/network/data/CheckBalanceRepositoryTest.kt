@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
@@ -12,10 +13,11 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.mock.MockRepositoryFactory
+import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.ui.ForagePINEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -24,22 +26,25 @@ import me.jorgecastillo.hiroaki.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CheckBalanceRepositoryTest : MockServerSuite() {
     private lateinit var repository: CheckBalanceRepository
     private val pinCollector = TestPinCollector()
-    private val testData = MockRepositoryFactory.ExpectedData
+    private val testData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = MockRepositoryFactory(
+        repository = MockServiceFactory(
+            mockVaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE),
+            mockPinCollector = pinCollector,
             logger = logger,
             server = server
-        ).createCheckBalanceRepository(pinCollector)
+        ).createCheckBalanceRepository(mock(ForagePINEditText::class.java))
     }
 
     @Test
@@ -108,9 +113,11 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         val response = repository.checkBalance(testData.paymentMethodRef)
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val clientError = response as ForageApiResponse.Failure
+        val firstError = (response as ForageApiResponse.Failure).errors.first()
 
-        assertThat(clientError.errors[0].message).contains("Received failure response from EBT network")
+        assertThat(firstError.code).contains("ebt_error_91")
+        assertThat(firstError.code).contains("ebt_error_91")
+        assertThat(firstError.message).contains("Authorizer not available (time-out) - Host Not Available")
     }
 
     @Test
