@@ -23,12 +23,10 @@ internal class CheckBalanceRepository(
     private val logger: Log
 ) {
     suspend fun checkBalance(
-        idempotencyKey: String = UUID.randomUUID().toString(),
         merchantId: String,
         paymentMethodRef: String,
         getVaultRequestParams: ((EncryptionKeys, PaymentMethod) -> VaultSubmitterParams) = { encryptionKeys, paymentMethod ->
             buildVaultRequestParams(
-                idempotencyKey = idempotencyKey,
                 merchantId = merchantId,
                 encryptionKeys = encryptionKeys,
                 paymentMethod = paymentMethod
@@ -72,7 +70,6 @@ internal class CheckBalanceRepository(
     }
 
     suspend fun posCheckBalance(
-        idempotencyKey: String = UUID.randomUUID().toString(),
         merchantId: String,
         paymentMethodRef: String,
         posTerminalId: String
@@ -83,7 +80,6 @@ internal class CheckBalanceRepository(
             getVaultRequestParams = { encryptionKeys, paymentMethod ->
                 PosBalanceVaultSubmitterParams(
                     baseVaultSubmitterParams = buildVaultRequestParams(
-                        idempotencyKey = idempotencyKey,
                         merchantId = merchantId,
                         encryptionKeys = encryptionKeys,
                         paymentMethod = paymentMethod
@@ -95,14 +91,13 @@ internal class CheckBalanceRepository(
     }
 
     private fun buildVaultRequestParams(
-        idempotencyKey: String,
         merchantId: String,
         encryptionKeys: EncryptionKeys,
         paymentMethod: PaymentMethod
     ): VaultSubmitterParams {
         return VaultSubmitterParams(
             encryptionKeys = encryptionKeys,
-            idempotencyKey = idempotencyKey,
+            idempotencyKey = UUID.randomUUID().toString(),
             merchantId = merchantId,
             path = AbstractVaultSubmitter.balancePath(paymentMethod.ref),
             paymentMethod = paymentMethod,

@@ -158,10 +158,6 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
 
     private suspend fun executeCheckBalance(): ForageApiResponse<String> {
         return repository.checkBalance(
-            // Normally, the idempotency key for checkBalance is supposed to be a random string,
-            // but here we use a deterministic value for testing
-            // when "saving" mocked vault responses.
-            idempotencyKey = expectedData.paymentMethodRef,
             merchantId = expectedData.merchantId,
             paymentMethodRef = expectedData.paymentMethodRef
         )

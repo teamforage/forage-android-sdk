@@ -147,10 +147,6 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
     private suspend fun executeDeferPaymentCapture(): ForageApiResponse<String> {
         return repository.deferPaymentCapture(
-            // Normally, the idempotency key for deferPaymentCapture is supposed to be a random string,
-            // but here we use a deterministic value for testing
-            // when "saving" mocked vault responses.
-            idempotencyKey = expectedData.paymentRef,
             merchantId = expectedData.merchantId,
             paymentRef = expectedData.paymentRef
         )

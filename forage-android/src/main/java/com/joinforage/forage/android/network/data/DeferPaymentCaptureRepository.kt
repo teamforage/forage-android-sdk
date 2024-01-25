@@ -23,7 +23,6 @@ internal class DeferPaymentCaptureRepository(
      * @return if successful, the response.data field is an empty string
      */
     suspend fun deferPaymentCapture(
-        idempotencyKey: String = UUID.randomUUID().toString(),
         merchantId: String,
         paymentRef: String
     ): ForageApiResponse<String> {
@@ -43,7 +42,7 @@ internal class DeferPaymentCaptureRepository(
         return vaultSubmitter.submit(
             VaultSubmitterParams(
                 encryptionKeys = encryptionKeys,
-                idempotencyKey = idempotencyKey,
+                idempotencyKey = UUID.randomUUID().toString(),
                 merchantId = merchantId,
                 path = AbstractVaultSubmitter.deferPaymentCapturePath(paymentRef),
                 paymentMethod = paymentMethod,
