@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMethodSuccessfully
@@ -37,7 +36,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
         super.setup()
 
         tokenizeCardService = MockServiceFactory(
-            mockVaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE),
+            mockVaultSubmitter = MockVaultSubmitter(),
             mockPinCollector = TestPinCollector(),
             logger = Log.getSilentInstance(),
             server = server

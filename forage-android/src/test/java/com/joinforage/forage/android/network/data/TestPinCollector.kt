@@ -10,9 +10,7 @@ import com.joinforage.forage.android.vault.PinCollector
 import com.joinforage.forage.android.vault.VaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitterParams
 
-internal class MockVaultSubmitter(
-    private val vaultType: VaultType
-) : VaultSubmitter {
+internal class MockVaultSubmitter() : VaultSubmitter {
     data class RequestContainer(
         val merchantId: String,
         val path: String,
@@ -49,7 +47,7 @@ internal class MockVaultSubmitter(
     }
 
     override fun getVaultType(): VaultType {
-        return vaultType
+        return VaultType.VGS_VAULT_TYPE
     }
 }
 

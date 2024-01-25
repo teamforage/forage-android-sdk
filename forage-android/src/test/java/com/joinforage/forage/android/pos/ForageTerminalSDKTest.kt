@@ -5,7 +5,6 @@ import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
-import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
@@ -68,7 +67,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
 
         mockPinCollector = TestPinCollector()
         mockLogger = MockLogger()
-        vaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE)
+        vaultSubmitter = MockVaultSubmitter()
         // Use Mockito judiciously (mainly for mocking views)!
         // Opt for dependency injection and inheritance over Mockito
         mockForagePanEditText = mock(ForagePANEditText::class.java)

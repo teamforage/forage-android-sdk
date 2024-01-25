@@ -21,8 +21,6 @@ import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.pos.PosVaultRequestParams
 import com.joinforage.forage.android.ui.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer
-import org.json.JSONArray
-import org.json.JSONObject
 
 internal class MockServiceFactory(
     private val mockVaultSubmitter: MockVaultSubmitter,
@@ -140,14 +138,4 @@ internal class MockServiceFactory(
         logger = logger
     )
     private fun createPosRefundService() = PosRefundService(emptyUrl(), logger, okHttpClient)
-}
-
-internal fun getVaultMessageResponse(contentId: String): String {
-    return JSONObject().apply {
-        put("content_id", contentId)
-        put("message_type", "0200")
-        put("status", "sent_to_proxy")
-        put("failed", false)
-        put("errors", JSONArray(emptyList<String>()))
-    }.toString()
 }

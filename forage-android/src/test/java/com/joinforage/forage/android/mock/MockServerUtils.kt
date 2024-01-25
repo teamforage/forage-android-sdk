@@ -13,6 +13,8 @@ import com.joinforage.forage.android.fixtures.returnsRefund
 import com.joinforage.forage.android.network.data.MockVaultSubmitter
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.json.JSONArray
+import org.json.JSONObject
 
 // contains the minimal data needed to marshall a refund response into a PosRefundVaultResponse
 internal val MOCK_VAULT_REFUND_RESPONSE = """
@@ -48,4 +50,14 @@ internal fun mockSuccessfulPosRefund(
         ),
         response = ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE)
     )
+}
+
+internal fun getVaultMessageResponse(contentId: String): String {
+    return JSONObject().apply {
+        put("content_id", contentId)
+        put("message_type", "0200")
+        put("status", "sent_to_proxy")
+        put("failed", false)
+        put("errors", JSONArray(emptyList<String>()))
+    }.toString()
 }

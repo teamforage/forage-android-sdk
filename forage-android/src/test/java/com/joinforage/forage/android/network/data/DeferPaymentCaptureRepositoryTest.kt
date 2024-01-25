@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
@@ -35,7 +34,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
         val logger = Log.getSilentInstance()
         repository = MockServiceFactory(
-            mockVaultSubmitter = MockVaultSubmitter(VaultType.VGS_VAULT_TYPE),
+            mockVaultSubmitter = MockVaultSubmitter(),
             mockPinCollector = pinCollector,
             logger = logger,
             server = server
