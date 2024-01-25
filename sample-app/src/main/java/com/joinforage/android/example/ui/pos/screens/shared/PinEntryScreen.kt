@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
+import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -19,7 +20,8 @@ fun PINEntryScreen(
     paymentMethodRef: String?,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    withPinElementReference: (element: ForagePINEditText) -> Unit
+    withPinElementReference: (element: ForagePINEditText) -> Unit,
+    errorText: String? = null
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -41,6 +43,7 @@ fun PINEntryScreen(
             } else {
                 Text("There was an issue adding your card")
             }
+            ErrorText(errorText)
         }
         Button(onClick = onBackButtonClicked) {
             if (paymentMethodRef != null) {
