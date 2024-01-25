@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
+import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePANEditText
@@ -18,7 +19,8 @@ fun ManualPANEntryScreen(
     forageConfig: ForageConfig,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    withPanElementReference: (element: ForagePANEditText) -> Unit
+    withPanElementReference: (element: ForagePANEditText) -> Unit,
+    errorText: String? = null
 ) {
     ScreenWithBottomRow(
         mainContent = {
@@ -33,6 +35,7 @@ fun ManualPANEntryScreen(
                 Text("Submit")
             }
             Spacer(modifier = Modifier.height(16.dp))
+            ErrorText(errorText)
         },
         bottomRowContent = {
             Button(onClick = onBackButtonClicked) {
