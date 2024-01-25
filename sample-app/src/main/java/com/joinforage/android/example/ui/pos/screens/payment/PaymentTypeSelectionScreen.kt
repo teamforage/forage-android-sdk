@@ -50,7 +50,7 @@ fun PaymentTypeSelectionScreen(
                 Text("EBT Cash Withdrawal (no purchase)")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onCashPurchaseCashbackClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
+            Button(onClick = onCashPurchaseCashbackClicked, modifier = Modifier.fillMaxWidth()) {
                 Text("EBT Cash Purchase + Cashback")
             }
         }
