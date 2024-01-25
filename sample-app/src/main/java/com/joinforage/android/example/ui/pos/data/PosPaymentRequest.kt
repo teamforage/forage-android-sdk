@@ -10,7 +10,9 @@ data class PosPaymentRequest(
     @Json(name = "payment_method") val paymentMethodRef: String,
     val description: String,
     @Json(name = "pos_terminal") val posTerminal: PosTerminal,
-    val metadata: Map<String, String>
+    val metadata: Map<String, String>,
+    @Json(name = "transaction_type") val transactionType: String? = null,
+    @Json(name = "cash_back_amount") val cashBackAmount: Double? = null
 ) {
     companion object {
         fun forSnapPayment(snapAmount: Double, terminalId: String) = PosPaymentRequest(
@@ -29,6 +31,16 @@ data class PosPaymentRequest(
             posTerminal = PosTerminal(providerTerminalId = terminalId),
             metadata = mapOf()
         )
+        fun forEbtCashPaymentWithCashBack(ebtCashAmount: Double, cashBackAmount: Double, terminalId: String) = PosPaymentRequest(
+            amount = ebtCashAmount + cashBackAmount,
+            cashBackAmount = cashBackAmount,
+            transactionType = TransactionType.PurchaseWithCashBack.value,
+            description = "Testing POS certification app payments (EBT Cash Purchase with Cash Back)",
+            fundingType = FundingType.EBTCash.value,
+            paymentMethodRef = "",
+            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            metadata = mapOf()
+        )
     }
 }
 
@@ -36,6 +48,10 @@ enum class FundingType(val value: String) {
     EBTSnap(value = "ebt_snap"),
     EBTCash(value = "ebt_cash"),
     CreditTPP(value = "credit_tpp")
+}
+
+enum class TransactionType(val value: String) {
+    PurchaseWithCashBack(value = "purchase_with_cash_back")
 }
 
 @JsonClass(generateAdapter = true)
