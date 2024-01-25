@@ -80,11 +80,11 @@ class POSViewModel : ViewModel() {
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
-                _uiState.update { it.copy(createPaymentResponse = response) }
+                _uiState.update { it.copy(createdPayment = response, paymentCreationError = null) }
                 onSuccess(response)
-                Log.i("POSViewModel", "Create payment call succeeded: $response")
             } catch (e: HttpException) {
                 Log.e("POSViewModel", "Create payment call failed: $e")
+                _uiState.update { it.copy(paymentCreationError = e.toString(), createdPayment = null) }
             }
         }
     }
@@ -101,11 +101,12 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<PaymentMethod> = PaymentMethodJsonAdapter(moshi)
                     val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod) }
+                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod, tokenizationError = null) }
                     onSuccess(tokenizedPaymentMethod)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
+                    _uiState.update { it.copy(tokenizationError = response.toString(), tokenizedPaymentMethod = null) }
                 }
             }
         }
@@ -126,11 +127,12 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<PaymentMethod> = PaymentMethodJsonAdapter(moshi)
                     val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod) }
+                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod, tokenizationError = null) }
                     onSuccess(tokenizedPaymentMethod)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
+                    _uiState.update { it.copy(tokenizationError = response.toString(), tokenizedPaymentMethod = null) }
                 }
             }
         }
@@ -150,11 +152,12 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<BalanceCheck> = BalanceCheckJsonAdapter(moshi)
                     val balance = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(balance = balance) }
+                    _uiState.update { it.copy(balance = balance, balanceCheckError = null) }
                     onSuccess(balance)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
+                    _uiState.update { it.copy(balanceCheckError = response.toString(), balance = null) }
                 }
             }
         }
@@ -174,11 +177,12 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<PaymentResponse> = PaymentResponseJsonAdapter(moshi)
                     val paymentResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(capturePaymentResponse = paymentResponse) }
+                    _uiState.update { it.copy(capturedPayment = paymentResponse, paymentCaptureError = null) }
                     onSuccess(paymentResponse)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
+                    _uiState.update { it.copy(paymentCaptureError = response.toString(), capturedPayment = null) }
                 }
             }
         }
