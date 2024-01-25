@@ -35,7 +35,7 @@ fun EBTCashWithdrawalScreen(
             OutlinedTextField(
                 value = ebtCashWithdrawalAmount,
                 onValueChange = { ebtCashWithdrawalAmount = it },
-                label = { Text("EBT Cash Withdrawal Dollar Amount") },
+                label = { Text("Withdrawal Amount") },
                 prefix = { Text("$") },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
