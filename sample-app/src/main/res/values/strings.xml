@@ -42,5 +42,6 @@
     <string name="title_pos_payment_swipe_card_entry">Swipe Card Entry</string>
     <string name="title_pos_payment_receipt">Payment Receipt</string>
     <string name="title_pos_payment_ebt_cash">Create a Payment / Purchase</string>
+    <string name="title_pos_payment_cash_withdrawal">Create a Payment / Purchase</string>
     <string name="title_pos_payment_with_cashback">Create a Payment / Purchase</string>
 </resources>

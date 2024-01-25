@@ -46,7 +46,7 @@ fun PaymentTypeSelectionScreen(
                 Text("EBT Cash Purchase")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onCashWithdrawalClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
+            Button(onClick = onCashWithdrawalClicked, modifier = Modifier.fillMaxWidth()) {
                 Text("EBT Cash Withdrawal (no purchase)")
             }
             Spacer(modifier = Modifier.height(4.dp))

@@ -31,6 +31,15 @@ data class PosPaymentRequest(
             posTerminal = PosTerminal(providerTerminalId = terminalId),
             metadata = mapOf()
         )
+        fun forEbtCashWithdrawal(ebtCashWithdrawalAmount: Double, terminalId: String) = PosPaymentRequest(
+            amount = ebtCashWithdrawalAmount,
+            description = "Testing POS certification app payments (EBT Cash Withdrawal)",
+            fundingType = FundingType.EBTCash.value,
+            paymentMethodRef = "",
+            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            metadata = mapOf(),
+            transactionType = TransactionType.Withdrawal.value
+        )
         fun forEbtCashPaymentWithCashBack(ebtCashAmount: Double, cashBackAmount: Double, terminalId: String) = PosPaymentRequest(
             amount = ebtCashAmount + cashBackAmount,
             cashBackAmount = cashBackAmount,
@@ -51,6 +60,7 @@ enum class FundingType(val value: String) {
 }
 
 enum class TransactionType(val value: String) {
+    Withdrawal(value = "withdrawal"),
     PurchaseWithCashBack(value = "purchase_with_cash_back")
 }
 
