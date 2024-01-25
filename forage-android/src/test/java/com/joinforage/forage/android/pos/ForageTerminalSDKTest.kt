@@ -20,12 +20,11 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodWithBalance
 import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.mock.mockSuccessfulPosRefund
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
-import com.joinforage.forage.android.network.data.MockVaultSubmitter
-import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForageConfig
@@ -44,28 +43,24 @@ import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ForageTerminalSDKTest : MockServerSuite() {
-    private lateinit var serviceFactory: MockServiceFactory
     private lateinit var mockForagePanEditText: ForagePANEditText
     private lateinit var mockForagePinEditText: ForagePINEditText
     private lateinit var terminalSdk: ForageTerminalSDK
     private lateinit var mockForageSdk: ForageSDK
     private lateinit var mockLogger: MockLogger
     private val expectedData = MockServiceFactory.ExpectedData
-    private lateinit var mockPinCollector: TestPinCollector
     private lateinit var vaultSubmitter: MockVaultSubmitter
 
     @Before
     fun setUp() {
         super.setup()
 
-        mockPinCollector = TestPinCollector()
         mockLogger = MockLogger()
         vaultSubmitter = MockVaultSubmitter()
         // Use Mockito judiciously (mainly for mocking views)!
@@ -80,7 +75,6 @@ class ForageTerminalSDKTest : MockServerSuite() {
             )
         )
         `when`(mockForagePinEditText.getVaultType()).thenReturn(vaultSubmitter.getVaultType())
-        `when`(mockForagePinEditText.getCollector(anyString())).thenReturn(mockPinCollector)
 
         terminalSdk = ForageTerminalSDK(
             posTerminalId = expectedData.posTerminalId,
@@ -178,10 +172,9 @@ class ForageTerminalSDKTest : MockServerSuite() {
         // Get Payment Method is called twice!
         server.givenPaymentMethodRef().returnsPaymentMethod()
         server.givenPaymentMethodRef().returnsPaymentMethodWithBalance()
-        mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = expectedData.paymentMethodRef,
-            vaultRequestParams = expectedData.posVaultRequestParams,
-            ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId))
+        vaultSubmitter.setSubmitResponse(
+            path = "/api/payment_methods/${expectedData.paymentMethodRef}/balance/",
+            response = ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId))
         )
         server.givenContentId(expectedData.contentId)
             .returnsMessageCompletedSuccessfully()
@@ -208,9 +201,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
-        mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = expectedData.paymentMethodRef,
-            vaultRequestParams = expectedData.posVaultRequestParams,
+        vaultSubmitter.setSubmitResponse(
+            path = "/api/payment_methods/${expectedData.paymentMethodRef}/balance/",
             response = failureResponse
         )
 
@@ -224,9 +216,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
-        mockPinCollector.setBalanceCheckResponse(
-            paymentMethodRef = expectedData.paymentMethodRef,
-            vaultRequestParams = expectedData.posVaultRequestParams,
+        vaultSubmitter.setSubmitResponse(
+            path = "/api/payment_methods/${expectedData.paymentRef}/balance/",
             response = failureResponse
         )
 
@@ -290,7 +281,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
-        setVaultResponse(
+        vaultSubmitter.setSubmitResponse(
             path = "/api/payments/${expectedData.paymentRef}/refunds/",
             response = failureResponse
         )
@@ -344,7 +335,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 )
             )
         ).thenReturn(
-            ForageApiResponse.Success("Success")
+            ForageApiResponse.Success("")
         )
         val params = DeferPaymentCaptureParams(
             foragePinEditText = mockForagePinEditText,
@@ -352,7 +343,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
         val response = terminalSdk.deferPaymentCapture(params)
         assertTrue(response is ForageApiResponse.Success)
-        assertTrue((response as ForageApiResponse.Success).data == "Success")
+        assertTrue((response as ForageApiResponse.Success).data == "")
     }
 
     private suspend fun executeTokenizeCardWithTrack2Data(
@@ -394,18 +385,6 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
     }
 
-    private fun setVaultResponse(path: String, response: ForageApiResponse<String>) {
-        vaultSubmitter.setSubmitResponse(
-            params = MockVaultSubmitter.RequestContainer(
-                merchantId = expectedData.merchantId,
-                path = path,
-                paymentMethodRef = expectedData.paymentMethodRef,
-                idempotencyKey = expectedData.paymentRef
-            ),
-            response = response
-        )
-    }
-
     private fun createMockTerminalSdk() = ForageTerminalSDK(
         posTerminalId = expectedData.posVaultRequestParams.posTerminalId,
         forageSdk = ForageSDK(),
@@ -413,7 +392,6 @@ class ForageTerminalSDKTest : MockServerSuite() {
         createServiceFactory = { _: String, _: String, logger: Log ->
             MockServiceFactory(
                 mockVaultSubmitter = vaultSubmitter,
-                mockPinCollector = mockPinCollector,
                 logger = logger,
                 server = server
             )

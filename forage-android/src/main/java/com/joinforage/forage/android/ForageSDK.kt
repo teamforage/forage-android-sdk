@@ -140,7 +140,7 @@ class ForageSDK : ForageSDKInterface {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vault = foragePinEditText.getVaultType(),
             vaultAction = UserAction.BALANCE,
             logger
         )
@@ -150,6 +150,7 @@ class ForageSDK : ForageSDKInterface {
         val balanceCheckService = ServiceFactory(sessionToken, merchantId, logger)
             .createCheckBalanceRepository(foragePinEditText)
         val response = balanceCheckService.checkBalance(
+            merchantId = merchantId,
             paymentMethodRef = paymentMethodRef
         )
         processApiResponseForMetrics(response, measurement)
@@ -198,7 +199,7 @@ class ForageSDK : ForageSDKInterface {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vault = foragePinEditText.getVaultType(),
             vaultAction = UserAction.CAPTURE,
             logger
         )
@@ -208,6 +209,7 @@ class ForageSDK : ForageSDKInterface {
         val capturePaymentService = ServiceFactory(sessionToken, merchantId, logger)
             .createCapturePaymentRepository(foragePinEditText)
         val response = capturePaymentService.capturePayment(
+            merchantId = merchantId,
             paymentRef = paymentRef
         )
         processApiResponseForMetrics(response, measurement)
@@ -220,7 +222,7 @@ class ForageSDK : ForageSDKInterface {
      * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element and defers
      * payment capture to the server.
      *
-     * * On success, the object returns `Nothing`.
+     * * On success, the `data` property of the [ForageApiResponse.Success] object resolves with an empty string.
      * * On failure, for example in the case of
      * [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable)
      * or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
@@ -256,9 +258,22 @@ class ForageSDK : ForageSDKInterface {
 
         val deferPaymentCaptureService = ServiceFactory(sessionToken, merchantId, logger)
             .createDeferPaymentCaptureRepository(foragePinEditText)
-        return deferPaymentCaptureService.deferPaymentCapture(
+        val response = deferPaymentCaptureService.deferPaymentCapture(
+            merchantId = merchantId,
             paymentRef = paymentRef
         )
+
+        return when (response) {
+            is ForageApiResponse.Success -> {
+                logger.i("[ForageSDK] Successfully deferred payment capture for Payment $paymentRef")
+                ForageApiResponse.Success("")
+            }
+
+            else -> {
+                logger.e("[ForageSDK] Failed to defer payment capture for Payment $paymentRef")
+                response
+            }
+        }
     }
 
     /**
@@ -313,7 +328,7 @@ class ForageSDK : ForageSDKInterface {
 
         open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
             return CheckBalanceRepository(
-                pinCollector = foragePinEditText.getCollector(merchantId),
+                vaultSubmitter = createVaultSubmitter(foragePinEditText),
                 encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
                 pollingService = pollingService,
@@ -323,17 +338,18 @@ class ForageSDK : ForageSDKInterface {
 
         open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
             return CapturePaymentRepository(
-                pinCollector = foragePinEditText.getCollector(merchantId),
+                vaultSubmitter = createVaultSubmitter(foragePinEditText),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
-                pollingService = pollingService
+                pollingService = pollingService,
+                logger = logger
             )
         }
 
         open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
             return DeferPaymentCaptureRepository(
-                pinCollector = foragePinEditText.getCollector(merchantId),
+                vaultSubmitter = createVaultSubmitter(foragePinEditText),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService

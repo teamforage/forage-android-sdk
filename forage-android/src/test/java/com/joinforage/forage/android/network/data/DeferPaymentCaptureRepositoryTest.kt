@@ -11,10 +11,10 @@ import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat
@@ -22,20 +22,19 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private lateinit var repository: DeferPaymentCaptureRepository
-    private val pinCollector = TestPinCollector()
-    private val testData = MockServiceFactory.ExpectedData
+    private lateinit var vaultSubmitter: MockVaultSubmitter
+    private val expectedData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
         val logger = Log.getSilentInstance()
+        vaultSubmitter = MockVaultSubmitter()
         repository = MockServiceFactory(
-            mockVaultSubmitter = MockVaultSubmitter(),
-            mockPinCollector = pinCollector,
+            mockVaultSubmitter = vaultSubmitter,
             logger = logger,
             server = server
         ).createDeferPaymentCaptureRepository(mock(ForagePINEditText::class.java))
@@ -45,7 +44,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.deferPaymentCapture(testData.paymentRef)
+        val response = executeDeferPaymentCapture()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -60,14 +59,9 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
         val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        setMockVaultResponse(failureResponse)
 
-        pinCollector.setCollectPinResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = failureResponse
-        )
-
-        val response = repository.deferPaymentCapture(testData.paymentRef)
+        val response = executeDeferPaymentCapture()
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -77,7 +71,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsFailedPayment()
 
-        val response = repository.deferPaymentCapture(testData.paymentRef)
+        val response = executeDeferPaymentCapture()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -95,7 +89,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsFailedPaymentMethod()
 
-        val response = repository.deferPaymentCapture(testData.paymentRef)
+        val response = executeDeferPaymentCapture()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -118,14 +112,9 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         val expectedMessage = "You don't have access to this endpoint"
         val expectedForageCode = "permission_denied"
         val expectedStatusCode = 401
+        setMockVaultResponse(ForageApiResponse.Failure.fromError(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
 
-        pinCollector.setCollectPinResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = ForageApiResponse.Failure(listOf(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
-        )
-
-        val response = repository.deferPaymentCapture(testData.paymentRef)
+        val response = executeDeferPaymentCapture()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -141,13 +130,9 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCollectPinResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = ForageApiResponse.Success("")
-        )
+        setMockVaultResponse(ForageApiResponse.Success(""))
 
-        val response = repository.deferPaymentCapture(testData.paymentRef)
+        val response = executeDeferPaymentCapture()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
@@ -158,5 +143,23 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
                 assertThat(false)
             }
         }
+    }
+
+    private suspend fun executeDeferPaymentCapture(): ForageApiResponse<String> {
+        return repository.deferPaymentCapture(
+            // Normally, the idempotency key for deferPaymentCapture is supposed to be a random string,
+            // but here we use a deterministic value for testing
+            // when "saving" mocked vault responses.
+            idempotencyKey = expectedData.paymentRef,
+            merchantId = expectedData.merchantId,
+            paymentRef = expectedData.paymentRef
+        )
+    }
+
+    private fun setMockVaultResponse(response: ForageApiResponse<String>) {
+        vaultSubmitter.setSubmitResponse(
+            path = "/api/payments/${expectedData.paymentRef}/collect_pin/",
+            response = response
+        )
     }
 }

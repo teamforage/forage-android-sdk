@@ -21,6 +21,8 @@ internal class PollingService(
         contentId: String,
         operationDescription: String
     ): ForageApiResponse<String> {
+        logger.addAttribute("content_id", contentId)
+
         var attempt = 1
         val pollingIntervals = LDManager.getPollingIntervals(logger)
 

@@ -17,9 +17,8 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MOCK_VAULT_REFUND_RESPONSE
 import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.mockSuccessfulPosRefund
-import com.joinforage.forage.android.network.data.MockVaultSubmitter
-import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -48,7 +47,6 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         val logger = Log.getSilentInstance()
         mockServiceFactory = MockServiceFactory(
             mockVaultSubmitter = mockVaultSubmitter,
-            mockPinCollector = TestPinCollector(),
             logger = logger,
             server = server
         )
@@ -69,14 +67,9 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         )
     }
 
-    private fun setVaultResponse(response: ForageApiResponse<String>) {
+    private fun setMockVaultResponse(response: ForageApiResponse<String>) {
         mockVaultSubmitter.setSubmitResponse(
-            params = MockVaultSubmitter.RequestContainer(
-                merchantId = expectedData.merchantId,
-                path = "/api/payments/${expectedData.paymentRef}/refunds/",
-                paymentMethodRef = expectedData.paymentMethodRef,
-                idempotencyKey = expectedData.paymentRef
-            ),
+            path = "/api/payments/${expectedData.paymentRef}/refunds/",
             response = response
         )
     }
@@ -141,7 +134,7 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
             .returnsMessageCompletedSuccessfully()
         server.givenPaymentAndRefundRef().returnsFailedRefund()
 
-        setVaultResponse(ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE))
+        setMockVaultResponse(ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE))
 
         val expectedMessage = "Refund with ref refund123 does not exist for current Merchant with FNS 1234567."
         val expectedCode = "resource_not_found"
@@ -165,7 +158,7 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         val expectedMessage = "Only Payments in the succeeded state can be refunded, but Payment with ref abcdef123 is in the canceled state"
         val expectedForageCode = "cannot_refund_payment"
         val expectedStatusCode = 400
-        setVaultResponse(
+        setMockVaultResponse(
             ForageApiResponse.Failure.fromError(
                 ForageError(400, code = expectedForageCode, message = expectedMessage)
             )
@@ -186,7 +179,7 @@ class PosRefundPaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        setVaultResponse(ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE))
+        setMockVaultResponse(ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE))
 
         server.givenContentId(expectedData.contentId)
             .returnsFailed()

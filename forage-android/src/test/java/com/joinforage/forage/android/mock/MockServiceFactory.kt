@@ -14,8 +14,6 @@ import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
-import com.joinforage.forage.android.network.data.MockVaultSubmitter
-import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.pos.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.pos.PosVaultRequestParams
@@ -24,7 +22,6 @@ import okhttp3.mockwebserver.MockWebServer
 
 internal class MockServiceFactory(
     private val mockVaultSubmitter: MockVaultSubmitter,
-    private val mockPinCollector: TestPinCollector,
     private val logger: Log,
     private val server: MockWebServer
 ) : ForageSDK.ServiceFactory(
@@ -90,7 +87,7 @@ internal class MockServiceFactory(
 
     override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
         return CheckBalanceRepository(
-            pinCollector = mockPinCollector,
+            vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
             paymentMethodService = paymentMethodService,
             pollingService = pollingService,
@@ -100,17 +97,18 @@ internal class MockServiceFactory(
 
     override fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
         return CapturePaymentRepository(
-            pinCollector = mockPinCollector,
+            vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService,
-            pollingService = pollingService
+            pollingService = pollingService,
+            logger = logger
         )
     }
 
     override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
         return DeferPaymentCaptureRepository(
-            pinCollector = mockPinCollector,
+            vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService
