@@ -37,8 +37,8 @@ import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseScreen
-import com.joinforage.android.example.ui.pos.screens.payment.EBTCashWithdrawalScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseWithCashBackScreen
+import com.joinforage.android.example.ui.pos.screens.payment.EBTCashWithdrawalScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTSnapPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
