@@ -12,8 +12,7 @@ import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
-import com.joinforage.android.example.ui.pos.network.PosApi
-import com.joinforage.android.example.ui.pos.network.formatAuthHeader
+import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -41,6 +40,13 @@ sealed interface MerchantDetailsState {
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
+    private val api: PosApiService by lazy {
+        // lazy because we may not have the merchantId
+        // of the forageConfig when a ViewModel instance
+        // is created but we certainly will by the time
+        // we ever use any methods of the api
+        PosApiService.from(uiState.value.forageConfig)
+    }
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
@@ -55,10 +61,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
             val merchantDetailsState = try {
-                val result = PosApi.retrofitService.getMerchantInfo(
-                    formatAuthHeader(uiState.value.sessionToken),
-                    merchantId
-                )
+                val result = api.getMerchantInfo()
                 onSuccess()
                 MerchantDetailsState.Success(result)
             } catch (e: HttpException) {
@@ -73,9 +76,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = PosApi.retrofitService.createPayment(
-                    authorization = formatAuthHeader(uiState.value.sessionToken),
-                    merchantId = merchantId,
+                val response = api.createPayment(
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
