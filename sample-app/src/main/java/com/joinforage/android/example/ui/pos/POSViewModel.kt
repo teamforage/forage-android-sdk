@@ -187,4 +187,41 @@ class POSViewModel : ViewModel() {
             }
         }
     }
+
+    fun voidPayment(paymentRef: String, onSuccess: (response: PaymentResponse) -> Unit) {
+        val idempotencyKey = UUID.randomUUID().toString()
+
+        viewModelScope.launch {
+            try {
+                val response = api.voidPayment(
+                    idempotencyKey = idempotencyKey,
+                    paymentRef = paymentRef
+                )
+                _uiState.update { it.copy(voidPaymentResponse = response) }
+                onSuccess(response)
+                Log.i("POSViewModel", "Void payment call succeeded: $response")
+            } catch (e: HttpException) {
+                Log.e("POSViewModel", "Void payment call failed: $e")
+            }
+        }
+    }
+
+    fun voidRefund(paymentRef: String, refundRef: String, onSuccess: (response: PaymentResponse) -> Unit) {
+        val idempotencyKey = UUID.randomUUID().toString()
+
+        viewModelScope.launch {
+            try {
+                val response = api.voidRefund(
+                    idempotencyKey = idempotencyKey,
+                    paymentRef = paymentRef,
+                    refundRef = refundRef
+                )
+                _uiState.update { it.copy(voidRefundResponse = response) }
+                onSuccess(response)
+                Log.i("POSViewModel", "Void refund call succeeded: $response")
+            } catch (e: HttpException) {
+                Log.e("POSViewModel", "Void refund call failed: $e")
+            }
+        }
+    }
 }
