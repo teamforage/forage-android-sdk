@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.network.model
 
+import org.json.JSONException
 import org.json.JSONObject
 
 internal val UnknownErrorApiResponse = ForageApiResponse.Failure.fromError(
@@ -68,6 +69,9 @@ data class ForageApiError(
     val errors: List<ForageErrorObj>
 ) {
     object ForageApiErrorMapper {
+        /**
+         * @throws [JSONException] if the `string` is not a valid ForageApiError JSON string
+         */
         fun from(string: String): ForageApiError {
             val jsonObject = JSONObject(string)
 

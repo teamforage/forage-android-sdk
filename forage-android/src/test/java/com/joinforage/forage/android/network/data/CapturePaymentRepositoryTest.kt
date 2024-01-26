@@ -15,15 +15,11 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
+import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.model.Payment
-import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
-import com.joinforage.forage.android.network.OkHttpClientBuilder
-import com.joinforage.forage.android.network.PaymentMethodService
-import com.joinforage.forage.android.network.PaymentService
-import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.ui.ForagePINEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -32,53 +28,25 @@ import me.jorgecastillo.hiroaki.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CapturePaymentRepositoryTest : MockServerSuite() {
     private lateinit var repository: CapturePaymentRepository
     private val pinCollector = TestPinCollector()
-    private val testData = ExpectedData()
+    private val testData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = CapturePaymentRepository(
-            pinCollector = pinCollector,
-            encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
-            pollingService = PollingService(
-                messageStatusService = MessageStatusService(
-                    okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                        testData.bearerToken,
-                        merchantId = testData.merchantAccount
-                    ),
-                    httpUrl = server.url("").toUrl().toString(),
-                    logger = logger
-                ),
-                logger = logger
-            ),
-            paymentService = PaymentService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantId = testData.merchantAccount
-                ),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
-            paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantId = testData.merchantAccount
-                ),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            )
-        )
+        repository = MockServiceFactory(
+            mockVaultSubmitter = MockVaultSubmitter(),
+            mockPinCollector = pinCollector,
+            logger = logger,
+            server = server
+        ).createCapturePaymentRepository(mock(ForagePINEditText::class.java))
     }
 
     @Test
@@ -121,11 +89,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
+                TestPinCollector.sendToProxyResponse(testData.contentId)
             )
         )
 
-        server.givenContentId(ExpectedData().contentId)
+        server.givenContentId(testData.contentId)
             .returnsUnauthorized()
 
         val response = repository.capturePayment(testData.paymentRef)
@@ -186,11 +154,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
+                TestPinCollector.sendToProxyResponse(testData.contentId)
             )
         )
 
-        server.givenContentId(ExpectedData().contentId)
+        server.givenContentId(testData.contentId)
             .returnsExpiredCard()
 
         val response = repository.capturePayment(testData.paymentRef)
@@ -215,12 +183,12 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
             paymentRef = testData.paymentRef,
             vaultRequestParams = testData.vaultRequestParams,
             response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(ExpectedData().contentId)
+                TestPinCollector.sendToProxyResponse(testData.contentId)
             )
         )
 
         repeat(MAX_ATTEMPTS) {
-            server.givenContentId(ExpectedData().contentId)
+            server.givenContentId(testData.contentId)
                 .returnsSendToProxy()
         }
 
@@ -235,7 +203,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
         assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
         assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
-        val interpolateId = ExpectedData().contentId
+        val interpolateId = testData.contentId
         server.verify("api/message/$interpolateId")
             .called(
                 times = times(MAX_ATTEMPTS)
@@ -264,7 +232,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         when (response) {
             is ForageApiResponse.Success -> {
                 val paymentMethod = Payment.ModelMapper.from(response.data).paymentMethod
-                assertThat(paymentMethod).isEqualTo(testData.paymentMethod)
+                assertThat(paymentMethod).isEqualTo(testData.paymentMethodRef)
             }
             else -> {
                 assertThat(false)
@@ -275,16 +243,4 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     companion object {
         private const val MAX_ATTEMPTS = 10
     }
-
-    private data class ExpectedData(
-        val bearerToken: String = "AbCaccesstokenXyz",
-        val paymentRef: String = "6ae6a45ff1",
-        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
-            "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-            "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
-        ),
-        val merchantAccount: String = "1234567",
-        val contentId: String = "36058ff7-0e9d-4025-94cd-80ef04a3bb1c",
-        val paymentMethod: String = "1f148fe399"
-    )
 }

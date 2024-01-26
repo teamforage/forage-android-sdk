@@ -16,7 +16,9 @@ internal data class PosRefundVaultResponse(
         fun from(string: String): PosRefundVaultResponse {
             val jsonObject = JSONObject(string)
 
-            val message = Message.ModelMapper.from(jsonObject.getString("message"))
+            val messageJsonObject = jsonObject.getJSONObject("message")
+
+            val message = Message.ModelMapper.from(messageJsonObject.toString())
             val refundRef = jsonObject.getString("ref")
 
             return PosRefundVaultResponse(

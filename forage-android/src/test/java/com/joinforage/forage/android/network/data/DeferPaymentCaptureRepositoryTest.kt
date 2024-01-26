@@ -10,54 +10,35 @@ import com.joinforage.forage.android.fixtures.returnsFailedPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.OkHttpClientBuilder
-import com.joinforage.forage.android.network.PaymentMethodService
-import com.joinforage.forage.android.network.PaymentService
+import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.ui.ForagePINEditText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private lateinit var repository: DeferPaymentCaptureRepository
     private val pinCollector = TestPinCollector()
-    private val testData = ExpectedData()
+    private val testData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
         val logger = Log.getSilentInstance()
-        repository = DeferPaymentCaptureRepository(
-            pinCollector = pinCollector,
-            encryptionKeyService = EncryptionKeyService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(testData.bearerToken),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
-            paymentService = PaymentService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantId = testData.merchantAccount
-                ),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            ),
-            paymentMethodService = PaymentMethodService(
-                okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-                    testData.bearerToken,
-                    merchantId = testData.merchantAccount
-                ),
-                httpUrl = server.url("").toUrl().toString(),
-                logger = logger
-            )
-        )
+        repository = MockServiceFactory(
+            mockVaultSubmitter = MockVaultSubmitter(),
+            mockPinCollector = pinCollector,
+            logger = logger,
+            server = server
+        ).createDeferPaymentCaptureRepository(mock(ForagePINEditText::class.java))
     }
 
     @Test
@@ -178,15 +159,4 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
             }
         }
     }
-
-    private data class ExpectedData(
-        val bearerToken: String = "AbCaccesstokenXyz",
-        val paymentRef: String = "6ae6a45ff1",
-        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
-            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
-        ),
-        val merchantAccount: String = "1234567",
-        val paymentMethod: String = "1f148fe399"
-    )
 }

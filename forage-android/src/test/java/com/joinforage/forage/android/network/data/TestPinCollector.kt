@@ -7,6 +7,49 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.vault.CollectorConstants
 import com.joinforage.forage.android.vault.PinCollector
+import com.joinforage.forage.android.vault.VaultSubmitter
+import com.joinforage.forage.android.vault.VaultSubmitterParams
+
+internal class MockVaultSubmitter() : VaultSubmitter {
+    data class RequestContainer(
+        val merchantId: String,
+        val path: String,
+        val paymentMethodRef: String,
+        val idempotencyKey: String
+    )
+
+    private var responses =
+        HashMap<RequestContainer, ForageApiResponse<String>>()
+
+    fun setSubmitResponse(
+        params: RequestContainer,
+        response: ForageApiResponse<String>
+    ) {
+        responses[params] = response
+    }
+
+    override suspend fun submit(params: VaultSubmitterParams): ForageApiResponse<String> {
+        return responses.getOrDefault(
+            RequestContainer(
+                merchantId = params.merchantId,
+                path = params.path,
+                paymentMethodRef = params.paymentMethod.ref,
+                idempotencyKey = params.idempotencyKey
+            ),
+            ForageApiResponse.Failure.fromError(
+                ForageError(
+                    500,
+                    "unknown_server_error",
+                    "Unknown Server Error"
+                )
+            )
+        )
+    }
+
+    override fun getVaultType(): VaultType {
+        return VaultType.VGS_VAULT_TYPE
+    }
+}
 
 /**
  * Fake test implementation of PinCollector that could be used to replace VGS on tests

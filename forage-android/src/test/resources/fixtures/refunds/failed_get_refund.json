@@ -1,0 +1,11 @@
+{
+  "path": "/api/payments/payment123/refunds/refund123",
+  "errors": [{
+    "code": "resource_not_found",
+    "message": "Refund with ref refund123 does not exist for current Merchant with FNS 1234567.",
+    "source": {
+      "resource": "Refund",
+      "ref": "refund123"
+    }
+  }]
+}

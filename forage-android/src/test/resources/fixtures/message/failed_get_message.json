@@ -5,9 +5,9 @@
   "failed": true,
   "errors": [
     {
-      "status_code": 400,
-      "forage_code": "ebt_error_51",
-      "message": "Received failure response from EBT network"
+      "status_code": 504,
+      "forage_code": "ebt_error_91",
+      "message": "Authorizer not available (time-out) - Host Not Available"
     }
   ]
 }

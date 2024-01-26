@@ -146,7 +146,14 @@ class ForageTerminalSDK(
         logger
             .addAttribute("payment_ref", paymentRef)
             .addAttribute("merchant_ref", merchantId)
-        logger.i("[POS] Call refundPayment for Payment $paymentRef with amount $amount for reason $reason on Terminal $posTerminalId")
+        logger.i(
+            """
+            [POS] Called refundPayment for Payment $paymentRef
+            with amount: $amount
+            for reason: $reason
+            on Terminal: $posTerminalId
+            """.trimIndent()
+        )
 
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
