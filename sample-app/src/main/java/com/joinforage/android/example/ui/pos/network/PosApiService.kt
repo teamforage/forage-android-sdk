@@ -15,6 +15,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 private val moshi = Moshi.Builder()
     .addLast(KotlinJsonAdapterFactory())
@@ -28,6 +29,19 @@ interface PosApiService {
     suspend fun createPayment(
         @Header("Idempotency-Key") idempotencyKey: String,
         @Body payment: PosPaymentRequest
+    ): PaymentResponse
+
+    @POST("api/payments/{paymentRef}/void/")
+    suspend fun voidPayment(
+        @Header("Idempotency-Key") idempotencyKey: String,
+        @Path("paymentRef") paymentRef: String
+    ): PaymentResponse
+
+    @POST("api/payments/{paymentRef}/refunds/{refundRef}/void/")
+    suspend fun voidRefund(
+        @Header("Idempotency-Key") idempotencyKey: String,
+        @Path("paymentRef") paymentRef: String,
+        @Path("refundRef") refundRef: String
     ): PaymentResponse
 
     companion object {
