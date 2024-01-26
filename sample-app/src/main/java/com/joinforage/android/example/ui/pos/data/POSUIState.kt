@@ -20,12 +20,18 @@ data class POSUIState(
 
     // Creating a payment
     val localPayment: PosPaymentRequest? = null, // Used to build up the payment object before we send it
-    val createdPayment: PaymentResponse? = null,
+    val createPaymentResponse: PaymentResponse? = null,
     val paymentCreationError: String? = null,
 
     // Capturing that payment
-    val capturedPayment: PaymentResponse? = null,
-    val paymentCaptureError: String? = null
+    val capturePaymentResponse: PaymentResponse? = null,
+    val paymentCaptureError: String? = null,
+
+    // Voiding a payment
+    val voidPaymentResponse: PaymentResponse? = null,
+
+    // Voiding a refund
+    val voidRefundResponse: PaymentResponse? = null
 ) {
     val forageConfig: ForageConfig
         get() = ForageConfig(merchantId, sessionToken)
