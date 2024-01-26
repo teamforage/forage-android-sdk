@@ -83,14 +83,18 @@ internal interface ForageSDKInterface {
 }
 
 /**
- * Data class representing the parameters required for tokenizing an EBT card.
+ * A model that represents the parameters that Forage requires to tokenize an EBT Card.
+ * [TokenizeEBTCardParams] are passed to the
+ * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] function.
  *
- * @property foragePanEditText A ForagePANEditText  UI component. Importantly,
- * you must have called .setForageConfig() already
- * @property customerId A unique identifier associated with a customer. This is
- * required by FNS for fraud detection purposes
- * @property reusable Optional. Indicates whether the tokenized card can be
- * reused for multiple transactions. Defaults to true if not specified.
+ * @property foragePanEditText A reference to a [ForagePANEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property customerId A unique ID for the end customer making the payment.
+ * If using your internal customer ID, then we recommend that you hash the value
+ * before sending it on the payload.
+ * @property reusable An optional boolean value that indicates whether the same card can be used
+ * to make multiple payments, set to true by default.
  */
 data class TokenizeEBTCardParams(
     val foragePanEditText: ForagePANEditText,
@@ -99,12 +103,20 @@ data class TokenizeEBTCardParams(
 )
 
 /**
- * Data class representing the parameters required for checking the balance of an EBT card.
+ * A model that represents the parameters that Forage requires to check a card's balance.
+ * [CheckBalanceParams] are passed to the
+ * [checkBalance][com.joinforage.forage.android.ForageSDK.checkBalance] function.
  *
- * @property foragePinEditText A ForagePINEditText UI component. Importantly,
- * you must have called .setForageConfig() already
- * @property paymentMethodRef A tokenized reference to the EBT card
- * (PaymentMethod) whose balance is being checked.
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentMethodRef A unique string identifier for a previously created
+ * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) in Forage's database,
+ * found in the response from a call to
+ * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] (online-only),
+ * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] (POS),
+ * or the [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method)
+ * endpoint.
  */
 data class CheckBalanceParams(
     val foragePinEditText: ForagePINEditText,
@@ -112,11 +124,17 @@ data class CheckBalanceParams(
 )
 
 /**
- * Data class representing the parameters required for capturing a payment on an EBT card.
+ * A model that represents the parameters that Forage requires to capture a payment.
+ * [CapturePaymentParams] are passed to the
+ * [capturePayment][com.joinforage.forage.android.ForageSDK.capturePayment] function.
  *
- * @property foragePinEditText A UI ForagePINEditText UI component. Importantly,
- * you must have called .setForageConfig() already
- * @property paymentRef A reference to the intended payment transaction.
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class CapturePaymentParams(
     val foragePinEditText: ForagePINEditText,
@@ -124,12 +142,24 @@ data class CapturePaymentParams(
 )
 
 /**
- * Data class representing the parameters required for capturing the PIN for a deferred EBT payment.
- * The EBT payment will then be confirmed through a request from the server.
+ * A model that represents the parameters that Forage requires to collect a card PIN and defer
+ * the capture of the payment to the server.
+ * [DeferPaymentCaptureParams] are passed to the
+ * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture] function.
  *
- * @property foragePinEditText A UI ForagePINEditText UI component. Importantly,
- * you must have called .setForageConfig() already
- * @property paymentRef A reference to the intended payment transaction.
+ * @see * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+ * for the related step-by-step guide.
+ * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment)
+ * for the API endpoint to call after
+ * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture].
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class DeferPaymentCaptureParams(
     val foragePinEditText: ForagePINEditText,
