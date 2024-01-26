@@ -223,9 +223,7 @@ class ForageSDK : ForageSDKInterface {
      * payment capture to the server.
      *
      * * On success, the `data` property of the [ForageApiResponse.Success] object resolves with an empty string.
-     * * On failure, for example in the case of
-     * [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable)
-     * or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
+     * * On failure, for example in the case of [`expired_session_token`](https://docs.joinforage.app/reference/errors#expired_session_token) errors, the
      * response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
      * unpack to troubleshoot the issue.
