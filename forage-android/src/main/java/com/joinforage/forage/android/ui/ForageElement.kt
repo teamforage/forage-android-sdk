@@ -126,7 +126,7 @@ interface ForageElement<T : ElementState> {
     fun setOnBlurEventListener(l: SimpleElementListener)
 
     /**
-     * Sets an event listener to be fired on ForageElement change events.
+     * Sets an event listener to be fired when the text inside the ForageElement input field changes.
      *
      * @param l The [StatefulElementListener] to be fired on change events.
      */
