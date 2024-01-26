@@ -18,8 +18,6 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 
 internal typealias BasisTheoryResponse = Result<Any?>
 
-internal data class ProxyRequestObject(val pin: TextElement, val card_number_token: String)
-
 internal class BasisTheoryPinSubmitter(
     context: Context,
     foragePinEditText: ForagePINEditText,
