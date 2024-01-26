@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.model.EncryptionKeys
@@ -14,7 +14,7 @@ internal object CollectorConstants {
     message = "Use VaultSubmitter instead",
     replaceWith = ReplaceWith(
         expression = "VaultSubmitter",
-        imports = ["com.joinforage.forage.android.collect.VaultSubmitter"]
+        imports = ["com.joinforage.forage.android.vault.VaultSubmitter"]
     ),
     level = DeprecationLevel.WARNING
 )

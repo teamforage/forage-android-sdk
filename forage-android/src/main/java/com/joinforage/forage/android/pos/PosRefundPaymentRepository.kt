@@ -1,8 +1,5 @@
 package com.joinforage.forage.android.pos
 
-import com.joinforage.forage.android.collect.AbstractVaultSubmitter
-import com.joinforage.forage.android.collect.VaultSubmitter
-import com.joinforage.forage.android.collect.VaultSubmitterParams
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.model.EncryptionKeys
@@ -13,6 +10,9 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.vault.VaultSubmitter
+import com.joinforage.forage.android.vault.VaultSubmitterParams
 
 internal class PosRefundPaymentRepository(
     private val vaultSubmitter: VaultSubmitter,

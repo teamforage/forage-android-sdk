@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
@@ -104,10 +104,18 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
     internal abstract suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String>
     internal abstract fun getVaultToken(paymentMethod: PaymentMethod): String?
 
+    /**
+     * @return [UnknownErrorApiResponse] if the response is a vault error, or null if it is not
+     */
     internal abstract fun toVaultErrorOrNull(vaultResponse: VaultResponse): ForageApiResponse.Failure?
-    abstract fun toForageErrorOrNull(vaultResponse: VaultResponse): ForageApiResponse.Failure?
-    abstract fun toForageSuccessOrNull(vaultResponse: VaultResponse): ForageApiResponse.Success<String>?
-    abstract fun parseVaultError(vaultResponse: VaultResponse): String
+    internal abstract fun toForageErrorOrNull(vaultResponse: VaultResponse): ForageApiResponse.Failure?
+    internal abstract fun toForageSuccessOrNull(vaultResponse: VaultResponse): ForageApiResponse.Success<String>?
+
+    /**
+     * @return A string containing the raw error details of the vault error.
+     * To be used for internal error reporting.
+     */
+    internal abstract fun parseVaultErrorMessage(vaultResponse: VaultResponse): String
 
     // concrete methods
     protected open fun buildProxyRequest(
@@ -140,15 +148,15 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
 
         val vaultError = toVaultErrorOrNull(vaultResponse)
         if (vaultError != null) {
-            val forageErr = parseVaultError(vaultResponse)
-            logger.e("[$vaultType] Received error from $vaultType: $forageErr")
+            val rawVaultError = parseVaultErrorMessage(vaultResponse)
+            logger.e("[$vaultType] Received error from $vaultType: $rawVaultError")
             return vaultError
         }
 
         val forageApiErrorResponse = toForageErrorOrNull(vaultResponse)
         if (forageApiErrorResponse != null) {
             val firstError = forageApiErrorResponse.errors[0]
-            logger.e("[$vaultType] Received error from $vaultType: $firstError")
+            logger.e("[$vaultType] Received ForageError from $vaultType: $firstError")
             return forageApiErrorResponse
         }
 
@@ -157,7 +165,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             logger.i("[$vaultType] Received successful response from $vaultType")
             return forageApiSuccess
         }
-        logger.e("[$vaultType] Received malformed response from $vaultType")
+        logger.e("[$vaultType] Received malformed response from $vaultType: $vaultResponse")
 
         return UnknownErrorApiResponse
     }

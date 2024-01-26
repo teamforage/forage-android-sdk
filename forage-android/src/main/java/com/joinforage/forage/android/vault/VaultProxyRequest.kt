@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 internal open class VaultProxyRequest(
     open val headers: Map<String, String>,

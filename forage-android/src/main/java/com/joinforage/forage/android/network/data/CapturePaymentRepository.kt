@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
@@ -10,6 +9,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.vault.PinCollector
 
 internal class CapturePaymentRepository(
     private val pinCollector: PinCollector,

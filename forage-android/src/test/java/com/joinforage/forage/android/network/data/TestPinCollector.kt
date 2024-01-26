@@ -1,12 +1,12 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.collect.CollectorConstants
-import com.joinforage.forage.android.collect.PinCollector
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.vault.CollectorConstants
+import com.joinforage.forage.android.vault.PinCollector
 
 /**
  * Fake test implementation of PinCollector that could be used to replace VGS on tests

@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos
 
-import com.joinforage.forage.android.collect.VaultSubmitterParams
 import com.joinforage.forage.android.network.data.BaseVaultRequestParams
+import com.joinforage.forage.android.vault.VaultSubmitterParams
 
 internal data class PosVaultRequestParams(
     override val cardNumberToken: String,

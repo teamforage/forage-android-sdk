@@ -1,8 +1,9 @@
-package com.joinforage.forage.android.collect
+package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
+import com.basistheory.android.service.getValue
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
@@ -14,14 +15,14 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
-import org.json.JSONException
 
 internal typealias BasisTheoryResponse = Result<Any?>
 
 internal class BasisTheoryPinSubmitter(
     context: Context,
     foragePinEditText: ForagePINEditText,
-    logger: Log
+    logger: Log,
+    private val buildVaultProvider: () -> BasisTheoryElements = { buildBt() }
 ) : AbstractVaultSubmitter<BasisTheoryResponse>(
     context = context,
     foragePinEditText = foragePinEditText,
@@ -48,7 +49,7 @@ internal class BasisTheoryPinSubmitter(
         .setHeader(ForageConstants.Headers.CONTENT_TYPE, "application/json")
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
-        val bt = buildBt()
+        val bt = buildVaultProvider()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = vaultProxyRequest.headers
@@ -66,51 +67,57 @@ internal class BasisTheoryPinSubmitter(
         return vaultToForageResponse(vaultResponse)
     }
 
-    override fun parseVaultError(vaultResponse: BasisTheoryResponse): String {
+    override fun parseVaultErrorMessage(vaultResponse: BasisTheoryResponse): String {
         return vaultResponse.exceptionOrNull().toString()
     }
 
     override fun toForageSuccessOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Success<String>? {
         // The caller should have already performed the error checks.
         // We add these error checks as a safeguard, just in case.
-        if (toVaultErrorOrNull(vaultResponse) != null ||
+        if (vaultResponse.isFailure ||
+            toVaultErrorOrNull(vaultResponse) != null ||
             toForageErrorOrNull(vaultResponse) != null
         ) {
             return null
         }
 
+        // note: Result.toString() wraps the actual response as
+        // "Success(<actual-value-here>)"
         return ForageApiResponse.Success(vaultResponse.getOrNull().toString())
     }
 
     override fun toForageErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
-        // is a Basis Theory error and doesn't have to do with Forage
-        if (vaultResponse.isFailure) return null
-
         return try {
-            // if the response is a ForageApiError, then this block
-            // should not throw
-            val forageResponse = vaultResponse.getOrNull().toString()
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(forageResponse)
-            val error = forageApiError.errors[0]
-            ForageApiResponse.Failure.fromError(
-                ForageError(400, error.code, error.message)
+            val matchedStatusCode = getBasisTheoryExceptionStatusCode(vaultResponse)!!
+            val basisTheoryExceptionBody = getBasisTheoryExceptionBody(vaultResponse)!!
+
+            val forageApiError = ForageApiError.ForageApiErrorMapper.from(basisTheoryExceptionBody)
+            val firstError = forageApiError.errors[0]
+
+            return ForageApiResponse.Failure.fromError(
+                ForageError(matchedStatusCode, firstError.code, firstError.message)
             )
-        } catch (_: JSONException) {
-            // if we throw when trying to extract the ForageApiError,
+        } catch (_: Exception) {
+            // if we throw (likely a NullPointerException) when trying to extract the ForageApiError,
             // that means the response is not a ForageApiError
             null
         }
     }
 
     override fun toVaultErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
-        // for basis theory, Success responses mean Basis Theory did not
-        // mess up. So, it will be a Forage Success or Forage Error
-        // but it won't be a Basis Theory Error
         if (vaultResponse.isSuccess) return null
 
-        // if the result is a Failure, we need to fail gracefully and
-        // return a ForageApiError
-        return UnknownErrorApiResponse
+        try {
+            // try to parse as an error from Basis Theory, indicated by the presence
+            // of a "proxy_error" in the raw response body.
+            val basisTheoryExceptionBody = getBasisTheoryExceptionBody(vaultResponse)
+            if (basisTheoryExceptionBody!!.contains("proxy_error")) {
+                return UnknownErrorApiResponse
+            }
+            return null
+        } catch (_: Exception) {
+            return null
+        }
     }
 
     override fun getVaultToken(paymentMethod: PaymentMethod): String? = pickVaultTokenByIndex(paymentMethod, 1)
@@ -126,6 +133,31 @@ internal class BasisTheoryPinSubmitter(
             return BasisTheoryElements.builder()
                 .apiKey(API_KEY)
                 .build()
+        }
+
+        /**
+         * com.basistheory.ApiException isn't currently
+         * publicly-exposed by the basis-theory-android package
+         * so we parse the raw exception message to retrieve the body of the BasisTheory
+         * errors
+         *
+         * @return the BasisTheory JSON response body string if the response is a BasisTheory error,
+         * or null if it is not
+         */
+        private fun getBasisTheoryExceptionBody(vaultResponse: BasisTheoryResponse): String? {
+            val rawBasisTheoryError = vaultResponse.exceptionOrNull()?.message ?: return null
+            val bodyRegex = "HTTP response body: (.+?)\\n".toRegex()
+            return bodyRegex.find(rawBasisTheoryError)?.groupValues?.get(1)
+        }
+
+        /**
+         * @return the BasisTheory exception HTTP status code (Int) if the response is a BasisTheory error,
+         * or null if it is not
+         */
+        private fun getBasisTheoryExceptionStatusCode(vaultResponse: BasisTheoryResponse): Int? {
+            val rawBasisTheoryError = vaultResponse.exceptionOrNull()?.message ?: return null
+            val statusCodeRegex = "HTTP response code: (\\d+)".toRegex()
+            return statusCodeRegex.find(rawBasisTheoryError)?.groupValues?.get(1)?.toIntOrNull()
         }
     }
 }
