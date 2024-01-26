@@ -7,10 +7,9 @@ import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuc
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
-import com.joinforage.forage.android.network.data.MockVaultSubmitter
-import com.joinforage.forage.android.network.data.TestPinCollector
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +36,6 @@ class TokenizeCardServiceTest : MockServerSuite() {
 
         tokenizeCardService = MockServiceFactory(
             mockVaultSubmitter = MockVaultSubmitter(),
-            mockPinCollector = TestPinCollector(),
             logger = Log.getSilentInstance(),
             server = server
         ).createTokenizeCardService()

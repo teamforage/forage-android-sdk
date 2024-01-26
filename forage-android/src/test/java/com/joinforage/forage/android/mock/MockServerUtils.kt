@@ -10,7 +10,6 @@ import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfull
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsRefund
-import com.joinforage.forage.android.network.data.MockVaultSubmitter
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONArray
@@ -42,12 +41,7 @@ internal fun mockSuccessfulPosRefund(
     server.givenPaymentAndRefundRef().returnsRefund()
 
     mockVaultSubmitter.setSubmitResponse(
-        params = MockVaultSubmitter.RequestContainer(
-            merchantId = MockServiceFactory.ExpectedData.merchantId,
-            path = "/api/payments/${MockServiceFactory.ExpectedData.paymentRef}/refunds/",
-            paymentMethodRef = MockServiceFactory.ExpectedData.paymentMethodRef,
-            idempotencyKey = MockServiceFactory.ExpectedData.paymentRef
-        ),
+        path = "/api/payments/${MockServiceFactory.ExpectedData.paymentRef}/refunds/",
         response = ForageApiResponse.Success(MOCK_VAULT_REFUND_RESPONSE)
     )
 }

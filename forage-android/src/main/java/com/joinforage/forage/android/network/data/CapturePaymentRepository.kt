@@ -1,5 +1,7 @@
 package com.joinforage.forage.android.network.data
 
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.model.EncryptionKeys
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.model.PaymentMethod
@@ -9,100 +11,65 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.Message
-import com.joinforage.forage.android.vault.PinCollector
+import com.joinforage.forage.android.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.vault.VaultSubmitter
+import com.joinforage.forage.android.vault.VaultSubmitterParams
 
 internal class CapturePaymentRepository(
-    private val pinCollector: PinCollector,
+    private val vaultSubmitter: VaultSubmitter,
     private val encryptionKeyService: EncryptionKeyService,
     private val pollingService: PollingService,
     private val paymentService: PaymentService,
-    private val paymentMethodService: PaymentMethodService
+    private val paymentMethodService: PaymentMethodService,
+    private val logger: Log
 ) {
-    suspend fun capturePayment(paymentRef: String): ForageApiResponse<String> {
-        return when (val response = encryptionKeyService.getEncryptionKey()) {
-            is ForageApiResponse.Success -> getPaymentMethodFromPayment(
-                paymentRef = paymentRef,
-                encryptionKey = pinCollector.parseEncryptionKey(
-                    EncryptionKeys.ModelMapper.from(response.data)
-                )
-            )
-            else -> response
-        }
-    }
-
-    private suspend fun getPaymentMethodFromPayment(
-        paymentRef: String,
-        encryptionKey: String
-    ): ForageApiResponse<String> {
-        return when (val response = paymentService.getPayment(paymentRef)) {
-            is ForageApiResponse.Success -> getTokenFromPaymentMethod(
-                paymentRef = paymentRef,
-                paymentMethodRef = Payment.ModelMapper.from(response.data).paymentMethod,
-                encryptionKey = encryptionKey
-            )
-            else -> response
-        }
-    }
-
-    private suspend fun getTokenFromPaymentMethod(
-        paymentRef: String,
-        paymentMethodRef: String,
-        encryptionKey: String
-    ): ForageApiResponse<String> {
-        return when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
-            is ForageApiResponse.Success -> submitPaymentCapture(
-                paymentRef = paymentRef,
-                vaultRequestParams = BaseVaultRequestParams(
-                    cardNumberToken = pinCollector.parseVaultToken(
-                        PaymentMethod.ModelMapper.from(response.data)
-                    ),
-                    encryptionKey = encryptionKey
-                )
-            )
-            else -> response
-        }
-    }
-
-    private suspend fun submitPaymentCapture(
-        paymentRef: String,
-        vaultRequestParams: BaseVaultRequestParams
-    ): ForageApiResponse<String> {
-        val response = pinCollector.submitPaymentCapture(
-            paymentRef = paymentRef,
-            vaultRequestParams
-        )
-
-        return when (response) {
-            is ForageApiResponse.Success -> {
-                pollingCapturePaymentMessageStatus(
-                    Message.ModelMapper.from(response.data).contentId,
-                    paymentRef
-                )
-            }
-            else -> response
-        }
-    }
-
-    private suspend fun pollingCapturePaymentMessageStatus(
-        contentId: String,
+    suspend fun capturePayment(
+        merchantId: String,
         paymentRef: String
     ): ForageApiResponse<String> {
-        val pollingResponse = pollingService.execute(
-            contentId = contentId,
-            operationDescription = "payment capture of Payment $paymentRef"
-        )
-        return when (pollingResponse) {
-            is ForageApiResponse.Success -> {
-                paymentService.getPayment(paymentRef = paymentRef)
-            }
-            else -> pollingResponse
+        val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
+            is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
+            else -> return response
         }
-    }
+        val payment = when (val response = paymentService.getPayment(paymentRef)) {
+            is ForageApiResponse.Success -> Payment.ModelMapper.from(response.data)
+            else -> return response
+        }
+        val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethod)) {
+            is ForageApiResponse.Success -> PaymentMethod.ModelMapper.from(response.data)
+            else -> return response
+        }
 
-    companion object {
-        private fun ForageApiResponse<String>.getStringResponse() = when (this) {
-            is ForageApiResponse.Failure -> this.errors[0].message
-            is ForageApiResponse.Success -> this.data
+        val vaultResponse = when (
+            val response = vaultSubmitter.submit(
+                params = VaultSubmitterParams(
+                    encryptionKeys = encryptionKeys,
+                    idempotencyKey = paymentRef,
+                    merchantId = merchantId,
+                    path = AbstractVaultSubmitter.capturePaymentPath(paymentRef),
+                    paymentMethod = paymentMethod,
+                    userAction = UserAction.CAPTURE
+                )
+            )
+        ) {
+            is ForageApiResponse.Success -> Message.ModelMapper.from(response.data)
+            else -> return response
+        }
+
+        val pollingResponse = pollingService.execute(
+            contentId = vaultResponse.contentId,
+            operationDescription = "payment capture of Payment $payment"
+        )
+        if (pollingResponse is ForageApiResponse.Failure) {
+            return pollingResponse
+        }
+
+        return when (val paymentResponse = paymentService.getPayment(paymentRef)) {
+            is ForageApiResponse.Success -> {
+                logger.i("[HTTP] Received updated Payment $paymentRef for Payment $paymentRef")
+                return paymentResponse
+            }
+            else -> paymentResponse
         }
     }
 }

@@ -16,11 +16,12 @@ import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.mock.MockVaultSubmitter
+import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import me.jorgecastillo.hiroaki.matchers.times
@@ -30,30 +31,43 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CapturePaymentRepositoryTest : MockServerSuite() {
     private lateinit var repository: CapturePaymentRepository
-    private val pinCollector = TestPinCollector()
-    private val testData = MockServiceFactory.ExpectedData
+    private lateinit var vaultSubmitter: MockVaultSubmitter
+    private val expectedData = MockServiceFactory.ExpectedData
 
     @Before
     override fun setup() {
         super.setup()
 
         val logger = Log.getSilentInstance()
+        vaultSubmitter = MockVaultSubmitter()
         repository = MockServiceFactory(
-            mockVaultSubmitter = MockVaultSubmitter(),
-            mockPinCollector = pinCollector,
+            mockVaultSubmitter = vaultSubmitter,
             logger = logger,
             server = server
         ).createCapturePaymentRepository(mock(ForagePINEditText::class.java))
+    }
+
+    private suspend fun executeCapturePayment(): ForageApiResponse<String> {
+        return repository.capturePayment(
+            merchantId = expectedData.merchantId,
+            paymentRef = expectedData.paymentRef
+        )
+    }
+
+    private fun setMockVaultResponse(response: ForageApiResponse<String>) {
+        vaultSubmitter.setSubmitResponse(
+            path = "/api/payments/${expectedData.paymentRef}/capture/",
+            response = response
+        )
     }
 
     @Test
     fun `it should return a failure when the getting the encryption key fails`() = runTest {
         server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
@@ -66,16 +80,10 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-
         val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        setMockVaultResponse(failureResponse)
 
-        pinCollector.setCapturePaymentResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = failureResponse
-        )
-
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isEqualTo(failureResponse)
     }
@@ -85,18 +93,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCapturePaymentResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(testData.contentId)
-            )
-        )
-
-        server.givenContentId(testData.contentId)
+        setMockVaultResponse(ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId)))
+        server.givenContentId(expectedData.contentId)
             .returnsUnauthorized()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -114,7 +115,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsFailedPayment()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -132,7 +133,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsFailedPaymentMethod()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -150,18 +151,11 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCapturePaymentResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(testData.contentId)
-            )
-        )
-
-        server.givenContentId(testData.contentId)
+        setMockVaultResponse(ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId)))
+        server.givenContentId(expectedData.contentId)
             .returnsExpiredCard()
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -179,20 +173,14 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        pinCollector.setCapturePaymentResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(testData.contentId)
-            )
-        )
+        setMockVaultResponse(ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId)))
 
-        repeat(MAX_ATTEMPTS) {
-            server.givenContentId(testData.contentId)
+        repeat(MAX_POLL_MESSAGE_ATTEMPTS) {
+            server.givenContentId(expectedData.contentId)
                 .returnsSendToProxy()
         }
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val failureResponse = response as ForageApiResponse.Failure
@@ -203,10 +191,10 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
         assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
         assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
-        val interpolateId = testData.contentId
+        val interpolateId = expectedData.contentId
         server.verify("api/message/$interpolateId")
             .called(
-                times = times(MAX_ATTEMPTS)
+                times = times(MAX_POLL_MESSAGE_ATTEMPTS)
             )
     }
 
@@ -216,23 +204,17 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        server.givenContentId(testData.contentId)
+        server.givenContentId(expectedData.contentId)
             .returnsMessageCompletedSuccessfully()
-        pinCollector.setCapturePaymentResponse(
-            paymentRef = testData.paymentRef,
-            vaultRequestParams = testData.vaultRequestParams,
-            response = ForageApiResponse.Success(
-                TestPinCollector.sendToProxyResponse(testData.contentId)
-            )
-        )
+        setMockVaultResponse(ForageApiResponse.Success(getVaultMessageResponse(expectedData.contentId)))
 
-        val response = repository.capturePayment(testData.paymentRef)
+        val response = executeCapturePayment()
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
                 val paymentMethod = Payment.ModelMapper.from(response.data).paymentMethod
-                assertThat(paymentMethod).isEqualTo(testData.paymentMethodRef)
+                assertThat(paymentMethod).isEqualTo(expectedData.paymentMethodRef)
             }
             else -> {
                 assertThat(false)
@@ -241,6 +223,6 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     }
 
     companion object {
-        private const val MAX_ATTEMPTS = 10
+        private const val MAX_POLL_MESSAGE_ATTEMPTS = 10
     }
 }

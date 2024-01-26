@@ -3,7 +3,6 @@ package com.joinforage.forage.android.vault
 import android.content.Context
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
-import com.basistheory.android.service.getValue
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log

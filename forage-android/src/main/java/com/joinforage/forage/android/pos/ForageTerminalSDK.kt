@@ -210,7 +210,7 @@ class ForageTerminalSDK(
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getCollector(merchantId).getVaultType(),
+            vault = foragePinEditText.getVaultType(),
             vaultAction = UserAction.BALANCE,
             logger
         )
@@ -220,6 +220,7 @@ class ForageTerminalSDK(
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
         val balanceCheckService = serviceFactory.createCheckBalanceRepository(foragePinEditText)
         val balanceResponse = balanceCheckService.posCheckBalance(
+            merchantId = merchantId,
             paymentMethodRef = paymentMethodRef,
             posTerminalId = posTerminalId
         )
