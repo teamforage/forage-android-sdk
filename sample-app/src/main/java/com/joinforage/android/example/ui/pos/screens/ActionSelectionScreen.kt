@@ -48,7 +48,7 @@ fun ActionSelectionScreen(
                     Text("Make a Refund / Return")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onVoidButtonClicked, modifier = Modifier.fillMaxWidth(), enabled = false) {
+                Button(onClick = onVoidButtonClicked, modifier = Modifier.fillMaxWidth()) {
                     Text("Void / Reverse a Transaction")
                 }
             }
