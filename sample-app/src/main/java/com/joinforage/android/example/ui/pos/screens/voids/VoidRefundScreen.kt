@@ -17,12 +17,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
 fun VoidRefundScreen(
     onConfirmButtonClicked: (paymentRef: String, refundRef: String) -> Unit,
-    onCancelButtonClicked: () -> Unit
+    onCancelButtonClicked: () -> Unit,
+    errorText: String? = null
 ) {
     var refundRefInput by rememberSaveable {
         mutableStateOf("")
@@ -51,6 +53,7 @@ fun VoidRefundScreen(
                     imeAction = ImeAction.Done
                 )
             )
+            ErrorText(errorText)
         },
         bottomRowContent = {
             Button(onClick = onCancelButtonClicked, colors = ButtonDefaults.elevatedButtonColors()) {
