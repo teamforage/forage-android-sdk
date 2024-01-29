@@ -172,7 +172,8 @@ fun POSComposeApp(
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIChoosePANMethodScreen.name, inclusive = false) },
-                    withPanElementReference = { panElement = it }
+                    withPanElementReference = { panElement = it },
+                    errorText = uiState.tokenizationError
                 )
             }
             composable(route = POSScreen.BIMagSwipePANEntryScreen.name) {
@@ -187,7 +188,8 @@ fun POSComposeApp(
                             }
                         }
                     },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.BIChoosePANMethodScreen.name, inclusive = false) }
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.BIChoosePANMethodScreen.name, inclusive = false) },
+                    errorText = uiState.tokenizationError
                 )
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {
@@ -210,7 +212,8 @@ fun POSComposeApp(
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIManualPANEntryScreen.name, inclusive = false) },
-                    withPinElementReference = { pinElement = it }
+                    withPinElementReference = { pinElement = it },
+                    errorText = uiState.balanceCheckError
                 )
             }
             composable(route = POSScreen.BIResultScreen.name) {
@@ -302,7 +305,8 @@ fun POSComposeApp(
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false) },
-                    withPanElementReference = { panElement = it }
+                    withPanElementReference = { panElement = it },
+                    errorText = uiState.tokenizationError ?: uiState.paymentCreationError
                 )
             }
             composable(route = POSScreen.PAYMagSwipePANEntryScreen.name) {
@@ -322,19 +326,20 @@ fun POSComposeApp(
                             }
                         }
                     },
-                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false) }
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false) },
+                    errorText = uiState.tokenizationError ?: uiState.paymentCreationError
                 )
             }
             composable(route = POSScreen.PAYPINEntryScreen.name) {
                 PINEntryScreen(
                     forageConfig = uiState.forageConfig,
-                    paymentMethodRef = uiState.createPaymentResponse?.paymentMethod,
+                    paymentMethodRef = uiState.createdPayment?.paymentMethod,
                     onSubmitButtonClicked = {
-                        if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
+                        if (pinElement != null && uiState.createdPayment?.ref != null) {
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
-                                paymentRef = uiState.createPaymentResponse!!.ref!!,
+                                paymentRef = uiState.createdPayment!!.ref!!,
                                 onSuccess = {
                                     if (it?.ref != null) {
                                         navController.navigate(POSScreen.PAYResultScreen.name)
@@ -344,12 +349,13 @@ fun POSComposeApp(
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) },
-                    withPinElementReference = { pinElement = it }
+                    withPinElementReference = { pinElement = it },
+                    errorText = uiState.paymentCaptureError
                 )
             }
             composable(route = POSScreen.PAYResultScreen.name) {
                 PaymentResultScreen(
-                    data = uiState.capturePaymentResponse.toString()
+                    data = uiState.capturedPayment.toString()
                 )
             }
         }

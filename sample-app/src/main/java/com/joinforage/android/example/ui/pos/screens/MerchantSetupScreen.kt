@@ -1,10 +1,8 @@
 package com.joinforage.android.example.ui.pos.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -29,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joinforage.android.example.ui.pos.MerchantDetailsState
+import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
 fun MerchantSetupScreen(
@@ -48,12 +47,8 @@ fun MerchantSetupScreen(
         is MerchantDetailsState.Error -> merchantDetailsState.error
     }
 
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column {
+    ScreenWithBottomRow(
+        mainContent = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -91,14 +86,16 @@ fun MerchantSetupScreen(
                     }
                 )
             }
+        },
+        bottomRowContent = {
+            Button(
+                onClick = { onSaveButtonClicked(merchantIdInput) },
+                enabled = merchantDetailsState != MerchantDetailsState.Loading
+            ) {
+                Text("Bind POS to Merchant")
+            }
         }
-        Button(
-            onClick = { onSaveButtonClicked(merchantIdInput) },
-            enabled = merchantDetailsState != MerchantDetailsState.Loading
-        ) {
-            Text("Bind POS to Merchant")
-        }
-    }
+    )
 }
 
 @Preview
