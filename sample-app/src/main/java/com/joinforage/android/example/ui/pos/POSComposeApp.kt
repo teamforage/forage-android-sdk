@@ -46,6 +46,10 @@ import com.joinforage.android.example.ui.pos.screens.shared.MagSwipePANEntryScre
 import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PANMethodSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PINEntryScreen
+import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentScreen
+import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
+import com.joinforage.android.example.ui.pos.screens.voids.VoidResultScreen
+import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -66,7 +70,12 @@ enum class POSScreen(@StringRes val title: Int) {
     PAYManualPANEntryScreen(title = R.string.title_pos_payment_manual_pan_entry),
     PAYMagSwipePANEntryScreen(title = R.string.title_pos_payment_swipe_card_entry),
     PAYPINEntryScreen(title = R.string.title_pos_payment_pin_entry),
-    PAYResultScreen(title = R.string.title_pos_payment_receipt)
+    PAYResultScreen(title = R.string.title_pos_payment_receipt),
+    VOIDTransactionTypeSelectionScreen(title = R.string.title_pos_void_flow),
+    VOIDPaymentScreen(title = R.string.title_pos_void_flow),
+    VOIDRefundScreen(title = R.string.title_pos_void_flow),
+    VOIDPaymentResultScreen(title = R.string.title_pos_void_flow),
+    VOIDRefundResultScreen(title = R.string.title_pos_void_flow)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -144,7 +153,7 @@ fun POSComposeApp(
                     onBalanceButtonClicked = { navController.navigate(POSScreen.BIChoosePANMethodScreen.name) },
                     onPaymentButtonClicked = { navController.navigate(POSScreen.PAYTransactionTypeSelectionScreen.name) },
                     onRefundButtonClicked = { /*TODO*/ },
-                    onVoidButtonClicked = { /*TODO*/ }
+                    onVoidButtonClicked = { navController.navigate(POSScreen.VOIDTransactionTypeSelectionScreen.name) }
                 )
             }
             composable(route = POSScreen.BIChoosePANMethodScreen.name) {
@@ -306,7 +315,7 @@ fun POSComposeApp(
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false) },
                     withPanElementReference = { panElement = it },
-                    errorText = uiState.tokenizationError ?: uiState.paymentCreationError
+                    errorText = uiState.tokenizationError ?: uiState.createPaymentError
                 )
             }
             composable(route = POSScreen.PAYMagSwipePANEntryScreen.name) {
@@ -327,19 +336,19 @@ fun POSComposeApp(
                         }
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYChoosePANMethodScreen.name, inclusive = false) },
-                    errorText = uiState.tokenizationError ?: uiState.paymentCreationError
+                    errorText = uiState.tokenizationError ?: uiState.createPaymentError
                 )
             }
             composable(route = POSScreen.PAYPINEntryScreen.name) {
                 PINEntryScreen(
                     forageConfig = uiState.forageConfig,
-                    paymentMethodRef = uiState.createdPayment?.paymentMethod,
+                    paymentMethodRef = uiState.createPaymentResponse?.paymentMethod,
                     onSubmitButtonClicked = {
-                        if (pinElement != null && uiState.createdPayment?.ref != null) {
+                        if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
-                                paymentRef = uiState.createdPayment!!.ref!!,
+                                paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
                                     if (it?.ref != null) {
                                         navController.navigate(POSScreen.PAYResultScreen.name)
@@ -350,13 +359,56 @@ fun POSComposeApp(
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) },
                     withPinElementReference = { pinElement = it },
-                    errorText = uiState.paymentCaptureError
+                    errorText = uiState.capturePaymentError
                 )
             }
             composable(route = POSScreen.PAYResultScreen.name) {
                 PaymentResultScreen(
-                    data = uiState.capturedPayment.toString()
+                    data = uiState.capturePaymentResponse.toString()
                 )
+            }
+            composable(route = POSScreen.VOIDTransactionTypeSelectionScreen.name) {
+                VoidTypeSelectionScreen(
+                    onPaymentButtonClicked = { navController.navigate(POSScreen.VOIDPaymentScreen.name) },
+                    onRefundButtonClicked = { navController.navigate(POSScreen.VOIDRefundScreen.name) },
+                    onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
+            }
+            composable(route = POSScreen.VOIDPaymentScreen.name) {
+                VoidPaymentScreen(
+                    onConfirmButtonClicked = { paymentRef ->
+                        Log.i("POSComposeApp", "Voiding payment: $paymentRef")
+                        viewModel.voidPayment(paymentRef) {
+                            Log.i("POSComposeApp", "Voided payment: $it")
+                            navController.navigate(POSScreen.VOIDPaymentResultScreen.name)
+                        }
+                    },
+                    onCancelButtonClicked = {
+                        navController.popBackStack(POSScreen.VOIDTransactionTypeSelectionScreen.name, inclusive = false)
+                    },
+                    errorText = uiState.voidPaymentError
+                )
+            }
+            composable(route = POSScreen.VOIDRefundScreen.name) {
+                VoidRefundScreen(
+                    onConfirmButtonClicked = { paymentRef, refundRef ->
+                        Log.i("POSComposeApp", "Voiding refund: $refundRef")
+                        viewModel.voidRefund(paymentRef, refundRef) {
+                            Log.i("POSComposeApp", "Voided refund: $it")
+                            navController.navigate(POSScreen.VOIDRefundResultScreen.name)
+                        }
+                    },
+                    onCancelButtonClicked = {
+                        navController.popBackStack(POSScreen.VOIDTransactionTypeSelectionScreen.name, inclusive = false)
+                    },
+                    errorText = uiState.voidRefundError
+                )
+            }
+            composable(route = POSScreen.VOIDPaymentResultScreen.name) {
+                VoidResultScreen(data = uiState.voidPaymentResponse.toString())
+            }
+            composable(route = POSScreen.VOIDRefundResultScreen.name) {
+                VoidResultScreen(data = uiState.voidRefundResponse.toString())
             }
         }
     }

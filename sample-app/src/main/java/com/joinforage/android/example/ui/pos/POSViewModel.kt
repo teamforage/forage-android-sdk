@@ -80,11 +80,11 @@ class POSViewModel : ViewModel() {
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
-                _uiState.update { it.copy(createdPayment = response, paymentCreationError = null) }
+                _uiState.update { it.copy(createPaymentResponse = response, createPaymentError = null) }
                 onSuccess(response)
             } catch (e: HttpException) {
                 Log.e("POSViewModel", "Create payment call failed: $e")
-                _uiState.update { it.copy(paymentCreationError = e.toString(), createdPayment = null) }
+                _uiState.update { it.copy(createPaymentError = e.toString(), createPaymentResponse = null) }
             }
         }
     }
@@ -177,13 +177,52 @@ class POSViewModel : ViewModel() {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<PaymentResponse> = PaymentResponseJsonAdapter(moshi)
                     val paymentResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(capturedPayment = paymentResponse, paymentCaptureError = null) }
+                    _uiState.update { it.copy(capturePaymentResponse = paymentResponse, capturePaymentError = null) }
                     onSuccess(paymentResponse)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(paymentCaptureError = response.toString(), capturedPayment = null) }
+                    _uiState.update { it.copy(capturePaymentError = response.toString(), capturePaymentResponse = null) }
                 }
+            }
+        }
+    }
+
+    fun voidPayment(paymentRef: String, onSuccess: (response: PaymentResponse) -> Unit) {
+        val idempotencyKey = UUID.randomUUID().toString()
+
+        viewModelScope.launch {
+            try {
+                val response = api.voidPayment(
+                    idempotencyKey = idempotencyKey,
+                    paymentRef = paymentRef
+                )
+                _uiState.update { it.copy(voidPaymentResponse = response) }
+                onSuccess(response)
+                Log.i("POSViewModel", "Void payment call succeeded: $response")
+            } catch (e: HttpException) {
+                Log.e("POSViewModel", "Void payment call failed: $e")
+                _uiState.update { it.copy(voidPaymentError = e.toString(), voidPaymentResponse = null) }
+            }
+        }
+    }
+
+    fun voidRefund(paymentRef: String, refundRef: String, onSuccess: (response: PaymentResponse) -> Unit) {
+        val idempotencyKey = UUID.randomUUID().toString()
+
+        viewModelScope.launch {
+            try {
+                val response = api.voidRefund(
+                    idempotencyKey = idempotencyKey,
+                    paymentRef = paymentRef,
+                    refundRef = refundRef
+                )
+                _uiState.update { it.copy(voidRefundResponse = response) }
+                onSuccess(response)
+                Log.i("POSViewModel", "Void refund call succeeded: $response")
+            } catch (e: HttpException) {
+                Log.e("POSViewModel", "Void refund call failed: $e")
+                _uiState.update { it.copy(voidRefundError = e.toString(), voidRefundResponse = null) }
             }
         }
     }
