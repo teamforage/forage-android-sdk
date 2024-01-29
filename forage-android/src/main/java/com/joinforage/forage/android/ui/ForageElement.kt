@@ -30,15 +30,19 @@ data class ForageConfig(
 )
 
 /**
- * The interface that all Forage UI Components adhere to. For example,
- * both the ForagePANEditText and the ForagePINEditText satisfy
- * ForageElement
+ * The interface that defines methods for configuring and interacting with a [ForageElement].
+ * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
+ * transaction.
+ * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
+ *
+ * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
+ * that is used to render text within the ForageElement.
  */
 interface ForageElement<T : ElementState> {
     var typeface: Typeface?
 
     /**
-     * Sets the necessary [ForageConfig] configuration properties for a [ForageElement].
+     * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
      *
      * [setForageConfig] must be called before any other methods can be executed on the Element.
      *
@@ -46,18 +50,85 @@ interface ForageElement<T : ElementState> {
      */
     fun setForageConfig(forageConfig: ForageConfig)
 
+    /**
+     * Clears the text input field of the ForageElement.
+     */
     fun clearText()
 
+    /**
+     * Sets the text color for the ForageElement.
+     *
+     * @param textColor The color value in the form `0xAARRGGBB`.
+     */
     fun setTextColor(textColor: Int)
+
+    /**
+     * Sets the text size for the ForageElement.
+     *
+     * @param textSize The scaled pixel size.
+     */
     fun setTextSize(textSize: Float)
+
+    /**
+     * Sets the text to be displayed when the ForageElement input field is empty.
+     *
+     * @param hint The text to display.
+     */
     fun setHint(hint: String)
+
+    /**
+     * Sets the hint text color.
+     *
+     * @param hintTextColor The color value in the form `0xAARRGGBB`.
+     */
     fun setHintTextColor(hintTextColor: Int)
+
+    /**
+     * Sets the border color of the input field.
+     *
+     * @param boxStrokeColor The color value in the form `0xAARRGGBB`.
+     */
     fun setBoxStrokeColor(boxStrokeColor: Int)
+
+    /**
+     * Sets the border thickness of the input field.
+     *
+     * @param boxStrokeWidth The scaled pixel size.
+     */
     fun setBoxStrokeWidth(boxStrokeWidth: Int)
+
+    /**
+     * Sets the border thickness of the input field when the field is in focus state.
+     *
+     * @param boxStrokeWidth The scaled pixel size.
+     */
     fun setBoxStrokeWidthFocused(boxStrokeWidth: Int)
 
+    /**
+     * Gets the current [ElementState] state of the ForageElement.
+     *
+     * @return The [ElementState].
+     */
     fun getElementState(): T
+
+    /**
+     * Sets an event listener to be fired when the ForageElement is in focus.
+     *
+     * @param l The [SimpleElementListener] to be fired on focus events.
+     */
     fun setOnFocusEventListener(l: SimpleElementListener)
+
+    /**
+     * Sets an event listener to be fired when the ForageElement is blurred.
+     *
+     * @param l The [SimpleElementListener] to be fired on blur events.
+     */
     fun setOnBlurEventListener(l: SimpleElementListener)
+
+    /**
+     * Sets an event listener to be fired when the text inside the ForageElement input field changes.
+     *
+     * @param l The [StatefulElementListener] to be fired on change events.
+     */
     fun setOnChangeEventListener(l: StatefulElementListener<T>)
 }
