@@ -4,6 +4,7 @@ import com.joinforage.android.example.network.model.EnvConfig
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.forage.android.ui.ForageConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -42,7 +43,7 @@ interface PosApiService {
         @Header("Idempotency-Key") idempotencyKey: String,
         @Path("paymentRef") paymentRef: String,
         @Path("refundRef") refundRef: String
-    ): PaymentResponse
+    ): Refund
 
     companion object {
         internal fun from(forageConfig: ForageConfig): PosApiService {
