@@ -12,6 +12,7 @@ import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
 import com.joinforage.android.example.ui.pos.data.RefundUIState
@@ -54,7 +55,7 @@ class POSViewModel : ViewModel() {
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
-        getMerchantInfo(merchantId = merchantId, onSuccess)
+        getMerchantInfo(onSuccess)
     }
 
     fun setLocalPayment(payment: PosPaymentRequest) {
@@ -65,7 +66,7 @@ class POSViewModel : ViewModel() {
         _uiState.update { it.copy(localRefundState = refundState) }
     }
 
-    private fun getMerchantInfo(merchantId: String, onSuccess: () -> Unit) {
+    private fun getMerchantInfo(onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
             val merchantDetailsState = try {
