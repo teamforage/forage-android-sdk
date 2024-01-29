@@ -27,14 +27,25 @@ data class POSUIState(
     val capturePaymentResponse: PaymentResponse? = null,
     val capturePaymentError: String? = null,
 
+    // Refunding a payment
+    val localRefundState: RefundUIState? = null, // Used to build up the refund object before we send it
+    val refundPaymentResponse: Refund? = null,
+    val refundPaymentError: String? = null,
+
     // Voiding a payment
     val voidPaymentResponse: PaymentResponse? = null,
     val voidPaymentError: String? = null,
 
     // Voiding a refund
-    val voidRefundResponse: PaymentResponse? = null,
+    val voidRefundResponse: Refund? = null,
     val voidRefundError: String? = null
 ) {
     val forageConfig: ForageConfig
         get() = ForageConfig(merchantId, sessionToken)
 }
+
+data class RefundUIState(
+    val paymentRef: String,
+    val amount: Float,
+    val reason: String
+)
