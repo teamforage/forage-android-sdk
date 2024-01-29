@@ -12,11 +12,15 @@ import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.Refund
+import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
+import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
+import com.joinforage.forage.android.pos.PosRefundPaymentParams
 import com.joinforage.forage.android.pos.PosTokenizeCardParams
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -55,6 +59,10 @@ class POSViewModel : ViewModel() {
 
     fun setLocalPayment(payment: PosPaymentRequest) {
         _uiState.update { it.copy(localPayment = payment) }
+    }
+
+    fun setLocalRefundState(refundState: RefundUIState) {
+        _uiState.update { it.copy(localRefundState = refundState) }
     }
 
     private fun getMerchantInfo(merchantId: String, onSuccess: () -> Unit) {
@@ -188,6 +196,33 @@ class POSViewModel : ViewModel() {
         }
     }
 
+    fun refundPayment(foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: (response: Refund?) -> Unit) {
+        viewModelScope.launch {
+            val response = ForageTerminalSDK(terminalId).refundPayment(
+                PosRefundPaymentParams(
+                    foragePinEditText = foragePinEditText,
+                    amount = amount,
+                    paymentRef = paymentRef,
+                    reason = reason
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    val moshi = Moshi.Builder().build()
+                    val jsonAdapter: JsonAdapter<Refund> = RefundJsonAdapter(moshi)
+                    val refundResponse = jsonAdapter.fromJson(response.data)
+                    _uiState.update { it.copy(refundPaymentResponse = refundResponse, refundPaymentError = null) }
+                    onSuccess(refundResponse)
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.e("POSViewModel", response.toString())
+                    _uiState.update { it.copy(refundPaymentError = response.toString(), refundPaymentResponse = null) }
+                }
+            }
+        }
+    }
+
     fun voidPayment(paymentRef: String, onSuccess: (response: PaymentResponse) -> Unit) {
         val idempotencyKey = UUID.randomUUID().toString()
 
@@ -207,7 +242,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun voidRefund(paymentRef: String, refundRef: String, onSuccess: (response: PaymentResponse) -> Unit) {
+    fun voidRefund(paymentRef: String, refundRef: String, onSuccess: (response: Refund) -> Unit) {
         val idempotencyKey = UUID.randomUUID().toString()
 
         viewModelScope.launch {
