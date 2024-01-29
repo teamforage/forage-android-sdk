@@ -12,9 +12,9 @@ import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
-import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
+import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams

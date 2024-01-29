@@ -15,8 +15,6 @@ import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 
-
-
 @Composable
 fun BalanceResultScreen(
     balance: BalanceCheck?,

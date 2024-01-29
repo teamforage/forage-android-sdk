@@ -48,9 +48,8 @@ interface PosApiService {
 
     @POST("api/payment_methods/{paymentMethodRef}/")
     suspend fun reFetchCard(
-        @Path("paymentMethodRef") paymentMethodRef: String,
+        @Path("paymentMethodRef") paymentMethodRef: String
     ): PaymentMethod
-
 
     companion object {
         internal fun from(forageConfig: ForageConfig): PosApiService {

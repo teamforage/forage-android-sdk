@@ -44,9 +44,11 @@ data class POSUIState(
         get() = ForageConfig(merchantId, sessionToken)
 
     val merchant
-        get() = if (merchantDetailsState is MerchantDetailsState.Success)
+        get() = if (merchantDetailsState is MerchantDetailsState.Success) {
             merchantDetailsState.merchant
-        else null
+        } else {
+            null
+        }
 }
 
 data class RefundUIState(

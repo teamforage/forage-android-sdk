@@ -33,15 +33,16 @@ internal open class ReceiptLayout(
             merchant: Merchant?,
             paymentMethod: PaymentMethod?,
             terminalId: String
-        ) : ReceiptLayout {
-            if (paymentMethod?.balance == null)
+        ): ReceiptLayout {
+            if (paymentMethod?.balance == null) {
                 return errorMessageLayout("Balance not found")
+            }
 
             val balance = paymentMethod.balance
             return ReceiptLayout(
                 *getMerchantReceiptLayout(merchant).lines,
                 *getTxReceiptLayout(terminalId, balance.updated, paymentMethod).lines,
-                *getBalanceReceiptLayout(balance).lines,
+                *getBalanceReceiptLayout(balance).lines
             )
         }
         internal fun errorMessageLayout(msg: String) = ReceiptLayout(
@@ -128,7 +129,6 @@ internal fun getLongAddressMerchantReceiptLayout(
     ReceiptLayoutLine.singleColLeft(clerkId)
 )
 
-
 internal fun getMerchantReceiptLayout(
     name: String,
     line1: String,
@@ -137,30 +137,41 @@ internal fun getMerchantReceiptLayout(
     state: String,
     zipCode: String,
     merchantTerminalId: String
-) : ReceiptLayout {
+): ReceiptLayout {
     val cityStateZip = "$city, $state, $zipCode"
     val merchTermId = "MERCH TERM ID $merchantTerminalId"
     val clerkId = "CLERK # 001"
-    if (line2 != null)
+    if (line2 != null) {
         return getLongAddressMerchantReceiptLayout(
-            name, line1, line2, cityStateZip, merchTermId, clerkId
+            name,
+            line1,
+            line2,
+            cityStateZip,
+            merchTermId,
+            clerkId
         )
+    }
     return getShortAddressMerchantReceiptLayout(
-        name, line1, cityStateZip, merchTermId, clerkId
+        name,
+        line1,
+        cityStateZip,
+        merchTermId,
+        clerkId
     )
-
 }
 
-internal fun getMerchantReceiptLayout(merchant: Merchant?) : ReceiptLayout {
-    if (merchant == null)
+internal fun getMerchantReceiptLayout(merchant: Merchant?): ReceiptLayout {
+    if (merchant == null) {
         return ReceiptLayout.errorMessageLayout(
             "Merchant details not found."
         )
+    }
 
-    if (merchant.address == null)
+    if (merchant.address == null) {
         return ReceiptLayout.errorMessageLayout(
             "Merchant is missing address."
         )
+    }
 
     return getMerchantReceiptLayout(
         name = merchant.name,
@@ -173,8 +184,7 @@ internal fun getMerchantReceiptLayout(merchant: Merchant?) : ReceiptLayout {
     )
 }
 
-
-fun formatReceiptTimestamp(timestamp: String) : String? {
+fun formatReceiptTimestamp(timestamp: String): String? {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     val date = inputFormat.parse(timestamp)
     val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -188,11 +198,12 @@ internal fun getTxReceiptLayout(
     txTimestamp: String,
     paymentMethod: PaymentMethod?,
     seqId: String = "TODO: need sequenceId"
-) : ReceiptLayout{
-    if (paymentMethod == null)
+): ReceiptLayout {
+    if (paymentMethod == null) {
         return ReceiptLayout.errorMessageLayout(
             "Missing tokenized PaymentMethod"
         )
+    }
 
     val card = paymentMethod.card
     val formattedTime = formatReceiptTimestamp(txTimestamp)
@@ -203,10 +214,9 @@ internal fun getTxReceiptLayout(
         ReceiptLayoutLine.singleColLeft("CARD# XXXXXXXXX${card?.last4}"),
         ReceiptLayoutLine.singleColLeft("STATE: ${card?.state}")
     )
-
 }
 
-internal fun getBalanceReceiptLayout(balance: Balance) : ReceiptLayout {
+internal fun getBalanceReceiptLayout(balance: Balance): ReceiptLayout {
     return ReceiptLayout(
         ReceiptLayoutLine.doubleColCenter("SNAP BAL", balance.snap),
         ReceiptLayoutLine.doubleColCenter("EBT CASH BAL", balance.non_snap)
