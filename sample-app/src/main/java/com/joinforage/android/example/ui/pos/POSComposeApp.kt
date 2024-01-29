@@ -309,7 +309,7 @@ fun POSComposeApp(
                                     if (tokenizedCard?.ref != null && uiState.localPayment != null) {
                                         Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $tokenizedCard.ref")
                                         val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
-                                        viewModel.createPayment(payment = payment, merchantId = uiState.merchantId, onSuccess = { serverPayment ->
+                                        viewModel.createPayment(payment = payment, onSuccess = { serverPayment ->
                                             if (serverPayment.ref !== null) {
                                                 navController.navigate(POSScreen.PAYPINEntryScreen.name)
                                             }
@@ -332,7 +332,7 @@ fun POSComposeApp(
                                 if (tokenizedCard?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $tokenizedCard.ref")
                                     val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
-                                    viewModel.createPayment(payment = payment, merchantId = uiState.merchantId, onSuccess = { serverPayment ->
+                                    viewModel.createPayment(payment = payment, onSuccess = { serverPayment ->
                                         if (serverPayment.ref !== null) {
                                             navController.navigate(POSScreen.PAYPINEntryScreen.name)
                                         }
