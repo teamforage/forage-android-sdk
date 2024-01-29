@@ -33,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
@@ -42,6 +43,8 @@ import com.joinforage.android.example.ui.pos.screens.payment.EBTCashWithdrawalSc
 import com.joinforage.android.example.ui.pos.screens.payment.EBTSnapPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.PaymentTypeSelectionScreen
+import com.joinforage.android.example.ui.pos.screens.refund.RefundDetailsScreen
+import com.joinforage.android.example.ui.pos.screens.refund.RefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.shared.MagSwipePANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PANMethodSelectionScreen
@@ -71,6 +74,9 @@ enum class POSScreen(@StringRes val title: Int) {
     PAYMagSwipePANEntryScreen(title = R.string.title_pos_payment_swipe_card_entry),
     PAYPINEntryScreen(title = R.string.title_pos_payment_pin_entry),
     PAYResultScreen(title = R.string.title_pos_payment_receipt),
+    REFUNDDetailsScreen(title = R.string.title_pos_refund_flow),
+    REFUNDPINEntryScreen(title = R.string.title_pos_refund_flow),
+    REFUNDResultScreen(title = R.string.title_pos_refund_flow),
     VOIDTransactionTypeSelectionScreen(title = R.string.title_pos_void_flow),
     VOIDPaymentScreen(title = R.string.title_pos_void_flow),
     VOIDRefundScreen(title = R.string.title_pos_void_flow),
@@ -152,7 +158,7 @@ fun POSComposeApp(
                     onBackButtonClicked = { navController.popBackStack(POSScreen.MerchantSetupScreen.name, inclusive = false) },
                     onBalanceButtonClicked = { navController.navigate(POSScreen.BIChoosePANMethodScreen.name) },
                     onPaymentButtonClicked = { navController.navigate(POSScreen.PAYTransactionTypeSelectionScreen.name) },
-                    onRefundButtonClicked = { /*TODO*/ },
+                    onRefundButtonClicked = { navController.navigate(POSScreen.REFUNDDetailsScreen.name) },
                     onVoidButtonClicked = { navController.navigate(POSScreen.VOIDTransactionTypeSelectionScreen.name) }
                 )
             }
@@ -366,6 +372,48 @@ fun POSComposeApp(
                 PaymentResultScreen(
                     data = uiState.capturePaymentResponse.toString()
                 )
+            }
+            composable(route = POSScreen.REFUNDDetailsScreen.name) {
+                RefundDetailsScreen(
+                    onConfirmButtonClicked = { paymentRef, amount, reason ->
+                        val refundState = RefundUIState(
+                            paymentRef = paymentRef,
+                            amount = amount,
+                            reason = reason
+                        )
+                        viewModel.setLocalRefundState(refundState)
+                        navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
+                    },
+                    onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
+            }
+            composable(route = POSScreen.REFUNDPINEntryScreen.name) {
+                PINEntryScreen(
+                    forageConfig = uiState.forageConfig,
+                    paymentMethodRef = uiState.localRefundState?.paymentRef,
+                    onSubmitButtonClicked = {
+                        if (pinElement != null && uiState.localRefundState != null) {
+                            viewModel.refundPayment(
+                                foragePinEditText = pinElement as ForagePINEditText,
+                                terminalId = k9SDK.terminalId,
+                                paymentRef = uiState.localRefundState!!.paymentRef,
+                                amount = uiState.localRefundState!!.amount,
+                                reason = uiState.localRefundState!!.reason,
+                                onSuccess = {
+                                    if (it != null) {
+                                        navController.navigate(POSScreen.REFUNDResultScreen.name)
+                                    }
+                                }
+                            )
+                        }
+                    },
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.REFUNDDetailsScreen.name, inclusive = false) },
+                    withPinElementReference = { pinElement = it },
+                    errorText = uiState.refundPaymentError
+                )
+            }
+            composable(route = POSScreen.REFUNDResultScreen.name) {
+                RefundResultScreen(data = uiState.refundPaymentResponse.toString())
             }
             composable(route = POSScreen.VOIDTransactionTypeSelectionScreen.name) {
                 VoidTypeSelectionScreen(
