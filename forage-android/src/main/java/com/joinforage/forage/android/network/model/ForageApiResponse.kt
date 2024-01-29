@@ -6,9 +6,23 @@ internal val UnknownErrorApiResponse = ForageApiResponse.Failure.fromError(
     ForageError(500, "unknown_server_error", "Unknown Server Error")
 )
 
+/**
+ * A model that represents the possible types of responses from the Forage API.
+ *
+ */
 sealed class ForageApiResponse<out T> {
+    /**
+     * A model that represents a success response from the API.
+     *
+     */
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
+    /**
+     * A model that represents a failure response from the API.
+     *
+     * @property errors A list of [ForageError] instances that you can unpack to programmatically
+     * handle the error and display the appropriate customer-facing message.
+     */
     data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
         companion object {
             fun fromError(error: ForageError): Failure {
@@ -18,29 +32,39 @@ sealed class ForageApiResponse<out T> {
     }
 }
 
-// Learn more about `ForageError`s [here](https://docs.joinforage.app/reference/forage-js-errors#forageerror)
+/**
+ * A model that represents an error response from the Forage API.
+ *
+ * @property httpStatusCode A number that corresponds to the HTTP status code that the Forage API
+ * returns in response to the request.
+ * @property code A short string that helps identify the cause of the error.
+ * For example, [`ebt_error_55`](https://docs.joinforage.app/reference/errors#ebt_error_55)
+ * indicates that a customer entered an invalid EBT Card PIN.
+ * @property message A string that specifies developer-facing error handling instructions.
+ * @property details A string that includes additional details about the error, when available, like for
+ * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) (Insufficient Funds).
+ * @see [SDK Errors](https://docs.joinforage.app/reference/errors#sdk-errors) for a comprehensive
+ * list of error `code` and `message` pairs.
+ *
+ */
 data class ForageError(
-    // The HTTP status that the Forage API returns in response to the request.
     val httpStatusCode: Int,
-
-    // A short string explaining why the request failed. The [error code](https://docs.joinforage.app/reference/errors#error-codes)
-    // string corresponds to the HTTP status code.
     val code: String,
-
-    // A developer-facing message about the error, not to be displayed to customers.
     val message: String,
-
-    // Additional data associated with certain ForageErrors included for your
-    // convenience. Guaranteed to be present for ForageErrors with details
-    // (e.g. error_code_51 Insufficient Balance). null for all other ForageErrors
     val details: ForageErrorDetails? = null
 ) {
+    /**
+     * A function that converts the [ForageError] response to a string.
+     *
+     * @return A string representation of a [ForageError] instance, including code, message,
+     * HTTP status, and any other available details from the Forage API.
+     */
     override fun toString(): String {
         return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode\nError Details (below):\n$details"
     }
 }
 
-data class ForageErrorObj(
+internal data class ForageErrorObj(
     val code: String,
     val message: String
 ) {
@@ -63,7 +87,7 @@ data class ForageErrorObj(
     }
 }
 
-data class ForageApiError(
+internal data class ForageApiError(
     val path: String,
     val errors: List<ForageErrorObj>
 ) {
