@@ -2,6 +2,7 @@ package com.joinforage.android.example.ui.pos.network
 
 import com.joinforage.android.example.network.model.EnvConfig
 import com.joinforage.android.example.network.model.PaymentResponse
+import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.Refund
@@ -44,6 +45,12 @@ interface PosApiService {
         @Path("paymentRef") paymentRef: String,
         @Path("refundRef") refundRef: String
     ): Refund
+
+    @POST("api/payment_methods/{paymentMethodRef}/")
+    suspend fun reFetchCard(
+        @Path("paymentMethodRef") paymentMethodRef: String,
+    ): PaymentMethod
+
 
     companion object {
         internal fun from(forageConfig: ForageConfig): PosApiService {

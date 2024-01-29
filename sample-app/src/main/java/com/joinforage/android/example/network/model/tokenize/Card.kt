@@ -8,5 +8,6 @@ data class Card(
     @Json(name = "last_4")
     val last4: String,
     val type: String = "",
-    val token: String
+    val token: String,
+    val state: String?
 )

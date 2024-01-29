@@ -15,7 +15,6 @@ import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
-import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
@@ -80,7 +79,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun createPayment(merchantId: String, payment: PosPaymentRequest, onSuccess: (response: PaymentResponse) -> Unit) {
+    fun createPayment(payment: PosPaymentRequest, onSuccess: (response: PaymentResponse) -> Unit) {
         val idempotencyKey = UUID.randomUUID().toString()
 
         viewModelScope.launch {
@@ -163,6 +162,16 @@ class POSViewModel : ViewModel() {
                     val balance = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(balance = balance, balanceCheckError = null) }
                     onSuccess(balance)
+
+                    // we need to refetch the EBT Card here because
+                    // `ForageTerminalSDK(terminalId).checkBalance`
+                    // does not return the timestamp of the balance
+                    // check and we need to display the timestamp
+                    // on the receipt
+                    val updatedCard = api.reFetchCard(paymentMethodRef)
+                    _uiState.update {
+                        it.copy(tokenizedPaymentMethod = updatedCard)
+                    }
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())

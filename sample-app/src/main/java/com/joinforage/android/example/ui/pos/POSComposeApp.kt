@@ -234,6 +234,9 @@ fun POSComposeApp(
             composable(route = POSScreen.BIResultScreen.name) {
                 BalanceResultScreen(
                     balance = uiState.balance,
+                    merchant = uiState.merchant,
+                    paymentMethod = uiState.tokenizedPaymentMethod,
+                    terminalId = k9SDK.terminalId,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
