@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.network.model.PaymentResponseJsonAdapter
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
-import com.joinforage.android.example.network.model.tokenize.PaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Merchant
@@ -15,6 +13,8 @@ import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
 import com.joinforage.android.example.ui.pos.data.RefundUIState
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
@@ -97,7 +97,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PaymentMethod?) -> Unit) {
+    fun tokenizeEBTCard(foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).tokenizeCard(
                 foragePanEditText = foragePanEditText,
@@ -107,7 +107,7 @@ class POSViewModel : ViewModel() {
             when (response) {
                 is ForageApiResponse.Success -> {
                     val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<PaymentMethod> = PaymentMethodJsonAdapter(moshi)
+                    val jsonAdapter: JsonAdapter<PosPaymentMethod> = PosPaymentMethodJsonAdapter(moshi)
                     val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod, tokenizationError = null) }
                     onSuccess(tokenizedPaymentMethod)
@@ -120,7 +120,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(track2Data: String, terminalId: String, onSuccess: (data: PaymentMethod?) -> Unit) {
+    fun tokenizeEBTCard(track2Data: String, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
             val forage = ForageTerminalSDK(terminalId)
             val response = forage.tokenizeCard(
@@ -133,7 +133,7 @@ class POSViewModel : ViewModel() {
             when (response) {
                 is ForageApiResponse.Success -> {
                     val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<PaymentMethod> = PaymentMethodJsonAdapter(moshi)
+                    val jsonAdapter: JsonAdapter<PosPaymentMethod> = PosPaymentMethodJsonAdapter(moshi)
                     val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod, tokenizationError = null) }
                     onSuccess(tokenizedPaymentMethod)

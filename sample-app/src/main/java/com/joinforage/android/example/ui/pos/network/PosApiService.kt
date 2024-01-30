@@ -2,10 +2,10 @@ package com.joinforage.android.example.ui.pos.network
 
 import com.joinforage.android.example.network.model.EnvConfig
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.Refund
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.ui.ForageConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -49,7 +49,7 @@ interface PosApiService {
     @POST("api/payment_methods/{paymentMethodRef}/")
     suspend fun reFetchCard(
         @Path("paymentMethodRef") paymentMethodRef: String
-    ): PaymentMethod
+    ): PosPaymentMethod
 
     companion object {
         internal fun from(forageConfig: ForageConfig): PosApiService {

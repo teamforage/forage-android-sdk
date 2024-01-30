@@ -1,8 +1,8 @@
 package com.joinforage.android.example.ui.pos.data
 
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.MerchantDetailsState
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.ui.ForageConfig
 
 data class POSUIState(
@@ -11,7 +11,7 @@ data class POSUIState(
     val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
 
     // Tokenizing EBT Cards
-    val tokenizedPaymentMethod: PaymentMethod? = null,
+    val tokenizedPaymentMethod: PosPaymentMethod? = null,
     val tokenizationError: String? = null,
 
     // Checking balances of those EBT Cards

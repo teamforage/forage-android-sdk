@@ -9,17 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.pos.receipts.ReceiptLayout
 import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.data.Merchant
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 
 @Composable
 fun BalanceResultScreen(
     balance: BalanceCheck?,
     merchant: Merchant?,
-    paymentMethod: PaymentMethod?,
+    paymentMethod: PosPaymentMethod?,
     terminalId: String,
     onBackButtonClicked: () -> Unit,
     onDoneButtonClicked: () -> Unit

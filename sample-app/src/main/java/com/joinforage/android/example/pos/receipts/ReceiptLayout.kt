@@ -1,8 +1,8 @@
 package com.joinforage.android.example.pos.receipts
 
-import com.joinforage.android.example.network.model.tokenize.Balance
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.data.Merchant
+import com.joinforage.android.example.ui.pos.data.tokenize.PosBalance
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -31,7 +31,7 @@ internal open class ReceiptLayout(
     companion object {
         internal fun forBalanceCheck(
             merchant: Merchant?,
-            paymentMethod: PaymentMethod?,
+            paymentMethod: PosPaymentMethod?,
             terminalId: String
         ): ReceiptLayout {
             if (paymentMethod?.balance == null) {
@@ -216,7 +216,7 @@ internal fun getTxReceiptLayout(
     )
 }
 
-internal fun getBalanceReceiptLayout(balance: Balance): ReceiptLayout {
+internal fun getBalanceReceiptLayout(balance: PosBalance): ReceiptLayout {
     return ReceiptLayout(
         ReceiptLayoutLine.doubleColCenter("SNAP BAL", balance.snap),
         ReceiptLayoutLine.doubleColCenter("EBT CASH BAL", balance.non_snap)
