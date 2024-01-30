@@ -14,4 +14,3 @@ data class PosBalance(
     @Json(name = "sequence_number")
     val sequenceNumber: String? = null
 )
-

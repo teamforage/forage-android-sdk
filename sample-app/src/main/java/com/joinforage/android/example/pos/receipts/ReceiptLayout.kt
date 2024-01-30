@@ -45,7 +45,7 @@ internal open class ReceiptLayout(
                     terminalId,
                     balance.updated,
                     paymentMethod,
-                    balance.sequenceNumber,
+                    balance.sequenceNumber
                 ).lines,
                 *getBalanceReceiptLayout(balance).lines
             )
