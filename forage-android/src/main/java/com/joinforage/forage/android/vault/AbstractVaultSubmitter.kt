@@ -86,11 +86,14 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         // FNS requirement to clear the PIN after each submission
         foragePinEditText.clearText()
 
-        val httpStatusCode = when (forageResponse) {
-            is ForageApiResponse.Success -> 200
-            is ForageApiResponse.Failure -> forageResponse.errors[0].httpStatusCode
+        if (forageResponse is ForageApiResponse.Failure && forageResponse.errors.isNotEmpty()) {
+            val forageError = forageResponse.errors.first()
+            proxyResponseMonitor.setForageErrorCode(forageError.code)
+            proxyResponseMonitor.setHttpStatusCode(forageError.httpStatusCode)
+        } else {
+            proxyResponseMonitor.setHttpStatusCode(200)
         }
-        proxyResponseMonitor.setHttpStatusCode(httpStatusCode).logResult()
+        proxyResponseMonitor.logResult()
 
         return forageResponse
     }
