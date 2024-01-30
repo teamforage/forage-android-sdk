@@ -8,12 +8,14 @@ internal val UnknownErrorApiResponse = ForageApiResponse.Failure.fromError(
 
 /**
  * A model that represents the possible types of responses from the Forage API.
- *
  */
 sealed class ForageApiResponse<out T> {
     /**
      * A model that represents a success response from the API.
      *
+     * In most cases, `data` is a string representation of a JSON object from the Forage API,
+     * for example:
+     * `if (response is ForageApiResponse.Success) { response.data // { "ref": "abcde123", ... }`
      */
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
@@ -21,7 +23,8 @@ sealed class ForageApiResponse<out T> {
      * A model that represents a failure response from the API.
      *
      * @property errors A list of [ForageError] instances that you can unpack to programmatically
-     * handle the error and display the appropriate customer-facing message.
+     * handle the error and display the appropriate
+     * [customer-facing message](https://docs.joinforage.app/docs/document-error-messages#template-error-table-for-fns-documentation).
      */
     data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
         companion object {
