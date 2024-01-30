@@ -7,9 +7,9 @@ import com.squareup.moshi.JsonClass
 data class PaymentMethod(
     val ref: String,
     val type: String,
-    val balance: Balance?,
-    val card: Card?,
     val reusable: Boolean,
+    val card: Card?,
+    val balance: Balance?,
     @Json(name = "customer_id")
-    val customerId: String? = null
+    val customerId: String?
 )
