@@ -187,7 +187,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertThat(successResponse.data).contains(expectedData.balance.snap)
 
         assertMetricsLog()
-        val attributes = getMetricsLog().getAttributes()
+        val attributes = mockLogger.getMetricsLog().getAttributes()
 
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
         assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
@@ -228,7 +228,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             failureResponse
         )
         assertMetricsLog()
-        val attributes = getMetricsLog().getAttributes()
+        val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
         assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
         assertThat(attributes.getValue("action").toString()).isEqualTo("balance")
@@ -266,7 +266,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
 
         assertMetricsLog()
-        val attributes = getMetricsLog().getAttributes()
+        val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
         assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
         assertThat(attributes.getValue("action").toString()).isEqualTo("refund")
@@ -293,7 +293,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             failureResponse
         )
         assertMetricsLog()
-        val attributes = getMetricsLog().getAttributes()
+        val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
         assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
         assertThat(attributes.getValue("action").toString()).isEqualTo("refund")
@@ -408,9 +408,6 @@ class ForageTerminalSDKTest : MockServerSuite() {
             """.trimIndent()
         )
     }
-
-    private fun getMetricsLog() =
-        mockLogger.infoLogs.last()
 
     private fun assertFirstLoggedMessage(expectedMessage: String) =
         assertThat(mockLogger.infoLogs.first().getMessage()).contains(expectedMessage)

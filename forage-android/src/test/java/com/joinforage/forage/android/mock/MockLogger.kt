@@ -27,6 +27,8 @@ internal class MockLogger : Log {
     val warnLogs: MutableList<LogEntry> = mutableListOf()
     val errorLogs: MutableList<LogEntry> = mutableListOf()
 
+    internal fun getMetricsLog() = infoLogs.last()
+
     private val cumulativeAttributes = mutableMapOf<String, Any?>()
 
     override fun initializeDD(context: Context, config: ForageConfig) {
