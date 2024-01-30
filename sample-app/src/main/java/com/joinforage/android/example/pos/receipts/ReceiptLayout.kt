@@ -41,7 +41,12 @@ internal open class ReceiptLayout(
             val balance = paymentMethod.balance
             return ReceiptLayout(
                 *getMerchantReceiptLayout(merchant).lines,
-                *getTxReceiptLayout(terminalId, balance.updated, paymentMethod).lines,
+                *getTxReceiptLayout(
+                    terminalId,
+                    balance.updated,
+                    paymentMethod,
+                    balance.sequenceNumber,
+                ).lines,
                 *getBalanceReceiptLayout(balance).lines
             )
         }
@@ -196,8 +201,8 @@ fun formatReceiptTimestamp(timestamp: String): String? {
 internal fun getTxReceiptLayout(
     terminalId: String,
     txTimestamp: String,
-    paymentMethod: PaymentMethod?,
-    seqId: String = "TODO: need sequenceId"
+    paymentMethod: PosPaymentMethod?,
+    seqId: String?
 ): ReceiptLayout {
     if (paymentMethod == null) {
         return ReceiptLayout.errorMessageLayout(
