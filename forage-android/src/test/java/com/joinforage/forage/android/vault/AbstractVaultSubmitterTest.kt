@@ -61,6 +61,9 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         mockForagePinEditText = mock(ForagePINEditText::class.java)
         mockContext = mock(Context::class.java)
 
+        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
+        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
+
         abstractVaultSubmitter = ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
@@ -96,9 +99,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             }
         }
 
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
-
         val response = concreteSubmitter.submit(mockVaultParams)
 
         assertTrue(response is ForageApiResponse.Success)
@@ -118,8 +118,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
                 return UnknownErrorApiResponse
             }
         }
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
 
         val response = concreteVaultSubmitter.submit(mockVaultParams)
 
@@ -140,9 +138,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             }
         }
 
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
-
         val response = concreteSubmitter.submit(mockVaultParams)
 
         val forageError = (response as ForageApiResponse.Failure).errors.first()
@@ -153,9 +148,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
 
     @Test
     fun `calls clearText after submitting`() = runTest {
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
-
         abstractVaultSubmitter.submit(mockVaultParams)
 
         verify(mockForagePinEditText, times(1)).clearText()
@@ -206,8 +198,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
                 return ForageApiResponse.Success("success")
             }
         }
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
 
         concreteVaultSubmitter.submit(mockVaultParams)
 
@@ -239,9 +229,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             }
         }
 
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = true)
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
-
         concreteVaultSubmitter.submit(
             VaultSubmitterParams(
                 encryptionKeys = mockEncryptionKeys,
@@ -267,6 +254,23 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         assertThat(attributes.getValue("path").toString()).isEqualTo("/api/payment_methods/abcdefg123/balance/")
         assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
         assertThat(attributes.getValue("forage_error_code").toString()).isEqualTo("unknown_server_error")
+    }
+
+    @Test
+    fun `creates the correct vault submitter`() = runTest {
+        val mockBasisTheoryPinEditText = mock(ForagePINEditText::class.java)
+        `when`(mockBasisTheoryPinEditText.getVaultType()).thenReturn(VaultType.BT_VAULT_TYPE)
+        `when`(mockBasisTheoryPinEditText.context).thenReturn(mockContext)
+
+        val mockVgsPinEditText = mock(ForagePINEditText::class.java)
+        `when`(mockVgsPinEditText.getVaultType()).thenReturn(VaultType.VGS_VAULT_TYPE)
+        `when`(mockVgsPinEditText.context).thenReturn(mockContext)
+
+        val btVaultSubmitter = AbstractVaultSubmitter.create(mockBasisTheoryPinEditText, mockLogger)
+        val vgsVaultSubmitter = AbstractVaultSubmitter.create(mockVgsPinEditText, mockLogger)
+
+        assertTrue(vgsVaultSubmitter is VgsPinSubmitter)
+        assertTrue(btVaultSubmitter is BasisTheoryPinSubmitter)
     }
 }
 
