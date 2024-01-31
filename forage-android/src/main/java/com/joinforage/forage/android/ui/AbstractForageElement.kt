@@ -6,7 +6,7 @@ import android.widget.LinearLayout
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.element.state.ElementState
 
-abstract class AbstractForageElement<T : ElementState>(
+private abstract class AbstractForageElement<T : ElementState>(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
