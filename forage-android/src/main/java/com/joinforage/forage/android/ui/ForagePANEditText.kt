@@ -19,7 +19,8 @@ import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.core.telemetry.Log
 
 /**
- * Material Design component with a TextInputEditText to collect the EBT card number
+ * A [ForageElement] that securely collects a customer's card number. You need a [ForagePANEditText] to call
+ * the method to [tokenize an EBT Card][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard].
  */
 class ForagePANEditText @JvmOverloads constructor(
     context: Context,
