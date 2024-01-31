@@ -20,6 +20,13 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
+/**
+ * A [ForageElement] that collects a customer's card number. You need a [ForagePINEditText] to call
+ * the methods to [check a card's balance][com.joinforage.forage.android.ForageSDK.checkBalance],
+ * [collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.ForageSDK.deferPaymentCapture],
+ * [capture a payment immediately][com.joinforage.forage.android.ForageSDK.capturePayment], or
+ * [refund a Payment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] (POS only).
+ */
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
