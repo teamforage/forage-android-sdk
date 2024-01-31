@@ -90,7 +90,7 @@ internal interface ForageSDKInterface {
  * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] function.
  *
  * @property foragePanEditText A reference to a [ForagePANEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property customerId A unique ID for the end customer making the payment.
  * If using your internal customer ID, then we recommend that you hash the value
@@ -110,7 +110,7 @@ data class TokenizeEBTCardParams(
  * [checkBalance][com.joinforage.forage.android.ForageSDK.checkBalance] function.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property paymentMethodRef A unique string identifier for a previously created
  * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) in Forage's database,
@@ -131,7 +131,7 @@ data class CheckBalanceParams(
  * [capturePayment][com.joinforage.forage.android.ForageSDK.capturePayment] function.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property paymentRef A unique string identifier for a previously created
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
@@ -156,7 +156,7 @@ data class CapturePaymentParams(
  * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture].
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property paymentRef A unique string identifier for a previously created
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's

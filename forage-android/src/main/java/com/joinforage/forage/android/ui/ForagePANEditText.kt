@@ -146,7 +146,7 @@ class ForagePANEditText @JvmOverloads constructor(
             }
     }
 
-    override fun initWithForageConfig(forageConfig: ForageConfig) {
+    override fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.

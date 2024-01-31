@@ -7,11 +7,14 @@ import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.ForageSDKInterface
 import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
+import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
  * ForageTerminalSDK is the entry point for **in-store POS Terminal** transactions.
@@ -125,63 +128,6 @@ class ForageTerminalSDK(
     }
 
     /**
-     * Refund a Forage Payment using a ForagePINEditText
-
-     * * On Success, the response includes a Forage
-     * [`Refund`]https://docs.joinforage.app/reference/create-payment-refund) object.
-     * * On failure, the response includes a list of
-     * * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * * unpack to troubleshoot the issue.
-     *
-     * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
-     * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
-     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
-     * hasn't had its ForageConfig set via .setForageConfig().
-     */
-    suspend fun refundPayment(params: PosRefundPaymentParams): ForageApiResponse<String> {
-        val logger = createLogger()
-        val (foragePinEditText, paymentRef, amount, reason) = params
-        val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
-
-        logger
-            .addAttribute("payment_ref", paymentRef)
-            .addAttribute("merchant_ref", merchantId)
-        logger.i(
-            """
-            [POS] Called refundPayment for Payment $paymentRef
-            with amount: $amount
-            for reason: $reason
-            on Terminal: $posTerminalId
-            """.trimIndent()
-        )
-
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getVaultType(),
-            vaultAction = UserAction.REFUND,
-            logger
-        )
-        measurement.start()
-        // ------------------------------------------------------
-
-        val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
-        val refundService = serviceFactory.createRefundPaymentRepository(foragePinEditText)
-        val refund = refundService.refundPayment(
-            merchantId = merchantId,
-            posTerminalId = posTerminalId,
-            refundParams = params
-        )
-        forageSdk.processApiResponseForMetrics(refund, measurement)
-
-        if (refund is ForageApiResponse.Failure) {
-            logger.e("[POS] refundPayment failed for Payment $paymentRef on Terminal $posTerminalId: ${refund.errors[0]}")
-        }
-
-        return refund
-    }
-
-    /**
      * Checks the balance of a given PaymentMethod using a ForagePINEditText
      *
      * @param params The parameters required for balance inquiries, including
@@ -200,6 +146,12 @@ class ForageTerminalSDK(
     ): ForageApiResponse<String> {
         val logger = createLogger()
         val (foragePinEditText, paymentMethodRef) = params
+
+        val illegalVaultException = isIllegalVaultExceptionOrNull(foragePinEditText, logger)
+        if (illegalVaultException != null) {
+            return illegalVaultException
+        }
+
         val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
 
         logger.addAttribute("merchant_ref", merchantId)
@@ -298,6 +250,79 @@ class ForageTerminalSDK(
             logger.e("[POS] deferPaymentCapture failed for Payment $paymentRef on Terminal $posTerminalId: ${deferCaptureResponse.errors[0]}")
         }
         return deferCaptureResponse
+    }
+
+    /**
+     * Refund a Forage Payment using a ForagePINEditText
+
+     * * On Success, the response includes a Forage
+     * [`Refund`]https://docs.joinforage.app/reference/create-payment-refund) object.
+     * * On failure, the response includes a list of
+     * * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * * unpack to troubleshoot the issue.
+     *
+     * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
+     * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    suspend fun refundPayment(params: PosRefundPaymentParams): ForageApiResponse<String> {
+        val logger = createLogger()
+        val (foragePinEditText, paymentRef, amount, reason) = params
+        val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
+
+        val illegalVaultException = isIllegalVaultExceptionOrNull(foragePinEditText, logger)
+        if (illegalVaultException != null) {
+            return illegalVaultException
+        }
+
+        logger
+            .addAttribute("payment_ref", paymentRef)
+            .addAttribute("merchant_ref", merchantId)
+        logger.i(
+            """
+            [POS] Called refundPayment for Payment $paymentRef
+            with amount: $amount
+            for reason: $reason
+            on Terminal: $posTerminalId
+            """.trimIndent()
+        )
+
+        // This block is used for tracking Metrics!
+        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+            vault = foragePinEditText.getVaultType(),
+            vaultAction = UserAction.REFUND,
+            logger
+        )
+        measurement.start()
+        // ------------------------------------------------------
+
+        val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
+        val refundService = serviceFactory.createRefundPaymentRepository(foragePinEditText)
+        val refund = refundService.refundPayment(
+            merchantId = merchantId,
+            posTerminalId = posTerminalId,
+            refundParams = params
+        )
+        forageSdk.processApiResponseForMetrics(refund, measurement)
+
+        if (refund is ForageApiResponse.Failure) {
+            logger.e("[POS] refundPayment failed for Payment $paymentRef on Terminal $posTerminalId: ${refund.errors[0]}")
+        }
+
+        return refund
+    }
+
+    private fun isIllegalVaultExceptionOrNull(
+        foragePinEditText: ForagePINEditText,
+        logger: Log
+    ): ForageApiResponse<String>? {
+        if (foragePinEditText.getVaultType() != VaultType.VGS_VAULT_TYPE) {
+            logger.e("[POS] checkBalance failed on Terminal $posTerminalId because the vault type is not VGS")
+            return UnknownErrorApiResponse
+        }
+        return null
     }
 
     /**

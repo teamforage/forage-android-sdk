@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.element.state.ElementState
+import com.joinforage.forage.android.pos.PosForageConfig
 
 /**
  * ⚠️ Forage developers use this class to manage common attributes across [ForageElement] types.
@@ -23,9 +24,14 @@ abstract class AbstractForageElement<T : ElementState>(
     // setForageConfig is called. Side effect include
     // initializing logger module, feature flag module,
     // and view UI manipulation logic
-    protected abstract fun initWithForageConfig(forageConfig: ForageConfig)
+    protected abstract fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean)
 
     override fun setForageConfig(forageConfig: ForageConfig) {
+        commonInitializer(forageConfig, false)
+    }
+
+    // common initializer for both setForageConfig and setPosForageConfig
+    private fun commonInitializer(forageConfig: ForageConfig, isPos: Boolean) {
         // keep a record of whether this was the first time
         // setForageConfig is getting called. we'll use
         // this info later
@@ -45,11 +51,21 @@ abstract class AbstractForageElement<T : ElementState>(
         // operations on any subsequent calls to setForageConfig
         // or else that could crash the app.
         if (isFirstCallToSet) {
-            initWithForageConfig(forageConfig)
+            initWithForageConfig(forageConfig, isPos)
         } else {
             // TODO: possible opportunity to log that
             //  they tried to do sessionToken refreshing
         }
+    }
+
+    override fun setPosForageConfig(posForageConfig: PosForageConfig) {
+        commonInitializer(
+            ForageConfig(
+                merchantId = posForageConfig.merchantId,
+                sessionToken = posForageConfig.sessionToken
+            ),
+            true
+        )
     }
 
     // internal because submit methods need read-access

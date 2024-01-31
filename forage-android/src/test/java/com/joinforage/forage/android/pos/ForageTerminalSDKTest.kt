@@ -5,6 +5,7 @@ import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
@@ -84,7 +85,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
-    fun `should send the correct headers + body to tokenize the card`() = runTest {
+    fun `POS should send the correct headers + body to tokenize the card`() = runTest {
         server.givenPaymentMethod(
             PosPaymentMethodRequestBody(
                 track2Data = expectedData.track2Data,
@@ -115,7 +116,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
-    fun `tokenize EBT card with Track 2 data successfully`() = runTest {
+    fun `POS tokenize EBT card with Track 2 data successfully`() = runTest {
         server.givenPaymentMethod(
             PosPaymentMethodRequestBody(
                 track2Data = expectedData.track2Data,
@@ -147,7 +148,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
-    fun `tokenize EBT card via UI-based PAN entry`() = runTest {
+    fun `POS tokenize EBT card via UI-based PAN entry`() = runTest {
         `when`(
             mockForageSdk.tokenizeEBTCard(
                 TokenizeEBTCardParams(
@@ -304,7 +305,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
-    fun testCapturePayment() = runTest {
+    fun `POS capturePayment`() = runTest {
         `when`(
             mockForageSdk.capturePayment(
                 CapturePaymentParams(
@@ -326,7 +327,20 @@ class ForageTerminalSDKTest : MockServerSuite() {
     }
 
     @Test
-    fun testDeferPaymentCapture() = runTest {
+    fun `POS illegal vault exception`() = runTest {
+        `when`(mockForagePinEditText.getVaultType()).thenReturn(VaultType.BT_VAULT_TYPE)
+        val response = terminalSdk.checkBalance(
+            CheckBalanceParams(
+                foragePinEditText = mockForagePinEditText,
+                paymentMethodRef = "1f148fe399"
+            )
+        )
+        assertTrue(response is ForageApiResponse.Failure)
+        assertThat(mockLogger.errorLogs.last().getMessage()).contains("because the vault type is not VGS")
+    }
+
+    @Test
+    fun `POS deferPaymentCapture`() = runTest {
         `when`(
             mockForageSdk.deferPaymentCapture(
                 DeferPaymentCaptureParams(

@@ -4,19 +4,19 @@ import android.graphics.Typeface
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
+import com.joinforage.forage.android.pos.PosForageConfig
 
 /**
  * The configuration details that Forage needs to create a functional [ForageElement].
  *
  * Pass a [ForageConfig] instance in a call to
- * [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig] to
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] to
  * configure an Element.
  *
- * @property merchantId Either a unique seven digit numeric string that
- * [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues
- * to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding
- * and can be retrieved from the dashboard.
- * Accepted formats include: `mid/<merchant-id>`, `<fns-number>`.
+ * @property merchantId A unique Merchant ID that Forage provides during onboarding
+ * onboarding preceded by "mid/". For example, `mid/123ab45c67`.
+ * The Merchant ID can be found in the Forage [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
+ * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
  *
  * @property sessionToken A short-lived token that authenticates front-end requests to Forage.
  * To create one, send a server-side `POST` request from your backend to the
@@ -42,13 +42,29 @@ interface ForageElement<T : ElementState> {
     var typeface: Typeface?
 
     /**
-     * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
+     * ⚠️ **The [setForageConfig] method is only valid for online-only transactions.** Use [setPosForageConfig]
+     * for in-store POS Terminal transactions.
      *
-     * [setForageConfig] must be called before any other methods can be executed on the Element.
+     * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
+     * **[setForageConfig] must be called before any other methods can be executed on the Element.**
+     *
+     * @see setPosForageConfig Use [setPosForageConfig] for the equivalent Terminal SDK.
      *
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
     fun setForageConfig(forageConfig: ForageConfig)
+
+    /**
+     * ⚠️ **The [setPosForageConfig] method is only valid for in-store POS Terminal transactions.**
+     *
+     * Sets the necessary [PosForageConfig] configuration properties for a ForageElement.
+     * **[setPosForageConfig] must be called before any other methods can be executed on the Element.**
+     *
+     * @see setForageConfig Use [setForageConfig] for the equivalent online-only method.
+     *
+     * @param posForageConfig A [PosForageConfig] instance that specifies a `merchantId` and `sessionToken`.
+     */
+    fun setPosForageConfig(posForageConfig: PosForageConfig)
 
     /**
      * Clears the text input field of the ForageElement.
