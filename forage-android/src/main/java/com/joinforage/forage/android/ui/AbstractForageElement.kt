@@ -6,6 +6,10 @@ import android.widget.LinearLayout
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.element.state.ElementState
 
+/**
+ * ⚠️ Forage developers use this class to manage common attributes across [ForageElement] types.
+ * You don't need to use or worry about it!
+ */
 abstract class AbstractForageElement<T : ElementState>(
     context: Context,
     attrs: AttributeSet? = null,
