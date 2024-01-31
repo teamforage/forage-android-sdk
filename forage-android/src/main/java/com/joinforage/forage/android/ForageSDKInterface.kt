@@ -5,9 +5,11 @@ import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
- * Exception thrown when attempting to call pass a reference to a
- * ForageElement without first setting its ForageConfig via
- * `.setForageConfig()`.
+ * An [Exception](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/) thrown if a
+ * reference to a [ForageElement][com.joinforage.forage.android.ui.ForageElement] is passed to a
+ * function before [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig]
+ * is called on the Element.
+ * @property message A string that describes the Exception.
  */
 class ForageConfigNotSetException(override val message: String) : IllegalStateException(message)
 
