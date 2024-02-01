@@ -328,15 +328,34 @@ class ForageTerminalSDKTest : MockServerSuite() {
 
     @Test
     fun `POS illegal vault exception`() = runTest {
+        val terminalSdk = createMockTerminalSdk()
+
+        val expectedLogSubstring = "because the vault type is not VGS"
         `when`(mockForagePinEditText.getVaultType()).thenReturn(VaultType.BT_VAULT_TYPE)
-        val response = terminalSdk.checkBalance(
+        val balanceResponse = terminalSdk.checkBalance(
             CheckBalanceParams(
                 foragePinEditText = mockForagePinEditText,
                 paymentMethodRef = "1f148fe399"
             )
         )
-        assertTrue(response is ForageApiResponse.Failure)
-        assertThat(mockLogger.errorLogs.last().getMessage()).contains("because the vault type is not VGS")
+
+        val balanceError = (balanceResponse as ForageApiResponse.Failure).errors.first()
+        assertThat(balanceError.message).contains("IllegalStateException")
+        assertThat(mockLogger.errorLogs.last().getMessage()).contains(expectedLogSubstring)
+        assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
+
+        val refundResponse = terminalSdk.refundPayment(
+            PosRefundPaymentParams(
+                foragePinEditText = mockForagePinEditText,
+                paymentRef = expectedData.paymentRef,
+                amount = expectedData.refundAmount,
+                reason = expectedData.refundReason
+            )
+        )
+
+        assertTrue(refundResponse is ForageApiResponse.Failure)
+        assertThat(mockLogger.errorLogs.count()).isEqualTo(2)
+        assertThat(mockLogger.errorLogs.last().getMessage()).contains(expectedLogSubstring)
     }
 
     @Test

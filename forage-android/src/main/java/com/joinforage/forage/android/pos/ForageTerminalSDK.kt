@@ -12,6 +12,7 @@ import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMon
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -320,7 +321,13 @@ class ForageTerminalSDK(
     ): ForageApiResponse<String>? {
         if (foragePinEditText.getVaultType() != VaultType.VGS_VAULT_TYPE) {
             logger.e("[POS] checkBalance failed on Terminal $posTerminalId because the vault type is not VGS")
-            return UnknownErrorApiResponse
+            return ForageApiResponse.Failure.fromError(
+                ForageError(
+                    code = "invalid_input_data",
+                    message = "IllegalStateException: Use ForageElement.setPosForageConfig, instead of ForageElement.setForageConfig.",
+                    httpStatusCode = 400
+                )
+            )
         }
         return null
     }
