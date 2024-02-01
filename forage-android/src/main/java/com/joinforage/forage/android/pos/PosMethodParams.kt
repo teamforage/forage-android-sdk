@@ -1,7 +1,32 @@
 package com.joinforage.forage.android.pos
 
 import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.ui.ForageElement
 import com.joinforage.forage.android.ui.ForagePINEditText
+
+/**
+ * **[PosForageConfig] is only valid for in-store POS Terminal transactions.**
+ *
+ * The configuration details that Forage needs to create a functional [ForageElement].
+ *
+ * Pass a [PosForageConfig] instance in a call to
+ * [setPosForageConfig][com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] to
+ * configure an Element.
+ *
+ * @property merchantId A unique Merchant ID that Forage provides during onboarding onboarding preceded by "mid/".
+ * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
+ * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
+ *
+ * @property sessionToken A short-lived token that authenticates front-end requests to Forage.
+ * To create one, send a server-side `POST` request from your backend to the
+ * [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+ *
+ * @constructor Creates an instance of the [PosForageConfig] data class.
+ */
+data class PosForageConfig(
+    val merchantId: String,
+    val sessionToken: String
+)
 
 /**
  * The [PosTokenizeCardParams] are only valid for in-store POS Terminal transactions.

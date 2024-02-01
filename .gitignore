@@ -17,5 +17,8 @@ SecretRingKey.gpg
 /buildSrc/build/
 *.jks
 
+# Intellij
+.idea
+
 # Dokka HTML documentation
 reference-docs/
