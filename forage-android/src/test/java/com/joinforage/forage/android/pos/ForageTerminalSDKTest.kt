@@ -386,7 +386,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
         val terminalSdk = createMockTerminalSdk()
         return terminalSdk.tokenizeCard(
             PosTokenizeCardParams(
-                forageConfig = ForageConfig(
+                posForageConfig = PosForageConfig(
                     merchantId = expectedData.merchantId,
                     sessionToken = expectedData.sessionToken
                 ),

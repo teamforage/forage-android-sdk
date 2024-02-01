@@ -3,7 +3,7 @@ package com.joinforage.android.example.ui.pos.data
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.MerchantDetailsState
-import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.pos.PosForageConfig
 
 data class POSUIState(
     val merchantId: String = "<your_merchant_id>", // <your_merchant_id>
@@ -40,8 +40,8 @@ data class POSUIState(
     val voidRefundResponse: Refund? = null,
     val voidRefundError: String? = null
 ) {
-    val forageConfig: ForageConfig
-        get() = ForageConfig(merchantId, sessionToken)
+    val posForageConfig: PosForageConfig
+        get() = PosForageConfig(merchantId, sessionToken)
 }
 
 data class RefundUIState(

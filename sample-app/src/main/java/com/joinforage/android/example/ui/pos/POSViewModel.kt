@@ -49,7 +49,7 @@ class POSViewModel : ViewModel() {
         // of the forageConfig when a ViewModel instance
         // is created but we certainly will by the time
         // we ever use any methods of the api
-        PosApiService.from(uiState.value.forageConfig)
+        PosApiService.from(uiState.value.posForageConfig)
     }
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
@@ -125,7 +125,7 @@ class POSViewModel : ViewModel() {
             val forage = ForageTerminalSDK(terminalId)
             val response = forage.tokenizeCard(
                 PosTokenizeCardParams(
-                    uiState.value.forageConfig,
+                    uiState.value.posForageConfig,
                     track2Data
                 )
             )
