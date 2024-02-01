@@ -7,7 +7,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 /**
  * An [Exception](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/) thrown if a
  * reference to a [ForageElement][com.joinforage.forage.android.ui.ForageElement] is passed to a
- * function before [setForageConfig][com.joinforage.forage.android.ui.AbstractForageElement.setForageConfig]
+ * function before [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig]
  * is called on the Element.
  * @property message A string that describes the Exception.
  */

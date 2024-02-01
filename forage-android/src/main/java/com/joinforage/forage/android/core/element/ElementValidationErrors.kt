@@ -2,7 +2,7 @@ package com.joinforage.forage.android.core.element
 
 /**
  * A model that represents an error related to an incomplete or incorrect customer input.
- * @property detail A message that describes the error.
+ * @property detail A customer-facing message that describes the error.
  */
 data class ElementValidationError(
     val detail: String
@@ -10,7 +10,7 @@ data class ElementValidationError(
 
 // PAN Input Errors
 /**
- * A type of [ElementValidationError] that is thrown when a customer submits an incomplete
+ * A type of [ElementValidationError] that occurs when a customer submits an incomplete
  * EBT Card number.
  */
 val IncompleteEbtPanError = ElementValidationError(
@@ -18,7 +18,7 @@ val IncompleteEbtPanError = ElementValidationError(
 )
 
 /**
- * A type of [ElementValidationError] that is thrown when a customer submits an invalid
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid
  * EBT Card number.
  */
 val InvalidEbtPanError = ElementValidationError(
@@ -26,7 +26,7 @@ val InvalidEbtPanError = ElementValidationError(
 )
 
 /**
- * A type of [ElementValidationError] that is thrown when a customer submits an EBT Card number that
+ * A type of [ElementValidationError] that occurs when a customer submits an EBT Card number that
  * is too long.
  */
 val TooLongEbtPanError = ElementValidationError(
@@ -39,7 +39,7 @@ val TooLongEbtPanError = ElementValidationError(
 
 // PIN Input Errors
 /**
- * A type of [ElementValidationError] that is thrown when a customer submits an incomplete
+ * A type of [ElementValidationError] that occurs when a customer submits an incomplete
  * EBT Card PIN.
  */
 val IncompleteEbtPinError = ElementValidationError(
@@ -47,7 +47,7 @@ val IncompleteEbtPinError = ElementValidationError(
 )
 
 /**
- * A type of [ElementValidationError] that is thrown when a customer submits an invalid EBT Card PIN.
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid EBT Card PIN.
  */
 val WrongEbtPinError = ElementValidationError(
     detail = "Invalid EBT card PIN entered. Please enter your 4-digit PIN."
