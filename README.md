@@ -277,7 +277,7 @@ tokenizeForagePanEditText.setForageConfig(
 
 #### `setForageConfig()` parameters
 
-- `merchantID`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+- `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
 - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 
 ## Create a Forage instance
@@ -438,14 +438,14 @@ On failure, for example in the case of [`unsupported_bin`](https://docs.joinfora
 
 ```kotlin
 data class PosTokenizeCardParams(
-    val forageConfig: ForageConfig,
+    val forageConfig: PosForageConfig,
     val track2Data: String,
     val reusable: Boolean = true
 )
 ```
 
-- `forageConfig` (_required_): The configuration details required to authenticate with the Forage API.
-  - `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+- `posForageConfig` (_required_): The configuration details required to authenticate with the Forage API.
+  - `merchantId` (_required_): A unique Merchant ID that Forage provides during onboarding onboarding preceded by "mid/". For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage [Sandbox](https://dashboard.sandbox.joinforage.app/login/) or [Production](https://dashboard.joinforage.app/login/) Dashboard.
   - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 - `track2data` (_required_): The information encoded on Track 2 of the EBT Card’s magnetic stripe, excluding the start and stop sentinels and any LRC characters.
 - `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
@@ -460,7 +460,6 @@ class TokenizePosViewModel : ViewModel() {
     val sessionToken = "<session_token>"
 
     fun tokenizePosCard(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-
         val response = ForageTerminalSDK().tokenizeCard(
           PosTokenizeCardParams(
             forageConfig = ForageConfig(
@@ -728,7 +727,6 @@ class PosRefundViewModel : ViewModel() {
 
 
   fun refundPayment(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-
     val forageParams = ForageTerminalSDKParams(posTerminalId)
     val forage = ForageTerminalSDK(forageParams)
     val refundParams = PosRefundPaymentParams(
