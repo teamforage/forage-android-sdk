@@ -300,15 +300,16 @@ You can then use the instance to call methods that perform payment operations. R
 
 `ForageTerminalSDK()` is the entry point to the Forage Terminal SDK. A `ForageTerminalSDK` instance interacts with the Forage API.
 
-To create a `ForageTerminalSDK` instance, call the constructor, passing the `posTerminalId` as the only parameter, as in the following snippet:
+To create a `ForageTerminalSDK` instance, call the constructor, passing the `posTerminalId` and a `sessionToken` as the only parameters, as in the following snippet:
 
 ```kotlin
-val forage = ForageTerminalSDK(posTerminalId)
+val forage = ForageTerminalSDK(posTerminalId, sessionToken)
 ```
 
 #### `ForageTerminalSDK()` parameters
 
 - `posTerminalId` (_required_): A string that uniquely identifies the POS Terminal used for a transaction.
+- `sessionToken` (_required_): A session token which will authenticate the POS Terminal against Forage's key management service.
 
 You can then use the instance to call methods that perform payment operations, as demonstrated in the following section.
 
@@ -727,7 +728,7 @@ class PosRefundViewModel : ViewModel() {
 
 
   fun refundPayment(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-    val forageParams = ForageTerminalSDKParams(posTerminalId)
+    val forageParams = ForageTerminalSDKParams(posTerminalId, sessionToken)
     val forage = ForageTerminalSDK(forageParams)
     val refundParams = PosRefundPaymentParams(
       foragePinEditText,

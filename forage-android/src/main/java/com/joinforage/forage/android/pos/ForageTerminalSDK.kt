@@ -31,7 +31,8 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * @param posTerminalId The unique string that identifies the POS Terminal.
  */
 class ForageTerminalSDK(
-    private val posTerminalId: String
+    private val posTerminalId: String,
+    private val sessionToken: String
 ) : ForageSDKInterface {
     private var createServiceFactory = {
             sessionToken: String, merchantId: String, logger: Log ->
