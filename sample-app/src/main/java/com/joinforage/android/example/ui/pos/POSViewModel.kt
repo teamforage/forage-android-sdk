@@ -18,6 +18,7 @@ import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
+import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
 import com.joinforage.forage.android.pos.PosRefundPaymentParams
@@ -173,8 +174,8 @@ class POSViewModel : ViewModel() {
 
     fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: (response: PaymentResponse?) -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId).capturePayment(
-                CapturePaymentParams(
+            val response = ForageTerminalSDK(terminalId).deferPaymentCapture(
+                DeferPaymentCaptureParams(
                     foragePinEditText = foragePinEditText,
                     paymentRef = paymentRef
                 )
@@ -182,11 +183,16 @@ class POSViewModel : ViewModel() {
 
             when (response) {
                 is ForageApiResponse.Success -> {
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<PaymentResponse> = PaymentResponseJsonAdapter(moshi)
-                    val paymentResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(capturePaymentResponse = paymentResponse, capturePaymentError = null) }
-                    onSuccess(paymentResponse)
+                    Log.w("POSViewModel", "Defer Payment Capture Succeeded, Payment ref: $paymentRef")
+                    _uiState.update { it.copy(capturePaymentError = null, deferPaymentCaptureResponse = """
+                        POST /payments/$paymentRef/collect_pin succeeded, 
+                        now call POST /payments/$paymentRef/capture_payment/
+                        in Postman to complete the capture. 
+                        Grab Payment ref from the logs
+                        """.trimIndent()
+                    ) }
+
+                    onSuccess(null)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())

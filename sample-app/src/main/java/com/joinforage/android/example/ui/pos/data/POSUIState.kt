@@ -25,6 +25,7 @@ data class POSUIState(
 
     // Capturing that payment
     val capturePaymentResponse: PaymentResponse? = null,
+    val deferPaymentCaptureResponse: String? = null,
     val capturePaymentError: String? = null,
 
     // Refunding a payment

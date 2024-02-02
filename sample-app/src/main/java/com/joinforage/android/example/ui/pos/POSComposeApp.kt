@@ -356,9 +356,9 @@ fun POSComposeApp(
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
-                                    if (it?.ref != null) {
+//                                    if (it?.ref != null) {
                                         navController.navigate(POSScreen.PAYResultScreen.name)
-                                    }
+//                                    }
                                 }
                             )
                         }
@@ -370,7 +370,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYResultScreen.name) {
                 PaymentResultScreen(
-                    data = uiState.capturePaymentResponse.toString()
+                    data = uiState.deferPaymentCaptureResponse ?: "..."
                 )
             }
             composable(route = POSScreen.REFUNDDetailsScreen.name) {
