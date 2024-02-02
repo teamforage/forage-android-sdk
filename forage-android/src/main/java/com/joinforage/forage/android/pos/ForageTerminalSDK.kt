@@ -110,14 +110,14 @@ class ForageTerminalSDK(
      * indicating the success or failure of the operation.
      */
     suspend fun tokenizeCard(params: PosTokenizeCardParams): ForageApiResponse<String> {
-        val (forageConfig, track2Data, reusable) = params
+        val (posForageConfig, track2Data, reusable) = params
         val logger = createLogger()
         logger.addAttribute("reusable", reusable)
-            .addAttribute("merchant_ref", forageConfig.merchantId)
+            .addAttribute("merchant_ref", posForageConfig.merchantId)
 
         logger.i("[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId")
 
-        val (merchantId, sessionToken) = forageConfig
+        val (merchantId, sessionToken) = posForageConfig
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
         val tokenizeCardService = serviceFactory.createTokenizeCardService()
 

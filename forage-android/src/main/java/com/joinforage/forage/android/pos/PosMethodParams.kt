@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.pos
 
-import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForageElement
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -34,14 +33,14 @@ data class PosForageConfig(
  * The information encoded on Track 2 of the EBT Card’s magnetic stripe,
  * excluding the start and stop sentinels and any LRC characters.
  *
- * @property forageConfig The configuration details required to authenticate with the Forage API.
+ * @property posForageConfig The [PosForageConfig] configuration details required to authenticate with the Forage API.
  * @property track2Data The information encoded on Track 2 of the EBT Card’s magnetic stripe,
  * excluding the start and stop sentinels and any LRC characters.
  * @property reusable Optional. Indicates whether the tokenized card can be
  * reused for multiple transactions. Defaults to true.
  */
 data class PosTokenizeCardParams(
-    val forageConfig: ForageConfig,
+    val posForageConfig: PosForageConfig,
     val track2Data: String,
     val reusable: Boolean = true
 )
