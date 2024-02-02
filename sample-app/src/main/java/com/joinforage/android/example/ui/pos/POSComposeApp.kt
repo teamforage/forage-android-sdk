@@ -175,6 +175,7 @@ fun POSComposeApp(
                 MerchantSetupScreen(
                     terminalId = k9SDK.terminalId,
                     merchantId = uiState.merchantId,
+                    sessionToken = uiState.sessionToken,
                     merchantDetailsState = uiState.merchantDetailsState,
                     onSaveButtonClicked = {
                         viewModel.setMerchantId(it, onSuccess = {

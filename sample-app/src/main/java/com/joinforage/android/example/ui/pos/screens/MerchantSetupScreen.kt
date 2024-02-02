@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.MerchantDetailsState
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
@@ -33,11 +34,16 @@ import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 fun MerchantSetupScreen(
     terminalId: String,
     merchantId: String,
+    sessionToken: String,
     merchantDetailsState: MerchantDetailsState,
     onSaveButtonClicked: (String) -> Unit
 ) {
     var merchantIdInput by rememberSaveable {
         mutableStateOf(merchantId)
+    }
+
+    var sessionTokenInput by rememberSaveable {
+        mutableStateOf(sessionToken)
     }
 
     val error = when (merchantDetailsState) {
@@ -83,7 +89,22 @@ fun MerchantSetupScreen(
                         if (error != null) {
                             Icon(imageVector = Icons.Filled.Warning, contentDescription = "", tint = MaterialTheme.colorScheme.error)
                         }
-                    }
+                    },
+                    modifier = Modifier.withTestId("pos_merchant_id_text_field")
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Session Token", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(16.dp))
+                TextField(
+                    value = sessionTokenInput,
+                    onValueChange = { sessionTokenInput  = it },
+                    modifier = Modifier.withTestId("pos_session_token_text_field")
                 )
             }
         },
@@ -92,7 +113,10 @@ fun MerchantSetupScreen(
                 onClick = { onSaveButtonClicked(merchantIdInput) },
                 enabled = merchantDetailsState != MerchantDetailsState.Loading
             ) {
-                Text("Bind POS to Merchant")
+                Text(
+                    "Bind POS to Merchant",
+                    modifier = Modifier.withTestId("pos_bind_to_merchant_button")
+                )
             }
         }
     )
@@ -104,6 +128,7 @@ fun MerchantSetupScreenPreview() {
     MerchantSetupScreen(
         terminalId = "preview terminal id",
         merchantId = "preview merchant id",
+        sessionToken = "preview session token",
         merchantDetailsState = MerchantDetailsState.Idle,
         onSaveButtonClicked = {}
     )
