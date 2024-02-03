@@ -106,6 +106,9 @@ class ForageSDK : ForageSDKInterface {
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods)
      * via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
+     * ⚠️ _FNS prohibits balance inquiries on sites and apps that offer guest checkout. Skip this
+     * method if your customers can opt for guest checkout. If guest checkout is not an option, then
+     * it's up to you whether or not to add a balance inquiry feature. No FNS regulations apply._
      * * On success, the response object includes `snap` and `cash` fields that indicate
      * the EBT Card's current SNAP and EBT Cash balances.
      * * On failure, for example in the case of
