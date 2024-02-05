@@ -34,7 +34,8 @@ internal enum class UserAction(val value: String) {
     BALANCE("balance"),
     CAPTURE("capture"),
     DEFER_CAPTURE("defer_capture"),
-    REFUND("refund");
+    REFUND("refund"),
+    DEFER_REFUND("defer_refund");
 
     override fun toString(): String {
         return value

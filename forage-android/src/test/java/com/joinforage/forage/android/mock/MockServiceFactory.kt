@@ -14,6 +14,7 @@ import com.joinforage.forage.android.network.data.BaseVaultRequestParams
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
+import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
 import com.joinforage.forage.android.pos.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.pos.PosVaultRequestParams
@@ -112,6 +113,15 @@ internal class MockServiceFactory(
             encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService
+        )
+    }
+
+    override fun createDeferPaymentRefundRepository(foragePinEditText: ForagePINEditText): DeferPaymentRefundRepository {
+        return DeferPaymentRefundRepository(
+            vaultSubmitter = mockVaultSubmitter,
+            encryptionKeyService = encryptionKeyService,
+            paymentMethodService = paymentMethodService,
+            paymentService = paymentService
         )
     }
 

@@ -46,6 +46,20 @@ internal fun mockSuccessfulPosRefund(
     )
 }
 
+internal fun mockSuccessfulPosDeferredRefund(
+    mockVaultSubmitter: MockVaultSubmitter,
+    server: MockWebServer
+) {
+    server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+    server.givenPaymentRef().returnsPayment()
+    server.givenPaymentMethodRef().returnsPaymentMethod()
+
+    mockVaultSubmitter.setSubmitResponse(
+        path = "/api/payments/${MockServiceFactory.ExpectedData.paymentRef}/refunds/collect_pin/",
+        response = ForageApiResponse.Success("")
+    )
+}
+
 internal fun getVaultMessageResponse(contentId: String): String {
     return JSONObject().apply {
         put("content_id", contentId)

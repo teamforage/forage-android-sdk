@@ -3,6 +3,7 @@ package com.joinforage.forage.android.pos
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
+import com.joinforage.forage.android.DeferPosPaymentRefundParams
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.VaultType
@@ -23,6 +24,7 @@ import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.getVaultMessageResponse
+import com.joinforage.forage.android.mock.mockSuccessfulPosDeferredRefund
 import com.joinforage.forage.android.mock.mockSuccessfulPosRefund
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
@@ -379,6 +381,64 @@ class ForageTerminalSDKTest : MockServerSuite() {
         assertTrue((response as ForageApiResponse.Success).data == "")
     }
 
+    @Test
+    fun `POS deferPaymentRefund succeeds`() = runTest {
+        mockSuccessfulPosDeferredRefund(
+            mockVaultSubmitter = vaultSubmitter,
+            server = server
+        )
+        val response = executeDeferPaymentRefund()
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
+        assertTrue((response as ForageApiResponse.Success).data == "")
+
+        assertFirstLoggedMessage(
+            """
+            [POS] Called deferPaymentRefund for Payment 6ae6a45ff1
+            on Terminal: pos-terminal-id-123
+            """.trimIndent()
+        )
+
+        assertMetricsLog()
+        val attributes = mockLogger.getMetricsLog().getAttributes()
+        assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("action").toString()).isEqualTo("defer_refund")
+        assertThat(
+            attributes.getValue("event_name").toString()
+        ).isEqualTo("customer_perceived_response")
+        assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
+    }
+
+    @Test
+    fun `POS deferPaymentRefund fails`() = runTest {
+        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+        server.givenPaymentRef().returnsPayment()
+        server.givenPaymentMethodRef().returnsPaymentMethod()
+        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        vaultSubmitter.setSubmitResponse(
+            path = "/api/payments/${expectedData.paymentRef}/refunds/collect_pin/",
+            response = failureResponse
+        )
+        val response = executeDeferPaymentRefund()
+
+        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
+
+        assertLoggedError(
+            expectedMessage = "[POS] deferPaymentRefund failed for Payment ${expectedData.paymentRef} on Terminal pos-terminal-id-123",
+            failureResponse
+        )
+        assertMetricsLog()
+        val attributes = mockLogger.getMetricsLog().getAttributes()
+        assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("action").toString()).isEqualTo("defer_refund")
+        assertThat(attributes.getValue("event_name").toString()).isEqualTo("customer_perceived_response")
+        assertThat(attributes.getValue("event_outcome").toString()).isEqualTo("failure")
+        assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
+        assertThat(attributes.getValue("forage_error_code").toString()).isEqualTo("unknown_server_error")
+    }
+
     private suspend fun executeTokenizeCardWithTrack2Data(
         track2Data: String,
         reusable: Boolean
@@ -414,6 +474,16 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 paymentRef = expectedData.paymentRef,
                 amount = expectedData.refundAmount,
                 reason = expectedData.refundReason
+            )
+        )
+    }
+
+    private suspend fun executeDeferPaymentRefund(): ForageApiResponse<String> {
+        val terminalSdk = createMockTerminalSdk()
+        return terminalSdk.deferPaymentRefund(
+            DeferPosPaymentRefundParams(
+                foragePinEditText = mockForagePinEditText,
+                paymentRef = expectedData.paymentRef
             )
         )
     }
