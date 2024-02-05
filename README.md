@@ -123,6 +123,20 @@ You have now synced the private fork with changes from the public SDK upstream.
 
 We are using Github's Releases feature to pass built APKs to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the APK and upload it to the release as a release asset.
 
+### Semantic Versioning
+
+We will retain the same versions as the public SDK, in order to reduce the number of versioning schemes.
+
+### Keeping the fork slim
+
+We should endeavor to make rebases in this repository as easy as possible. The following principles should guide our changes here,
+
+1. For any key management functions/utilities, keep them in new files as much as possible. There will be no rebase conflicts on files added in this repository.
+2. Use shim functions inside the public SDK code that call out to code in separate files. There should only be 3 places that we need to make updates,
+  - An initialization function to the ForageTerminalSDK class. Immediately call another function that is contained in a separate file.
+  - A function for field level encryption on the PIN before balance checks. Again, immediately call another function that is contained in a separate file.
+  - A function for field level encryption on the PIN before capture attempts
+
 ## Table of contents
 
 <!--ts-->
