@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.pos
 
-import android.util.Log as AndroidLog
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
@@ -41,19 +40,20 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 class ForageTerminalSDK(
     private val posTerminalId: String
 ) : ForageSDKInterface {
-    private var preInitialized = false
-    private fun _warnDevelopersIfNotPreInitialized(method: String) {
-        if (!preInitialized) {
-            val tag = "StartupTime"
-            val msg = """
-                        This instance of `ForageTerminalSDK` has not been pre-initialized 
-                        and will run the initialization process now instead. Consider 
-                        calling `.init(config: PosForageConfig)` ahead of calling $method
-                        to ensure any long-running init operations are completed beforehand.
-                    """.trimIndent()
-            AndroidLog.w(tag, msg)
+    private var initialized = false
+    private fun _assertInitialized(method: String) {
+        if (!initialized) {
+            val errorMessage = """
+                    This instance of `ForageTerminalSDK` has not been pre-initialized 
+                    and will run the initialization process now instead. Consider 
+                    calling `.init(config: PosForageConfig)` ahead of calling $method
+                    to ensure any long-running init operations are completed beforehand.
+                """.trimIndent()
+
+            throw IllegalStateException(errorMessage)
         }
     }
+
 
 
     private var createServiceFactory = {
@@ -85,18 +85,15 @@ class ForageTerminalSDK(
     /**
      * The ForageTerminalSDK may perform some long running initialization
      * operations in certain circumstances. The operations typically
-     * last less than 10 seconds and only occur infrequently. By default
-     * a `ForageTerminalSDK` instance will lazily run the initialization
-     * process once the first method on a `ForageTerminalSDK` instance
-     * is invoked.
+     * last less than 10 seconds and only occur infrequently. It is
+     * required to call `init` ahead of calling any other methods on
+     * a `ForageTerminalSDK` instance.
      *
-     * However, you may call `init` ahead of time to ensure that all long
-     * running processes are completed by the time any other methods on
-     * a `ForageTemrinalSDK` instance is invoked.
-     * @param config: A PosForageConfig instance
+     * @param sessionToken: A short-lived token for authenticating again
+     *  Forage's server
      */
     fun init(sessionToken: String) {
-        preInitialized = true
+        initialized = true
     }
 
     /**
@@ -131,7 +128,7 @@ class ForageTerminalSDK(
         logger.addAttribute("reusable", reusable)
         logger.i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
 
-        _warnDevelopersIfNotPreInitialized("tokenizeCard")
+        _assertInitialized("tokenizeCard")
 
         val tokenizationResponse = forageSdk.tokenizeEBTCard(
             TokenizeEBTCardParams(
@@ -173,7 +170,7 @@ class ForageTerminalSDK(
 
         logger.i("[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId")
 
-        _warnDevelopersIfNotPreInitialized("tokenizeCard")
+        _assertInitialized("tokenizeCard")
 
         val (merchantId, sessionToken) = posForageConfig
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
@@ -233,7 +230,7 @@ class ForageTerminalSDK(
 
         logger.i("[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId")
 
-        _warnDevelopersIfNotPreInitialized("checkBalance")
+        _assertInitialized("checkBalance")
 
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
@@ -307,7 +304,7 @@ class ForageTerminalSDK(
         val logger = createLogger().addAttribute("payment_ref", paymentRef)
         logger.i("[POS] Called capturePayment for Payment $paymentRef")
 
-        _warnDevelopersIfNotPreInitialized("capturePayment")
+        _assertInitialized("capturePayment")
 
         val captureResponse = forageSdk.capturePayment(params)
 
@@ -351,7 +348,7 @@ class ForageTerminalSDK(
         val logger = createLogger().addAttribute("payment_ref", paymentRef)
         logger.i("[POS] Called deferPaymentCapture for Payment $paymentRef")
 
-        _warnDevelopersIfNotPreInitialized("deferPaymentCapture")
+        _assertInitialized("deferPaymentCapture")
 
         val deferCaptureResponse = forageSdk.deferPaymentCapture(params)
 
@@ -405,7 +402,7 @@ class ForageTerminalSDK(
             """.trimIndent()
         )
 
-        _warnDevelopersIfNotPreInitialized("refundPayment")
+        _assertInitialized("refundPayment")
 
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
