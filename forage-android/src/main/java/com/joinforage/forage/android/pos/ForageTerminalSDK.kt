@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos
 
+import android.util.Log as AndroidLog
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
