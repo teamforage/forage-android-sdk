@@ -44,13 +44,8 @@ sealed interface MerchantDetailsState {
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
-    private val api: PosApiService by lazy {
-        // lazy because we may not have the merchantId
-        // of the forageConfig when a ViewModel instance
-        // is created but we certainly will by the time
-        // we ever use any methods of the api
-        PosApiService.from(uiState.value.posForageConfig)
-    }
+    private val api
+        get() = PosApiService.from(uiState.value.posForageConfig)
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
