@@ -95,7 +95,7 @@ class ForageTerminalSDK(
      * a `ForageTemrinalSDK` instance is invoked.
      * @param config: A PosForageConfig instance
      */
-    fun init(config: PosForageConfig) {
+    fun init(sessionToken: String) {
         preInitialized = true
     }
 
