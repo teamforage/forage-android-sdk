@@ -44,10 +44,8 @@ sealed interface MerchantDetailsState {
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
-
-    private fun getForageRetrofitApi(): PosApiService {
-        return PosApiService.from(uiState.value.posForageConfig)
-    }
+    private val api
+        get() = PosApiService.from(uiState.value.posForageConfig)
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
@@ -66,7 +64,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
             val merchantDetailsState = try {
-                val result = getForageRetrofitApi().getMerchantInfo()
+                val result = api.getMerchantInfo()
                 onSuccess()
                 MerchantDetailsState.Success(result)
             } catch (e: HttpException) {
@@ -81,7 +79,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = getForageRetrofitApi().createPayment(
+                val response = api.createPayment(
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
@@ -225,7 +223,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = getForageRetrofitApi().voidPayment(
+                val response = api.voidPayment(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef
                 )
@@ -244,7 +242,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = getForageRetrofitApi().voidRefund(
+                val response = api.voidRefund(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef,
                     refundRef = refundRef
