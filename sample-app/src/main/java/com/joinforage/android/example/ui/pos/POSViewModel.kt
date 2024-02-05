@@ -44,12 +44,9 @@ sealed interface MerchantDetailsState {
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
-    private val api: PosApiService by lazy {
-        // lazy because we may not have the merchantId
-        // of the forageConfig when a ViewModel instance
-        // is created but we certainly will by the time
-        // we ever use any methods of the api
-        PosApiService.from(uiState.value.posForageConfig)
+
+    private fun getForageRetrofitApi(): PosApiService {
+        return PosApiService.from(uiState.value.posForageConfig)
     }
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
@@ -69,7 +66,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
             val merchantDetailsState = try {
-                val result = api.getMerchantInfo()
+                val result = getForageRetrofitApi().getMerchantInfo()
                 onSuccess()
                 MerchantDetailsState.Success(result)
             } catch (e: HttpException) {
@@ -84,7 +81,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = api.createPayment(
+                val response = getForageRetrofitApi().createPayment(
                     idempotencyKey = idempotencyKey,
                     payment = payment
                 )
@@ -228,7 +225,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = api.voidPayment(
+                val response = getForageRetrofitApi().voidPayment(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef
                 )
@@ -247,7 +244,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = api.voidRefund(
+                val response = getForageRetrofitApi().voidRefund(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef,
                     refundRef = refundRef
