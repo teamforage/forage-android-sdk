@@ -23,6 +23,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * The entry point for **in-store POS Terminal** transactions.
  *
  * A [ForageTerminalSDK] instance interacts with the Forage API.
+ * Provide a unique POS Terminal ID, the `posTerminalId` parameter, to perform operations like:
  *
  * **You need to call [`ForageTerminalSDK.init`][init] to initialize the SDK.**
  * Then you can perform operations like:
@@ -408,6 +409,8 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
 
         return balanceResponse
     }
+
+    // ======= Same as online-only Forage SDK below =======
 
     /**
      * Immediately captures a payment via a
