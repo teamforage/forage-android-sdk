@@ -48,13 +48,11 @@ class ForageTerminalSDK(
                     and will run the initialization process now instead. Consider 
                     calling `.init(config: PosForageConfig)` ahead of calling $method
                     to ensure any long-running init operations are completed beforehand.
-                """.trimIndent()
+            """.trimIndent()
 
             throw IllegalStateException(errorMessage)
         }
     }
-
-
 
     private var createServiceFactory = {
             sessionToken: String, merchantId: String, logger: Log ->
