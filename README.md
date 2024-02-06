@@ -121,7 +121,7 @@ You have now synced the private fork with changes from the public SDK upstream.
 
 ### Release process
 
-We are using Github's Releases feature to pass built APKs to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the APK and upload it to the release as a release asset.
+We are using Github's Releases feature to pass built AAR files to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the AAR and upload it to the release as a release asset.
 
 ### Semantic Versioning
 
