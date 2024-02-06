@@ -29,10 +29,5 @@ jobs:
         with:
           arguments: forage-android:lint
 
-      - uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: forage-android/build/reports/lint-results-debug.sarif
-          category: lint-forage-android
-
       - name: Check spotless
         run: ./gradlew spotlessCheck
