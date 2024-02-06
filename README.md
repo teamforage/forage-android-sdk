@@ -25,6 +25,15 @@ You have now synced the private fork with changes from the public SDK upstream.
 
 We are using Github's Releases feature to pass built AAR files to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the AAR and upload it to the release as a release asset.
 
+The commands are,
+
+```
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+See .github/workflows/Release.yaml for more insight into the build process. If you are seeing errors, it might be due to reliance on pre-installed build tools on Github's Ubuntu runners. Consult the runner docs [here](https://github.com/actions/runner-images#available-images).
+
 ### Semantic Versioning
 
 We will retain the same versions as the public SDK, in order to reduce the number of versioning schemes.
