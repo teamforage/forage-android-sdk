@@ -26,8 +26,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
 
-      - name: Build APK
-        run: ./gradlew build
+      - name: Build AAR
+        run: ./gradlew build -x test
 
       - name: Create release with the tag name and attach APK
         env:
@@ -39,5 +39,6 @@ jobs:
               --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
               --generate-notes
 
-          gh release upload "$tag" ./forage-android/build/outputs/aar/forage-android-release.aar
+          gh release upload "$tag" \
+              ./forage-android/build/outputs/aar/forage-android-release.aar
           
