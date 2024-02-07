@@ -49,9 +49,10 @@ import com.joinforage.android.example.ui.pos.screens.shared.MagSwipePANEntryScre
 import com.joinforage.android.example.ui.pos.screens.shared.ManualPANEntryScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PANMethodSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.shared.PINEntryScreen
+import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentScreen
+import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
-import com.joinforage.android.example.ui.pos.screens.voids.VoidResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -243,7 +244,10 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIResultScreen.name) {
                 BalanceResultScreen(
-                    balance = uiState.balance,
+                    merchant = uiState.merchant,
+                    terminalId = k9SDK.terminalId,
+                    paymentMethod = uiState.tokenizedPaymentMethod,
+                    balanceCheckError = uiState.balanceCheckError,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
@@ -423,7 +427,13 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYResultScreen.name) {
                 PaymentResultScreen(
-                    data = uiState.capturePaymentResponse.toString()
+                    merchant = uiState.merchant,
+                    terminalId = k9SDK.terminalId,
+                    paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRequest = uiState.localPayment,
+                    paymentResponse = uiState.capturePaymentResponse!!,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.REFUNDDetailsScreen.name) {
@@ -466,7 +476,15 @@ fun POSComposeApp(
                 )
             }
             composable(route = POSScreen.REFUNDResultScreen.name) {
-                RefundResultScreen(data = uiState.refundPaymentResponse.toString())
+                RefundResultScreen(
+                    merchant = uiState.merchant,
+                    terminalId = k9SDK.terminalId,
+                    paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRequest = uiState.localPayment,
+                    refundResponse = uiState.refundPaymentResponse!!,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.REFUNDPINEntryScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
             }
             composable(route = POSScreen.VOIDTransactionTypeSelectionScreen.name) {
                 VoidTypeSelectionScreen(
@@ -506,10 +524,26 @@ fun POSComposeApp(
                 )
             }
             composable(route = POSScreen.VOIDPaymentResultScreen.name) {
-                VoidResultScreen(data = uiState.voidPaymentResponse.toString())
+                VoidPaymentResultScreen(
+                    merchant = uiState.merchant,
+                    terminalId = k9SDK.terminalId,
+                    paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRequest = uiState.localPayment,
+                    paymentResponse = uiState.capturePaymentResponse!!,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDPaymentScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
             }
             composable(route = POSScreen.VOIDRefundResultScreen.name) {
-                VoidResultScreen(data = uiState.voidRefundResponse.toString())
+                VoidRefundResultScreen(
+                    merchant = uiState.merchant,
+                    terminalId = k9SDK.terminalId,
+                    paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRequest = uiState.localPayment,
+                    refundResponse = uiState.refundPaymentResponse!!,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDRefundScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
             }
         }
     }

@@ -46,6 +46,11 @@ interface PosApiService {
         @Path("refundRef") refundRef: String
     ): Refund
 
+    @POST("api/payment_methods/{paymentMethodRef}/")
+    suspend fun reFetchCard(
+        @Path("paymentMethodRef") paymentMethodRef: String
+    ): PosPaymentMethod
+
     companion object {
         internal fun from(posForageConfig: PosForageConfig): PosApiService {
             val commonHeadersInterceptor = Interceptor { chain ->
