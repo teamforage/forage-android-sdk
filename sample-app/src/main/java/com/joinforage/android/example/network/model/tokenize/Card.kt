@@ -7,6 +7,6 @@ import com.squareup.moshi.JsonClass
 data class Card(
     @Json(name = "last_4")
     val last4: String,
-    val type: String = "",
+    val created: String,
     val token: String
 )
