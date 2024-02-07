@@ -1,9 +1,17 @@
 package com.joinforage.android.example.ui.pos.screens.shared
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
@@ -22,6 +30,13 @@ fun PINEntryScreen(
     ScreenWithBottomRow(
         mainContent = {
             if (paymentMethodRef != null) {
+                Card {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Payment Method", fontWeight = FontWeight.SemiBold)
+                        Text("Ref: " + paymentMethodRef)
+                    }
+                }
+                Spacer(modifier = Modifier.height(18.dp))
                 Text("Enter your card PIN")
                 ComposableForagePINEditText(
                     posForageConfig = posForageConfig,

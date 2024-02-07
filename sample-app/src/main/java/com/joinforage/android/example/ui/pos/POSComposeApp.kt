@@ -60,9 +60,9 @@ enum class POSScreen(@StringRes val title: Int) {
     MerchantSetupScreen(title = R.string.title_pos_merchant_setup),
     ActionSelectionScreen(title = R.string.title_pos_action_selection),
     BIChoosePANMethodScreen(title = R.string.title_pos_balance_inquiry),
-    BIManualPANEntryScreen(title = R.string.title_pos_manual_pan_entry),
-    BIMagSwipePANEntryScreen(title = R.string.title_pos_mag_swipe_pan_entry),
-    BIPINEntryScreen(title = R.string.title_pos_pin_entry),
+    BIManualPANEntryScreen(title = R.string.title_pos_bi_manual_pan_entry),
+    BIMagSwipePANEntryScreen(title = R.string.title_pos_bi_mag_swipe_pan_entry),
+    BIPINEntryScreen(title = R.string.title_pos_bi_pin_entry),
     BIResultScreen(title = R.string.title_pos_balance_inquiry_result),
     PAYTransactionTypeSelectionScreen(title = R.string.title_pos_payment_type_selection_screen),
     PAYChoosePANMethodScreen(title = R.string.title_pos_payment_choose_pan_method),
@@ -74,14 +74,14 @@ enum class POSScreen(@StringRes val title: Int) {
     PAYMagSwipePANEntryScreen(title = R.string.title_pos_payment_swipe_card_entry),
     PAYPINEntryScreen(title = R.string.title_pos_payment_pin_entry),
     PAYResultScreen(title = R.string.title_pos_payment_receipt),
-    REFUNDDetailsScreen(title = R.string.title_pos_refund_flow),
-    REFUNDPINEntryScreen(title = R.string.title_pos_refund_flow),
-    REFUNDResultScreen(title = R.string.title_pos_refund_flow),
-    VOIDTransactionTypeSelectionScreen(title = R.string.title_pos_void_flow),
-    VOIDPaymentScreen(title = R.string.title_pos_void_flow),
-    VOIDRefundScreen(title = R.string.title_pos_void_flow),
-    VOIDPaymentResultScreen(title = R.string.title_pos_void_flow),
-    VOIDRefundResultScreen(title = R.string.title_pos_void_flow)
+    REFUNDDetailsScreen(title = R.string.title_pos_refund_details),
+    REFUNDPINEntryScreen(title = R.string.title_pos_refund_pin_entry),
+    REFUNDResultScreen(title = R.string.title_pos_refund_result),
+    VOIDTransactionTypeSelectionScreen(title = R.string.title_pos_void_action_selection),
+    VOIDPaymentScreen(title = R.string.title_pos_void_payment),
+    VOIDRefundScreen(title = R.string.title_pos_void_refund),
+    VOIDPaymentResultScreen(title = R.string.title_pos_void_payment_result),
+    VOIDRefundResultScreen(title = R.string.title_pos_void_refund_result)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,13 +108,23 @@ fun POSComposeApp(
         mutableStateOf(K9SDK().init(context))
     }
 
+    var pageTitle: String? by rememberSaveable {
+        mutableStateOf(null)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(currentScreen.title)) },
+                title = { Text(pageTitle ?: stringResource(currentScreen.title)) },
                 navigationIcon = {
                     if (navController.previousBackStackEntry != null) {
-                        IconButton(onClick = { navController.navigateUp() }) {
+                        IconButton(onClick = {
+                            val isPayTypeScreen = navController.previousBackStackEntry?.destination?.route == POSScreen.PAYTransactionTypeSelectionScreen.name
+                            if (isPayTypeScreen) {
+                                pageTitle = null
+                            }
+                            navController.navigateUp()
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = stringResource(R.string.pos_back_button)
@@ -240,11 +250,25 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYTransactionTypeSelectionScreen.name) {
                 PaymentTypeSelectionScreen(
-                    onSnapPurchaseClicked = { navController.navigate(POSScreen.PAYSnapPurchaseScreen.name) },
-                    onCashPurchaseClicked = { navController.navigate(POSScreen.PAYEBTCashPurchaseScreen.name) },
-                    onCashWithdrawalClicked = { navController.navigate(POSScreen.PAYEBTCashWithdrawalScreen.name) },
-                    onCashPurchaseCashbackClicked = { navController.navigate(POSScreen.PAYEBTCashPurchaseWithCashBackScreen.name) },
-                    onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                    onSnapPurchaseClicked = {
+                        navController.navigate(POSScreen.PAYSnapPurchaseScreen.name)
+                        pageTitle = "EBT SNAP Purchase"
+                    },
+                    onCashPurchaseClicked = {
+                        navController.navigate(POSScreen.PAYEBTCashPurchaseScreen.name)
+                        pageTitle = "EBT Cash Purchase"
+                    },
+                    onCashWithdrawalClicked = {
+                        navController.navigate(POSScreen.PAYEBTCashWithdrawalScreen.name)
+                        pageTitle = "EBT Cash Withdrawal"
+                    },
+                    onCashPurchaseCashbackClicked = {
+                        navController.navigate(POSScreen.PAYEBTCashPurchaseWithCashBackScreen.name)
+                        pageTitle = "EBT Cash Purchase + Cashback"
+                    },
+                    onCancelButtonClicked = {
+                        navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false)
+                    }
                 )
             }
             composable(route = POSScreen.PAYSnapPurchaseScreen.name) {
@@ -254,37 +278,66 @@ fun POSComposeApp(
                         viewModel.setLocalPayment(payment = payment)
                         navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
-                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
+                    onCancelButtonClicked = {
+                        navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false)
+                        pageTitle = null
+                    }
                 )
             }
             composable(route = POSScreen.PAYEBTCashPurchaseScreen.name) {
                 EBTCashPurchaseScreen(
                     onConfirmButtonClicked = { ebtCashAmount ->
-                        val payment = PosPaymentRequest.forEbtCashPayment(ebtCashAmount, k9SDK.terminalId)
+                        val payment =
+                            PosPaymentRequest.forEbtCashPayment(ebtCashAmount, k9SDK.terminalId)
                         viewModel.setLocalPayment(payment)
                         navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
-                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
+                    onCancelButtonClicked = {
+                        navController.popBackStack(
+                            POSScreen.PAYTransactionTypeSelectionScreen.name,
+                            inclusive = false
+                        )
+                        pageTitle = null
+                    }
                 )
             }
             composable(route = POSScreen.PAYEBTCashWithdrawalScreen.name) {
                 EBTCashWithdrawalScreen(
                     onConfirmButtonClicked = { ebtCashWithdrawalAmount ->
-                        val payment = PosPaymentRequest.forEbtCashWithdrawal(ebtCashWithdrawalAmount, k9SDK.terminalId)
+                        val payment = PosPaymentRequest.forEbtCashWithdrawal(
+                            ebtCashWithdrawalAmount,
+                            k9SDK.terminalId
+                        )
                         viewModel.setLocalPayment(payment)
                         navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
-                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
+                    onCancelButtonClicked = {
+                        navController.popBackStack(
+                            POSScreen.PAYTransactionTypeSelectionScreen.name,
+                            inclusive = false
+                        )
+                        pageTitle = null
+                    }
                 )
             }
             composable(route = POSScreen.PAYEBTCashPurchaseWithCashBackScreen.name) {
                 EBTCashPurchaseWithCashBackScreen(
                     onConfirmButtonClicked = { ebtCashAmount, cashBackAmount ->
-                        val payment = PosPaymentRequest.forEbtCashPaymentWithCashBack(ebtCashAmount, cashBackAmount, k9SDK.terminalId)
+                        val payment = PosPaymentRequest.forEbtCashPaymentWithCashBack(
+                            ebtCashAmount,
+                            cashBackAmount,
+                            k9SDK.terminalId
+                        )
                         viewModel.setLocalPayment(payment)
                         navController.navigate(POSScreen.PAYChoosePANMethodScreen.name)
                     },
-                    onCancelButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
+                    onCancelButtonClicked = {
+                        navController.popBackStack(
+                            POSScreen.PAYTransactionTypeSelectionScreen.name,
+                            inclusive = false
+                        )
+                        pageTitle = null
+                    }
                 )
             }
             composable(route = POSScreen.PAYChoosePANMethodScreen.name) {

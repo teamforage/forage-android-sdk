@@ -31,7 +31,7 @@ fun EBTCashWithdrawalScreen(
 
     ScreenWithBottomRow(
         mainContent = {
-            Text("EBT Cash Purchase (no cashback)", fontSize = 18.sp)
+            Text("EBT Cash Withdrawal", fontSize = 18.sp)
             OutlinedTextField(
                 value = ebtCashWithdrawalAmount,
                 onValueChange = { ebtCashWithdrawalAmount = it },
