@@ -42,6 +42,13 @@ data class POSUIState(
 ) {
     val posForageConfig: PosForageConfig
         get() = PosForageConfig(merchantId, sessionToken)
+
+    val merchant
+        get() = if (merchantDetailsState is MerchantDetailsState.Success) {
+            merchantDetailsState.merchant
+        } else {
+            null
+        }
 }
 
 data class RefundUIState(
