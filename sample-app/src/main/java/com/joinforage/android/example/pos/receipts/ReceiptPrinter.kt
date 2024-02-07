@@ -1,5 +1,6 @@
 package com.joinforage.android.example.pos.receipts
 
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLayout
 import com.pos.sdk.printer.PrinterDevice
 
 /**

@@ -1,8 +1,7 @@
 package com.joinforage.android.example.ui.pos.data
 
-import com.joinforage.android.example.network.model.PaymentResponse
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.android.example.ui.pos.MerchantDetailsState
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.pos.PosForageConfig
 
 data class POSUIState(
@@ -11,7 +10,7 @@ data class POSUIState(
     val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
 
     // Tokenizing EBT Cards
-    val tokenizedPaymentMethod: PaymentMethod? = null,
+    val tokenizedPaymentMethod: PosPaymentMethod? = null,
     val tokenizationError: String? = null,
 
     // Checking balances of those EBT Cards
@@ -20,11 +19,11 @@ data class POSUIState(
 
     // Creating a payment
     val localPayment: PosPaymentRequest? = null, // Used to build up the payment object before we send it
-    val createPaymentResponse: PaymentResponse? = null,
+    val createPaymentResponse: PosPaymentResponse? = null,
     val createPaymentError: String? = null,
 
     // Capturing that payment
-    val capturePaymentResponse: PaymentResponse? = null,
+    val capturePaymentResponse: PosPaymentResponse? = null,
     val capturePaymentError: String? = null,
 
     // Refunding a payment
@@ -33,7 +32,7 @@ data class POSUIState(
     val refundPaymentError: String? = null,
 
     // Voiding a payment
-    val voidPaymentResponse: PaymentResponse? = null,
+    val voidPaymentResponse: PosPaymentResponse? = null,
     val voidPaymentError: String? = null,
 
     // Voiding a refund
@@ -42,6 +41,13 @@ data class POSUIState(
 ) {
     val posForageConfig: PosForageConfig
         get() = PosForageConfig(merchantId, sessionToken)
+
+    val merchant
+        get() = if (merchantDetailsState is MerchantDetailsState.Success) {
+            merchantDetailsState.merchant
+        } else {
+            null
+        }
 }
 
 data class RefundUIState(

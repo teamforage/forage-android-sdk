@@ -13,11 +13,11 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.joinforage.android.example.R
-import com.joinforage.android.example.pos.receipts.LinePartAlignment
-import com.joinforage.android.example.pos.receipts.ReceiptLayout
-import com.joinforage.android.example.pos.receipts.ReceiptLayoutLine
-import com.joinforage.android.example.pos.receipts.ReceiptLinePart
 import com.joinforage.android.example.pos.receipts.ReceiptPrinter
+import com.joinforage.android.example.pos.receipts.primitives.LinePartAlignment
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLayout
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLayoutLine
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLinePart
 import com.pos.sdk.DevicesFactory
 
 internal fun createReceiptPartTextView(context: Context, part: ReceiptLinePart) = TextView(context).apply {
@@ -103,7 +103,9 @@ class ReceiptView(
     private val scrollableContent: LinearLayout
     private val printReceiptBtn: Button
     private var receiptDisplay: LinearLayout
-    private var receiptLayout = ReceiptLayout.EmptyReceiptLayout
+    private var receiptLayout = ReceiptLayout(
+        ReceiptLayoutLine.singleColCenter("This is an empty receipt.")
+    )
 
     init {
         // organize the scrollview itself will house (the root)

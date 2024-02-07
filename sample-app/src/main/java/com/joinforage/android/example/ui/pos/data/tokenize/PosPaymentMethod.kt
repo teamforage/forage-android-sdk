@@ -1,15 +1,15 @@
-package com.joinforage.android.example.network.model.tokenize
+package com.joinforage.android.example.ui.pos.data.tokenize
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class PaymentMethod(
+data class PosPaymentMethod(
     val ref: String,
     val type: String,
     val reusable: Boolean,
-    val card: Card?,
-    val balance: Balance?,
+    val card: PosCard?,
+    val balance: PosBalance?,
     @Json(name = "customer_id")
-    val customerId: String?
+    val customerId: String? = null
 )

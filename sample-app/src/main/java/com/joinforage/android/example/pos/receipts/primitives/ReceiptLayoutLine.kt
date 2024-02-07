@@ -1,4 +1,6 @@
-package com.joinforage.android.example.pos.receipts
+package com.joinforage.android.example.pos.receipts.primitives
+
+import com.joinforage.android.example.pos.receipts.ReceiptFormatting
 
 /**
  * @param parts - the list of ReceiptLineParts that should *  occupy this line. You can have as many as you want but

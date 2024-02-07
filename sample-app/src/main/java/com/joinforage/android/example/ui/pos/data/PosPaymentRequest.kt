@@ -5,49 +5,49 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PosPaymentRequest(
-    val amount: Double,
+    val amount: String,
     @Json(name = "funding_type") val fundingType: String,
     @Json(name = "payment_method") val paymentMethodRef: String,
     val description: String,
-    @Json(name = "pos_terminal") val posTerminal: PosTerminal,
+    @Json(name = "pos_terminal") val posTerminal: PosTerminalRequestField,
     val metadata: Map<String, String>,
     @Json(name = "transaction_type") val transactionType: String? = null,
-    @Json(name = "cash_back_amount") val cashBackAmount: Double? = null
+    @Json(name = "cash_back_amount") val cashBackAmount: String? = null
 ) {
     companion object {
-        fun forSnapPayment(snapAmount: Double, terminalId: String) = PosPaymentRequest(
+        fun forSnapPayment(snapAmount: String, terminalId: String) = PosPaymentRequest(
             amount = snapAmount,
             description = "Testing POS certification app payments (SNAP Purchase)",
             fundingType = FundingType.EBTSnap.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
-        fun forEbtCashPayment(ebtCashAmount: Double, terminalId: String) = PosPaymentRequest(
+        fun forEbtCashPayment(ebtCashAmount: String, terminalId: String) = PosPaymentRequest(
             amount = ebtCashAmount,
             description = "Testing POS certification app payments (EBT Cash Purchase)",
             fundingType = FundingType.EBTCash.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
-        fun forEbtCashWithdrawal(ebtCashWithdrawalAmount: Double, terminalId: String) = PosPaymentRequest(
+        fun forEbtCashWithdrawal(ebtCashWithdrawalAmount: String, terminalId: String) = PosPaymentRequest(
             amount = ebtCashWithdrawalAmount,
             description = "Testing POS certification app payments (EBT Cash Withdrawal)",
             fundingType = FundingType.EBTCash.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf(),
             transactionType = TransactionType.Withdrawal.value
         )
-        fun forEbtCashPaymentWithCashBack(ebtCashAmount: Double, cashBackAmount: Double, terminalId: String) = PosPaymentRequest(
+        fun forEbtCashPaymentWithCashBack(ebtCashAmount: String, cashBackAmount: String, terminalId: String) = PosPaymentRequest(
             amount = ebtCashAmount + cashBackAmount,
             cashBackAmount = cashBackAmount,
             transactionType = TransactionType.PurchaseWithCashBack.value,
             description = "Testing POS certification app payments (EBT Cash Purchase with Cash Back)",
             fundingType = FundingType.EBTCash.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
     }
@@ -65,6 +65,6 @@ enum class TransactionType(val value: String) {
 }
 
 @JsonClass(generateAdapter = true)
-data class PosTerminal(
+data class PosTerminalRequestField(
     @Json(name = "provider_terminal_id") val providerTerminalId: String
 )

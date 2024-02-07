@@ -1,4 +1,6 @@
-package com.joinforage.android.example.pos.receipts
+package com.joinforage.android.example.pos.receipts.primitives
+
+import com.joinforage.android.example.pos.receipts.ReceiptFormatting
 
 /**
  * an internal representation of the different
