@@ -9,7 +9,7 @@ data class PosPaymentRequest(
     @Json(name = "funding_type") val fundingType: String,
     @Json(name = "payment_method") val paymentMethodRef: String,
     val description: String,
-    @Json(name = "pos_terminal") val posTerminal: PosTerminal,
+    @Json(name = "pos_terminal") val posTerminal: PosTerminalRequestField,
     val metadata: Map<String, String>,
     @Json(name = "transaction_type") val transactionType: String? = null,
     @Json(name = "cash_back_amount") val cashBackAmount: String? = null
@@ -20,7 +20,7 @@ data class PosPaymentRequest(
             description = "Testing POS certification app payments (SNAP Purchase)",
             fundingType = FundingType.EBTSnap.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
         fun forEbtCashPayment(ebtCashAmount: String, terminalId: String) = PosPaymentRequest(
@@ -28,7 +28,7 @@ data class PosPaymentRequest(
             description = "Testing POS certification app payments (EBT Cash Purchase)",
             fundingType = FundingType.EBTCash.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
         fun forEbtCashWithdrawal(ebtCashWithdrawalAmount: String, terminalId: String) = PosPaymentRequest(
@@ -36,7 +36,7 @@ data class PosPaymentRequest(
             description = "Testing POS certification app payments (EBT Cash Withdrawal)",
             fundingType = FundingType.EBTCash.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf(),
             transactionType = TransactionType.Withdrawal.value
         )
@@ -47,7 +47,7 @@ data class PosPaymentRequest(
             description = "Testing POS certification app payments (EBT Cash Purchase with Cash Back)",
             fundingType = FundingType.EBTCash.value,
             paymentMethodRef = "",
-            posTerminal = PosTerminal(providerTerminalId = terminalId),
+            posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
     }
@@ -65,6 +65,6 @@ enum class TransactionType(val value: String) {
 }
 
 @JsonClass(generateAdapter = true)
-data class PosTerminal(
+data class PosTerminalRequestField(
     @Json(name = "provider_terminal_id") val providerTerminalId: String
 )

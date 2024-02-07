@@ -1,10 +1,11 @@
 package com.joinforage.android.example.ui.pos.network
 
 import com.joinforage.android.example.network.model.EnvConfig
-import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.Refund
+import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.pos.PosForageConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -30,13 +31,13 @@ interface PosApiService {
     suspend fun createPayment(
         @Header("Idempotency-Key") idempotencyKey: String,
         @Body payment: PosPaymentRequest
-    ): PaymentResponse
+    ): PosPaymentResponse
 
     @POST("api/payments/{paymentRef}/void/")
     suspend fun voidPayment(
         @Header("Idempotency-Key") idempotencyKey: String,
         @Path("paymentRef") paymentRef: String
-    ): PaymentResponse
+    ): PosPaymentResponse
 
     @POST("api/payments/{paymentRef}/refunds/{refundRef}/void/")
     suspend fun voidRefund(
