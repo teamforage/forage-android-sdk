@@ -22,7 +22,7 @@ import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
 fun EBTCashWithdrawalScreen(
-    onConfirmButtonClicked: (amount: Double) -> Unit,
+    onConfirmButtonClicked: (amount: String) -> Unit,
     onCancelButtonClicked: () -> Unit
 ) {
     var ebtCashWithdrawalAmount by rememberSaveable {
@@ -48,7 +48,7 @@ fun EBTCashWithdrawalScreen(
                 Text("Cancel")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onConfirmButtonClicked(ebtCashWithdrawalAmount.toDouble()) }) {
+            Button(onClick = { onConfirmButtonClicked(ebtCashWithdrawalAmount) }) {
                 Text("Confirm")
             }
         }
