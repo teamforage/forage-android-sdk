@@ -2,6 +2,10 @@ package com.joinforage.android.example.pos.receipts
 
 import android.os.Bundle
 import android.util.Log
+import com.joinforage.android.example.pos.receipts.primitives.LinePartAlignment
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLayout
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLayoutLine
+import com.joinforage.android.example.pos.receipts.primitives.ReceiptLinePart
 import com.pos.sdk.printer.PrinterDevice
 import com.pos.sdk.printer.param.MultipleTextPrintItemParam
 import com.pos.sdk.printer.param.PrintItemAlign
