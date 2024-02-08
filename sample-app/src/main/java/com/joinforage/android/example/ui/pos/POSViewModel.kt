@@ -26,6 +26,7 @@ import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,6 +59,22 @@ class POSViewModel : ViewModel() {
 
     fun setLocalRefundState(refundState: RefundUIState) {
         _uiState.update { it.copy(localRefundState = refundState) }
+    }
+
+    fun resetUiState() {
+        // this needs to be in a coroutine and delayed to allow for the back-stack
+        // to be fully popped before some of the data it depends on disappears.
+        // There's probably a better way to do this but this works for now.
+        viewModelScope.launch {
+            delay(1000)
+            _uiState.update {
+                POSUIState(
+                    merchantId = it.merchantId,
+                    sessionToken = it.sessionToken,
+                    merchantDetailsState = it.merchantDetailsState
+                )
+            }
+        }
     }
 
     private fun getMerchantInfo(onSuccess: () -> Unit) {
