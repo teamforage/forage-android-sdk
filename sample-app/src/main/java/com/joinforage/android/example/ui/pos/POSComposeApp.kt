@@ -202,6 +202,7 @@ fun POSComposeApp(
                     posForageConfig = uiState.posForageConfig,
                     onSubmitButtonClicked = {
                         if (panElement != null) {
+                            panElement!!.clearFocus()
                             viewModel.tokenizeEBTCard(
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
@@ -241,6 +242,7 @@ fun POSComposeApp(
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
+                            pinElement!!.clearFocus()
                             viewModel.checkEBTCardBalance(
                                 pinElement as ForagePINEditText,
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
@@ -373,8 +375,8 @@ fun POSComposeApp(
                     posForageConfig = uiState.posForageConfig,
                     onSubmitButtonClicked = {
                         Log.i("POSComposeApp", "Calling onSubmitButtonClicked in ManualPANEntryScreen in PAYChoosePANMethodScreen")
-
                         if (panElement != null) {
+                            panElement!!.clearFocus()
                             viewModel.tokenizeEBTCard(
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
@@ -425,6 +427,7 @@ fun POSComposeApp(
                     paymentMethodRef = uiState.createPaymentResponse?.paymentMethod,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
+                            pinElement!!.clearFocus()
                             viewModel.capturePayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
@@ -473,6 +476,7 @@ fun POSComposeApp(
                     paymentMethodRef = uiState.localRefundState?.paymentRef,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.localRefundState != null) {
+                            pinElement!!.clearFocus()
                             viewModel.refundPayment(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
