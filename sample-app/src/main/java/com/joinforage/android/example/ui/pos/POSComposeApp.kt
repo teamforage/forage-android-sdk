@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -129,6 +130,22 @@ fun POSComposeApp(
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = stringResource(R.string.pos_back_button)
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    val isMerchantScreen = navController.currentBackStackEntry?.destination?.route == POSScreen.MerchantSetupScreen.name
+                    val isActionScreen = navController.currentBackStackEntry?.destination?.route == POSScreen.ActionSelectionScreen.name
+                    if (!isMerchantScreen && !isActionScreen) {
+                        IconButton(onClick = {
+                            navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false)
+                            pageTitle = null
+                            viewModel.resetUiState()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Refresh,
+                                contentDescription = stringResource(R.string.pos_restart)
                             )
                         }
                     }
