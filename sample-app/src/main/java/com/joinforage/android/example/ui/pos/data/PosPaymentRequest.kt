@@ -41,7 +41,7 @@ data class PosPaymentRequest(
             transactionType = TransactionType.Withdrawal.value
         )
         fun forEbtCashPaymentWithCashBack(ebtCashAmount: String, cashBackAmount: String, terminalId: String) = PosPaymentRequest(
-            amount = ebtCashAmount + cashBackAmount,
+            amount = (ebtCashAmount.toDouble() + cashBackAmount.toDouble()).toString(),
             cashBackAmount = cashBackAmount,
             transactionType = TransactionType.PurchaseWithCashBack.value,
             description = "Testing POS certification app payments (EBT Cash Purchase with Cash Back)",
