@@ -100,7 +100,6 @@ fun RefundResultScreen(
                         Text("Couldn't find receipt template matching transaction type: ${txType.title}")
                     }
                 }
-
             }
         }
         if (paymentMethod?.balance == null) {
