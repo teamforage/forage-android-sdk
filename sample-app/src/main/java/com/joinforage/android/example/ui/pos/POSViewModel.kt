@@ -268,11 +268,17 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = api.voidPayment(
+                var response = api.voidPayment(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef
                 )
+                val payment = api.getPayment(paymentRef)
                 val paymentMethod = api.getPaymentMethod(response.paymentMethod)
+                if (response.receipt != null && payment.receipt != null) {
+                    response.receipt!!.isVoided = true
+                    response.receipt!!.balance.snap = (response.receipt!!.balance.snap.toDouble() + payment.receipt!!.snapAmount.toDouble()).toString()
+                    response.receipt!!.balance.nonSnap = (response.receipt!!.balance.nonSnap.toDouble() + payment.receipt!!.ebtCashAmount.toDouble()).toString()
+                }
                 _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void payment call succeeded: $response")
@@ -288,13 +294,19 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
+                val payment = api.getPayment(paymentRef)
+                val refund = api.getRefund(paymentRef, refundRef)
                 val response = api.voidRefund(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef,
                     refundRef = refundRef
                 )
-                val payment = api.getPayment(response.paymentRef)
                 val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                if (response.receipt != null && payment.receipt != null) {
+                    response.receipt!!.isVoided = true
+                    response.receipt!!.balance.snap = (response.receipt!!.balance.snap.toDouble() - refund.receipt!!.snapAmount.toDouble()).toString()
+                    response.receipt!!.balance.nonSnap = (response.receipt!!.balance.nonSnap.toDouble() - refund.receipt!!.ebtCashAmount.toDouble()).toString()
+                }
                 _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void refund call succeeded: $response")
