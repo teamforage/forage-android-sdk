@@ -263,7 +263,7 @@ class POSViewModel : ViewModel() {
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef
                 )
-                _uiState.update { it.copy(voidPaymentResponse = response) }
+                _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void payment call succeeded: $response")
             } catch (e: HttpException) {
@@ -283,7 +283,7 @@ class POSViewModel : ViewModel() {
                     paymentRef = paymentRef,
                     refundRef = refundRef
                 )
-                _uiState.update { it.copy(voidRefundResponse = response) }
+                _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void refund call succeeded: $response")
             } catch (e: HttpException) {

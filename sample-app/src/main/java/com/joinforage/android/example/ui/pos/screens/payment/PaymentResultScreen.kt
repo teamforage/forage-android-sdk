@@ -26,7 +26,7 @@ fun PaymentResultScreen(
     merchant: Merchant?,
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
-    paymentRequest: PosPaymentRequest?,
+    txType: TxType?,
     paymentResponse: PosPaymentResponse?,
     onBackButtonClicked: () -> Unit,
     onDoneButtonClicked: () -> Unit
@@ -39,12 +39,11 @@ fun PaymentResultScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (paymentRequest == null) {
-                Text("null paymentRequest")
+            if (txType == null) {
+                Text("null txType")
             } else if (paymentResponse == null) {
                 Text("null paymentResponse")
             } else {
-                val txType = TxType.forPayment(paymentRequest)
                 var receipt: BaseReceiptTemplate? = null
                 if (txType == TxType.SNAP_PAYMENT) {
                     receipt = SnapPurchaseTxReceipt(
@@ -100,7 +99,7 @@ fun PaymentResultScreenPreview() {
         merchant = null,
         terminalId = "",
         paymentMethod = null,
-        paymentRequest = null,
+        txType = null,
         paymentResponse = null,
         onBackButtonClicked = {},
         onDoneButtonClicked = {}

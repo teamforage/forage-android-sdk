@@ -26,7 +26,7 @@ fun RefundResultScreen(
     merchant: Merchant?,
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
-    paymentRequest: PosPaymentRequest?,
+    txType: TxType?,
     refundResponse: Refund?,
     onBackButtonClicked: () -> Unit,
     onDoneButtonClicked: () -> Unit
@@ -39,12 +39,11 @@ fun RefundResultScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (paymentRequest == null) {
+            if (txType == null) {
                 Text("null paymentRequest")
             } else if (refundResponse == null) {
                 Text("null refundResponse")
             } else {
-                val txType = TxType.forPayment(paymentRequest)
                 var receipt: BaseReceiptTemplate? = null
                 if (txType == TxType.SNAP_PAYMENT) {
                     receipt = SnapPurchaseTxReceipt(
@@ -100,7 +99,7 @@ fun RefundResultScreenPreview() {
         merchant = null,
         terminalId = "",
         paymentMethod = null,
-        paymentRequest = null,
+        txType = null,
         refundResponse = null,
         onBackButtonClicked = {},
         onDoneButtonClicked = {}
