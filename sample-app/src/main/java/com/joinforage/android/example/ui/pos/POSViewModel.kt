@@ -268,7 +268,7 @@ class POSViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                var response = api.voidPayment(
+                val response = api.voidPayment(
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef
                 )
@@ -302,10 +302,10 @@ class POSViewModel : ViewModel() {
                     refundRef = refundRef
                 )
                 val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
-                if (response.receipt != null && payment.receipt != null) {
-                    response.receipt!!.isVoided = true
-                    response.receipt!!.balance.snap = (response.receipt!!.balance.snap.toDouble() - refund.receipt!!.snapAmount.toDouble()).toString()
-                    response.receipt!!.balance.nonSnap = (response.receipt!!.balance.nonSnap.toDouble() - refund.receipt!!.ebtCashAmount.toDouble()).toString()
+                if (payment.receipt != null) {
+                    response.receipt.isVoided = true
+                    response.receipt.balance.snap = (response.receipt.balance.snap.toDouble() - refund.receipt.snapAmount.toDouble()).toString()
+                    response.receipt.balance.nonSnap = (response.receipt.balance.nonSnap.toDouble() - refund.receipt.ebtCashAmount.toDouble()).toString()
                 }
                 _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)

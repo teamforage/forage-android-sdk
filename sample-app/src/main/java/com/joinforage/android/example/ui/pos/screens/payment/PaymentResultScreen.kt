@@ -16,7 +16,6 @@ import com.joinforage.android.example.pos.receipts.templates.txs.CashWithdrawalT
 import com.joinforage.android.example.pos.receipts.templates.txs.SnapPurchaseTxReceipt
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.Merchant
-import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen

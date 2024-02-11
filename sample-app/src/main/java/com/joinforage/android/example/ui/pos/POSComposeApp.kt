@@ -554,11 +554,13 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    txType = uiState.voidPaymentResponse?.let { it1 -> it1.receipt?.let { it2 ->
-                        TxType.forReceipt(
-                            it2
-                        )
-                    } },
+                    txType = uiState.voidPaymentResponse?.let { it1 ->
+                        it1.receipt?.let { it2 ->
+                            TxType.forReceipt(
+                                it2
+                            )
+                        }
+                    },
                     paymentResponse = uiState.voidPaymentResponse,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDPaymentScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
