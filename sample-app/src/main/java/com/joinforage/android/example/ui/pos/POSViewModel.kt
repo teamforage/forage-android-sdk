@@ -180,7 +180,7 @@ class POSViewModel : ViewModel() {
                     // does not return the timestamp of the balance
                     // check and we need to display the timestamp
                     // on the receipt
-                    val updatedCard = api.reFetchCard(paymentMethodRef)
+                    val updatedCard = api.getPaymentMethod(paymentMethodRef)
                     _uiState.update {
                         it.copy(tokenizedPaymentMethod = updatedCard)
                     }
@@ -214,7 +214,7 @@ class POSViewModel : ViewModel() {
                     // capturing a payment does not include the updated
                     // balance we need to display the balance on the receipt
                     val paymentMethodRef = paymentResponse!!.paymentMethod
-                    val updatedCard = api.reFetchCard(paymentMethodRef)
+                    val updatedCard = api.getPaymentMethod(paymentMethodRef)
                     _uiState.update {
                         it.copy(tokenizedPaymentMethod = updatedCard)
                     }
@@ -237,13 +237,22 @@ class POSViewModel : ViewModel() {
                     reason = reason
                 )
             )
+            var paymentMethod: PosPaymentMethod? = null
+
+            try {
+                val paymentResponse = api.getPayment(paymentRef)
+                val paymentMethodResponse = api.getPaymentMethod(paymentResponse.paymentMethod)
+                paymentMethod = paymentMethodResponse
+            } catch (e: HttpException) {
+                Log.e("POSViewModel", "Looking up payment method for refund failed. PaymentRef: $paymentRef")
+            }
 
             when (response) {
                 is ForageApiResponse.Success -> {
                     val moshi = Moshi.Builder().build()
                     val jsonAdapter: JsonAdapter<Refund> = RefundJsonAdapter(moshi)
                     val refundResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(refundPaymentResponse = refundResponse, refundPaymentError = null) }
+                    _uiState.update { it.copy(refundPaymentResponse = refundResponse, refundPaymentError = null, tokenizedPaymentMethod = paymentMethod) }
                     onSuccess(refundResponse)
                 }
                 is ForageApiResponse.Failure -> {
@@ -263,7 +272,8 @@ class POSViewModel : ViewModel() {
                     idempotencyKey = idempotencyKey,
                     paymentRef = paymentRef
                 )
-                _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null) }
+                val paymentMethod = api.getPaymentMethod(response.paymentMethod)
+                _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void payment call succeeded: $response")
             } catch (e: HttpException) {
@@ -283,7 +293,9 @@ class POSViewModel : ViewModel() {
                     paymentRef = paymentRef,
                     refundRef = refundRef
                 )
-                _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null) }
+                val payment = api.getPayment(response.paymentRef)
+                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void refund call succeeded: $response")
             } catch (e: HttpException) {

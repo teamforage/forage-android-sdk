@@ -33,6 +33,11 @@ interface PosApiService {
         @Body payment: PosPaymentRequest
     ): PosPaymentResponse
 
+    @GET("api/payments/{paymentRef}/")
+    suspend fun getPayment(
+        @Path("paymentRef") paymentRef: String
+    ): PosPaymentResponse
+
     @POST("api/payments/{paymentRef}/void/")
     suspend fun voidPayment(
         @Header("Idempotency-Key") idempotencyKey: String,
@@ -47,7 +52,7 @@ interface PosApiService {
     ): Refund
 
     @POST("api/payment_methods/{paymentMethodRef}/")
-    suspend fun reFetchCard(
+    suspend fun getPaymentMethod(
         @Path("paymentMethodRef") paymentMethodRef: String
     ): PosPaymentMethod
 

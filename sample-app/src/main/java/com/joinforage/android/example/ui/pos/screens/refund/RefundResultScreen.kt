@@ -40,12 +40,12 @@ fun RefundResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (txType == null) {
-                Text("null paymentRequest")
+                Text("null txType")
             } else if (refundResponse == null) {
                 Text("null refundResponse")
             } else {
                 var receipt: BaseReceiptTemplate? = null
-                if (txType == TxType.SNAP_PAYMENT) {
+                if (txType == TxType.REFUND_SNAP_PAYMENT) {
                     receipt = SnapPurchaseTxReceipt(
                         merchant,
                         terminalId,
@@ -53,7 +53,7 @@ fun RefundResultScreen(
                         refundResponse
                     )
                 }
-                if (txType == TxType.CASH_PAYMENT) {
+                if (txType == TxType.REFUND_CASH_PAYMENT) {
                     receipt = CashPurchaseTxReceipt(
                         merchant,
                         terminalId,
@@ -61,7 +61,7 @@ fun RefundResultScreen(
                         refundResponse
                     )
                 }
-                if (txType == TxType.CASH_PURCHASE_WITH_CASHBACK) {
+                if (txType == TxType.REFUND_CASH_PURCHASE_WITH_CASHBACK) {
                     receipt = CashPurchaseWithCashbackTxReceipt(
                         merchant,
                         terminalId,
@@ -69,7 +69,7 @@ fun RefundResultScreen(
                         refundResponse
                     )
                 }
-                if (txType == TxType.CASH_WITHDRAWAL) {
+                if (txType == TxType.REFUND_CASH_WITHDRAWAL) {
                     receipt = CashWithdrawalTxReceipt(
                         merchant,
                         terminalId,
@@ -77,7 +77,11 @@ fun RefundResultScreen(
                         refundResponse
                     )
                 }
-                ReceiptPreviewScreen(receipt!!.getReceiptLayout())
+                if (receipt != null) {
+                    ReceiptPreviewScreen(receipt.getReceiptLayout())
+                } else {
+                    Text("Couldn't find receipt template matching transaction type: ${txType.title}")
+                }
             }
         }
         if (paymentMethod?.balance == null) {

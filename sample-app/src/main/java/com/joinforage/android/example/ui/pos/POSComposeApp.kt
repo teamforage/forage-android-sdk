@@ -559,7 +559,7 @@ fun POSComposeApp(
                             it2
                         )
                     } },
-                    paymentResponse = uiState.voidPaymentResponse!!,
+                    paymentResponse = uiState.voidPaymentResponse,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDPaymentScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
@@ -570,7 +570,7 @@ fun POSComposeApp(
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     txType = uiState.voidRefundResponse?.let { it1 -> TxType.forReceipt(it1.receipt) },
-                    refundResponse = uiState.refundPaymentResponse!!,
+                    refundResponse = uiState.voidRefundResponse,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDRefundScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
