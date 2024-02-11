@@ -44,6 +44,12 @@ interface PosApiService {
         @Path("paymentRef") paymentRef: String
     ): PosPaymentResponse
 
+    @GET("api/payments/{paymentRef}/refunds/{refundRef}/")
+    suspend fun getRefund(
+        @Path("paymentRef") paymentRef: String,
+        @Path("refundRef") refundRef: String
+    ): Refund
+
     @POST("api/payments/{paymentRef}/refunds/{refundRef}/void/")
     suspend fun voidRefund(
         @Header("Idempotency-Key") idempotencyKey: String,
