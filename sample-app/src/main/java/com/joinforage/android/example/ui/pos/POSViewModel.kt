@@ -57,8 +57,18 @@ class POSViewModel : ViewModel() {
         _uiState.update { it.copy(localPayment = payment) }
     }
 
-    fun setLocalRefundState(refundState: RefundUIState) {
-        _uiState.update { it.copy(localRefundState = refundState) }
+    fun setLocalRefundState(refundState: RefundUIState, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val payment = api.getPayment(refundState.paymentRef)
+                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = paymentMethod) }
+                onComplete()
+            } catch (e: HttpException) {
+                _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = null) }
+                onComplete()
+            }
+        }
     }
 
     fun resetUiState() {

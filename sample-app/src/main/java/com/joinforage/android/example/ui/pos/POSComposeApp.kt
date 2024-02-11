@@ -469,8 +469,9 @@ fun POSComposeApp(
                             amount = amount,
                             reason = reason
                         )
-                        viewModel.setLocalRefundState(refundState)
-                        navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
+                        viewModel.setLocalRefundState(refundState) {
+                            navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
+                        }
                     },
                     onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
@@ -478,7 +479,7 @@ fun POSComposeApp(
             composable(route = POSScreen.REFUNDPINEntryScreen.name) {
                 PINEntryScreen(
                     posForageConfig = uiState.posForageConfig,
-                    paymentMethodRef = uiState.localRefundState?.paymentRef,
+                    paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.localRefundState != null) {
                             pinElement!!.clearFocus()
