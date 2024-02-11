@@ -2,12 +2,16 @@ package com.joinforage.android.example.ui.pos.screens.refund
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import com.joinforage.android.example.pos.receipts.templates.BaseReceiptTemplate
 import com.joinforage.android.example.pos.receipts.templates.txs.CashPurchaseTxReceipt
@@ -30,6 +34,8 @@ fun RefundResultScreen(
     onBackButtonClicked: () -> Unit,
     onDoneButtonClicked: () -> Unit
 ) {
+    val clipboardManager = LocalClipboardManager.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -76,11 +82,25 @@ fun RefundResultScreen(
                         refundResponse
                     )
                 }
-                if (receipt != null) {
-                    ReceiptPreviewScreen(receipt.getReceiptLayout())
-                } else {
-                    Text("Couldn't find receipt template matching transaction type: ${txType.title}")
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Refund Ref: ${refundResponse.ref}")
+                        Button(onClick = {
+                            clipboardManager.setText(AnnotatedString(refundResponse.ref))
+                        }, colors = ButtonDefaults.elevatedButtonColors()) {
+                            Text("Copy")
+                        }
+                    }
+                    if (receipt != null) {
+                        ReceiptPreviewScreen(receipt.getReceiptLayout())
+                    } else {
+                        Text("Couldn't find receipt template matching transaction type: ${txType.title}")
+                    }
                 }
+
             }
         }
         if (paymentMethod?.balance == null) {
