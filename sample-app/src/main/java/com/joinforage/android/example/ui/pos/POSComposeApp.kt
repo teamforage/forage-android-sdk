@@ -35,9 +35,11 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
+import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseWithCashBackScreen
@@ -56,6 +58,7 @@ import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
+import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -437,6 +440,9 @@ fun POSComposeApp(
                                     if (it?.ref != null) {
                                         navController.navigate(POSScreen.PAYResultScreen.name)
                                     }
+                                },
+                                onFailure = {
+                                    navController.navigate(POSScreen.PAYResultScreen.name)
                                 }
                             )
                         }
@@ -498,6 +504,9 @@ fun POSComposeApp(
                                     if (it != null) {
                                         navController.navigate(POSScreen.REFUNDResultScreen.name)
                                     }
+                                },
+                                onFailure = {
+                                    navController.navigate(POSScreen.REFUNDResultScreen.name)
                                 }
                             )
                         }
