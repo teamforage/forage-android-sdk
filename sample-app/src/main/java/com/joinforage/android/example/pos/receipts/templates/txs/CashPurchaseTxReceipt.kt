@@ -18,7 +18,7 @@ internal class CashPurchaseTxReceipt : TxReceiptTemplate {
         terminalId: String,
         paymentMethod: PosPaymentMethod?,
         refund: Refund
-    ) : super(merchant, terminalId, paymentMethod, refund.receipt) {
+    ) : super(merchant, terminalId, paymentMethod, refund.receipt!!) {
         cashAmt = negateAmt(cashAmt)
     }
 

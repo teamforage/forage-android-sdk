@@ -20,6 +20,7 @@ import com.joinforage.android.example.pos.receipts.templates.txs.CashWithdrawalT
 import com.joinforage.android.example.pos.receipts.templates.txs.SnapPurchaseTxReceipt
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.Merchant
+import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
@@ -31,8 +32,11 @@ fun RefundResultScreen(
     paymentMethod: PosPaymentMethod?,
     txType: TxType?,
     refundResponse: Refund?,
+    fetchedPayment: PosPaymentResponse?,
+    onRefundRefClicked: (paymentRef: String, refundRef: String) -> Unit,
     onBackButtonClicked: () -> Unit,
-    onDoneButtonClicked: () -> Unit
+    onDoneButtonClicked: () -> Unit,
+    onReloadButtonClicked: () -> Unit
 ) {
     val clipboardManager = LocalClipboardManager.current
 
@@ -45,7 +49,20 @@ fun RefundResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (txType == null) {
-                Text("null txType")
+                Text("Unable to determine transaction type. Terminal might be offline.")
+                if (fetchedPayment?.ref == null) {
+                    Text("Re-fetch payment to see a list of refunds on the payment.")
+                    Button(onClick = onReloadButtonClicked) {
+                        Text("Re-fetch Payment")
+                    }
+                } else {
+                    Text("Select a Refund ref from payment (${fetchedPayment.ref}) to view the receipt for:")
+                    fetchedPayment.refunds.forEach { refundRef ->
+                        Button(onClick = { onRefundRefClicked(fetchedPayment.ref!!, refundRef) }) {
+                            Text(refundRef)
+                        }
+                    }
+                }
             } else if (refundResponse == null) {
                 Text("null refundResponse")
             } else {
@@ -123,7 +140,10 @@ fun RefundResultScreenPreview() {
         paymentMethod = null,
         txType = null,
         refundResponse = null,
+        fetchedPayment = null,
+        onRefundRefClicked = { _, _ -> },
         onBackButtonClicked = {},
-        onDoneButtonClicked = {}
+        onDoneButtonClicked = {},
+        onReloadButtonClicked = {}
     )
 }

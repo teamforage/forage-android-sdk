@@ -71,6 +71,28 @@ class POSViewModel : ViewModel() {
         }
     }
 
+    fun fetchPayment(paymentRef: String) {
+        viewModelScope.launch {
+            try {
+                val payment = api.getPayment(paymentRef)
+                _uiState.update { it.copy(capturePaymentResponse = payment, capturePaymentError = null) }
+            } catch (e: HttpException) {
+                _uiState.update { it.copy(capturePaymentError = e.toString()) }
+            }
+        }
+    }
+
+    fun fetchRefund(paymentRef: String, refundRef: String) {
+        viewModelScope.launch {
+            try {
+                val refund = api.getRefund(paymentRef, refundRef)
+                _uiState.update { it.copy(refundPaymentResponse = refund, refundPaymentError = null) }
+            } catch (e: HttpException) {
+                _uiState.update { it.copy(refundPaymentError = e.toString()) }
+            }
+        }
+    }
+
     fun resetUiState() {
         // this needs to be in a coroutine and delayed to allow for the back-stack
         // to be fully popped before some of the data it depends on disappears.
@@ -313,9 +335,9 @@ class POSViewModel : ViewModel() {
                 )
                 val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
                 if (payment.receipt != null) {
-                    response.receipt.isVoided = true
-                    response.receipt.balance.snap = (response.receipt.balance.snap.toDouble() - refund.receipt.snapAmount.toDouble()).toString()
-                    response.receipt.balance.nonSnap = (response.receipt.balance.nonSnap.toDouble() - refund.receipt.ebtCashAmount.toDouble()).toString()
+                    response.receipt!!.isVoided = true
+                    response.receipt.balance.snap = (response.receipt.balance.snap.toDouble() - refund.receipt!!.snapAmount!!.toDouble()).toString()
+                    response.receipt.balance.nonSnap = (response.receipt.balance.nonSnap.toDouble() - refund.receipt!!.ebtCashAmount!!.toDouble()).toString()
                 }
                 _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)

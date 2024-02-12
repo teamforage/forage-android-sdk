@@ -25,7 +25,8 @@ fun VoidPaymentResultScreen(
         txType,
         paymentResponse,
         onBackButtonClicked,
-        onDoneButtonClicked
+        onDoneButtonClicked,
+        onReloadButtonClicked = {}
     )
 }
 
