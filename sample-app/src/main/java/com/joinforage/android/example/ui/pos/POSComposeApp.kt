@@ -512,11 +512,13 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    txType = uiState.refundPaymentResponse?.let { it1 -> it1.receipt?.let { it2 ->
-                        TxType.forReceipt(
-                            it2
-                        )
-                    } },
+                    txType = uiState.refundPaymentResponse?.let { it1 ->
+                        it1.receipt?.let { it2 ->
+                            TxType.forReceipt(
+                                it2
+                            )
+                        }
+                    },
                     refundResponse = uiState.refundPaymentResponse!!,
                     fetchedPayment = uiState.capturePaymentResponse,
                     onRefundRefClicked = { paymentRef, refundRef -> viewModel.fetchRefund(paymentRef, refundRef) },
@@ -590,11 +592,13 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    txType = uiState.voidRefundResponse?.let { it1 -> it1.receipt?.let { it2 ->
-                        TxType.forReceipt(
-                            it2
-                        )
-                    } },
+                    txType = uiState.voidRefundResponse?.let { it1 ->
+                        it1.receipt?.let { it2 ->
+                            TxType.forReceipt(
+                                it2
+                            )
+                        }
+                    },
                     refundResponse = uiState.voidRefundResponse,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDRefundScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }

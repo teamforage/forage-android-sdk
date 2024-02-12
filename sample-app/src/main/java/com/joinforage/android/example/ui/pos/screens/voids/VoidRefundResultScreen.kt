@@ -25,7 +25,7 @@ fun VoidRefundResultScreen(
         txType,
         refundResponse,
         fetchedPayment = null,
-        onRefundRefClicked = { _, _ ->},
+        onRefundRefClicked = { _, _ -> },
         onBackButtonClicked,
         onDoneButtonClicked,
         onReloadButtonClicked = {}

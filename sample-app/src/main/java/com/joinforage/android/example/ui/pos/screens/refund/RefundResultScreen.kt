@@ -141,7 +141,7 @@ fun RefundResultScreenPreview() {
         txType = null,
         refundResponse = null,
         fetchedPayment = null,
-        onRefundRefClicked = { _, _ ->},
+        onRefundRefClicked = { _, _ -> },
         onBackButtonClicked = {},
         onDoneButtonClicked = {},
         onReloadButtonClicked = {}
