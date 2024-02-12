@@ -32,7 +32,8 @@ fun PaymentResultScreen(
     txType: TxType?,
     paymentResponse: PosPaymentResponse?,
     onBackButtonClicked: () -> Unit,
-    onDoneButtonClicked: () -> Unit
+    onDoneButtonClicked: () -> Unit,
+    onReloadButtonClicked: () -> Unit
 ) {
     val clipboardManager = LocalClipboardManager.current
 
@@ -45,7 +46,10 @@ fun PaymentResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (txType == null) {
-                Text("null txType")
+                Text("Unable to determine transaction type. Terminal might be offline.")
+                Button(onClick = onReloadButtonClicked) {
+                    Text("Re-fetch Payment")
+                }
             } else if (paymentResponse == null) {
                 Text("null paymentResponse")
             } else {
@@ -122,6 +126,7 @@ fun PaymentResultScreenPreview() {
         txType = null,
         paymentResponse = null,
         onBackButtonClicked = {},
-        onDoneButtonClicked = {}
+        onDoneButtonClicked = {},
+        onReloadButtonClicked = {}
     )
 }
