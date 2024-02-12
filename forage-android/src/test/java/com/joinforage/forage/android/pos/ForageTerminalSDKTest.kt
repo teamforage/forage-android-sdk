@@ -83,7 +83,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             posTerminalId = expectedData.posTerminalId,
             forageSdk = mockForageSdk,
             createLogger = { mockLogger }
-        )
+        ).init("another fake session token")
     }
 
     @Test
@@ -499,7 +499,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 server = server
             )
         }
-    )
+    ).init("fake session token")
 
     private fun assertLoggedError(expectedMessage: String, failureResponse: ForageApiResponse.Failure) {
         val firstForageError = failureResponse.errors.first()
