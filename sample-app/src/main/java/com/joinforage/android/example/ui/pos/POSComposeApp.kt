@@ -33,6 +33,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
+import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
@@ -450,7 +451,11 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    paymentRequest = uiState.localPayment,
+                    txType = uiState.capturePaymentResponse?.receipt?.let { it1 ->
+                        TxType.forReceipt(
+                            it1
+                        )
+                    },
                     paymentResponse = uiState.capturePaymentResponse!!,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
@@ -464,8 +469,9 @@ fun POSComposeApp(
                             amount = amount,
                             reason = reason
                         )
-                        viewModel.setLocalRefundState(refundState)
-                        navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
+                        viewModel.setLocalRefundState(refundState) {
+                            navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
+                        }
                     },
                     onCancelButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
@@ -473,7 +479,7 @@ fun POSComposeApp(
             composable(route = POSScreen.REFUNDPINEntryScreen.name) {
                 PINEntryScreen(
                     posForageConfig = uiState.posForageConfig,
-                    paymentMethodRef = uiState.localRefundState?.paymentRef,
+                    paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.localRefundState != null) {
                             pinElement!!.clearFocus()
@@ -501,7 +507,7 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    paymentRequest = uiState.localPayment,
+                    txType = uiState.refundPaymentResponse?.let { it1 -> TxType.forReceipt(it1.receipt) },
                     refundResponse = uiState.refundPaymentResponse!!,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.REFUNDPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
@@ -549,8 +555,14 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    paymentRequest = uiState.localPayment,
-                    paymentResponse = uiState.capturePaymentResponse!!,
+                    txType = uiState.voidPaymentResponse?.let { it1 ->
+                        it1.receipt?.let { it2 ->
+                            TxType.forReceipt(
+                                it2
+                            )
+                        }
+                    },
+                    paymentResponse = uiState.voidPaymentResponse,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDPaymentScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
@@ -560,8 +572,8 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    paymentRequest = uiState.localPayment,
-                    refundResponse = uiState.refundPaymentResponse!!,
+                    txType = uiState.voidRefundResponse?.let { it1 -> TxType.forReceipt(it1.receipt) },
+                    refundResponse = uiState.voidRefundResponse,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDRefundScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )

@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Receipt(
     @Json(name = "ref_number") val refNumber: String,
-    @Json(name = "is_voided") val isVoided: Boolean,
+    @Json(name = "is_voided") var isVoided: Boolean,
     @Json(name = "snap_amount") val snapAmount: String,
     @Json(name = "ebt_cash_amount") val ebtCashAmount: String,
     @Json(name = "cash_back_amount") val cashBackAmount: String,
@@ -23,7 +23,7 @@ data class Receipt(
 @JsonClass(generateAdapter = true)
 data class ReceiptBalance(
     val id: Double,
-    val snap: String,
-    @Json(name = "non_snap") val nonSnap: String,
+    var snap: String,
+    @Json(name = "non_snap") var nonSnap: String,
     val updated: String
 )
