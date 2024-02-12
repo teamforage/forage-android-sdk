@@ -15,7 +15,7 @@ data class Refund(
     val updated: String,
     val status: String,
     @Json(name = "last_processing_error") val lastProcessingError: String?,
-    val receipt: Receipt,
+    val receipt: Receipt?,
     @Json(name = "pos_terminal") val posTerminal: RefundPosTerminal,
     @Json(name = "external_order_id") val externalOrderId: String?,
     val messages: RefundVoidMessages?

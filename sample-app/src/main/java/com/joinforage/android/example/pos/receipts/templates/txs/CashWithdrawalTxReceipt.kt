@@ -19,7 +19,7 @@ internal class CashWithdrawalTxReceipt : TxReceiptTemplate {
         terminalId: String,
         paymentMethod: PosPaymentMethod?,
         refund: Refund
-    ) : super(merchant, terminalId, paymentMethod, refund.receipt)
+    ) : super(merchant, terminalId, paymentMethod, refund.receipt!!)
 
     override val txContent = CashWithdrawalLayout(
         snapBal,
