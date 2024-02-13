@@ -193,8 +193,14 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIChoosePANMethodScreen.name) {
                 PANMethodSelectionScreen(
-                    onManualEntryButtonClicked = { navController.navigate(POSScreen.BIManualPANEntryScreen.name) },
-                    onSwipeButtonClicked = { navController.navigate(POSScreen.BIMagSwipePANEntryScreen.name) },
+                    onManualEntryButtonClicked = {
+                        viewModel.resetTokenizationError()
+                        navController.navigate(POSScreen.BIManualPANEntryScreen.name)
+                    },
+                    onSwipeButtonClicked = {
+                        viewModel.resetPinActionErrors()
+                        navController.navigate(POSScreen.BIMagSwipePANEntryScreen.name)
+                    },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
@@ -210,6 +216,7 @@ fun POSComposeApp(
                                 onSuccess = {
                                     if (it?.ref != null) {
                                         Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                        viewModel.resetPinActionErrors()
                                         navController.navigate(POSScreen.BIPINEntryScreen.name)
                                     }
                                 }
@@ -228,6 +235,7 @@ fun POSComposeApp(
                             viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) {
                                 if (it?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                    viewModel.resetPinActionErrors()
                                     navController.navigate(POSScreen.BIPINEntryScreen.name)
                                 }
                             }
@@ -366,8 +374,14 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYChoosePANMethodScreen.name) {
                 PANMethodSelectionScreen(
-                    onManualEntryButtonClicked = { navController.navigate(POSScreen.PAYManualPANEntryScreen.name) },
-                    onSwipeButtonClicked = { navController.navigate(POSScreen.PAYMagSwipePANEntryScreen.name) },
+                    onManualEntryButtonClicked = {
+                        viewModel.resetPinActionErrors()
+                        navController.navigate(POSScreen.PAYManualPANEntryScreen.name)
+                    },
+                    onSwipeButtonClicked = {
+                        viewModel.resetPinActionErrors()
+                        navController.navigate(POSScreen.PAYMagSwipePANEntryScreen.name)
+                    },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
                 )
             }
@@ -388,6 +402,7 @@ fun POSComposeApp(
                                         val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
                                         viewModel.createPayment(payment = payment, onSuccess = { serverPayment ->
                                             if (serverPayment.ref !== null) {
+                                                viewModel.resetPinActionErrors()
                                                 navController.navigate(POSScreen.PAYPINEntryScreen.name)
                                             }
                                         })
@@ -411,6 +426,7 @@ fun POSComposeApp(
                                     val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
                                     viewModel.createPayment(payment = payment, onSuccess = { serverPayment ->
                                         if (serverPayment.ref !== null) {
+                                            viewModel.resetPinActionErrors()
                                             navController.navigate(POSScreen.PAYPINEntryScreen.name)
                                         }
                                     })
@@ -475,6 +491,7 @@ fun POSComposeApp(
                             reason = reason
                         )
                         viewModel.setLocalRefundState(refundState) {
+                            viewModel.resetPinActionErrors()
                             navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
                         }
                     },
