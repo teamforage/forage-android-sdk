@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.Merchant
-import com.joinforage.android.example.ui.pos.data.Refund
+import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.refund.RefundResultScreen
 
@@ -13,8 +13,10 @@ fun VoidRefundResultScreen(
     merchant: Merchant?,
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
+    paymentRef: String,
+    refundRef: String?,
     txType: TxType?,
-    refundResponse: Refund?,
+    receipt: Receipt?,
     onBackButtonClicked: () -> Unit,
     onDoneButtonClicked: () -> Unit
 ) {
@@ -22,8 +24,10 @@ fun VoidRefundResultScreen(
         merchant,
         terminalId,
         paymentMethod,
+        paymentRef,
+        refundRef,
         txType,
-        refundResponse,
+        receipt,
         fetchedPayment = null,
         onRefundRefClicked = { _, _ -> },
         onBackButtonClicked,
@@ -39,8 +43,10 @@ fun VoidRefundResultScreenPreview() {
         merchant = null,
         terminalId = "",
         paymentMethod = null,
+        paymentRef = "",
+        refundRef = "",
         txType = null,
-        refundResponse = null,
+        receipt = null,
         onBackButtonClicked = {},
         onDoneButtonClicked = {}
     )

@@ -21,7 +21,7 @@ import com.joinforage.android.example.pos.receipts.templates.txs.SnapPurchaseTxR
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
-import com.joinforage.android.example.ui.pos.data.Refund
+import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 
@@ -30,8 +30,10 @@ fun RefundResultScreen(
     merchant: Merchant?,
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
+    paymentRef: String,
+    refundRef: String?,
     txType: TxType?,
-    refundResponse: Refund?,
+    receipt: Receipt?,
     fetchedPayment: PosPaymentResponse?,
     onRefundRefClicked: (paymentRef: String, refundRef: String) -> Unit,
     onBackButtonClicked: () -> Unit,
@@ -63,40 +65,40 @@ fun RefundResultScreen(
                         }
                     }
                 }
-            } else if (refundResponse == null) {
+            } else if (receipt == null) {
                 Text("null refundResponse")
             } else {
-                var receipt: BaseReceiptTemplate? = null
+                var receiptTemplate: BaseReceiptTemplate? = null
                 if (txType == TxType.REFUND_SNAP_PAYMENT) {
-                    receipt = SnapPurchaseTxReceipt(
+                    receiptTemplate = SnapPurchaseTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        refundResponse
+                        receipt
                     )
                 }
                 if (txType == TxType.REFUND_CASH_PAYMENT) {
-                    receipt = CashPurchaseTxReceipt(
+                    receiptTemplate = CashPurchaseTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        refundResponse
+                        receipt
                     )
                 }
                 if (txType == TxType.REFUND_CASH_PURCHASE_WITH_CASHBACK) {
-                    receipt = CashPurchaseWithCashbackTxReceipt(
+                    receiptTemplate = CashPurchaseWithCashbackTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        refundResponse
+                        receipt
                     )
                 }
                 if (txType == TxType.REFUND_CASH_WITHDRAWAL) {
-                    receipt = CashWithdrawalTxReceipt(
+                    receiptTemplate = CashWithdrawalTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        refundResponse
+                        receipt
                     )
                 }
                 Column {
@@ -104,15 +106,28 @@ fun RefundResultScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("Refund Ref: ${refundResponse.ref}")
+                        Text("Payment Ref: $paymentRef")
                         Button(onClick = {
-                            clipboardManager.setText(AnnotatedString(refundResponse.ref))
+                            clipboardManager.setText(AnnotatedString(paymentRef))
                         }, colors = ButtonDefaults.elevatedButtonColors()) {
                             Text("Copy")
                         }
                     }
-                    if (receipt != null) {
-                        ReceiptPreviewScreen(receipt.getReceiptLayout())
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Refund Ref: $refundRef")
+                        if (refundRef != null) {
+                            Button(onClick = {
+                                clipboardManager.setText(AnnotatedString(refundRef))
+                            }, colors = ButtonDefaults.elevatedButtonColors()) {
+                                Text("Copy")
+                            }
+                        }
+                    }
+                    if (receiptTemplate != null) {
+                        ReceiptPreviewScreen(receiptTemplate.getReceiptLayout())
                     } else {
                         Text("Couldn't find receipt template matching transaction type: ${txType.title}")
                     }
@@ -138,8 +153,10 @@ fun RefundResultScreenPreview() {
         merchant = null,
         terminalId = "",
         paymentMethod = null,
+        paymentRef = "",
+        refundRef = "",
         txType = null,
-        refundResponse = null,
+        receipt = null,
         fetchedPayment = null,
         onRefundRefClicked = { _, _ -> },
         onBackButtonClicked = {},
