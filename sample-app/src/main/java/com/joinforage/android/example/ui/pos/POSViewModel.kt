@@ -225,7 +225,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: (response: PosPaymentResponse?) -> Unit) {
+    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).capturePayment(
                 CapturePaymentParams(
@@ -240,7 +240,6 @@ class POSViewModel : ViewModel() {
                     val jsonAdapter: JsonAdapter<PosPaymentResponse> = PosPaymentResponseJsonAdapter(moshi)
                     val paymentResponse = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(capturePaymentResponse = paymentResponse, capturePaymentError = null) }
-                    onSuccess(paymentResponse)
 
                     // we need to refetch the EBT Card here because
                     // capturing a payment does not include the updated
@@ -250,10 +249,12 @@ class POSViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(tokenizedPaymentMethod = updatedCard)
                     }
+                    onComplete()
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(capturePaymentError = response.toString(), capturePaymentResponse = null) }
+                    _uiState.update { it.copy(capturePaymentError = response.errors.joinToString("\n"), capturePaymentResponse = null) }
+                    onComplete()
                 }
             }
         }

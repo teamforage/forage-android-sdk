@@ -35,6 +35,8 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.Receipt
+import com.joinforage.android.example.ui.pos.data.ReceiptBalance
 import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
@@ -433,10 +435,8 @@ fun POSComposeApp(
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
-                                onSuccess = {
-                                    if (it?.ref != null) {
-                                        navController.navigate(POSScreen.PAYResultScreen.name)
-                                    }
+                                onComplete = {
+                                    navController.navigate(POSScreen.PAYResultScreen.name)
                                 }
                             )
                         }
@@ -447,16 +447,39 @@ fun POSComposeApp(
                 )
             }
             composable(route = POSScreen.PAYResultScreen.name) {
+                val paymentRef = uiState.capturePaymentResponse?.ref ?: uiState.createPaymentResponse!!.ref!!
+                val manualErrorReceipt = Receipt(
+                    refNumber = paymentRef,
+                    isVoided = false,
+                    snapAmount = (if (uiState.createPaymentResponse!!.fundingType == "ebt_snap") uiState.createPaymentResponse!!.amount else "0.00").toString(),
+                    ebtCashAmount = (if (uiState.createPaymentResponse!!.fundingType == "ebt_cash") uiState.createPaymentResponse!!.amount else "0.00").toString(),
+                    cashBackAmount = uiState.createPaymentResponse!!.cashBackAmount.toString(),
+                    otherAmount = "0.00",
+                    salesTaxApplied = "0.00",
+                    last4 = uiState.tokenizedPaymentMethod!!.card!!.last4,
+                    transactionType = "Payment",
+                    sequenceNumber = "TODO", // TODO (evanfreeze): Need to get this sequence number from somewhere?
+                    balance = ReceiptBalance(
+                        id = 0.toDouble(),
+                        snap = uiState.tokenizedPaymentMethod!!.balance!!.snap,
+                        nonSnap = uiState.tokenizedPaymentMethod!!.balance!!.non_snap,
+                        updated = uiState.tokenizedPaymentMethod!!.balance!!.updated
+                    ),
+                    created = uiState.createPaymentResponse!!.created,
+                    message = uiState.capturePaymentError ?: "Unknown Error"
+                )
+
                 PaymentResultScreen(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRef = paymentRef,
                     txType = uiState.capturePaymentResponse?.receipt?.let { it1 ->
                         TxType.forReceipt(
                             it1
                         )
-                    },
-                    paymentResponse = uiState.capturePaymentResponse!!,
+                    } ?: uiState.localPayment?.let { TxType.forPayment(it) },
+                    receipt = uiState.capturePaymentResponse?.receipt ?: manualErrorReceipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) },
                     onReloadButtonClicked = {
@@ -575,6 +598,7 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRef = uiState.voidPaymentResponse!!.ref!!,
                     txType = uiState.voidPaymentResponse?.let { it1 ->
                         it1.receipt?.let { it2 ->
                             TxType.forReceipt(
@@ -582,7 +606,7 @@ fun POSComposeApp(
                             )
                         }
                     },
-                    paymentResponse = uiState.voidPaymentResponse,
+                    receipt = uiState.voidPaymentResponse!!.receipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDPaymentScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
