@@ -198,7 +198,7 @@ fun POSComposeApp(
                         navController.navigate(POSScreen.BIManualPANEntryScreen.name)
                     },
                     onSwipeButtonClicked = {
-                        viewModel.resetPinActionErrors()
+                        viewModel.resetTokenizationError()
                         navController.navigate(POSScreen.BIMagSwipePANEntryScreen.name)
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
@@ -375,11 +375,11 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYChoosePANMethodScreen.name) {
                 PANMethodSelectionScreen(
                     onManualEntryButtonClicked = {
-                        viewModel.resetPinActionErrors()
+                        viewModel.resetTokenizationError()
                         navController.navigate(POSScreen.PAYManualPANEntryScreen.name)
                     },
                     onSwipeButtonClicked = {
-                        viewModel.resetPinActionErrors()
+                        viewModel.resetTokenizationError()
                         navController.navigate(POSScreen.PAYMagSwipePANEntryScreen.name)
                     },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) }
