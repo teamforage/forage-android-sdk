@@ -225,7 +225,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: (response: PosPaymentResponse?) -> Unit, onFailure: (String) -> Unit) {
+    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).capturePayment(
                 CapturePaymentParams(
@@ -240,7 +240,6 @@ class POSViewModel : ViewModel() {
                     val jsonAdapter: JsonAdapter<PosPaymentResponse> = PosPaymentResponseJsonAdapter(moshi)
                     val paymentResponse = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(capturePaymentResponse = paymentResponse, capturePaymentError = null) }
-                    onSuccess(paymentResponse)
 
                     // we need to refetch the EBT Card here because
                     // capturing a payment does not include the updated
@@ -250,17 +249,18 @@ class POSViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(tokenizedPaymentMethod = updatedCard)
                     }
+                    onComplete()
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(capturePaymentError = response.toString(), capturePaymentResponse = null) }
-                    onFailure(response.toString())
+                    _uiState.update { it.copy(capturePaymentError = response.errors.joinToString("\n"), capturePaymentResponse = null) }
+                    onComplete()
                 }
             }
         }
     }
 
-    fun refundPayment(foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: (response: Refund?) -> Unit, onFailure: (String) -> Unit) {
+    fun refundPayment(foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: (response: Refund?) -> Unit, onFailure: () -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).refundPayment(
                 PosRefundPaymentParams(
@@ -290,8 +290,8 @@ class POSViewModel : ViewModel() {
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(refundPaymentError = response.toString(), refundPaymentResponse = null) }
-                    onFailure(response.toString())
+                    _uiState.update { it.copy(refundPaymentError = response.errors.joinToString("\n"), refundPaymentResponse = null) }
+                    onFailure()
                 }
             }
         }
