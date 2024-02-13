@@ -239,7 +239,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onComplete: () -> Unit) {
+    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).capturePayment(
                 CapturePaymentParams(
@@ -263,18 +263,18 @@ class POSViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(tokenizedPaymentMethod = updatedCard)
                     }
-                    onComplete()
+                    onSuccess()
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
                     _uiState.update { it.copy(capturePaymentError = response.errors.joinToString("\n"), capturePaymentResponse = null) }
-                    onComplete()
+                    onFailure()
                 }
             }
         }
     }
 
-    fun refundPayment(foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onComplete: () -> Unit) {
+    fun refundPayment(foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).refundPayment(
                 PosRefundPaymentParams(
@@ -299,12 +299,12 @@ class POSViewModel : ViewModel() {
                     val jsonAdapter: JsonAdapter<Refund> = RefundJsonAdapter(moshi)
                     val refundResponse = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(refundPaymentResponse = refundResponse, refundPaymentError = null) }
-                    onComplete()
+                    onSuccess()
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
                     _uiState.update { it.copy(refundPaymentError = response.errors.joinToString("\n"), refundPaymentResponse = null) }
-                    onComplete()
+                    onFailure()
                 }
             }
         }
