@@ -18,7 +18,8 @@ data class Refund(
     val receipt: Receipt?,
     @Json(name = "pos_terminal") val posTerminal: RefundPosTerminal,
     @Json(name = "external_order_id") val externalOrderId: String?,
-    val messages: RefundVoidMessages?
+    val message: RefundVoidMessage?,
+    @Json(name = "sequence_number") val sequenceNumber: String?
 )
 
 @JsonClass(generateAdapter = true)
@@ -28,7 +29,7 @@ data class RefundPosTerminal(
 )
 
 @JsonClass(generateAdapter = true)
-data class RefundVoidMessages(
+data class RefundVoidMessage(
     @Json(name = "content_id") val contentId: String,
     @Json(name = "message_type") val messageType: String,
     val status: String,
