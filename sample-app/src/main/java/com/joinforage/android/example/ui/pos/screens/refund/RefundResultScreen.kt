@@ -31,6 +31,7 @@ fun RefundResultScreen(
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
     paymentRef: String,
+    refundRef: String?,
     txType: TxType?,
     receipt: Receipt?,
     fetchedPayment: PosPaymentResponse?,
@@ -105,11 +106,24 @@ fun RefundResultScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("Refund Ref: $paymentRef")
+                        Text("Payment Ref: $paymentRef")
                         Button(onClick = {
                             clipboardManager.setText(AnnotatedString(paymentRef))
                         }, colors = ButtonDefaults.elevatedButtonColors()) {
                             Text("Copy")
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Refund Ref: $refundRef")
+                        if (refundRef != null) {
+                            Button(onClick = {
+                                clipboardManager.setText(AnnotatedString(refundRef))
+                            }, colors = ButtonDefaults.elevatedButtonColors()) {
+                                Text("Copy")
+                            }
                         }
                     }
                     if (receiptTemplate != null) {
@@ -140,6 +154,7 @@ fun RefundResultScreenPreview() {
         terminalId = "",
         paymentMethod = null,
         paymentRef = "",
+        refundRef = "",
         txType = null,
         receipt = null,
         fetchedPayment = null,
