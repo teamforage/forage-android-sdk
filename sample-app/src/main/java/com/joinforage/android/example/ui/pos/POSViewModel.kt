@@ -109,6 +109,18 @@ class POSViewModel : ViewModel() {
         }
     }
 
+    fun resetTokenizationError() {
+        _uiState.update { it.copy(tokenizationError = null) }
+    }
+
+    fun resetPinActionErrors() {
+        _uiState.update { it.copy(
+            balanceCheckError = null,
+            capturePaymentError = null,
+            refundPaymentError = null,
+        ) }
+    }
+
     private fun getMerchantInfo(onSuccess: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
