@@ -4,16 +4,19 @@ import com.joinforage.forage.android.ui.ForageElement
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
- * **[PosForageConfig] is only valid for in-store POS Terminal transactions.**
+ * **[PosForageConfig] is only valid for in-store POS Terminal transactions via [ForageTerminalSDK].**
  *
  * The configuration details that Forage needs to create a functional [ForageElement].
  *
  * Pass a [PosForageConfig] instance in a call to
  * [setPosForageConfig][com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] to
  * configure an Element.
+ * [PosForageConfig] is also passed as a parameter to [PosTokenizeCardParams].
  *
- * @property merchantId A unique Merchant ID that Forage provides during onboarding onboarding preceded by "mid/".
- * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
+ * @property merchantId A unique Merchant ID that Forage provides during onboarding onboarding
+ * preceded by "mid/".
+ * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage
+ * [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
  * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
  *
  * @property sessionToken A short-lived token that authenticates front-end requests to Forage.
@@ -28,16 +31,18 @@ data class PosForageConfig(
 )
 
 /**
- * The [PosTokenizeCardParams] are only valid for in-store POS Terminal transactions.
- * This data class is not supported for online transactions.
- * The information encoded on Track 2 of the EBT Card’s magnetic stripe,
- * excluding the start and stop sentinels and any LRC characters.
+ * A model that represents the parameters that [ForageTerminalSDK] requires to tokenize a card via
+ * a magnetic swipe from a physical POS Terminal.
+ * This data class is not supported for online-only transactions.
+ * [PosTokenizeCardParams] are passed to the
+ * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] function.
  *
- * @property posForageConfig The [PosForageConfig] configuration details required to authenticate with the Forage API.
- * @property track2Data The information encoded on Track 2 of the EBT Card’s magnetic stripe,
- * excluding the start and stop sentinels and any LRC characters.
- * @property reusable Optional. Indicates whether the tokenized card can be
- * reused for multiple transactions. Defaults to true.
+ * @property posForageConfig **Required**. The [PosForageConfig] configuration details required to
+ * authenticate with the Forage API.
+ * @property track2Data **Required**. The information encoded on Track 2 of the card’s magnetic
+ * stripe, excluding the start and stop sentinels and any LRC characters.
+ * @property reusable Optional. A boolean that indicates whether the same card can be used to make
+ * multiple payments. Defaults to true.
  */
 data class PosTokenizeCardParams(
     val posForageConfig: PosForageConfig,
@@ -46,19 +51,23 @@ data class PosTokenizeCardParams(
 )
 
 /**
- * The [PosRefundPaymentParams] are only valid for in-store POS Terminal transactions.
+ * A model that represents the parameters that [ForageTerminalSDK] requires to refund a Payment.
+ * [PosRefundPaymentParams] are passed to the
+ * [refundPayment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] function.
  *
- * @property foragePinEditText The [ForagePINEditText] instance that collected the customer's PIN for the refund.
- * @property paymentRef A unique string identifier that refers to the Payment to be refunded
- * as it’s represented in Forage's database. Forage returns the paymentRef in response
- * to a successful capturePayment call or in response to a request from your server that creates a Payment.
- * @property amount A positive decimal number that represents how much of the original
+ * @property foragePinEditText **Required**. A reference to the [ForagePINEditText] instance that collected
+ * the customer's PIN for the refund.
+ *  [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must be
+ *  called on the instance before it can be passed.
+ * @property paymentRef **Required**. A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's database, returned by the
+ *  [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ * @property amount **Required**. A positive decimal number that represents how much of the original
  * payment to refund in USD. Precision to the penny is supported.
- * **The minimum amount that can be refunded is 0.01.**
- * @property reason A string that describes why the Payment is to be refunded.
- * @property metadata Optional. A map of merchant-defined key-value pairs.
- * For example, some merchants attach their credit card processor’s ID for
- * the customer making the refund.
+ * The minimum amount that can be refunded is `0.01`.
+ * @property reason **Required**. A string that describes why the payment is to be refunded.
+ * @property metadata Optional. A map of merchant-defined key-value pairs. For example, some
+ * merchants attach their credit card processor’s ID for the customer making the refund.
  */
 data class PosRefundPaymentParams(
     val foragePinEditText: ForagePINEditText,

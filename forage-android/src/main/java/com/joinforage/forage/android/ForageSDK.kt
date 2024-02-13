@@ -25,7 +25,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 
 /**
- * Entry point to the Forage SDK.
+ * The entry point to the Forage SDK.
  *
  * A [ForageSDK] instance interacts with the Forage API.
  *
