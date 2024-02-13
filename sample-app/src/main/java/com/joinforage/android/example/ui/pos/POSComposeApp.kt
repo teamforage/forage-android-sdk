@@ -521,9 +521,6 @@ fun POSComposeApp(
                                     if (it != null) {
                                         navController.navigate(POSScreen.REFUNDResultScreen.name)
                                     }
-                                },
-                                onFailure = {
-                                    navController.navigate(POSScreen.REFUNDResultScreen.name)
                                 }
                             )
                         }
