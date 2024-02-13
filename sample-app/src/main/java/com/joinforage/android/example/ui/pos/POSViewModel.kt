@@ -114,11 +114,13 @@ class POSViewModel : ViewModel() {
     }
 
     fun resetPinActionErrors() {
-        _uiState.update { it.copy(
-            balanceCheckError = null,
-            capturePaymentError = null,
-            refundPaymentError = null,
-        ) }
+        _uiState.update {
+            it.copy(
+                balanceCheckError = null,
+                capturePaymentError = null,
+                refundPaymentError = null
+            )
+        }
     }
 
     private fun getMerchantInfo(onSuccess: () -> Unit) {
