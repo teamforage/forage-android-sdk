@@ -35,11 +35,9 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
-import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
-import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseWithCashBackScreen
@@ -58,7 +56,6 @@ import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
-import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -457,12 +454,13 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRef = uiState.capturePaymentResponse!!.ref!!,
                     txType = uiState.capturePaymentResponse?.receipt?.let { it1 ->
                         TxType.forReceipt(
                             it1
                         )
                     },
-                    paymentResponse = uiState.capturePaymentResponse!!,
+                    receipt = uiState.capturePaymentResponse!!.receipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) },
                     onReloadButtonClicked = {
@@ -584,6 +582,7 @@ fun POSComposeApp(
                     merchant = uiState.merchant,
                     terminalId = k9SDK.terminalId,
                     paymentMethod = uiState.tokenizedPaymentMethod,
+                    paymentRef = uiState.voidPaymentResponse!!.ref!!,
                     txType = uiState.voidPaymentResponse?.let { it1 ->
                         it1.receipt?.let { it2 ->
                             TxType.forReceipt(
@@ -591,7 +590,7 @@ fun POSComposeApp(
                             )
                         }
                     },
-                    paymentResponse = uiState.voidPaymentResponse,
+                    receipt = uiState.voidPaymentResponse!!.receipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.VOIDPaymentScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )

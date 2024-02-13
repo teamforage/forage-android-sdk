@@ -20,7 +20,7 @@ import com.joinforage.android.example.pos.receipts.templates.txs.CashWithdrawalT
 import com.joinforage.android.example.pos.receipts.templates.txs.SnapPurchaseTxReceipt
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
 import com.joinforage.android.example.ui.pos.data.Merchant
-import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
+import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 
@@ -29,8 +29,9 @@ fun PaymentResultScreen(
     merchant: Merchant?,
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
+    paymentRef: String,
     txType: TxType?,
-    paymentResponse: PosPaymentResponse?,
+    receipt: Receipt?,
     onBackButtonClicked: () -> Unit,
     onDoneButtonClicked: () -> Unit,
     onReloadButtonClicked: () -> Unit
@@ -50,57 +51,55 @@ fun PaymentResultScreen(
                 Button(onClick = onReloadButtonClicked) {
                     Text("Re-fetch Payment")
                 }
-            } else if (paymentResponse == null) {
+            } else if (receipt == null) {
                 Text("null paymentResponse")
             } else {
-                var receipt: BaseReceiptTemplate? = null
+                var receiptTemplate: BaseReceiptTemplate? = null
                 if (txType == TxType.SNAP_PAYMENT) {
-                    receipt = SnapPurchaseTxReceipt(
+                    receiptTemplate = SnapPurchaseTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        paymentResponse
+                        receipt
                     )
                 }
                 if (txType == TxType.CASH_PAYMENT) {
-                    receipt = CashPurchaseTxReceipt(
+                    receiptTemplate = CashPurchaseTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        paymentResponse
+                        receipt
                     )
                 }
                 if (txType == TxType.CASH_PURCHASE_WITH_CASHBACK) {
-                    receipt = CashPurchaseWithCashbackTxReceipt(
+                    receiptTemplate = CashPurchaseWithCashbackTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        paymentResponse
+                        receipt
                     )
                 }
                 if (txType == TxType.CASH_WITHDRAWAL) {
-                    receipt = CashWithdrawalTxReceipt(
+                    receiptTemplate = CashWithdrawalTxReceipt(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        paymentResponse
+                        receipt
                     )
                 }
                 Column {
-                    if (paymentResponse.ref != null) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text("Payment Ref: ${paymentResponse.ref}")
-                            Button(onClick = {
-                                clipboardManager.setText(AnnotatedString(paymentResponse.ref!!))
-                            }, colors = ButtonDefaults.elevatedButtonColors()) {
-                                Text("Copy")
-                            }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text("Payment Ref: $paymentRef")
+                        Button(onClick = {
+                            clipboardManager.setText(AnnotatedString(paymentRef))
+                        }, colors = ButtonDefaults.elevatedButtonColors()) {
+                            Text("Copy")
                         }
                     }
-                    ReceiptPreviewScreen(receipt!!.getReceiptLayout())
+                    ReceiptPreviewScreen(receiptTemplate!!.getReceiptLayout())
                 }
             }
         }
@@ -123,8 +122,9 @@ fun PaymentResultScreenPreview() {
         merchant = null,
         terminalId = "",
         paymentMethod = null,
+        paymentRef = "",
         txType = null,
-        paymentResponse = null,
+        receipt = null,
         onBackButtonClicked = {},
         onDoneButtonClicked = {},
         onReloadButtonClicked = {}
