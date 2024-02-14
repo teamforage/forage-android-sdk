@@ -37,5 +37,7 @@ data class PosPaymentResponse(
     @Json(name = "cash_back_amount")
     var cashBackAmount: Float?,
     @Json(name = "sequence_number")
-    var sequenceNumber: String?
+    var sequenceNumber: String?,
+    @Json(name = "transaction_type")
+    var transactionType: String?
 )
