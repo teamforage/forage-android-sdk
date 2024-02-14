@@ -305,7 +305,6 @@ class POSViewModel : ViewModel() {
                     val jsonAdapter: JsonAdapter<Refund> = RefundJsonAdapter(moshi)
                     val refundResponse = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(refundPaymentResponse = refundResponse, refundPaymentError = null) }
-                    Log.i("POSViewModel-REFUND", refundResponse.toString())
                     onSuccess()
                 }
                 is ForageApiResponse.Failure -> {
@@ -321,8 +320,6 @@ class POSViewModel : ViewModel() {
                     } catch (e: HttpException) {
                         Log.e("POSViewModel", "Failed to re-fetch payment or refund after failed refund attempt. PaymentRef: $paymentRef")
                     }
-                    Log.i("POSViewModel-REFUND", payment.toString())
-                    Log.i("POSViewModel-REFUND", refund.toString())
                     _uiState.update { it.copy(refundPaymentError = response.errors[0].message, refundPaymentResponse = refund, capturePaymentResponse = payment) }
                     onFailure()
                 }
