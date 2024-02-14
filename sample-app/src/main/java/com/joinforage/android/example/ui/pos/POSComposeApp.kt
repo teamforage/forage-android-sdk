@@ -459,7 +459,7 @@ fun POSComposeApp(
                                 onSuccess = {
                                     navController.navigate(POSScreen.PAYResultScreen.name)
                                 },
-                                onFailure = {sequenceNumber ->
+                                onFailure = { sequenceNumber ->
                                     if (sequenceNumber != null) {
                                         navController.navigate(POSScreen.PAYErrorResultScreen.name)
                                     }
