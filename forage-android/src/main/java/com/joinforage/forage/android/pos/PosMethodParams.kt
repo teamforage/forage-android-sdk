@@ -13,7 +13,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * configure an Element.
  * [PosForageConfig] is also passed as a parameter to [PosTokenizeCardParams].
  *
- * @property merchantId A unique Merchant ID that Forage provides during onboarding onboarding
+ * @property merchantId A unique Merchant ID that Forage provides during onboarding
  * preceded by "mid/".
  * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage
  * [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
