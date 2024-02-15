@@ -475,7 +475,7 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYErrorResultScreen.name) {
                 val errorReceipt = uiState.capturePaymentResponse?.receipt ?: Receipt(
                     refNumber = uiState.createPaymentResponse!!.ref!!,
-                    isVoided = false,
+                    isVoided = true, // We should only use this manual receipt when in the late-notification scenario
                     snapAmount = (if (uiState.createPaymentResponse!!.fundingType == "ebt_snap") uiState.createPaymentResponse!!.amount else "0.00").toString(),
                     ebtCashAmount = (if (uiState.createPaymentResponse!!.fundingType == "ebt_cash") uiState.createPaymentResponse!!.amount else "0.00").toString(),
                     cashBackAmount = uiState.createPaymentResponse!!.cashBackAmount.toString(),
@@ -483,12 +483,12 @@ fun POSComposeApp(
                     salesTaxApplied = "0.00",
                     last4 = uiState.tokenizedPaymentMethod!!.card!!.last4,
                     transactionType = "Payment",
-                    sequenceNumber = uiState.createPaymentResponse!!.sequenceNumber ?: "Unknown",
+                    sequenceNumber = uiState.capturePaymentResponse?.sequenceNumber ?: uiState.createPaymentResponse?.sequenceNumber ?: "ERROR",
                     balance = ReceiptBalance(
                         id = 0.toDouble(),
-                        snap = uiState.tokenizedPaymentMethod!!.balance!!.snap,
-                        nonSnap = uiState.tokenizedPaymentMethod!!.balance!!.non_snap,
-                        updated = uiState.tokenizedPaymentMethod!!.balance!!.updated
+                        snap = uiState.tokenizedPaymentMethod!!.balance?.snap ?: "ERROR",
+                        nonSnap = uiState.tokenizedPaymentMethod!!.balance?.non_snap ?: "ERROR",
+                        updated = uiState.tokenizedPaymentMethod!!.balance?.updated ?: "ERROR"
                     ),
                     created = uiState.createPaymentResponse!!.created,
                     message = uiState.capturePaymentError ?: "Unknown Error"
