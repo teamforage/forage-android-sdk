@@ -499,7 +499,7 @@ fun POSComposeApp(
                     terminalId = uiState.capturePaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = errorReceipt.refNumber,
-                    txType = uiState.localPayment?.let { TxType.forPayment(it) } ?: TxType.forReceipt(errorReceipt),
+                    txType = uiState.localPayment?.let { TxType.fromPaymentRequest(it) } ?: TxType.fromReceipt(errorReceipt),
                     receipt = errorReceipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) },
@@ -516,7 +516,7 @@ fun POSComposeApp(
                     terminalId = uiState.capturePaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.capturePaymentResponse!!.ref!!,
-                    txType = uiState.capturePaymentResponse?.receipt?.let { TxType.forReceipt(it) } ?: uiState.localPayment?.let { TxType.forPayment(it) },
+                    txType = uiState.capturePaymentResponse?.let { TxType.fromPaymentResponse(it) } ?: uiState.localPayment?.let { TxType.fromPaymentRequest(it) },
                     receipt = uiState.capturePaymentResponse?.receipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) },
@@ -583,7 +583,7 @@ fun POSComposeApp(
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.localRefundState!!.paymentRef,
                     refundRef = uiState.refundPaymentResponse?.ref,
-                    txType = TxType.forReceipt(errorReceipt),
+                    txType = TxType.fromReceipt(errorReceipt),
                     receipt = errorReceipt,
                     fetchedPayment = uiState.capturePaymentResponse,
                     onRefundRefClicked = { paymentRef, refundRef -> viewModel.fetchRefund(paymentRef, refundRef) },
@@ -607,7 +607,7 @@ fun POSComposeApp(
                     refundRef = uiState.refundPaymentResponse?.ref,
                     txType = uiState.refundPaymentResponse?.let { it1 ->
                         it1.receipt?.let { it2 ->
-                            TxType.forReceipt(
+                            TxType.fromReceipt(
                                 it2
                             )
                         }
@@ -671,7 +671,7 @@ fun POSComposeApp(
                     paymentRef = uiState.voidPaymentResponse!!.ref!!,
                     txType = uiState.voidPaymentResponse?.let { it1 ->
                         it1.receipt?.let { it2 ->
-                            TxType.forReceipt(
+                            TxType.fromReceipt(
                                 it2
                             )
                         }
@@ -690,7 +690,7 @@ fun POSComposeApp(
                     refundRef = uiState.voidRefundResponse?.ref,
                     txType = uiState.voidRefundResponse?.let { it1 ->
                         it1.receipt?.let { it2 ->
-                            TxType.forReceipt(
+                            TxType.fromReceipt(
                                 it2
                             )
                         }

@@ -31,7 +31,8 @@ internal abstract class TxReceiptTemplate(
     merchant: Merchant?,
     terminalId: String,
     paymentMethod: PosPaymentMethod?,
-    protected val receipt: Receipt
+    protected val receipt: Receipt,
+    title: String
 ) : BaseReceiptTemplate(
     merchant,
     terminalId,
@@ -43,7 +44,7 @@ internal abstract class TxReceiptTemplate(
     override val timestamp: String = receipt.created
     override val snapBal: String = receipt.balance.snap
     override val cashBal: String = receipt.balance.nonSnap
-    override val title = TxType.forReceipt(receipt).title
+    override val title = title
     override val mainContent: ReceiptLayout
         get() = ReceiptLayout(
             *getTxOutcome(receipt).lines,

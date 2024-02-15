@@ -74,7 +74,8 @@ fun RefundResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.REFUND_CASH_PAYMENT) {
@@ -82,7 +83,8 @@ fun RefundResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.REFUND_CASH_PURCHASE_WITH_CASHBACK) {
@@ -90,7 +92,8 @@ fun RefundResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.REFUND_CASH_WITHDRAWAL) {
@@ -98,7 +101,8 @@ fun RefundResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 Column {
