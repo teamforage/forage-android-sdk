@@ -60,7 +60,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.CASH_PAYMENT) {
@@ -68,7 +69,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.CASH_PURCHASE_WITH_CASHBACK) {
@@ -76,7 +78,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.CASH_WITHDRAWAL) {
@@ -84,7 +87,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 Column {
