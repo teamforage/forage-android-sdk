@@ -583,7 +583,7 @@ fun POSComposeApp(
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.localRefundState!!.paymentRef,
                     refundRef = uiState.refundPaymentResponse?.ref,
-                    txType = TxType.forReceipt(errorReceipt),
+                    txType = uiState.capturePaymentResponse?.let { TxType.forRefund(it.transactionType, it.fundingType!!) } ?: TxType.forReceipt(errorReceipt),
                     receipt = errorReceipt,
                     fetchedPayment = uiState.capturePaymentResponse,
                     onRefundRefClicked = { paymentRef, refundRef -> viewModel.fetchRefund(paymentRef, refundRef) },
@@ -605,13 +605,7 @@ fun POSComposeApp(
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.localRefundState!!.paymentRef,
                     refundRef = uiState.refundPaymentResponse?.ref,
-                    txType = uiState.refundPaymentResponse?.let { it1 ->
-                        it1.receipt?.let { it2 ->
-                            TxType.forReceipt(
-                                it2
-                            )
-                        }
-                    },
+                    txType = uiState.capturePaymentResponse?.let { TxType.forRefund(it.transactionType, it.fundingType!!) },
                     receipt = uiState.refundPaymentResponse?.receipt,
                     fetchedPayment = uiState.capturePaymentResponse,
                     onRefundRefClicked = { paymentRef, refundRef -> viewModel.fetchRefund(paymentRef, refundRef) },

@@ -73,5 +73,21 @@ enum class TxType(val title: String) {
             }
             return UNKNOWN
         }
+
+        fun forRefund(transactionType: String?, fundingType: String): TxType {
+            if (transactionType == TransactionType.Withdrawal.value) {
+                return REFUND_CASH_WITHDRAWAL
+            }
+            if (transactionType == TransactionType.PurchaseWithCashBack.value) {
+                return REFUND_CASH_PURCHASE_WITH_CASHBACK
+            }
+            if (fundingType == FundingType.EBTSnap.value) {
+                return REFUND_SNAP_PAYMENT
+            }
+            if (fundingType == FundingType.EBTCash.value) {
+                return REFUND_CASH_PAYMENT
+            }
+            return UNKNOWN
+        }
     }
 }
