@@ -50,8 +50,8 @@ fun RefundResultScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (txType == null) {
-                Text("Unable to determine transaction type. Terminal might be offline.")
+            if (txType == null || receipt == null) {
+                Text("Transaction Type or Receipt unavailable. Terminal might be offline.")
                 if (fetchedPayment?.ref == null) {
                     Text("Re-fetch payment to see a list of refunds on the payment.")
                     Button(onClick = onReloadButtonClicked) {
@@ -65,8 +65,6 @@ fun RefundResultScreen(
                         }
                     }
                 }
-            } else if (receipt == null) {
-                Text("null refundResponse")
             } else {
                 var receiptTemplate: BaseReceiptTemplate? = null
                 if (txType == TxType.REFUND_SNAP_PAYMENT) {
