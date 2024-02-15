@@ -24,7 +24,7 @@ enum class TxType(val title: String) {
     UNKNOWN("UNKNOWN");
 
     companion object {
-        fun fromReceipt(receipt: Receipt): TxType {
+        fun forReceipt(receipt: Receipt): TxType {
             if (isPayment(receipt)) {
                 if (spentSnap(receipt)) {
                     return SNAP_PAYMENT
