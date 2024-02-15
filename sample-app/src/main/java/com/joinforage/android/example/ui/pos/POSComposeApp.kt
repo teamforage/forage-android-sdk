@@ -459,8 +459,10 @@ fun POSComposeApp(
                                 onSuccess = {
                                     navController.navigate(POSScreen.PAYResultScreen.name)
                                 },
-                                onFailure = {
-                                    navController.navigate(POSScreen.PAYErrorResultScreen.name)
+                                onFailure = { sequenceNumber ->
+                                    if (sequenceNumber != null) {
+                                        navController.navigate(POSScreen.PAYErrorResultScreen.name)
+                                    }
                                 }
                             )
                         }
@@ -471,7 +473,7 @@ fun POSComposeApp(
                 )
             }
             composable(route = POSScreen.PAYErrorResultScreen.name) {
-                val manualErrorReceipt = Receipt(
+                val errorReceipt = uiState.capturePaymentResponse?.receipt ?: Receipt(
                     refNumber = uiState.createPaymentResponse!!.ref!!,
                     isVoided = false,
                     snapAmount = (if (uiState.createPaymentResponse!!.fundingType == "ebt_snap") uiState.createPaymentResponse!!.amount else "0.00").toString(),
@@ -494,11 +496,11 @@ fun POSComposeApp(
 
                 PaymentResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.capturePaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
-                    paymentRef = manualErrorReceipt.refNumber,
-                    txType = uiState.localPayment?.let { TxType.forPayment(it) },
-                    receipt = manualErrorReceipt,
+                    paymentRef = errorReceipt.refNumber,
+                    txType = uiState.localPayment?.let { TxType.forPayment(it) } ?: TxType.forReceipt(errorReceipt),
+                    receipt = errorReceipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) },
                     onReloadButtonClicked = {
@@ -511,14 +513,10 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYResultScreen.name) {
                 PaymentResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.capturePaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.capturePaymentResponse!!.ref!!,
-                    txType = uiState.capturePaymentResponse?.receipt?.let { it1 ->
-                        TxType.forReceipt(
-                            it1
-                        )
-                    },
+                    txType = uiState.capturePaymentResponse?.receipt?.let { TxType.forReceipt(it) } ?: uiState.localPayment?.let { TxType.forPayment(it) },
                     receipt = uiState.capturePaymentResponse?.receipt,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
                     onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) },
@@ -573,7 +571,7 @@ fun POSComposeApp(
                 )
             }
             composable(route = POSScreen.REFUNDErrorResultScreen.name) {
-                val manualErrorReceipt = uiState.capturePaymentResponse!!.receipt!!.copy(
+                val errorReceipt = uiState.refundPaymentResponse?.receipt ?: uiState.capturePaymentResponse!!.receipt!!.copy(
                     transactionType = "Refund",
                     created = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Timestamp(System.currentTimeMillis())),
                     message = uiState.refundPaymentError ?: uiState.capturePaymentResponse?.receipt?.message ?: ""
@@ -581,12 +579,12 @@ fun POSComposeApp(
 
                 RefundResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.refundPaymentResponse?.posTerminal?.terminalId ?: uiState.capturePaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.localRefundState!!.paymentRef,
                     refundRef = uiState.refundPaymentResponse?.ref,
-                    txType = TxType.forReceipt(manualErrorReceipt),
-                    receipt = manualErrorReceipt,
+                    txType = TxType.forReceipt(errorReceipt),
+                    receipt = errorReceipt,
                     fetchedPayment = uiState.capturePaymentResponse,
                     onRefundRefClicked = { paymentRef, refundRef -> viewModel.fetchRefund(paymentRef, refundRef) },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.REFUNDPINEntryScreen.name, inclusive = false) },
@@ -603,7 +601,7 @@ fun POSComposeApp(
             composable(route = POSScreen.REFUNDResultScreen.name) {
                 RefundResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.refundPaymentResponse?.posTerminal?.terminalId ?: uiState.capturePaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.localRefundState!!.paymentRef,
                     refundRef = uiState.refundPaymentResponse?.ref,

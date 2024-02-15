@@ -239,7 +239,7 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: () -> Unit, onFailure: (sequenceNumber: String?) -> Unit) {
         viewModelScope.launch {
             val response = ForageTerminalSDK(terminalId).capturePayment(
                 CapturePaymentParams(
@@ -266,9 +266,15 @@ class POSViewModel : ViewModel() {
                     onSuccess()
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(capturePaymentError = response.errors.joinToString("\n"), capturePaymentResponse = null) }
-                    onFailure()
+                    Log.e("POSViewModel", response.errors[0].message)
+                    var payment: PosPaymentResponse? = null
+                    try {
+                        payment = api.getPayment(paymentRef)
+                    } catch (e: HttpException) {
+                        Log.e("POSViewModel", "Failed to re-fetch payment $paymentRef after failed capture")
+                    }
+                    _uiState.update { it.copy(capturePaymentError = response.errors[0].message, capturePaymentResponse = payment) }
+                    onFailure(payment?.sequenceNumber)
                 }
             }
         }
@@ -303,7 +309,18 @@ class POSViewModel : ViewModel() {
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(refundPaymentError = response.errors.joinToString("\n"), refundPaymentResponse = null) }
+                    var payment: PosPaymentResponse? = null
+                    var refund: Refund? = null
+                    try {
+                        payment = api.getPayment(paymentRef)
+                        val mostRecentRefundRef = payment.refunds.lastOrNull()
+                        if (mostRecentRefundRef != null) {
+                            refund = api.getRefund(paymentRef, mostRecentRefundRef)
+                        }
+                    } catch (e: HttpException) {
+                        Log.e("POSViewModel", "Failed to re-fetch payment or refund after failed refund attempt. PaymentRef: $paymentRef")
+                    }
+                    _uiState.update { it.copy(refundPaymentError = response.errors[0].message, refundPaymentResponse = refund, capturePaymentResponse = payment) }
                     onFailure()
                 }
             }
