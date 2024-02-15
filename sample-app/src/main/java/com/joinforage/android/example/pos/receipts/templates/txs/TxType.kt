@@ -1,7 +1,6 @@
 package com.joinforage.android.example.pos.receipts.templates.txs
 
-import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
-import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
+import com.joinforage.android.example.ui.pos.data.FundingType
 import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.TransactionType
 
@@ -10,11 +9,7 @@ fun isRefund(receipt: Receipt) = receipt.transactionType == "Refund"
 
 val ZERO_TX = "0.00"
 fun spentSnap(receipt: Receipt) = receipt.snapAmount != ZERO_TX
-fun spentSnap(paymentRequest: PosPaymentRequest) = paymentRequest.fundingType == "ebt_snap"
-fun spentSnap(paymentResponse: PosPaymentResponse) = paymentResponse.fundingType == "ebt_snap"
 fun spentEbtCash(receipt: Receipt) = receipt.ebtCashAmount != ZERO_TX
-fun spentEbtCash(paymentRequest: PosPaymentRequest) = paymentRequest.fundingType == "ebt_cash"
-fun spentEbtCash(paymentResponse: PosPaymentResponse) = paymentResponse.fundingType == "ebt_cash"
 fun withdrewEbtCash(receipt: Receipt) = receipt.cashBackAmount != ZERO_TX
 
 enum class TxType(val title: String) {
@@ -63,24 +58,20 @@ enum class TxType(val title: String) {
             return UNKNOWN
         }
 
-        fun fromPaymentRequest(payment: PosPaymentRequest): TxType {
-            return when {
-                payment.transactionType == TransactionType.Withdrawal.value -> CASH_WITHDRAWAL
-                payment.transactionType == TransactionType.PurchaseWithCashBack.value -> CASH_PURCHASE_WITH_CASHBACK
-                spentSnap(payment) -> SNAP_PAYMENT
-                spentEbtCash(payment) -> CASH_PAYMENT
-                else -> UNKNOWN
+        fun forPayment(transactionType: String?, fundingType: String): TxType {
+            if (transactionType == TransactionType.Withdrawal.value) {
+                return CASH_WITHDRAWAL
             }
-        }
-
-        fun fromPaymentResponse(payment: PosPaymentResponse): TxType {
-            return when {
-                payment.transactionType == TransactionType.Withdrawal.value -> CASH_WITHDRAWAL
-                payment.transactionType == TransactionType.PurchaseWithCashBack.value -> CASH_PURCHASE_WITH_CASHBACK
-                spentSnap(payment) -> SNAP_PAYMENT
-                spentEbtCash(payment) -> CASH_PAYMENT
-                else -> UNKNOWN
+            if (transactionType == TransactionType.PurchaseWithCashBack.value) {
+                return CASH_PURCHASE_WITH_CASHBACK
             }
+            if (fundingType == FundingType.EBTSnap.value) {
+                return SNAP_PAYMENT
+            }
+            if (fundingType == FundingType.EBTCash.value) {
+                return CASH_PAYMENT
+            }
+            return UNKNOWN
         }
     }
 }
