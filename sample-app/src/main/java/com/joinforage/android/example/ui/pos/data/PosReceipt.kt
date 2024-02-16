@@ -12,7 +12,7 @@ data class Receipt(
     @Json(name = "cash_back_amount") val cashBackAmount: String,
     @Json(name = "other_amount") val otherAmount: String,
     @Json(name = "sales_tax_applied") val salesTaxApplied: String,
-    val balance: ReceiptBalance,
+    val balance: ReceiptBalance?,
     @Json(name = "last_4") val last4: String,
     val message: String,
     @Json(name = "transaction_type") val transactionType: String,
@@ -23,7 +23,7 @@ data class Receipt(
 @JsonClass(generateAdapter = true)
 data class ReceiptBalance(
     val id: Double,
-    var snap: String,
-    @Json(name = "non_snap") var nonSnap: String,
+    var snap: String? = "--",
+    @Json(name = "non_snap") var nonSnap: String? = "--",
     val updated: String
 )

@@ -340,8 +340,8 @@ class POSViewModel : ViewModel() {
                 val paymentMethod = api.getPaymentMethod(response.paymentMethod)
                 if (response.receipt != null && payment.receipt != null) {
                     response.receipt!!.isVoided = true
-                    response.receipt!!.balance.snap = (response.receipt!!.balance.snap.toDouble() + payment.receipt!!.snapAmount.toDouble()).toString()
-                    response.receipt!!.balance.nonSnap = (response.receipt!!.balance.nonSnap.toDouble() + payment.receipt!!.ebtCashAmount.toDouble()).toString()
+                    response.receipt!!.balance?.snap = ((response.receipt!!.balance?.snap?.toDouble() ?: 0.0) + payment.receipt!!.snapAmount.toDouble()).toString()
+                    response.receipt!!.balance?.nonSnap = ((response.receipt!!.balance?.nonSnap?.toDouble() ?: 0.0) + payment.receipt!!.ebtCashAmount.toDouble()).toString()
                 }
                 _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)
@@ -368,8 +368,8 @@ class POSViewModel : ViewModel() {
                 val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
                 if (payment.receipt != null) {
                     response.receipt!!.isVoided = true
-                    response.receipt.balance.snap = (response.receipt.balance.snap.toDouble() - refund.receipt!!.snapAmount!!.toDouble()).toString()
-                    response.receipt.balance.nonSnap = (response.receipt.balance.nonSnap.toDouble() - refund.receipt!!.ebtCashAmount!!.toDouble()).toString()
+                    response.receipt.balance?.snap = ((response.receipt.balance?.snap?.toDouble() ?: 0.0) - refund.receipt!!.snapAmount!!.toDouble()).toString()
+                    response.receipt.balance?.nonSnap = ((response.receipt.balance?.nonSnap?.toDouble() ?: 0.0) - refund.receipt!!.ebtCashAmount!!.toDouble()).toString()
                 }
                 _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)

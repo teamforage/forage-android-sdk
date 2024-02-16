@@ -42,8 +42,8 @@ internal abstract class TxReceiptTemplate(
 
     override val seqNumber: String = receipt.sequenceNumber
     override val timestamp: String = receipt.created
-    override val snapBal: String = receipt.balance.snap
-    override val cashBal: String = receipt.balance.nonSnap
+    override val snapBal: String = receipt.balance?.snap ?: "--"
+    override val cashBal: String = receipt.balance?.nonSnap ?: "--"
     override val title = title
     override val mainContent: ReceiptLayout
         get() = ReceiptLayout(
