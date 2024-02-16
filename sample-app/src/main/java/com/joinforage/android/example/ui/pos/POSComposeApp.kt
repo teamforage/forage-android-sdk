@@ -280,7 +280,7 @@ fun POSComposeApp(
             composable(route = POSScreen.BIResultScreen.name) {
                 BalanceResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.tokenizedPaymentMethod?.balance?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     balanceCheckError = uiState.balanceCheckError,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIPINEntryScreen.name, inclusive = false) },
