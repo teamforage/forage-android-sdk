@@ -1,18 +1,16 @@
 package com.joinforage.android.example.pos.receipts.templates.txs
 
-import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
+import com.joinforage.android.example.ui.pos.data.FundingType
 import com.joinforage.android.example.ui.pos.data.Receipt
+import com.joinforage.android.example.ui.pos.data.TransactionType
 
 fun isPayment(receipt: Receipt) = receipt.transactionType == "Payment"
 fun isRefund(receipt: Receipt) = receipt.transactionType == "Refund"
 
 val ZERO_TX = "0.00"
 fun spentSnap(receipt: Receipt) = receipt.snapAmount != ZERO_TX
-fun spentSnap(payment: PosPaymentRequest) = payment.fundingType == "ebt_snap"
 fun spentEbtCash(receipt: Receipt) = receipt.ebtCashAmount != ZERO_TX
-fun spentEbtCash(payment: PosPaymentRequest) = payment.fundingType == "ebt_cash"
 fun withdrewEbtCash(receipt: Receipt) = receipt.cashBackAmount != ZERO_TX
-fun withdrewEbtCash(payment: PosPaymentRequest) = payment.cashBackAmount != ZERO_TX
 
 enum class TxType(val title: String) {
     SNAP_PAYMENT("SNAP PAYMENT"),
@@ -60,37 +58,35 @@ enum class TxType(val title: String) {
             return UNKNOWN
         }
 
-        fun forPayment(payment: PosPaymentRequest): TxType {
-            if (spentSnap(payment)) {
-                return SNAP_PAYMENT
-            }
-            if (spentEbtCash(payment) && withdrewEbtCash(payment)) {
-                return CASH_PURCHASE_WITH_CASHBACK
-            }
-            if (!spentEbtCash(payment) && withdrewEbtCash(payment)) {
+        fun forPayment(transactionType: String?, fundingType: String): TxType {
+            if (transactionType == TransactionType.Withdrawal.value) {
                 return CASH_WITHDRAWAL
             }
-            if (spentEbtCash(payment) && !withdrewEbtCash(payment)) {
+            if (transactionType == TransactionType.PurchaseWithCashBack.value) {
+                return CASH_PURCHASE_WITH_CASHBACK
+            }
+            if (fundingType == FundingType.EBTSnap.value) {
+                return SNAP_PAYMENT
+            }
+            if (fundingType == FundingType.EBTCash.value) {
                 return CASH_PAYMENT
             }
-
             return UNKNOWN
         }
 
-        fun forRefund(payment: PosPaymentRequest): TxType {
-            if (spentSnap(payment)) {
-                return REFUND_SNAP_PAYMENT
-            }
-            if (spentEbtCash(payment) && withdrewEbtCash(payment)) {
-                return REFUND_CASH_PURCHASE_WITH_CASHBACK
-            }
-            if (!spentEbtCash(payment) && withdrewEbtCash(payment)) {
+        fun forRefund(transactionType: String?, fundingType: String): TxType {
+            if (transactionType == TransactionType.Withdrawal.value) {
                 return REFUND_CASH_WITHDRAWAL
             }
-            if (spentEbtCash(payment) && !withdrewEbtCash(payment)) {
+            if (transactionType == TransactionType.PurchaseWithCashBack.value) {
+                return REFUND_CASH_PURCHASE_WITH_CASHBACK
+            }
+            if (fundingType == FundingType.EBTSnap.value) {
+                return REFUND_SNAP_PAYMENT
+            }
+            if (fundingType == FundingType.EBTCash.value) {
                 return REFUND_CASH_PAYMENT
             }
-
             return UNKNOWN
         }
     }

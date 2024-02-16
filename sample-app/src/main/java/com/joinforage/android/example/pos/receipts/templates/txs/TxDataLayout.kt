@@ -55,5 +55,5 @@ internal class CashWithdrawalLayout(
     override val withdrawalAmt: String
 ) : TxDataLayout() {
     override val snapAmt: String = ZERO_TX
-    override val cashAmt: String = ZERO_TX
+    override val cashAmt: String = withdrawalAmt
 }

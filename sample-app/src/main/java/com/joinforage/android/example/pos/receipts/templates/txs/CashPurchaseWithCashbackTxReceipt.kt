@@ -11,8 +11,9 @@ internal class CashPurchaseWithCashbackTxReceipt : TxReceiptTemplate {
         merchant: Merchant?,
         terminalId: String,
         paymentMethod: PosPaymentMethod?,
-        receipt: Receipt
-    ) : super(merchant, terminalId, paymentMethod, receipt) {
+        receipt: Receipt,
+        title: String
+    ) : super(merchant, terminalId, paymentMethod, receipt, title) {
         cashAmt = if (isRefund(receipt)) negateAmt(cashAmt) else cashAmt
     }
 

@@ -46,13 +46,11 @@ fun PaymentResultScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (txType == null) {
-                Text("Unable to determine transaction type. Terminal might be offline.")
+            if (txType == null || receipt == null) {
+                Text("Transaction Type or Receipt unavailable. Terminal might be offline.")
                 Button(onClick = onReloadButtonClicked) {
                     Text("Re-fetch Payment")
                 }
-            } else if (receipt == null) {
-                Text("null paymentResponse")
             } else {
                 var receiptTemplate: BaseReceiptTemplate? = null
                 if (txType == TxType.SNAP_PAYMENT) {
@@ -60,7 +58,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.CASH_PAYMENT) {
@@ -68,7 +67,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.CASH_PURCHASE_WITH_CASHBACK) {
@@ -76,7 +76,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 if (txType == TxType.CASH_WITHDRAWAL) {
@@ -84,7 +85,8 @@ fun PaymentResultScreen(
                         merchant,
                         terminalId,
                         paymentMethod,
-                        receipt
+                        receipt,
+                        txType.title
                     )
                 }
                 Column {
