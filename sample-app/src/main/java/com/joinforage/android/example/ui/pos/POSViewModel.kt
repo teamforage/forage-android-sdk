@@ -219,7 +219,6 @@ class POSViewModel : ViewModel() {
                     val jsonAdapter: JsonAdapter<BalanceCheck> = BalanceCheckJsonAdapter(moshi)
                     val balance = jsonAdapter.fromJson(response.data)
                     _uiState.update { it.copy(balance = balance, balanceCheckError = null) }
-                    onSuccess(balance)
 
                     // we need to refetch the EBT Card here because
                     // `ForageTerminalSDK(terminalId).checkBalance`
@@ -230,6 +229,7 @@ class POSViewModel : ViewModel() {
                     _uiState.update {
                         it.copy(tokenizedPaymentMethod = updatedCard)
                     }
+                    onSuccess(balance)
                 }
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())

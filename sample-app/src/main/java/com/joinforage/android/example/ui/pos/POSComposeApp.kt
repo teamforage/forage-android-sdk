@@ -280,7 +280,7 @@ fun POSComposeApp(
             composable(route = POSScreen.BIResultScreen.name) {
                 BalanceResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.tokenizedPaymentMethod?.balance?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     balanceCheckError = uiState.balanceCheckError,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.BIPINEntryScreen.name, inclusive = false) },
@@ -660,7 +660,7 @@ fun POSComposeApp(
             composable(route = POSScreen.VOIDPaymentResultScreen.name) {
                 VoidPaymentResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.voidPaymentResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.voidPaymentResponse!!.ref!!,
                     txType = uiState.voidPaymentResponse?.let { it1 ->
@@ -678,7 +678,7 @@ fun POSComposeApp(
             composable(route = POSScreen.VOIDRefundResultScreen.name) {
                 VoidRefundResultScreen(
                     merchant = uiState.merchant,
-                    terminalId = k9SDK.terminalId,
+                    terminalId = uiState.voidRefundResponse?.posTerminal?.terminalId ?: "Unknown",
                     paymentMethod = uiState.tokenizedPaymentMethod,
                     paymentRef = uiState.voidRefundResponse!!.paymentRef,
                     refundRef = uiState.voidRefundResponse?.ref,
