@@ -255,19 +255,19 @@ Consult the below tables for a comprehensive list of all styling options per Ele
 
 ## Configure Forage
 
-### `setForageConfig()`
-
-⚠️ **In order for a `ForageElement` to work properly, you MUST call `setForageConfig()` before calling any other methods.**
+⚠️ **In order for a `ForageElement` to work properly, you MUST call `setForageConfig()` (Online-only) or `setForagePosConfig()` (Terminal) before calling any other methods.**
 
 The call is the same for `ForagePINEditText` and `ForagePANEditText`.
+
+### `setForageConfig()` - Online-only
 
 The following example calls `setForageConfig` on a `ForagePANEditText` Element:
 
 ```kotlin
-val tokenizeForagePanEditText = root?.findViewById<ForagePANEditText>(
+val onlineOnlyForagePanEditText = root?.findViewById<ForagePANEditText>(
     R.id.tokenizeForagePanEditText
 )
-tokenizeForagePanEditText.setForageConfig(
+onlineOnlyForagePanEditText.setForageConfig(
     ForageConfig(
         merchantId = "mid/<merchant_id>",
         sessionToken = "<session_token>"
@@ -277,8 +277,29 @@ tokenizeForagePanEditText.setForageConfig(
 
 #### `setForageConfig()` parameters
 
-- `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
-- `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+- `ForageConfig`: An object that specifies a `merchantId` and a `sessionToken`.
+  - `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+  - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+
+### `setPosForageConfig()` - Terminal
+
+The following example calls `setPosForageConfig` on a `ForagePINEditText` Element:
+
+```kotlin
+val posForagePinEditText = root?.findViewById<ForagePINEditText>(R.id.foragePinEditText)
+posForagePinEditText.setPosForageConfig(
+    PosForageConfig(
+        sessionToken = "<session_token>",
+        merchantId = "mid/<merchant_id>"
+    )
+)
+```
+
+#### `setPosForageConfig` parameters
+
+- `PosForageConfig`: An object that specifies a `merchantId` and a `sessionToken`.
+    - `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+    - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 
 ## Create a Forage instance
 
@@ -311,6 +332,22 @@ val forage = ForageTerminalSDK(posTerminalId)
 - `posTerminalId` (_required_): A string that uniquely identifies the POS Terminal used for a transaction.
 
 You can then use the instance to call methods that perform payment operations, as demonstrated in the following section.
+
+#### Initialize a `ForageTerminalSDK` instance
+⚠️ **Before you can execute `ForageTerminalSDK` methods, you must call the `init` function on the `ForageTerminalSDK` instance.**
+
+`init` returns the original instance.
+
+```kotlin
+val forage = ForageTerminalSDK(posTerminalId)
+
+forage.init(sessionToken)
+```
+
+##### `init` parameters
+- `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+
+⚠️ **`init` can take up to 10 seconds to run.** While it doesn’t often take that much time, account for the potential delay in your app’s UX design.
 
 ## Payment operations
 
