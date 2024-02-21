@@ -71,9 +71,10 @@ class ForageTerminalSDK(
      * the token in your database and reference it for future transactions, like to call
      * [checkBalance] or to [create a Payment](https://docs.joinforage.app/reference/create-a-payment)
      * in Forage's database.
-     * * On failure, for example in the case of [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
+     * * On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
      * the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError]
-     * objects that you can unpack to troubleshoot the issue.
+     * objects that you can unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      *
      * @param foragePanEditText **Required**. A reference to a [ForagePANEditText] instance that
      * collects the customer's card number.
@@ -112,9 +113,10 @@ class ForageTerminalSDK(
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods). You can store
      * the token for future transactions, like to call [checkBalance] or to
      * [create a Payment](https://docs.joinforage.app/reference/create-a-payment) in Forage's database.
-     * * On failure, for example in the case of [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
+     * * On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
      * the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError]
-     * objects that you can unpack to troubleshoot the issue.
+     * objects that you can unpack to programmatically handle the error and display the appropriate
+     *      * customer-facing message based on the `ForageError.code`.
      *
      * @param params **Required**. A [PosTokenizeCardParams] model that passes the [PosForageConfig], the card's
      * `track2Data`, and a `reusable` boolean that Forage uses to tokenize the card.
@@ -157,7 +159,8 @@ class ForageTerminalSDK(
      * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
      * the response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      * @param params A [CheckBalanceParams] model that passes
      * a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a
      * `paymentMethodRef`, found in the response from a call to [tokenizeEBTCard] or the
@@ -235,7 +238,8 @@ class ForageTerminalSDK(
      * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
      * response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      *
      * @param params A [CapturePaymentParams] model that passes a
      * [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText]
@@ -277,7 +281,8 @@ class ForageTerminalSDK(
      * * On failure, for example in the case of [`expired_session_token`](https://docs.joinforage.app/reference/errors#expired_session_token) errors, the
      * response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      *
      * @param params A [DeferPaymentCaptureParams] model that passes a
      * [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a
