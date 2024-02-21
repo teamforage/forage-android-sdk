@@ -3,8 +3,8 @@ package com.joinforage.forage.android.pos
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
-import com.joinforage.forage.android.DeferPosPaymentRefundParams
 import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
@@ -481,7 +481,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
     private suspend fun executeDeferPaymentRefund(): ForageApiResponse<String> {
         val terminalSdk = createMockTerminalSdk()
         return terminalSdk.deferPaymentRefund(
-            DeferPosPaymentRefundParams(
+            PosDeferPaymentRefundParams(
                 foragePinEditText = mockForagePinEditText,
                 paymentRef = expectedData.paymentRef
             )
