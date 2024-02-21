@@ -14,7 +14,7 @@ interface ElementState {
 
 interface PinElementState : ElementState
 
-data class PinElementStateDto(
+internal data class PinElementStateDto(
     override val isFocused: Boolean,
     override val isBlurred: Boolean,
     override val isEmpty: Boolean,
@@ -36,7 +36,7 @@ interface DerivedCardInfo {
     val usState: USState?
 }
 
-data class DerivedCardInfoDto(
+internal data class DerivedCardInfoDto(
     override val usState: USState? = null
 ) : DerivedCardInfo
 
@@ -44,7 +44,7 @@ interface PanElementState : ElementState {
     val derivedCardInfo: DerivedCardInfo // the interface not the DTO
 }
 
-data class PanElementStateDto(
+internal data class PanElementStateDto(
     override val isFocused: Boolean,
     override val isBlurred: Boolean,
     override val isEmpty: Boolean,
