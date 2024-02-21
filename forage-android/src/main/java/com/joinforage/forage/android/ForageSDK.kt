@@ -36,6 +36,9 @@ import com.joinforage.forage.android.vault.AbstractVaultSubmitter
  * * [Collecting a customer's card PIN for a payment and deferring
  * the capture of the payment to the server][deferPaymentCapture]
  * * [Capturing a payment immediately][capturePayment]
+ *
+ * @see * [Forage Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
+ * * [ForageTerminalSDK][com.joinforage.forage.android.pos.ForageTerminalSDK] to process online-only transactions
  */
 class ForageSDK : ForageSDKInterface {
     /**
@@ -68,10 +71,11 @@ class ForageSDK : ForageSDKInterface {
      * to [create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) in
      * Forage's database.
      * * On failure, for example in the case of
-     * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
+     * [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
      * the response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      * @param params A [TokenizeEBTCardParams] model that passes a [`foragePanEditText`]
      * [com.joinforage.forage.android.ui.ForagePANEditText] instance, a `customerId`, and a `reusable`
      * boolean that Forage uses to tokenize an EBT Card.
@@ -115,7 +119,8 @@ class ForageSDK : ForageSDKInterface {
      * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
      * the response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      * @param params A [CheckBalanceParams] model that passes
      * a [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a
      * `paymentMethodRef`, found in the response from a call to [tokenizeEBTCard] or the
@@ -172,7 +177,8 @@ class ForageSDK : ForageSDKInterface {
      * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
      * response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      *
      * @param params A [CapturePaymentParams] model that passes a
      * [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText]
@@ -229,7 +235,8 @@ class ForageSDK : ForageSDKInterface {
      * * On failure, for example in the case of [`expired_session_token`](https://docs.joinforage.app/reference/errors#expired_session_token) errors, the
      * response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * unpack to programmatically handle the error and display the appropriate
+     * customer-facing message based on the `ForageError.code`.
      *
      * @param params A [DeferPaymentCaptureParams] model that passes a
      * [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a
