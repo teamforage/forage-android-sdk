@@ -1,4 +1,4 @@
-# Forage Android SDK (`v3.7.0`)
+# Forage Android SDK (`v3.7.1`)
 
 ## Table of contents
 
