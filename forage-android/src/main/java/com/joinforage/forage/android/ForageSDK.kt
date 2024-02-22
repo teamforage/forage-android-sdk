@@ -16,6 +16,7 @@ import com.joinforage.forage.android.network.TokenizeCardService
 import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
+import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.PosRefundService
@@ -357,6 +358,15 @@ class ForageSDK : ForageSDKInterface {
 
         open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
             return DeferPaymentCaptureRepository(
+                vaultSubmitter = createVaultSubmitter(foragePinEditText),
+                encryptionKeyService = encryptionKeyService,
+                paymentService = paymentService,
+                paymentMethodService = paymentMethodService
+            )
+        }
+
+        open fun createDeferPaymentRefundRepository(foragePinEditText: ForagePINEditText): DeferPaymentRefundRepository {
+            return DeferPaymentRefundRepository(
                 vaultSubmitter = createVaultSubmitter(foragePinEditText),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,

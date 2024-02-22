@@ -27,6 +27,8 @@ import com.verygoodsecurity.vgscollect.widget.VGSEditText
  * * [Collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.ForageSDK.deferPaymentCapture]
  * * [Capture a payment immediately][com.joinforage.forage.android.ForageSDK.capturePayment]
  * * [Refund a Payment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] (POS only)
+ * * [Collect a card PIN to defer payment refund to the server][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund] (POS only)
+ *
  */
 class ForagePINEditText @JvmOverloads constructor(
     context: Context,

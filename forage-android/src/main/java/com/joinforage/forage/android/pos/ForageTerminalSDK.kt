@@ -6,6 +6,7 @@ import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.ForageSDKInterface
+import com.joinforage.forage.android.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
@@ -379,6 +380,65 @@ class ForageTerminalSDK(
 
         if (refund is ForageApiResponse.Failure) {
             logger.e("[POS] refundPayment failed for Payment $paymentRef on Terminal $posTerminalId: ${refund.errors[0]}")
+        }
+
+        return refund
+    }
+
+    /**
+     * Collect's a customer's PIN for an EBT payment and defers
+     * the refund of the payment to the server.
+     *
+     * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
+     * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
+     * indicating the success or failure of the
+     * PIN capture. On success, returns `Nothing`.
+     * On failure, the response includes a list of
+     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * unpack to troubleshoot the issue.
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
+     */
+    suspend fun deferPaymentRefund(params: PosDeferPaymentRefundParams): ForageApiResponse<String> {
+        val logger = createLogger()
+        val (foragePinEditText, paymentRef) = params
+        val (merchantId, sessionToken) = forageSdk._getForageConfigOrThrow(foragePinEditText)
+
+        val illegalVaultException = isIllegalVaultExceptionOrNull(foragePinEditText, logger)
+        if (illegalVaultException != null) {
+            return illegalVaultException
+        }
+
+        logger
+            .addAttribute("payment_ref", paymentRef)
+            .addAttribute("merchant_ref", merchantId)
+        logger.i(
+            """
+            [POS] Called deferPaymentRefund for Payment $paymentRef
+            on Terminal: $posTerminalId
+            """.trimIndent()
+        )
+
+        // This block is used for tracking Metrics!
+        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+            vault = foragePinEditText.getVaultType(),
+            vaultAction = UserAction.DEFER_REFUND,
+            logger
+        )
+        measurement.start()
+        // ------------------------------------------------------
+
+        val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
+        val refundService = serviceFactory.createDeferPaymentRefundRepository(foragePinEditText)
+        val refund = refundService.deferPaymentRefund(
+            merchantId = merchantId,
+            paymentRef = paymentRef
+        )
+        forageSdk.processApiResponseForMetrics(refund, measurement)
+
+        if (refund is ForageApiResponse.Failure) {
+            logger.e("[POS] deferPaymentRefund failed for Payment $paymentRef on Terminal $posTerminalId: ${refund.errors[0]}")
         }
 
         return refund

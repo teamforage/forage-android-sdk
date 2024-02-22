@@ -239,5 +239,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
             "/api/payments/$paymentRef/collect_pin/"
 
         internal fun refundPaymentPath(paymentRef: String) = "/api/payments/$paymentRef/refunds/"
+
+        internal fun deferPaymentRefundPath(paymentRef: String) = "/api/payments/$paymentRef/refunds/collect_pin/"
     }
 }
