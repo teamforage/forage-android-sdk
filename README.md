@@ -21,7 +21,7 @@
   - [Collect a customer's card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
   - [Capture a payment immediately](#capture-a-payment-immediately)
   - [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
-  - [Collect a customer's card PIN for a refund and defer the capture of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-capture-of-the-refund-to-the-server) **(POS-only)**
+  - [Collect a customer's card PIN for a refund and defer the completion of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the sample app](#running-the-sample-app)
   - [Dependencies](#dependencies)
@@ -765,8 +765,7 @@ class PosRefundViewModel : ViewModel() {
 
 
   fun refundPayment(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-    val forageParams = ForageTerminalSDKParams(posTerminalId)
-    val forage = ForageTerminalSDK(forageParams)
+    val forage = ForageTerminalSDK(posTerminalId)
     val refundParams = PosRefundPaymentParams(
       foragePinEditText,
       paymentRef,
@@ -781,23 +780,23 @@ class PosRefundViewModel : ViewModel() {
         // do something with response.data
       }
       is ForageApiResponse.Failure -> {
-        // do something with response.error
+        // do something with response.errors
       }
     }
   }
 }
 ```
 
-### Collect a customer's card PIN for a refund and defer the capture of the refund to the server
+### Collect a customer's card PIN for a refund and defer the completion of the refund to the server
 ### (POS Terminal-only)
 
 #### `deferPaymentRefund(PosDeferPaymentRefundParams)`
 
-This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund capture to the server.
+This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund completion to the server.
 
 On success, returns `Nothing`.
 
-On failure, for example in the case of [`ebt_error_05`](https://docs.joinforage.app/reference/errors#ebt_error_05) or [`ebt_error_13`](https://docs.joinforage.app/reference/errors#ebt_error_13) errors, the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
+On failure, the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
 ```kotlin
 data class PosDeferPaymentRefundParams(
@@ -824,8 +823,7 @@ class PosDeferPaymentRefundViewModel : ViewModel() {
   var paymentRef: String  = ""
 
   fun deferPaymentRefund(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-    val forageParams = ForageTerminalSDKParams(posTerminalId)
-    val forage = ForageTerminalSDK(forageParams)
+    val forage = ForageTerminalSDK(posTerminalId)
     val deferPaymentRefundParams = PosDeferPaymentRefundParams(
       foragePinEditText,
       paymentRef
@@ -837,7 +835,7 @@ class PosDeferPaymentRefundViewModel : ViewModel() {
         // do something with response.data
       }
       is ForageApiResponse.Failure -> {
-        // do something with response.error
+        // do something with response.errors
       }
     }
   }
