@@ -594,7 +594,7 @@ class BalanceCheckViewModel : ViewModel() {
 
 This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers payment capture to the server.
 
-On success, the response object returns `Nothing`.
+On success, `response.data` resolves with an empty string.
 
 On failure, for example in the case of [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
@@ -794,7 +794,7 @@ class PosRefundViewModel : ViewModel() {
 
 This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund completion to the server.
 
-On success, returns `Nothing`.
+On success, `response.data` resolves with an empty string.
 
 On failure, the response includes a list of `ForageError` objects. You can unpack the list to programmatically handle the error and display the appropriate customer-facing message based on the `ForageError.code`.
 
