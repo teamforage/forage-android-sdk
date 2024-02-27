@@ -104,7 +104,7 @@ Forage maintains an additional layer of PIN security for POS terminals, specific
 
 ## Maintaining the POS Terminal fork
 
-### Setting the public SDK as a remote 
+### Setting the public SDK as a remote
 
 In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
 
@@ -167,7 +167,7 @@ We should endeavor to make rebases in this repository as easy as possible. The f
   - [Collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
   - [Capture a payment immediately](#capture-a-payment-immediately)
   - [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
-  - [Collect a card PIN for a refund and defer the completion of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
+  - [Collect a customer's card PIN for a refund and defer the completion of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the sample app](#running-the-sample-app)
   - [Dependencies](#dependencies)
@@ -481,7 +481,7 @@ val forage = ForageTerminalSDK(posTerminalId)
 You can then use the instance to call methods that perform payment operations, as demonstrated in the following section.
 
 #### Initialize a `ForageTerminalSDK` instance
-⚠️ **Before you can execute `ForageTerminalSDK` methods, you must call the `init` method on the `ForageTerminalSDK` instance.**
+⚠️ **Before you can execute `ForageTerminalSDK` methods, you must call the `init` function on the `ForageTerminalSDK` instance.**
 
 `init` returns the original instance.
 
@@ -933,12 +933,12 @@ class PosRefundViewModel : ViewModel() {
 }
 ```
 
-### Collect a card PIN for a refund and defer the completion of the refund to the server
+### Collect a customer's card PIN for a refund and defer the completion of the refund to the server
 ### (POS Terminal-only)
 
 #### `deferPaymentRefund(PosDeferPaymentRefundParams)`
 
-This method submits a card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund completion to the server.
+This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund completion to the server.
 
 On success, `response.data` resolves with an empty string.
 
