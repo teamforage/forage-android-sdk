@@ -6,7 +6,7 @@ Forage maintains an additional layer of PIN security for POS terminals, specific
 
 ## Maintaining the POS Terminal fork
 
-### Setting the public SDK as a remote 
+### Setting the public SDK as a remote
 
 In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
 
