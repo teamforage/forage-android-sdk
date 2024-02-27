@@ -28,7 +28,7 @@ sealed class ForageApiResponse<out T> {
      * [customer-facing message](https://docs.joinforage.app/docs/document-error-messages#template-error-table-for-fns-documentation).
      */
     data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
-        companion object {
+        internal companion object {
             fun fromError(error: ForageError): Failure {
                 return Failure(listOf(error))
             }
