@@ -3,6 +3,16 @@ package com.joinforage.forage.android.core.element.state
 import com.joinforage.forage.android.core.element.ElementValidationError
 import com.joinforage.forage.android.model.USState
 
+/**
+ * An interface that represents the state of the [ForageElement][com.joinforage.forage.android.ui.ForageElement]
+ * as the customer interacts with it.
+ * @property isFocused Whether the Element is in focus.
+ * @property isBlurred Whether the Element is blurred.
+ * @property isEmpty Whether the text field of the Element is empty.
+ * @property isValid Whether the text field contains valid text.
+ * @property isComplete Whether the text field of the Element is ready to submit.
+ * @property validationError A [ElementValidationError], if applicable.
+ */
 interface ElementState {
     val isFocused: Boolean
     val isBlurred: Boolean
@@ -12,6 +22,10 @@ interface ElementState {
     val validationError: ElementValidationError?
 }
 
+/**
+ * An interface that represents the state of a
+ * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+ */
 interface PinElementState : ElementState
 
 internal data class PinElementStateDto(
@@ -32,6 +46,10 @@ internal val INITIAL_PIN_ELEMENT_STATE = PinElementStateDto(
     validationError = null
 )
 
+/**
+ * An interface that represents information that Forage gets from the card.
+ * This includes the [USState] that issued the card.
+ */
 interface DerivedCardInfo {
     val usState: USState?
 }
@@ -40,6 +58,11 @@ internal data class DerivedCardInfoDto(
     override val usState: USState? = null
 ) : DerivedCardInfo
 
+/**
+ * An interface that represents the state of a
+ * [ForagePANEditText][com.joinforage.forage.android.ui.ForagePANEditText] Element.
+ * @property derivedCardInfo The [derivedCardInfo] for the card number submitted to the Element.
+ */
 interface PanElementState : ElementState {
     val derivedCardInfo: DerivedCardInfo // the interface not the DTO
 }
