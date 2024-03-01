@@ -8,10 +8,12 @@ import com.joinforage.forage.android.model.USState
  * as the customer interacts with it.
  * @property isFocused Whether the Element is in focus.
  * @property isBlurred Whether the Element is blurred.
- * @property isEmpty Whether the text field of the Element is empty.
- * @property isValid Whether the text field contains valid text.
- * @property isComplete Whether the text field of the Element is ready to submit.
- * @property validationError A [ElementValidationError], if applicable.
+ * @property isEmpty Whether the input value of the Element is empty.
+ * @property isValid Whether the input text fails any validation checks, with the exception of the
+ * target length constraint.
+ * @property isComplete Whether the text field of the Element is ready to submit. This is `true`
+ * when all input value validation constraints are satisfied.
+ * @property validationError An [ElementValidationError], if `isValid` is `false`.
  */
 interface ElementState {
     val isFocused: Boolean
