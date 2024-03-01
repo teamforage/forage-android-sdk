@@ -103,7 +103,7 @@ fun MerchantSetupScreen(
                 Spacer(modifier = Modifier.width(16.dp))
                 TextField(
                     value = sessionTokenInput,
-                    onValueChange = { sessionTokenInput  = it },
+                    onValueChange = { sessionTokenInput = it },
                     modifier = Modifier.withTestId("pos_session_token_text_field")
                 )
             }
