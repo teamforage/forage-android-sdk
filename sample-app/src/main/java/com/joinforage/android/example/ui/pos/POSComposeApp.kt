@@ -177,8 +177,9 @@ fun POSComposeApp(
                     merchantId = uiState.merchantId,
                     sessionToken = uiState.sessionToken,
                     merchantDetailsState = uiState.merchantDetailsState,
-                    onSaveButtonClicked = {
-                        viewModel.setMerchantId(it, onSuccess = {
+                    onSaveButtonClicked = { merchantId, sessionToken ->
+                        viewModel.setSessionToken(sessionToken)
+                        viewModel.setMerchantId(merchantId, onSuccess = {
                             navController.navigate(POSScreen.ActionSelectionScreen.name)
                         })
                     }

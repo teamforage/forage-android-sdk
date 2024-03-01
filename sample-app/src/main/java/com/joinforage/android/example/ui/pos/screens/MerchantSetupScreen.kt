@@ -36,7 +36,7 @@ fun MerchantSetupScreen(
     merchantId: String,
     sessionToken: String,
     merchantDetailsState: MerchantDetailsState,
-    onSaveButtonClicked: (String) -> Unit
+    onSaveButtonClicked: (String, String) -> Unit
 ) {
     var merchantIdInput by rememberSaveable {
         mutableStateOf(merchantId)
@@ -110,7 +110,7 @@ fun MerchantSetupScreen(
         },
         bottomRowContent = {
             Button(
-                onClick = { onSaveButtonClicked(merchantIdInput) },
+                onClick = { onSaveButtonClicked(merchantIdInput, sessionTokenInput) },
                 enabled = merchantDetailsState != MerchantDetailsState.Loading
             ) {
                 Text(
@@ -130,6 +130,6 @@ fun MerchantSetupScreenPreview() {
         merchantId = "preview merchant id",
         sessionToken = "preview session token",
         merchantDetailsState = MerchantDetailsState.Idle,
-        onSaveButtonClicked = {}
+        onSaveButtonClicked = { _, _ -> }
     )
 }
