@@ -48,6 +48,10 @@ class POSViewModel : ViewModel() {
     private val api
         get() = PosApiService.from(uiState.value.posForageConfig)
 
+    fun setSessionToken(sessionToken: String) {
+        _uiState.update { it.copy(sessionToken = sessionToken) }
+    }
+
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
         getMerchantInfo(onSuccess)
