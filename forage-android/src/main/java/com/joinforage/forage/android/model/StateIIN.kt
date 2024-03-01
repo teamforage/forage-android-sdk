@@ -2,6 +2,13 @@ package com.joinforage.forage.android.model
 
 internal const val STATE_INN_LENGTH = 6
 
+/**
+ * A class that includes all of the possible US states that issue EBT Cards and their corresponding
+ * abbreviations.
+ *
+ * ⚠️ Note that North Dakota and South Dakota share the same Issuer Identification Number (IIN) and
+ * abbreviation: `"SD"`.
+ */
 enum class USState(val abbreviation: String) {
     ALABAMA("AL"),
     ALASKA("AK"),
