@@ -54,7 +54,7 @@ class POSViewModel : ViewModel() {
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
-        getMerchantInfo(onSuccess)
+        onSuccess()
     }
 
     fun setLocalPayment(payment: PosPaymentRequest) {
@@ -106,8 +106,7 @@ class POSViewModel : ViewModel() {
             _uiState.update {
                 POSUIState(
                     merchantId = it.merchantId,
-                    sessionToken = it.sessionToken,
-                    merchantDetailsState = it.merchantDetailsState
+                    sessionToken = it.sessionToken
                 )
             }
         }
@@ -124,20 +123,6 @@ class POSViewModel : ViewModel() {
                 capturePaymentError = null,
                 refundPaymentError = null
             )
-        }
-    }
-
-    private fun getMerchantInfo(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
-            val merchantDetailsState = try {
-                val result = api.getMerchantInfo()
-                onSuccess()
-                MerchantDetailsState.Success(result)
-            } catch (e: HttpException) {
-                MerchantDetailsState.Error(e.toString())
-            }
-            _uiState.update { it.copy(merchantDetailsState = merchantDetailsState) }
         }
     }
 
