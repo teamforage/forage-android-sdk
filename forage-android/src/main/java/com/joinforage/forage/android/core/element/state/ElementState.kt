@@ -63,7 +63,7 @@ internal data class DerivedCardInfoDto(
 /**
  * An interface that represents the state of a
  * [ForagePANEditText][com.joinforage.forage.android.ui.ForagePANEditText] Element.
- * @property derivedCardInfo The [derivedCardInfo] for the card number submitted to the Element.
+ * @property derivedCardInfo The [DerivedCardInfo] for the card number submitted to the Element.
  */
 interface PanElementState : ElementState {
     val derivedCardInfo: DerivedCardInfo // the interface not the DTO
