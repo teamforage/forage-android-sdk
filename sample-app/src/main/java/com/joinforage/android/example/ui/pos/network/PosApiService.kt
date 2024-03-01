@@ -1,7 +1,6 @@
 package com.joinforage.android.example.ui.pos.network
 
 import com.joinforage.android.example.network.model.EnvConfig
-import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.Refund
@@ -24,9 +23,6 @@ private val moshi = Moshi.Builder()
     .build()
 
 interface PosApiService {
-    @GET("api/merchants/")
-    suspend fun getMerchantInfo(): Merchant
-
     @POST("api/payments/")
     suspend fun createPayment(
         @Header("Idempotency-Key") idempotencyKey: String,
