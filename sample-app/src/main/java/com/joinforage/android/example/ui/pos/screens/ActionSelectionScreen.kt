@@ -28,8 +28,6 @@ fun ActionSelectionScreen(
         mainContent = {
             Box {
                 Column {
-                    Text("Merchant Name: ${merchantDetails?.name ?: "Unknown"}")
-                    Text("Merchant Address: ${merchantDetails?.address?.line1 ?: "Unknown"}")
                     Text("Merchant FNS: ${merchantDetails?.fns ?: "Unknown"}")
                 }
             }

@@ -1,13 +1,11 @@
 package com.joinforage.android.example.ui.pos.data
 
-import com.joinforage.android.example.ui.pos.MerchantDetailsState
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.pos.PosForageConfig
 
 data class POSUIState(
     val merchantId: String = "1234567", // <your_merchant_id>
     val sessionToken: String = "sandbox_eyabcdef....", // <your_oauth_or_session_token>
-    val merchantDetailsState: MerchantDetailsState = MerchantDetailsState.Idle,
 
     // Tokenizing EBT Cards
     val tokenizedPaymentMethod: PosPaymentMethod? = null,
@@ -43,11 +41,19 @@ data class POSUIState(
         get() = PosForageConfig(merchantId, sessionToken)
 
     val merchant
-        get() = if (merchantDetailsState is MerchantDetailsState.Success) {
-            merchantDetailsState.merchant
-        } else {
-            null
-        }
+        get() = Merchant(
+            name = "POS Test Merchant",
+            ref = "testMerchantRef",
+            fns = merchantId,
+            address = Address(
+                line1 = "171 E 2nd St",
+                line2 = null,
+                city = "New York",
+                state = "NY",
+                zipcode = "10009",
+                country = "USA"
+            )
+        )
 }
 
 data class RefundUIState(

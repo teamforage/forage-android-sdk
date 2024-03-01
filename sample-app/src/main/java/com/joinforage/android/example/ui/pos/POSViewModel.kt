@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
-import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
@@ -35,13 +34,6 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.UUID
 
-sealed interface MerchantDetailsState {
-    object Idle : MerchantDetailsState
-    data class Success(val merchant: Merchant) : MerchantDetailsState
-    data class Error(val error: String) : MerchantDetailsState
-    object Loading : MerchantDetailsState
-}
-
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
@@ -54,7 +46,7 @@ class POSViewModel : ViewModel() {
 
     fun setMerchantId(merchantId: String, onSuccess: () -> Unit) {
         _uiState.update { it.copy(merchantId = merchantId) }
-        getMerchantInfo(onSuccess)
+        onSuccess()
     }
 
     fun setLocalPayment(payment: PosPaymentRequest) {
@@ -106,8 +98,7 @@ class POSViewModel : ViewModel() {
             _uiState.update {
                 POSUIState(
                     merchantId = it.merchantId,
-                    sessionToken = it.sessionToken,
-                    merchantDetailsState = it.merchantDetailsState
+                    sessionToken = it.sessionToken
                 )
             }
         }
@@ -124,20 +115,6 @@ class POSViewModel : ViewModel() {
                 capturePaymentError = null,
                 refundPaymentError = null
             )
-        }
-    }
-
-    private fun getMerchantInfo(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(merchantDetailsState = MerchantDetailsState.Loading) }
-            val merchantDetailsState = try {
-                val result = api.getMerchantInfo()
-                onSuccess()
-                MerchantDetailsState.Success(result)
-            } catch (e: HttpException) {
-                MerchantDetailsState.Error(e.toString())
-            }
-            _uiState.update { it.copy(merchantDetailsState = merchantDetailsState) }
         }
     }
 

@@ -7,11 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,7 +23,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.joinforage.android.example.ui.extensions.withTestId
-import com.joinforage.android.example.ui.pos.MerchantDetailsState
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
@@ -35,7 +30,6 @@ fun MerchantSetupScreen(
     terminalId: String,
     merchantId: String,
     sessionToken: String,
-    merchantDetailsState: MerchantDetailsState,
     onSaveButtonClicked: (String, String) -> Unit
 ) {
     var merchantIdInput by rememberSaveable {
@@ -44,13 +38,6 @@ fun MerchantSetupScreen(
 
     var sessionTokenInput by rememberSaveable {
         mutableStateOf(sessionToken)
-    }
-
-    val error = when (merchantDetailsState) {
-        is MerchantDetailsState.Idle -> null
-        is MerchantDetailsState.Success -> null
-        is MerchantDetailsState.Loading -> null
-        is MerchantDetailsState.Error -> merchantDetailsState.error
     }
 
     ScreenWithBottomRow(
@@ -78,18 +65,6 @@ fun MerchantSetupScreen(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
-                    supportingText = {
-                        if (error != null) {
-                            Text(text = error, color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    isError = error.toBoolean(),
-                    enabled = merchantDetailsState != MerchantDetailsState.Loading,
-                    trailingIcon = {
-                        if (error != null) {
-                            Icon(imageVector = Icons.Filled.Warning, contentDescription = "", tint = MaterialTheme.colorScheme.error)
-                        }
-                    },
                     modifier = Modifier.withTestId("pos_merchant_id_text_field")
                 )
             }
@@ -110,8 +85,7 @@ fun MerchantSetupScreen(
         },
         bottomRowContent = {
             Button(
-                onClick = { onSaveButtonClicked(merchantIdInput, sessionTokenInput) },
-                enabled = merchantDetailsState != MerchantDetailsState.Loading
+                onClick = { onSaveButtonClicked(merchantIdInput, sessionTokenInput) }
             ) {
                 Text(
                     "Bind POS to Merchant",
@@ -129,7 +103,6 @@ fun MerchantSetupScreenPreview() {
         terminalId = "preview terminal id",
         merchantId = "preview merchant id",
         sessionToken = "preview session token",
-        merchantDetailsState = MerchantDetailsState.Idle,
         onSaveButtonClicked = { _, _ -> }
     )
 }

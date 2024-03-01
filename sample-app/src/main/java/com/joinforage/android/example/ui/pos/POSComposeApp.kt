@@ -176,7 +176,6 @@ fun POSComposeApp(
                     terminalId = k9SDK.terminalId,
                     merchantId = uiState.merchantId,
                     sessionToken = uiState.sessionToken,
-                    merchantDetailsState = uiState.merchantDetailsState,
                     onSaveButtonClicked = { merchantId, sessionToken ->
                         viewModel.setSessionToken(sessionToken)
                         viewModel.setMerchantId(merchantId, onSuccess = {
@@ -187,12 +186,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.ActionSelectionScreen.name) {
                 ActionSelectionScreen(
-                    merchantDetails = when (uiState.merchantDetailsState) {
-                        is MerchantDetailsState.Success -> (uiState.merchantDetailsState as MerchantDetailsState.Success).merchant
-                        is MerchantDetailsState.Loading -> null
-                        is MerchantDetailsState.Idle -> null
-                        is MerchantDetailsState.Error -> null
-                    },
+                    merchantDetails = uiState.merchant,
                     onBackButtonClicked = { navController.popBackStack(POSScreen.MerchantSetupScreen.name, inclusive = false) },
                     onBalanceButtonClicked = { navController.navigate(POSScreen.BIChoosePANMethodScreen.name) },
                     onPaymentButtonClicked = { navController.navigate(POSScreen.PAYTransactionTypeSelectionScreen.name) },
