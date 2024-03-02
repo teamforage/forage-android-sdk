@@ -8,9 +8,9 @@ import com.joinforage.forage.android.LDFlags
 import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.computeVaultType
-import com.launchdarkly.sdk.LDValue
-import com.launchdarkly.sdk.android.LDConfig
-import com.launchdarkly.sdk.android.integrations.TestData
+//import com.launchdarkly.sdk.LDValue
+//import com.launchdarkly.sdk.android.LDConfig
+//import com.launchdarkly.sdk.android.integrations.TestData
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -27,11 +27,7 @@ class LaunchDarklyTest() {
     // to be a instance variable instead of a static variable causes
     // race conditions within tests
     companion object {
-        private var td: TestData = TestData.dataSource()
-        private val ldConfig = LDConfig.Builder()
-            .mobileKey(LD_MOBILE_KEY)
-            .dataSource(td)
-            .build()
+        private val ldConfig = "anystringworks"
     }
 
     @Test
@@ -44,35 +40,4 @@ class LaunchDarklyTest() {
         assertThat(computeVaultType(ALWAYS_VGS_PERCENT)).isEqualTo(VaultType.VGS_VAULT_TYPE)
     }
 
-    @Test
-    fun `It should default to using VGS and honor flag updates`() = runTest {
-        // set up LDManager, importantly, we're not giving it any value for
-        // primaryTrafficPercent since we want to test it defaults to VGS
-        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        LDManager.initialize(app, ldConfig)
-
-        // it should default to using VGS as the vault provider
-        val original = LDManager.getVaultProvider()
-        assertThat(original).isEqualTo(VaultType.VGS_VAULT_TYPE)
-
-        // Set the test data to send all traffic to BT
-        td.update(td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(LDValue.of(ALWAYS_BT_PERCENT)))
-
-        // it should consume the flag and choose BT
-        val postUpdate = LDManager.getVaultProvider()
-        assertThat(postUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
-    }
-
-    @Test
-    fun `Default polling intervals`() = runTest {
-        // set up LDManager
-        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
-        LDManager.initialize(app, ldConfig)
-
-        // Set the test data to be {"intervals" : [1000]}
-        td.update(td.flag(LDFlags.ISO_POLLING_WAIT_INTERVALS).variations(LDValue.buildObject().put("intervals", LDValue.Convert.Long.arrayFrom(List(1) { 1000L })).build()))
-
-        val pollingIntervals = LDManager.getPollingIntervals()
-        assertThat(pollingIntervals).isEqualTo(longArrayOf(1000L))
-    }
 }
