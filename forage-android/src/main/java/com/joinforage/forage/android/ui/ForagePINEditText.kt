@@ -18,7 +18,7 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.telemetry.Log
-import com.launchdarkly.sdk.android.LDConfig
+//import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 /**
@@ -141,7 +141,7 @@ class ForagePINEditText @JvmOverloads constructor(
         } else {
             // initialize Launch Darkly singleton
             val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
-            val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
+            val ldConfig = "anystringworks"
             LDManager.initialize(context.applicationContext as Application, ldConfig)
 
             // decide on a vault provider and the corresponding vault wrapper
