@@ -18,16 +18,17 @@ val IncompleteEbtPanError = ElementValidationError(
 )
 
 /**
- * A type of [ElementValidationError] that occurs when a customer submits an invalid
- * EBT Card number.
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid numeric input
+ * that fails to meet the expected length constraint.
  */
 val InvalidEbtPanError = ElementValidationError(
     detail = "Your EBT card number is invalid."
 )
 
 /**
+ * **Deprecated** - This error will be removed in a future release.
  * A type of [ElementValidationError] that occurs when a customer submits an EBT Card number that
- * is too long.
+ * is too long. In theory, this error should never occur.
  */
 val TooLongEbtPanError = ElementValidationError(
     // in theory the view layer should prevent this

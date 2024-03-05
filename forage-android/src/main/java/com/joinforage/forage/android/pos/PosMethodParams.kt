@@ -35,13 +35,14 @@ data class PosForageConfig(
  * a magnetic swipe from a physical POS Terminal.
  * This data class is not supported for online-only transactions.
  * [PosTokenizeCardParams] are passed to the
- * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] function.
+ * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] method.
  *
  * @property posForageConfig **Required**. The [PosForageConfig] configuration details required to
  * authenticate with the Forage API.
  * @property track2Data **Required**. The information encoded on Track 2 of the card’s magnetic
- * stripe, excluding the start and stop sentinels and any LRC characters.
- * @property reusable Optional. A boolean that indicates whether the same card can be used to make
+ * stripe, excluding the start and stop sentinels and any LRC characters. _Example value_:
+ * `"123456789123456789=123456789123"`
+ * @property reusable Optional. A boolean that indicates whether the same card can be used to create
  * multiple payments. Defaults to true.
  */
 data class PosTokenizeCardParams(
@@ -53,10 +54,10 @@ data class PosTokenizeCardParams(
 /**
  * A model that represents the parameters that [ForageTerminalSDK] requires to refund a Payment.
  * [PosRefundPaymentParams] are passed to the
- * [refundPayment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] function.
+ * [refundPayment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] method.
  *
  * @property foragePinEditText **Required**. A reference to the [ForagePINEditText] instance that collected
- * the customer's PIN for the refund.
+ * the card PIN for the refund.
  *  [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must be
  *  called on the instance before it can be passed.
  * @property paymentRef **Required**. A unique string identifier for a previously created

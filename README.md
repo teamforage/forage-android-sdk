@@ -18,10 +18,10 @@
     - [`ForageSDK()`](#foragesdk-1)
     - [`ForageTerminalSDK()`](#forageterminalsdk-1)
   - [Check a card's balance](#check-a-cards-balance)
-  - [Collect a customer's card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
+  - [Collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
   - [Capture a payment immediately](#capture-a-payment-immediately)
   - [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
-  - [Collect a customer's card PIN for a refund and defer the completion of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
+  - [Collect a card PIN for a refund and defer the completion of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the sample app](#running-the-sample-app)
   - [Dependencies](#dependencies)
@@ -38,7 +38,7 @@ The [`ForagePANEditText`](#foragepanedittext) Element collects a customer’s ca
 The [`ForagePINEditText`](#foragepinedittext) Element collects a customer’s card PIN. You need a `ForagePINEditText` instance to call the SDK methods that:
 
 - [Check the card's balance](#check-a-cards-balance)
-- [Collect the customer's card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
+- [Collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
 - [Capture a payment immediately](#capture-a-payment-immediately)
 - [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
 
@@ -316,7 +316,7 @@ To create a `ForageSDK` instance, call the constructor, as in the below snippet:
 val forage = ForageSDK()
 ```
 
-You can then use the instance to call methods that perform payment operations. Refer to the [payment operations](#payment-operations) section for documentation on available functions.
+You can then use the instance to call methods that perform payment operations. Refer to the [payment operations](#payment-operations) section for documentation on available methods.
 
 ### `ForageTerminalSDK()`
 
@@ -335,7 +335,7 @@ val forage = ForageTerminalSDK(posTerminalId)
 You can then use the instance to call methods that perform payment operations, as demonstrated in the following section.
 
 #### Initialize a `ForageTerminalSDK` instance
-⚠️ **Before you can execute `ForageTerminalSDK` methods, you must call the `init` function on the `ForageTerminalSDK` instance.**
+⚠️ **Before you can execute `ForageTerminalSDK` methods, you must call the `init` method on the `ForageTerminalSDK` instance.**
 
 `init` returns the original instance.
 
@@ -381,8 +381,8 @@ suspend fun tokenizeEBTCard(
 ###### `TokenizeEBTCardParams`
 
 - `foragePANEditText` (_required_): A reference to the the `ForagePANEditText` Element that you added to your view. This is needed to extract the card number text.
-- `customerId`: A unique ID for the end customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
-- `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
+- `customerId`: A unique ID for the customer making the payment. If you use your internal customer ID, then we recommend that you hash the value before sending it on the payload.
+- `reusable`: An optional boolean value indicating whether the same card can be used to create multiple payments, set to `true` by default.
 
 ###### Example `tokenizeEBTCard()` request
 
@@ -431,7 +431,7 @@ On failure, for example in the case of [`unsupported_bin`](https://docs.joinfora
 ###### `tokenizeCard` parameters
 
 - `foragePanEditText` (_required_): A reference to the the `ForagePANEditText` Element that you added to your view. This is needed to extract the card number text.
-- `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
+- `reusable`: An optional boolean value indicating whether the same card can be used to create multiple payments, set to `true` by default.
 
 ###### Example `tokenizeCard()` request
 
@@ -486,7 +486,7 @@ data class PosTokenizeCardParams(
   - `merchantId` (_required_): A unique Merchant ID that Forage provides during onboarding onboarding preceded by "mid/". For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage [Sandbox](https://dashboard.sandbox.joinforage.app/login/) or [Production](https://dashboard.joinforage.app/login/) Dashboard.
   - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 - `track2data` (_required_): The information encoded on Track 2 of the EBT Card’s magnetic stripe, excluding the start and stop sentinels and any LRC characters.
-- `reusable`: An optional boolean value indicating whether the same card can be used to make multiple payments, set to `true` by default.
+- `reusable`: An optional boolean value indicating whether the same card can be used to create multiple payments, set to `true` by default.
 
 ###### Example `tokenizeCard(PosTokenizeCardParams)` request
 
@@ -584,7 +584,7 @@ class BalanceCheckViewModel : ViewModel() {
 }
 ```
 
-### Collect a customer's card PIN for a payment and defer the capture of the payment to the server
+### Collect a card PIN for a payment and defer the capture of the payment to the server
 
 ✅ _The example code in this section uses a `ForageSDK` instance._ If you’re building a Forage Terminal integration, then call methods on a `ForageTerminalSDK` instance instead.
 
@@ -592,7 +592,7 @@ class BalanceCheckViewModel : ViewModel() {
 
 #### `deferPaymentCapture(DeferPaymentCaptureParams)`
 
-This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers payment capture to the server.
+This method submits a card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers payment capture to the server.
 
 On success, `response.data` resolves with an empty string.
 
@@ -787,12 +787,12 @@ class PosRefundViewModel : ViewModel() {
 }
 ```
 
-### Collect a customer's card PIN for a refund and defer the completion of the refund to the server
+### Collect a card PIN for a refund and defer the completion of the refund to the server
 ### (POS Terminal-only)
 
 #### `deferPaymentRefund(PosDeferPaymentRefundParams)`
 
-This method submits a customer's card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund completion to the server.
+This method submits a card PIN via a [`ForagePINEditText`](#foragepinedittext) Element and defers refund completion to the server.
 
 On success, `response.data` resolves with an empty string.
 
@@ -844,7 +844,7 @@ class PosDeferPaymentRefundViewModel : ViewModel() {
 
 ## The ForageApiResponse sealed class
 
-The SDK provides suspending functions to interact with the Forage API.
+The SDK provides suspending methods to interact with the Forage API.
 `ForageApiResponse` is a sealed class that could be either a `Success` or a `Failure`
 
 ```kotlin
