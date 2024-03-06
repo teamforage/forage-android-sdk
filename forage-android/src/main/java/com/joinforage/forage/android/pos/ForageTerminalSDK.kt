@@ -33,7 +33,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * * [Refunding a payment immediately][refundPayment]
  *
  * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
- * used for a transaction.
+ * used for a transaction. The max length of the strength is 255 characters.
  * @see * [Forage guide to Terminal POS integrations](https://docs.joinforage.app/docs/forage-terminal-android)
  * * [ForageSDK] to process online-only transactions
  */
