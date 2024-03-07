@@ -28,18 +28,19 @@ import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 /**
  * The entry point to the Forage SDK.
  *
- * A [ForageSDK] instance interacts with the Forage API.
+ * A [ForageSDK] instance interacts with the Forage API to process online-only payments.
  *
  * You need an instance of the ForageSDK to perform operations like:
  *
  * * [Tokenizing card information][tokenizeEBTCard]
  * * [Checking the balance of a card][checkBalance]
- * * [Collecting a customer's card PIN for a payment and deferring
+ * * [Collecting a card PIN for a payment and deferring
  * the capture of the payment to the server][deferPaymentCapture]
  * * [Capturing a payment immediately][capturePayment]
  *
  * @see * [Forage Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
- * * [ForageTerminalSDK][com.joinforage.forage.android.pos.ForageTerminalSDK] to process online-only transactions
+ * * [ForageTerminalSDK][com.joinforage.forage.android.pos.ForageTerminalSDK] to process POS
+ * Terminal transactions
  */
 class ForageSDK : ForageSDKInterface {
     /**
@@ -228,7 +229,7 @@ class ForageSDK : ForageSDKInterface {
     }
 
     /**
-     * Submits a customer's PIN via a
+     * Submits a card PIN via a
      * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element and defers
      * payment capture to the server.
      *

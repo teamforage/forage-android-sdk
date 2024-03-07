@@ -7,7 +7,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 /**
  * An [Exception](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/) thrown if a
  * reference to a [ForageElement][com.joinforage.forage.android.ui.ForageElement] is passed to a
- * function before [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig]
+ * method before [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig]
  * is called on the Element.
  * @property message A string that describes the Exception.
  */
@@ -68,7 +68,7 @@ internal interface ForageSDKInterface {
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String>
 
     /**
-     * Collect's a customer's PIN for an EBT payment and defers the
+     * Collects a card PIN for an EBT payment and defers the
      * capture of the payment to the server
      *
      * @param params The parameters required for pin capture, including
@@ -87,16 +87,16 @@ internal interface ForageSDKInterface {
 /**
  * A model that represents the parameters that Forage requires to tokenize an EBT Card.
  * [TokenizeEBTCardParams] are passed to the
- * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] function.
+ * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] method.
  *
  * @property foragePanEditText A reference to a [ForagePANEditText] instance.
  * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
  * be called on the instance before it can be passed.
- * @property customerId A unique ID for the end customer making the payment.
+ * @property customerId A unique ID for the customer making the payment.
  * If using your internal customer ID, then we recommend that you hash the value
  * before sending it on the payload.
  * @property reusable An optional boolean value that indicates whether the same card can be used
- * to make multiple payments, set to true by default.
+ * to create multiple payments, set to true by default.
  */
 data class TokenizeEBTCardParams(
     val foragePanEditText: ForagePANEditText,
@@ -107,7 +107,7 @@ data class TokenizeEBTCardParams(
 /**
  * A model that represents the parameters that Forage requires to check a card's balance.
  * [CheckBalanceParams] are passed to the
- * [checkBalance][com.joinforage.forage.android.ForageSDK.checkBalance] function.
+ * [checkBalance][com.joinforage.forage.android.ForageSDK.checkBalance] method.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
  * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
@@ -128,7 +128,7 @@ data class CheckBalanceParams(
 /**
  * A model that represents the parameters that Forage requires to capture a payment.
  * [CapturePaymentParams] are passed to the
- * [capturePayment][com.joinforage.forage.android.ForageSDK.capturePayment] function.
+ * [capturePayment][com.joinforage.forage.android.ForageSDK.capturePayment] method.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
  * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
@@ -147,7 +147,7 @@ data class CapturePaymentParams(
  * A model that represents the parameters that Forage requires to collect a card PIN and defer
  * the capture of the payment to the server.
  * [DeferPaymentCaptureParams] are passed to the
- * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture] function.
+ * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture] method.
  *
  * @see * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
  * for the related step-by-step guide.
@@ -172,7 +172,7 @@ data class DeferPaymentCaptureParams(
  * A model that represents the parameters that Forage requires to collect a card PIN and defer
  * the refund of the payment to the server.
  * [PosDeferPaymentRefundParams] are passed to the
- * [deferPaymentRefund][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund] function.
+ * [deferPaymentRefund][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund] method.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
  * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must

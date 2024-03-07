@@ -19,8 +19,11 @@ import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.core.telemetry.Log
 
 /**
- * A [ForageElement] that securely collects a customer's card number. You need a [ForagePANEditText] to call
- * the method to [tokenize an EBT Card][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard].
+ * A [ForageElement] that securely collects a customer's card number. You need a [ForagePANEditText]
+ * to call the ForageSDK online-only method to
+ * [tokenize an EBT Card][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard], or
+ * the ForageTerminalSDK POS method to
+ * [tokenize a card][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard].
  */
 class ForagePANEditText @JvmOverloads constructor(
     context: Context,

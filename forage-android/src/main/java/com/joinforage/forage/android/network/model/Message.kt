@@ -26,7 +26,7 @@ sealed class ForageErrorDetails {
         }
 
         /**
-         * A function that converts the [EbtError51Details] to a string.
+         * A method that converts the [EbtError51Details] to a string.
          *
          * @return A string representation of [EbtError51Details].
          */

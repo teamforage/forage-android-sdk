@@ -25,13 +25,15 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  *
  * * [Tokenizing card information][tokenizeCard]
  * * [Checking the balance of a card][checkBalance]
- * * [Collecting a customer's PIN for a payment and
+ * * [Collecting a card PIN for a payment and
  * deferring the capture of the payment to the server][deferPaymentCapture]
  * * [Capturing a payment immediately][capturePayment]
- * * [Refunding a payment][refundPayment]
+ * * [Collecting a customer's card PIN for a refund and defer the completion of the refund to the
+ * server][deferPaymentRefund]
+ * * [Refunding a payment immediately][refundPayment]
  *
  * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
- * used for a transaction.
+ * used for a transaction. The max length of the string is 255 characters.
  * @see * [Forage guide to Terminal POS integrations](https://docs.joinforage.app/docs/forage-terminal-android)
  * * [ForageSDK] to process online-only transactions
  */
@@ -81,7 +83,7 @@ class ForageTerminalSDK(
      * collects the customer's card number.
      * [setPosForageConfig][com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] must
      * have been called on the instance before it can be passed.
-     * @param reusable Optional. A boolean that indicates whether the same card can be used to make
+     * @param reusable Optional. A boolean that indicates whether the same card can be used to create
      * multiple payments. Defaults to true.
      * @throws ForageConfigNotSetException If the [PosForageConfig] is not set for the provided
      * [ForagePANEditText] instance.
@@ -274,7 +276,7 @@ class ForageTerminalSDK(
     }
 
     /**
-     * Submits a customer's PIN via a
+     * Submits a card PIN via a
      * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element and defers
      * payment capture to the server.
      *
@@ -293,7 +295,7 @@ class ForageTerminalSDK(
      *
      * @throws [ForageConfigNotSetException] If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+     * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
      * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment)
      * for the API endpoint to call after [deferPaymentCapture].
@@ -386,7 +388,7 @@ class ForageTerminalSDK(
     }
 
     /**
-     * Collect's a customer's PIN for an EBT payment and defers
+     * Collects a card PIN for an EBT payment and defers
      * the refund of the payment to the server.
      *
      * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
@@ -396,6 +398,8 @@ class ForageTerminalSDK(
      * On failure, the response includes a list of
      * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
      * unpack to troubleshoot the issue.
+     * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+     * for the related step-by-step guide.
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */

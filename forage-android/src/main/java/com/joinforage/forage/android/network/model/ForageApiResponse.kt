@@ -16,7 +16,11 @@ sealed class ForageApiResponse<out T> {
      *
      * In most cases, `data` is a string representation of a JSON object from the Forage API,
      * for example:
-     * `if (response is ForageApiResponse.Success) { response.data // { "ref": "abcde123", ... }`
+     * ```
+     * if (response is ForageApiResponse.Success) {
+     *   response.data // { "ref": "abcde123", ... }
+     * }
+     * ```
      */
     data class Success<out T>(val data: T) : ForageApiResponse<T>()
 
@@ -45,7 +49,7 @@ sealed class ForageApiResponse<out T> {
  * For example, [`ebt_error_55`](https://docs.joinforage.app/reference/errors#ebt_error_55)
  * indicates that a customer entered an invalid EBT Card PIN.
  * @property message A string that specifies developer-facing error handling instructions.
- * @property details A string that includes additional details about the error, when available, like for
+ * @property details An object that includes additional details about the error, when available, like for
  * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) (Insufficient Funds).
  * @see [SDK Errors](https://docs.joinforage.app/reference/errors#sdk-errors) for a comprehensive
  * list of error `code` and `message` pairs.
@@ -58,7 +62,7 @@ data class ForageError(
     val details: ForageErrorDetails? = null
 ) {
     /**
-     * A function that converts the [ForageError] response to a string.
+     * A method that converts the [ForageError] response to a string.
      *
      * @return A string representation of a [ForageError] instance, including code, message,
      * HTTP status, and any other available details from the Forage API.
