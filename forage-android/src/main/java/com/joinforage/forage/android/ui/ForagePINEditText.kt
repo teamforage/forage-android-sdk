@@ -18,7 +18,6 @@ import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.telemetry.Log
-//import com.launchdarkly.sdk.android.LDConfig
 import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 /**

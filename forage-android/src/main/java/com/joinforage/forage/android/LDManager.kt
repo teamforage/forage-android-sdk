@@ -50,9 +50,7 @@ internal object LDManager {
     private var client: String? = null
 
     internal fun initialize(app: Application, ldConfig: String) {
-//        val contextKind = ContextKind.of(LDContextKind.SERVICE)
-//        val context = LDContext.create(contextKind, LDContexts.ANDROID_CONTEXT)
-//        client = LDClient.init(app, ldConfig, context, 1)
+
     }
 
     internal fun getVaultProvider(logger: Log = Log.getSilentInstance()): VaultType {
