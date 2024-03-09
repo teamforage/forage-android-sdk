@@ -10,7 +10,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.ForageConfigNotSetException
-import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.EnvConfig
@@ -138,13 +137,8 @@ class ForagePINEditText @JvmOverloads constructor(
             // only use Forage Vault for POS traffic!
             _SET_ONLY_vault = forageVaultWrapper
         } else {
-            // initialize Launch Darkly singleton
-            val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
-            val ldConfig = "anystringworks"
-            LDManager.initialize(context.applicationContext as Application, ldConfig)
-
             // decide on a vault provider and the corresponding vault wrapper
-            val vaultType = LDManager.getVaultProvider(logger)
+            val vaultType = VaultType.FORAGE_VAULT_TYPE
             _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
                 btVaultWrapper
             } else {

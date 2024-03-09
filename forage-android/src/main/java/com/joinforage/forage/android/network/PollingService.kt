@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.LDManager
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.getJitterAmount
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -24,7 +23,7 @@ internal class PollingService(
         logger.addAttribute("content_id", contentId)
 
         var attempt = 1
-        val pollingIntervals = LDManager.getPollingIntervals(logger)
+        val pollingIntervals = ForageConstants.PollingIntervals.intervals
 
         while (true) {
             logger.i(
