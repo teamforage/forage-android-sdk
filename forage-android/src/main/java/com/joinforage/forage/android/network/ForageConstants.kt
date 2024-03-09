@@ -46,4 +46,9 @@ internal object ForageConstants {
             ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
         )
     }
+
+    object PollingIntervals {
+        val intervals = longArrayOf(1000,1000,1000,1000,1000,1000,1000,1000,1000,1000)
+    }
+
 }
