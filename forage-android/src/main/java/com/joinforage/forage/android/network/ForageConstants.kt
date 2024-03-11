@@ -48,7 +48,7 @@ internal object ForageConstants {
     }
 
     object PollingIntervals {
-        val intervals = longArrayOf(1000,1000,1000,1000,1000,1000,1000,1000,1000,1000)
+        val intervals = longArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
     }
 
 }
