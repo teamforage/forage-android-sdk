@@ -50,7 +50,7 @@ This project was developed using [Android Studio Giraffe](https://developer.andr
 Run the test task for dev debug build variant:
 
 ```shell
-./gradlew testDevDebugUnitTest
+./gradlew testDebugUnitTest
 ```
 
 Currently, our build variants are only changing env vars, so any `test<dev/staging/cert/sandbox/prod><debug/release>UnitTest` variants should run the same tests producing the same result.
