@@ -23,3 +23,14 @@ internal fun TypedArray.getBoxCornerRadius(styleIndex: Int, defaultBoxCornerRadi
     val styledBoxCornerRadius = getDimension(styleIndex, 0f)
     return if (styledBoxCornerRadius == 0f) defaultBoxCornerRadius else styledBoxCornerRadius
 }
+
+// This extension splits the path by "/" and adds each segment individually to the path.
+// This is to prevent the URL from getting corrupted through internal OKHttp URL encoding.
+fun HttpUrl.Builder.addPathSegmentsSafe(path: String): HttpUrl.Builder {
+    path.split("/").forEach { segment ->
+        if (segment.isNotEmpty()) {
+            this.addPathSegment(segment)
+        }
+    }
+    return this
+}
