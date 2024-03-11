@@ -52,7 +52,8 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
     private suspend fun executeCapturePayment(): ForageApiResponse<String> {
         return repository.capturePayment(
             merchantId = expectedData.merchantId,
-            paymentRef = expectedData.paymentRef
+            paymentRef = expectedData.paymentRef,
+            sessionToken = expectedData.sessionToken
         )
     }
 

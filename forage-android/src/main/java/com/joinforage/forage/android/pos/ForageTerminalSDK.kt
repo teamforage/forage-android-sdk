@@ -211,7 +211,8 @@ class ForageTerminalSDK(
         val balanceResponse = balanceCheckService.posCheckBalance(
             merchantId = merchantId,
             paymentMethodRef = paymentMethodRef,
-            posTerminalId = posTerminalId
+            posTerminalId = posTerminalId,
+            sessionToken = sessionToken
         )
         forageSdk.processApiResponseForMetrics(balanceResponse, measurement)
 
@@ -376,7 +377,8 @@ class ForageTerminalSDK(
         val refund = refundService.refundPayment(
             merchantId = merchantId,
             posTerminalId = posTerminalId,
-            refundParams = params
+            refundParams = params,
+            sessionToken = sessionToken
         )
         forageSdk.processApiResponseForMetrics(refund, measurement)
 
@@ -437,7 +439,8 @@ class ForageTerminalSDK(
         val refundService = serviceFactory.createDeferPaymentRefundRepository(foragePinEditText)
         val refund = refundService.deferPaymentRefund(
             merchantId = merchantId,
-            paymentRef = paymentRef
+            paymentRef = paymentRef,
+            sessionToken = sessionToken
         )
         forageSdk.processApiResponseForMetrics(refund, measurement)
 
@@ -452,8 +455,8 @@ class ForageTerminalSDK(
         foragePinEditText: ForagePINEditText,
         logger: Log
     ): ForageApiResponse<String>? {
-        if (foragePinEditText.getVaultType() != VaultType.VGS_VAULT_TYPE) {
-            logger.e("[POS] checkBalance failed on Terminal $posTerminalId because the vault type is not VGS")
+        if (foragePinEditText.getVaultType() != VaultType.FORAGE_VAULT_TYPE) {
+            logger.e("[POS] checkBalance failed on Terminal $posTerminalId because the vault type is not forage")
             return ForageApiResponse.Failure.fromError(
                 ForageError(
                     code = "invalid_input_data",

@@ -148,7 +148,8 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     private suspend fun executeDeferPaymentCapture(): ForageApiResponse<String> {
         return repository.deferPaymentCapture(
             merchantId = expectedData.merchantId,
-            paymentRef = expectedData.paymentRef
+            paymentRef = expectedData.paymentRef,
+            sessionToken = expectedData.sessionToken
         )
     }
 

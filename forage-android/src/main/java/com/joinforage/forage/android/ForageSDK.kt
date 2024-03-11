@@ -161,7 +161,8 @@ class ForageSDK : ForageSDKInterface {
             .createCheckBalanceRepository(foragePinEditText)
         val response = balanceCheckService.checkBalance(
             merchantId = merchantId,
-            paymentMethodRef = paymentMethodRef
+            paymentMethodRef = paymentMethodRef,
+            sessionToken = sessionToken
         )
         processApiResponseForMetrics(response, measurement)
 
@@ -221,7 +222,8 @@ class ForageSDK : ForageSDKInterface {
             .createCapturePaymentRepository(foragePinEditText)
         val response = capturePaymentService.capturePayment(
             merchantId = merchantId,
-            paymentRef = paymentRef
+            paymentRef = paymentRef,
+            sessionToken = sessionToken
         )
         processApiResponseForMetrics(response, measurement)
 
@@ -270,7 +272,8 @@ class ForageSDK : ForageSDKInterface {
             .createDeferPaymentCaptureRepository(foragePinEditText)
         val response = deferPaymentCaptureService.deferPaymentCapture(
             merchantId = merchantId,
-            paymentRef = paymentRef
+            paymentRef = paymentRef,
+            sessionToken = sessionToken
         )
 
         return when (response) {
@@ -328,10 +331,10 @@ class ForageSDK : ForageSDKInterface {
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
         private val pollingService by lazy { createPollingService() }
-        private val posRefundService by lazy { PosRefundService(config.baseUrl, logger, okHttpClient) }
+        private val posRefundService by lazy { PosRefundService(config.vaultBaseUrl, logger, okHttpClient) }
 
         open fun createTokenizeCardService() = TokenizeCardService(
-            config.baseUrl,
+            config.apiBaseUrl,
             okHttpClient,
             logger
         )
@@ -391,10 +394,10 @@ class ForageSDK : ForageSDKInterface {
             foragePinEditText = foragePinEditText,
             logger = logger
         )
-        private fun createEncryptionKeyService() = EncryptionKeyService(config.baseUrl, okHttpClient, logger)
-        private fun createPaymentMethodService() = PaymentMethodService(config.baseUrl, okHttpClient, logger)
-        private fun createPaymentService() = PaymentService(config.baseUrl, okHttpClient, logger)
-        private fun createMessageStatusService() = MessageStatusService(config.baseUrl, okHttpClient, logger)
+        private fun createEncryptionKeyService() = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger)
+        private fun createPaymentMethodService() = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
+        private fun createPaymentService() = PaymentService(config.apiBaseUrl, okHttpClient, logger)
+        private fun createMessageStatusService() = MessageStatusService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPollingService() = PollingService(
             messageStatusService = messageStatusService,
             logger = logger

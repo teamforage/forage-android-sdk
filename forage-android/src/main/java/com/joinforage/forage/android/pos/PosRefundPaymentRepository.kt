@@ -10,6 +10,7 @@ import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitterParams
@@ -29,58 +30,65 @@ internal class PosRefundPaymentRepository(
     suspend fun refundPayment(
         merchantId: String,
         posTerminalId: String,
-        refundParams: PosRefundPaymentParams
+        refundParams: PosRefundPaymentParams,
+        sessionToken: String
     ): ForageApiResponse<String> {
-        val paymentRef = refundParams.paymentRef
+        try {
+            val paymentRef = refundParams.paymentRef
 
-        val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
-            is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
-            else -> return response
-        }
-        val payment = when (val response = paymentService.getPayment(paymentRef)) {
-            is ForageApiResponse.Success -> Payment.ModelMapper.from(response.data)
-            else -> return response
-        }
-        val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethod)) {
-            is ForageApiResponse.Success -> PaymentMethod.ModelMapper.from(response.data)
-            else -> return response
-        }
-
-        val vaultResponse = when (
-            val response = vaultSubmitter.submit(
-                params = PosRefundVaultSubmitterParams(
-                    baseVaultSubmitterParams = VaultSubmitterParams(
-                        encryptionKeys = encryptionKeys,
-                        idempotencyKey = paymentRef,
-                        merchantId = merchantId,
-                        path = AbstractVaultSubmitter.refundPaymentPath(paymentRef),
-                        paymentMethod = paymentMethod,
-                        userAction = UserAction.REFUND
-                    ),
-                    posTerminalId = posTerminalId,
-                    refundParams = refundParams
-                )
-            )
-        ) {
-            is ForageApiResponse.Success -> PosRefundVaultResponse.ModelMapper.from(response.data)
-            else -> return response
-        }
-
-        val pollingResponse = pollingService.execute(
-            contentId = vaultResponse.message.contentId,
-            operationDescription = "refund of Payment $payment"
-        )
-        if (pollingResponse is ForageApiResponse.Failure) {
-            return pollingResponse
-        }
-
-        val refundRef = vaultResponse.refundRef
-        return when (val refundResponse = refundService.getRefund(paymentRef, refundRef)) {
-            is ForageApiResponse.Success -> {
-                logger.i("[HTTP] Received updated Refund $refundRef for Payment $paymentRef")
-                return refundResponse
+            val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
+                is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
+                else -> return response
             }
-            else -> refundResponse
+            val payment = when (val response = paymentService.getPayment(paymentRef)) {
+                is ForageApiResponse.Success -> Payment.ModelMapper.from(response.data)
+                else -> return response
+            }
+            val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethod)) {
+                is ForageApiResponse.Success -> PaymentMethod.ModelMapper.from(response.data)
+                else -> return response
+            }
+
+            val vaultResponse = when (
+                val response = vaultSubmitter.submit(
+                    params = PosRefundVaultSubmitterParams(
+                        baseVaultSubmitterParams = VaultSubmitterParams(
+                            encryptionKeys = encryptionKeys,
+                            idempotencyKey = paymentRef,
+                            merchantId = merchantId,
+                            path = AbstractVaultSubmitter.refundPaymentPath(paymentRef),
+                            paymentMethod = paymentMethod,
+                            userAction = UserAction.REFUND,
+                            sessionToken = sessionToken
+                        ),
+                        posTerminalId = posTerminalId,
+                        refundParams = refundParams
+                    )
+                )
+            ) {
+                is ForageApiResponse.Success -> PosRefundVaultResponse.ModelMapper.from(response.data)
+                else -> return response
+            }
+
+            val pollingResponse = pollingService.execute(
+                contentId = vaultResponse.message.contentId,
+                operationDescription = "refund of Payment $payment"
+            )
+            if (pollingResponse is ForageApiResponse.Failure) {
+                return pollingResponse
+            }
+
+            val refundRef = vaultResponse.refundRef
+            return when (val refundResponse = refundService.getRefund(paymentRef, refundRef)) {
+                is ForageApiResponse.Success -> {
+                    logger.i("[HTTP] Received updated Refund $refundRef for Payment $paymentRef")
+                    return refundResponse
+                }
+                else -> refundResponse
+            }
+        } catch (err: Exception) {
+            logger.e("Failed to refund Payment ${refundParams.paymentRef}", err)
+            return UnknownErrorApiResponse
         }
     }
 }

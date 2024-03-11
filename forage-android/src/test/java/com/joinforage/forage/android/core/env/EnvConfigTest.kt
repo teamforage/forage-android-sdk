@@ -83,26 +83,31 @@ class EnvConfigTest_fromForageConfig {
 class EnvConfigTest_BaseUrlsAreCorrect {
     @Test
     fun `test Dev baseUrl is correct`() {
-        assertThat(EnvConfig.Dev.baseUrl).isEqualTo("https://api.dev.joinforage.app/")
+        assertThat(EnvConfig.Dev.apiBaseUrl).isEqualTo("https://api.dev.joinforage.app/")
+        assertThat(EnvConfig.Dev.vaultBaseUrl).isEqualTo("https://vault.dev.joinforage.app/proxy/")
     }
 
     @Test
     fun `test Staging baseUrl is correct`() {
-        assertThat(EnvConfig.Staging.baseUrl).isEqualTo("https://api.staging.joinforage.app/")
+        assertThat(EnvConfig.Staging.apiBaseUrl).isEqualTo("https://api.staging.joinforage.app/")
+        assertThat(EnvConfig.Staging.vaultBaseUrl).isEqualTo("https://vault.staging.joinforage.app/proxy/")
     }
 
     @Test
     fun `test Sandbox baseUrl is correct`() {
-        assertThat(EnvConfig.Sandbox.baseUrl).isEqualTo("https://api.sandbox.joinforage.app/")
+        assertThat(EnvConfig.Sandbox.apiBaseUrl).isEqualTo("https://api.sandbox.joinforage.app/")
+        assertThat(EnvConfig.Sandbox.vaultBaseUrl).isEqualTo("https://vault.sandbox.joinforage.app/proxy/")
     }
 
     @Test
     fun `test Cert baseUrl is correct`() {
-        assertThat(EnvConfig.Cert.baseUrl).isEqualTo("https://api.cert.joinforage.app/")
+        assertThat(EnvConfig.Cert.apiBaseUrl).isEqualTo("https://api.cert.joinforage.app/")
+        assertThat(EnvConfig.Cert.vaultBaseUrl).isEqualTo("https://vault.cert.joinforage.app/proxy/")
     }
 
     @Test
     fun `test Prod baseUrl is correct`() {
-        assertThat(EnvConfig.Prod.baseUrl).isEqualTo("https://api.joinforage.app/")
+        assertThat(EnvConfig.Prod.apiBaseUrl).isEqualTo("https://api.joinforage.app/")
+        assertThat(EnvConfig.Prod.vaultBaseUrl).isEqualTo("https://vault.joinforage.app/proxy/")
     }
 }

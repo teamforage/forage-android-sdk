@@ -1,6 +1,7 @@
 package com.joinforage.android.example.network.model
 
 internal enum class EnvOption(val value: String) {
+    Local("local"),
     DEV("dev"),
     STAGING("staging"),
     SANDBOX("sandbox"),
@@ -12,6 +13,11 @@ internal sealed class EnvConfig(
     val FLAVOR: EnvOption,
     val baseUrl: String
 ) {
+
+    object Local : EnvConfig(
+        FLAVOR = EnvOption.Local,
+        baseUrl = "http://10.0.2.2:8000/"
+    )
 
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
@@ -45,6 +51,7 @@ internal sealed class EnvConfig(
             if (parts.isEmpty()) return Sandbox
 
             return when (parts[0].lowercase()) {
+                "local" -> Local
                 "dev" -> Dev
                 "staging" -> Staging
                 "sandbox" -> Sandbox

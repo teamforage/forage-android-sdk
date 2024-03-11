@@ -106,6 +106,7 @@ shadowAarDependencies {
             "androidx.work:work-runtime:2.8.1",
             "com.google.code.gson:gson:2.10.1",
             "com.lyft.kronos:kronos-android:0.0.1-alpha11",
+            // TODO: CONSIDER UPGRADING TO V5
             "com.squareup.okhttp3:okhttp:4.11.0",
             "org.jetbrains.kotlin:kotlin-stdlib:1.8.10",
     ])

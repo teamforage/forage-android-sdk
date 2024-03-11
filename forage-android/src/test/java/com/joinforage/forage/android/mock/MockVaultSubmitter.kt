@@ -6,14 +6,9 @@ import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.vault.VaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitterParams
 
-internal class MockVaultSubmitter() : VaultSubmitter {
-    data class RequestContainer(
-        val merchantId: String,
-        val path: String,
-        val paymentMethodRef: String,
-        val idempotencyKey: String
-    )
-
+internal class MockVaultSubmitter(
+    private val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
+) : VaultSubmitter {
     private var responses =
         HashMap<String, ForageApiResponse<String>>()
 
@@ -44,6 +39,6 @@ internal class MockVaultSubmitter() : VaultSubmitter {
     }
 
     override fun getVaultType(): VaultType {
-        return VaultType.VGS_VAULT_TYPE
+        return this.vaultType
     }
 }

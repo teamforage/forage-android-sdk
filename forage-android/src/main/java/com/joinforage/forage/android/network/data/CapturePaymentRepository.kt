@@ -25,7 +25,8 @@ internal class CapturePaymentRepository(
 ) {
     suspend fun capturePayment(
         merchantId: String,
-        paymentRef: String
+        paymentRef: String,
+        sessionToken: String
     ): ForageApiResponse<String> {
         val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
@@ -48,7 +49,8 @@ internal class CapturePaymentRepository(
                     merchantId = merchantId,
                     path = AbstractVaultSubmitter.capturePaymentPath(paymentRef),
                     paymentMethod = paymentMethod,
-                    userAction = UserAction.CAPTURE
+                    userAction = UserAction.CAPTURE,
+                    sessionToken = sessionToken
                 )
             )
         ) {

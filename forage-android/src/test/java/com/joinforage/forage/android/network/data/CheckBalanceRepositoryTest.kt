@@ -159,7 +159,8 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     private suspend fun executeCheckBalance(): ForageApiResponse<String> {
         return repository.checkBalance(
             merchantId = expectedData.merchantId,
-            paymentMethodRef = expectedData.paymentMethodRef
+            paymentMethodRef = expectedData.paymentMethodRef,
+            sessionToken = expectedData.sessionToken
         )
     }
 

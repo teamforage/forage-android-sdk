@@ -4,6 +4,7 @@ import com.joinforage.forage.android.BuildConfig
 import com.joinforage.forage.android.ui.ForageConfig
 
 internal enum class EnvOption(val value: String) {
+    LOCAL("local"),
     DEV("dev"),
     STAGING("staging"),
     SANDBOX("sandbox"),
@@ -17,7 +18,8 @@ internal sealed class EnvConfig(
     val btAPIKey: String,
     val vgsVaultId: String,
     val vgsVaultType: String,
-    val baseUrl: String,
+    val apiBaseUrl: String,
+    val vaultBaseUrl: String,
     val ldMobileKey: String,
     val ddClientToken: String
 ) {
@@ -26,13 +28,26 @@ internal sealed class EnvConfig(
     // to BuildConfig.
     val PUBLISH_VERSION: String = BuildConfig.PUBLISH_VERSION
 
+    object Local : EnvConfig(
+        FLAVOR = EnvOption.LOCAL,
+        btProxyID = "N31FZgKpYZpo3oQ6XiM6M6",
+        btAPIKey = "key_AZfcBuKUsV38PEeYu6ZV8x",
+        vgsVaultId = "tntlqkidhc6",
+        vgsVaultType = "sandbox",
+        apiBaseUrl = "http://10.0.2.2:8000/",
+        vaultBaseUrl = "http://10.0.2.2:3999/proxy/",
+        ldMobileKey = "mob-03e025cb-5b4e-4d97-8685-39a22316d601",
+        ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
+    )
+
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
         btProxyID = "N31FZgKpYZpo3oQ6XiM6M6",
         btAPIKey = "key_AZfcBuKUsV38PEeYu6ZV8x",
         vgsVaultId = "tntlqkidhc6",
         vgsVaultType = "sandbox",
-        baseUrl = "https://api.dev.joinforage.app/",
+        apiBaseUrl = "https://api.dev.joinforage.app/",
+        vaultBaseUrl = "https://vault.dev.joinforage.app/proxy/",
         ldMobileKey = "mob-03e025cb-5b4e-4d97-8685-39a22316d601",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -43,7 +58,8 @@ internal sealed class EnvConfig(
         btAPIKey = "key_6B4cvpcDCEeNDYNow9zH7c",
         vgsVaultId = "tnteykuh975",
         vgsVaultType = "sandbox",
-        baseUrl = "https://api.staging.joinforage.app/",
+        apiBaseUrl = "https://api.staging.joinforage.app/",
+        vaultBaseUrl = "https://vault.staging.joinforage.app/proxy/",
         ldMobileKey = "mob-a9903698-759b-48e2-86e1-c551e2b69118",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -54,7 +70,8 @@ internal sealed class EnvConfig(
         btAPIKey = "key_DQ5NfUAgiqzwX1pxqcrSzK",
         vgsVaultId = "tntagcot4b1",
         vgsVaultType = "sandbox",
-        baseUrl = "https://api.sandbox.joinforage.app/",
+        apiBaseUrl = "https://api.sandbox.joinforage.app/",
+        vaultBaseUrl = "https://vault.sandbox.joinforage.app/proxy/",
         ldMobileKey = "mob-22024b85-05b7-4e24-b290-a071310dfc3d",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -65,7 +82,8 @@ internal sealed class EnvConfig(
         btAPIKey = "key_NdWtkKrZqztEfJRkZA8dmw",
         vgsVaultId = "tntpnht7psv",
         vgsVaultType = "sandbox",
-        baseUrl = "https://api.cert.joinforage.app/",
+        apiBaseUrl = "https://api.cert.joinforage.app/",
+        vaultBaseUrl = "https://vault.cert.joinforage.app/proxy/",
         ldMobileKey = "mob-d2261a08-784b-4300-a45f-ce0e46324d66",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -76,7 +94,8 @@ internal sealed class EnvConfig(
         btAPIKey = "key_BypNREttGMPbZ1muARDUf4",
         vgsVaultId = "tntbcrncmgi",
         vgsVaultType = "live",
-        baseUrl = "https://api.joinforage.app/",
+        apiBaseUrl = "https://api.joinforage.app/",
+        vaultBaseUrl = "https://vault.joinforage.app/proxy/",
         ldMobileKey = "mob-5c3dfa7a-fa6d-4cdf-93e8-d28ef8080696",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -88,6 +107,7 @@ internal sealed class EnvConfig(
             if (parts.isEmpty()) return Sandbox
 
             return when (parts[0].lowercase()) {
+                "local" -> Local
                 "dev" -> Dev
                 "staging" -> Staging
                 "sandbox" -> Sandbox
