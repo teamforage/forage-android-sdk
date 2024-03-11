@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.ui
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
@@ -12,7 +11,6 @@ import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState

@@ -90,7 +90,7 @@ class ForageTerminalSDK(
      * @param sessionToken: A short-lived token for authenticating again
      *  Forage's server
      */
-    fun init(sessionToken: String) : ForageTerminalSDK {
+    fun init(sessionToken: String): ForageTerminalSDK {
         initialized = true
         return this
     }
