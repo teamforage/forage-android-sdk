@@ -2,6 +2,8 @@ package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
+import com.joinforage.forage.android.addPathSegmentsSafe
+import com.joinforage.forage.android.addTrailingSlash
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.EncryptionKeys
@@ -107,7 +109,9 @@ internal class ForagePinSubmitter(
         private fun buildVaultUrl(path: String): HttpUrl =
             VAULT_BASE_URL.toHttpUrlOrNull()!!
                 .newBuilder()
-                .addPathSegment(path)
+                .scheme("https")
+                .addPathSegmentsSafe(path)
+                .addTrailingSlash()
                 .build()
 
         private fun buildForageVaultRequestBody(foragePinEditText: ForagePINEditText, baseRequestBody: Map<String, Any>): RequestBody {

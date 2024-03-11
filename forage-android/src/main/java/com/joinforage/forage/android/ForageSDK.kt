@@ -331,7 +331,7 @@ class ForageSDK : ForageSDKInterface {
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
         private val pollingService by lazy { createPollingService() }
-        private val posRefundService by lazy { PosRefundService(config.vaultBaseUrl, logger, okHttpClient) }
+        private val posRefundService by lazy { PosRefundService(config.apiBaseUrl, logger, okHttpClient) }
 
         open fun createTokenizeCardService() = TokenizeCardService(
             config.apiBaseUrl,
