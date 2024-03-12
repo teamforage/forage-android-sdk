@@ -1,10 +1,13 @@
 # Forage Android SDK (`v3.8.0`)
 
+You can use the Forage Android SDK to process online-only and/or Terminal POS EBT payments. The SDK provides UI components known as [Forage Elements](#forage-elements-ui-components) and associated methods that perform payment operations.
+
+Get started with our Quickstart guides ([online-only](https://docs.joinforage.app/docs/forage-android-quickstart), [POS](https://docs.joinforage.app/docs/forage-terminal-android)) and [reference documentation](https://android.joinforage.app/), or keep reading for [installation instructions](#installation) and more details.
+
 ## Table of contents
 
 <!--ts-->
 
-- [Overview](#overview)
 - [Installation](#installation)
 - [Forage Elements: UI Components](#forage-elements-ui-components)
   - [`ForagePANEditText`](#foragepanedittext)
@@ -18,34 +21,14 @@
     - [`ForageSDK()`](#foragesdk-1)
     - [`ForageTerminalSDK()`](#forageterminalsdk-1)
   - [Check a card's balance](#check-a-cards-balance)
-  - [Collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
+  - [Collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
   - [Capture a payment immediately](#capture-a-payment-immediately)
   - [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
-  - [Collect a card PIN for a refund and defer the completion of the refund to the server](#collect-a-customers-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
+  - [Collect a card PIN for a refund and defer the completion of the refund to the server](#collect-a-card-pin-for-a-refund-and-defer-the-completion-of-the-refund-to-the-server) **(POS-only)**
 - [The ForageApiResponse sealed class](#the-forageapiresponse-sealed-class)
 - [Running the sample app](#running-the-sample-app)
   - [Dependencies](#dependencies)
   <!--te-->
-
-## Overview
-
-This documentation explains how to integrate the Forage Android SDK to process online and/or Terminal POS payments.
-
-The SDK provides UI components known as Forage Elements and associated methods that perform payment operations.
-
-The [`ForagePANEditText`](#foragepanedittext) Element collects a customer’s card number. You need a `ForagePANEditText` instance to call the SDK method to [tokenize the card](#tokenize-a-card).
-
-The [`ForagePINEditText`](#foragepinedittext) Element collects a customer’s card PIN. You need a `ForagePINEditText` instance to call the SDK methods that:
-
-- [Check the card's balance](#check-a-cards-balance)
-- [Collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server)
-- [Capture a payment immediately](#capture-a-payment-immediately)
-- [Refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
-
-### Step-by-step guides
-
-- [Forage Android SDK Quickstart (online-only)](https://docs.joinforage.app/docs/forage-android-quickstart)
-- [Forage Terminal POS Android SDK Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
 
 ## Installation
 
@@ -78,7 +61,9 @@ A `ForageElement` is a secure, client-side entity that accepts and submits custo
 The Android SDK includes:
 
 - `ForagePANEditText`: an Element for collecting an EBT Card Number
+  - You need a `ForagePANEditText` instance to call the SDK method to [tokenize a card](#tokenize-a-card)
 - `ForagePANEditText`: an Element to collect an EBT Card PIN
+  - You need a `ForagePINEditText` instance to call the SDK methods that: [check a card's balance](#check-a-cards-balance), [collect a card PIN for a payment and defer the capture of the payment to the server](#collect-a-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server), [capture a payment immediately](#capture-a-payment-immediately), and [refund a payment](#refund-a-payment-pos-terminal-only) **(POS-only)**
 
 To use an Element, add it to a file in your app’s `/layout/` directory, as in the below examples.
 
@@ -109,7 +94,7 @@ A UI text field component for a customer to enter their card number. A `ForagePA
 
 ### `ForagePINEditText`
 
-A UI component for a customer to enter their payment method PIN. A `ForagePINEditText` is used to [check the balance of the payment method](#check-a-cards-balance), [defer the capture of a payment to the server](#collect-a-customers-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server), or to [capture a payment immediately](#capture-a-payment-immediately).
+A UI component for a customer to enter their payment method PIN. A `ForagePINEditText` is used to [check the balance of the payment method](#check-a-cards-balance), [defer the capture of a payment to the server](#collect-a-card-pin-for-a-payment-and-defer-the-capture-of-the-payment-to-the-server), or to [capture a payment immediately](#capture-a-payment-immediately).
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -299,8 +284,8 @@ posForagePinEditText.setPosForageConfig(
 #### `setPosForageConfig` parameters
 
 - `PosForageConfig`: An object that specifies a `merchantId` and a `sessionToken`.
-    - `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
-    - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+  - `merchantId`: Either a unique seven digit numeric string that [FNS](https://docs.joinforage.app/docs/ebt-online-101#food-and-nutrition-service-fns) issues to authorized EBT merchants, or a unique merchant ID that Forage provides during onboarding.
+  - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 
 ## Create a Forage instance
 
@@ -335,6 +320,7 @@ val forage = ForageTerminalSDK(posTerminalId)
 You can then use the instance to call methods that perform payment operations, as demonstrated in the following section.
 
 #### Initialize a `ForageTerminalSDK` instance
+
 ⚠️ **Before you can execute `ForageTerminalSDK` methods, you must call the `init` method on the `ForageTerminalSDK` instance.**
 
 `init` returns the original instance.
@@ -346,6 +332,7 @@ forage.init(sessionToken)
 ```
 
 ##### `init` parameters
+
 - `sessionToken`: A short-lived token that authenticates front-end requests to Forage. To create one, send a server-side request from your backend to the [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
 
 ⚠️ **`init` can take up to 10 seconds to run.** While it doesn’t often take that much time, account for the potential delay in your app’s UX design.
@@ -788,6 +775,7 @@ class PosRefundViewModel : ViewModel() {
 ```
 
 ### Collect a card PIN for a refund and defer the completion of the refund to the server
+
 ### (POS Terminal-only)
 
 #### `deferPaymentRefund(PosDeferPaymentRefundParams)`
