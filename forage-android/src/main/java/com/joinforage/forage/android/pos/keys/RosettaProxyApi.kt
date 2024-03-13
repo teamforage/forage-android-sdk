@@ -26,7 +26,7 @@ internal data class CertificateSigningRequest(
 
 @JsonClass(generateAdapter = true)
 internal data class InitializePosRequest(
-    @Json(name = "certificate") val base64EncodedPublicKey: String
+    @Json(name = "certificate") val base64PublicKeyPEM: String
 )
 
 // RESPONSES:
