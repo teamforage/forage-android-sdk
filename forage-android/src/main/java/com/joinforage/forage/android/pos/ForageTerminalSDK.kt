@@ -1,5 +1,7 @@
 package com.joinforage.forage.android.pos
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
@@ -105,6 +107,7 @@ class ForageTerminalSDK(
      *  * To create one, send a server-side `POST` request from your backend to the
      *  * [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
      */
+    @RequiresApi(Build.VERSION_CODES.M)
     suspend fun init(
         merchantId: String,
         sessionToken: String

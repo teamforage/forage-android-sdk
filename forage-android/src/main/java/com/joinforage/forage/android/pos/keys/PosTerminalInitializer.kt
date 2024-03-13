@@ -1,5 +1,8 @@
 package com.joinforage.forage.android.pos.keys
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.pos.PosForageConfig
 
@@ -26,13 +29,12 @@ internal data class PinTranslationParams(
 /**
  * Handles the initialization steps for the [com.joinforage.forage.android.pos.ForageTerminalSDK.init] method.
  */
+@RequiresApi(Build.VERSION_CODES.M)
 internal class PosTerminalInitializer(
     private val ksnManager: KsnManager,
     private val logger: Log
 ) : PosInitializer {
-    /**
-     * @throws PosInitializationException if any of the initialization steps fail.
-     */
+    @Throws(PosInitializationException::class)
     override suspend fun getPinTranslationParams(
         merchantId: String,
         sessionToken: String
@@ -51,12 +53,10 @@ internal class PosTerminalInitializer(
                 )
             }
 
-            // TODO: @devinMorgan to pass Context here if needed
-//            val certificateAlias = "..."
-//            val rsaKeyManager = RsaKeyManager.fromAndroidKeystore(..., certificateAlias)
+            val vaultUrl = EnvConfig.fromSessionToken(sessionToken).vaultBaseUrl
+            val rsaKeyManager = initRsaKeyManager(vaultUrl)
 
-            // TODO: @devinmorgan make sure this is the base64-encoded CSR.
-            val base64encodedCsr = "...==" // call getBase64EncodedCsr()
+            val base64encodedCsr = getBase64CSR(rsaKeyManager)
 
             val rosettaApi = RosettaProxyApi.from(
                 PosForageConfig(
@@ -65,14 +65,11 @@ internal class PosTerminalInitializer(
                 )
             )
 
-            signCertificate(rosettaApi, base64encodedCsr)
-
-            // TODO: @devinmorgan replace with base64-encoded public key.
-            val base64encodedPublicKey = "..."
+            val response = signCertificate(rosettaApi, base64encodedCsr)
 
             val initializePosResponse = initializePos(
                 rosettaApi,
-                base64encodedPublicKey = base64encodedPublicKey
+                base64PublicKeyPEM = response.signedCertificate
             )
 
             ksnManager.init(initialKeyId = initializePosResponse.keySerialNumber)
@@ -101,6 +98,16 @@ internal class PosTerminalInitializer(
         }
     }
 
+    companion object {
+        private fun initRsaKeyManager(vaultUrl: String): RsaKeyManager {
+            try {
+                return RsaKeyManager.fromAndroidKeystore(vaultUrl)
+            } catch (e: Exception) {
+                throw PosInitializationException("Failed to initialize RSA Key Manager", e)
+            }
+        }
+    }
+
     /**
      * @throws PosInitializationException
      *
@@ -115,44 +122,53 @@ internal class PosTerminalInitializer(
             }
             return false
         } catch (e: Exception) {
-            throw PosInitializationException("Failed to check for existing KSN file")
+            throw PosInitializationException("Failed to check for existing KSN file", e)
         }
     }
 
     /**
-     * @throws PosInitializationException
+     * Generates a Certificate Signing Request (CSR) using the RsaKeyManager
+     * @return a base-64 encoded CSR
      */
+    @Throws(PosInitializationException::class)
+    private fun getBase64CSR(rsaKeyManager: RsaKeyManager): String {
+        try {
+            return rsaKeyManager.generateCSRBase64()
+        } catch (e: Exception) {
+            throw PosInitializationException("Failed to generate CSR", e)
+        }
+    }
+
+    @Throws(PosInitializationException::class)
     private suspend fun signCertificate(
         rosettaApi: RosettaProxyApi,
         csr: String
     ): CertificateSigningResponse {
         try {
-            logger.i("[Rosetta] Signing certificate")
+            logger.i("[Rosetta] Signing certificate with /api/terminal/certificate/")
             return rosettaApi.signCertificate(
                 CertificateSigningRequest(csr)
             )
         } catch (e: Exception) {
-            throw PosInitializationException("Failed to sign certificate")
+            throw PosInitializationException("Failed to sign certificate", e)
         }
     }
 
-    /**
-     * @throws PosInitializationException
-     */
+    @Throws(PosInitializationException::class)
     private suspend fun initializePos(
         rosettaApi: RosettaProxyApi,
-        base64encodedPublicKey: String
+        base64PublicKeyPEM: String
     ): InitializePosResponse {
         try {
-            logger.i("[Rosetta] Calling /api/terminal/initialize")
+            logger.i("[Rosetta] Initializing POS terminal with /api/terminal/initialize")
 
             return rosettaApi.initializePos(
                 InitializePosRequest(
-                    base64EncodedPublicKey = base64encodedPublicKey
+                    base64PublicKeyPEM = base64PublicKeyPEM
                 )
             )
         } catch (e: Exception) {
-            throw PosInitializationException("Failed to initialize POS terminal with Rosetta")
+            throw PosInitializationException("Failed to initialize POS terminal with Rosetta", e)
         }
     }
 }
