@@ -387,13 +387,12 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
 
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
         val balanceCheckService = serviceFactory.createCheckBalanceRepository(foragePinEditText)
-        val balanceResponse =
-            balanceCheckService.posCheckBalance(
-                merchantId = merchantId,
-                paymentMethodRef = paymentMethodRef,
-                posTerminalId = posTerminalId,
-                sessionToken = sessionToken
-            )
+        val balanceResponse = balanceCheckService.posCheckBalance(
+            merchantId = merchantId,
+            paymentMethodRef = paymentMethodRef,
+            posTerminalId = posTerminalId,
+            sessionToken = sessionToken
+        )
         forageSdk.processApiResponseForMetrics(balanceResponse, measurement)
 
         if (balanceResponse is ForageApiResponse.Failure) {
@@ -802,6 +801,8 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         // So we always return null here!
         return null
     }
+
+    private fun getLogSuffix(merchantId: String): String = "on Terminal $posTerminalId for Merchant $merchantId"
 
     /**
      * Use one of the [tokenizeCard] options instead.

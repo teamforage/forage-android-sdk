@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.pos
 
 import com.joinforage.forage.android.network.data.BaseVaultRequestParams
+import com.joinforage.forage.android.pos.keys.PinTranslationParams
 import com.joinforage.forage.android.vault.VaultSubmitterParams
 
 internal data class PosVaultRequestParams(
@@ -19,7 +20,23 @@ internal data class PosVaultRequestParams(
 
 internal data class PosBalanceVaultSubmitterParams(
     val baseVaultSubmitterParams: VaultSubmitterParams,
-    val posTerminalId: String
+    val posTerminalId: String,
+    val pinTranslationParams: PinTranslationParams
+) : VaultSubmitterParams(
+    encryptionKeys = baseVaultSubmitterParams.encryptionKeys,
+    idempotencyKey = baseVaultSubmitterParams.idempotencyKey,
+    merchantId = baseVaultSubmitterParams.merchantId,
+    path = baseVaultSubmitterParams.path,
+    paymentMethod = baseVaultSubmitterParams.paymentMethod,
+    userAction = baseVaultSubmitterParams.userAction,
+    sessionToken = baseVaultSubmitterParams.sessionToken
+)
+
+// for /capture/ and /collect_pin/
+internal data class PosBaseVaultSubmitterParams(
+    val baseVaultSubmitterParams: VaultSubmitterParams,
+    val posTerminalId: String,
+    val pinTranslationParams: PinTranslationParams
 ) : VaultSubmitterParams(
     encryptionKeys = baseVaultSubmitterParams.encryptionKeys,
     idempotencyKey = baseVaultSubmitterParams.idempotencyKey,
@@ -33,6 +50,7 @@ internal data class PosBalanceVaultSubmitterParams(
 internal data class PosRefundVaultSubmitterParams(
     val baseVaultSubmitterParams: VaultSubmitterParams,
     val posTerminalId: String,
+    val pinTranslationParams: PinTranslationParams,
     val refundParams: PosRefundPaymentParams
 ) : VaultSubmitterParams(
     encryptionKeys = baseVaultSubmitterParams.encryptionKeys,

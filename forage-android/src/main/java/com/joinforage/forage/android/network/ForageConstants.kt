@@ -27,6 +27,12 @@ internal object ForageConstants {
         const val PROVIDER_TERMINAL_ID = "provider_terminal_id"
     }
 
+    // POS-only
+    object PosRequestBody {
+        const val KSN = "ksn"
+        const val TXN_COUNTER = "txn_counter"
+    }
+
     object PathSegment {
         const val ISO_SERVER = "iso_server"
         const val ENCRYPTION_ALIAS = "encryption_alias"
