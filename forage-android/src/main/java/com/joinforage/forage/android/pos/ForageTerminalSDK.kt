@@ -335,7 +335,7 @@ class ForageTerminalSDK(
      *             val response = ForageTerminalSDK().capturePayment(
      *                 CapturePaymentParams(
      *                     foragePinEditText = foragePinEditText,
-     *                     paymentRef = paymentRef
+     *                     paymentRef = snapPaymentRef
      *                 )
      *             )
      *
@@ -413,7 +413,7 @@ class ForageTerminalSDK(
      *             val response = ForageTerminalSDK().deferPaymentCapture(
      *                 DeferPaymentCaptureParams(
      *                     foragePinEditText = foragePinEditText,
-     *                     paymentRef = paymentRef
+     *                     paymentRef = snapPaymentRef
      *                 )
      *             )
      *
