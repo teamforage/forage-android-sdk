@@ -239,7 +239,6 @@ class ForageSDK : ForageSDKInterface {
      * // Example capturePayment call in a PaymentCaptureViewModel.kt
      * class PaymentCaptureViewModel : ViewModel() {
      *     val snapPaymentRef = "s0alzle0fal"
-     *     val cashPaymentRef = "d0alsdkfla0"
      *     val merchantId = "mid/<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
@@ -333,7 +332,6 @@ class ForageSDK : ForageSDKInterface {
      * // Example deferPaymentCapture call in a DeferPaymentCaptureViewModel.kt
      * class DeferPaymentCaptureViewModel  : ViewModel() {
      *     val snapPaymentRef = "s0alzle0fal"
-     *     val cashPaymentRef = "d0alsdkfla0"
      *     val merchantId = "mid/<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
