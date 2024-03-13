@@ -14,6 +14,10 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.keys.KsnManager
+import com.joinforage.forage.android.pos.keys.PinTranslationParams
+import com.joinforage.forage.android.pos.keys.PosTerminalInitializer
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -40,9 +44,11 @@ import com.joinforage.forage.android.ui.ForagePINEditText
 class ForageTerminalSDK(
     private val posTerminalId: String
 ) : ForageSDKInterface {
-    private var initialized = false
+    private var calledInit = false
+    private var pinTranslationParams: PinTranslationParams? = null
+
     private fun _assertInitialized(method: String) {
-        if (!initialized) {
+        if (!calledInit) {
             val errorMessage = """
                     This instance of `ForageTerminalSDK` has not been pre-initialized 
                     and will run the initialization process now instead. Consider 
@@ -81,17 +87,51 @@ class ForageTerminalSDK(
     }
 
     /**
-     * The ForageTerminalSDK may perform some long running initialization
+     * The [ForageTerminalSDK] may perform some long running initialization
      * operations in certain circumstances. The operations typically
      * last less than 10 seconds and only occur infrequently. It is
-     * required to call `init` ahead of calling any other methods on
-     * a `ForageTerminalSDK` instance.
+     * required to call [ForageTerminalSDK.init] ahead of calling any other methods on
+     * a [ForageTerminalSDK] instance.
      *
-     * @param sessionToken: A short-lived token for authenticating again
-     *  Forage's server
+     * @throws Exception
+     *
+     * @param merchantId A unique Merchant ID that Forage provides during onboarding
+     *  * preceded by "mid/".
+     *  * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage
+     *  * [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
+     *  * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
+     *
+     * @param sessionToken A short-lived token that authenticates front-end requests to Forage.
+     *  * To create one, send a server-side `POST` request from your backend to the
+     *  * [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
      */
-    fun init(sessionToken: String): ForageTerminalSDK {
-        initialized = true
+    suspend fun init(
+        merchantId: String,
+        sessionToken: String
+    ): ForageTerminalSDK {
+        calledInit = true
+        val logger = createLogger()
+        try {
+            val logSuffix = getLogSuffix(merchantId)
+            logger.addAttribute("merchant_ref", merchantId)
+            logger.i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
+
+            val initializer = PosTerminalInitializer(
+                logger = createLogger(),
+                ksnManager = KsnManager.forJavaRuntime()
+            )
+
+            pinTranslationParams = initializer.getPinTranslationParams(
+                merchantId = merchantId,
+                sessionToken = sessionToken
+            )
+
+            logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
+        } catch (e: Exception) {
+            logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
+            throw e
+        }
+
         return this
     }
 
@@ -127,7 +167,11 @@ class ForageTerminalSDK(
         logger.addAttribute("reusable", reusable)
         logger.i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
 
+        // TODO: @devinmorgan if tokenize card doesn't depend on the init method result. Do we need this here?
         _assertInitialized("tokenizeCard")
+        if (pinTranslationParams == null) {
+            return UnknownErrorApiResponse
+        }
 
         val tokenizationResponse = forageSdk.tokenizeEBTCard(
             TokenizeEBTCardParams(
@@ -170,6 +214,9 @@ class ForageTerminalSDK(
         logger.i("[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId")
 
         _assertInitialized("tokenizeCard")
+        if (pinTranslationParams == null) {
+            return UnknownErrorApiResponse
+        }
 
         val (merchantId, sessionToken) = posForageConfig
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
@@ -230,6 +277,9 @@ class ForageTerminalSDK(
         logger.i("[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId")
 
         _assertInitialized("checkBalance")
+        if (pinTranslationParams == null) {
+            return UnknownErrorApiResponse
+        }
 
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
@@ -247,7 +297,8 @@ class ForageTerminalSDK(
             merchantId = merchantId,
             paymentMethodRef = paymentMethodRef,
             posTerminalId = posTerminalId,
-            sessionToken = sessionToken
+            sessionToken = sessionToken,
+            pinTranslationParams = pinTranslationParams!!
         )
         forageSdk.processApiResponseForMetrics(balanceResponse, measurement)
 
@@ -304,6 +355,9 @@ class ForageTerminalSDK(
         logger.i("[POS] Called capturePayment for Payment $paymentRef")
 
         _assertInitialized("capturePayment")
+        if (pinTranslationParams == null) {
+            return UnknownErrorApiResponse
+        }
 
         val captureResponse = forageSdk.capturePayment(params)
 
@@ -402,6 +456,9 @@ class ForageTerminalSDK(
         )
 
         _assertInitialized("refundPayment")
+        if (pinTranslationParams == null) {
+            return UnknownErrorApiResponse
+        }
 
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
@@ -419,7 +476,8 @@ class ForageTerminalSDK(
             merchantId = merchantId,
             posTerminalId = posTerminalId,
             refundParams = params,
-            sessionToken = sessionToken
+            sessionToken = sessionToken,
+            pinTranslationParams = pinTranslationParams!!
         )
         forageSdk.processApiResponseForMetrics(refund, measurement)
 
@@ -466,6 +524,11 @@ class ForageTerminalSDK(
             """.trimIndent()
         )
 
+        _assertInitialized("deferPaymentRefund")
+        if (pinTranslationParams == null) {
+            return UnknownErrorApiResponse
+        }
+
         // This block is used for tracking Metrics!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
@@ -508,6 +571,8 @@ class ForageTerminalSDK(
         }
         return null
     }
+
+    private fun getLogSuffix(merchantId: String): String = "on Terminal $posTerminalId for Merchant $merchantId"
 
     /**
      * Use one of the [tokenizeCard] options instead.

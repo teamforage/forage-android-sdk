@@ -40,6 +40,7 @@ internal class ForagePinSubmitter(
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
         return try {
             val apiUrl = buildVaultUrl(vaultProxyRequest.path)
+
             val baseRequestBody = buildRequestBody(vaultProxyRequest)
             val requestBody = buildForageVaultRequestBody(foragePinEditText, baseRequestBody)
 
@@ -109,7 +110,7 @@ internal class ForagePinSubmitter(
         private fun buildVaultUrl(path: String): HttpUrl =
             VAULT_BASE_URL.toHttpUrlOrNull()!!
                 .newBuilder()
-                .scheme("https")
+                .addPathSegment("proxy")
                 .addPathSegmentsSafe(path)
                 .addTrailingSlash()
                 .build()

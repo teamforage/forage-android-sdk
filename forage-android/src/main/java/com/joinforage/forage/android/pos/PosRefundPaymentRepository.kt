@@ -11,6 +11,7 @@ import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.keys.PinTranslationParams
 import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitterParams
@@ -31,7 +32,8 @@ internal class PosRefundPaymentRepository(
         merchantId: String,
         posTerminalId: String,
         refundParams: PosRefundPaymentParams,
-        sessionToken: String
+        sessionToken: String,
+        pinTranslationParams: PinTranslationParams
     ): ForageApiResponse<String> {
         try {
             val paymentRef = refundParams.paymentRef
@@ -61,6 +63,7 @@ internal class PosRefundPaymentRepository(
                             userAction = UserAction.REFUND,
                             sessionToken = sessionToken
                         ),
+                        pinTranslationParams = pinTranslationParams,
                         posTerminalId = posTerminalId,
                         refundParams = refundParams
                     )
