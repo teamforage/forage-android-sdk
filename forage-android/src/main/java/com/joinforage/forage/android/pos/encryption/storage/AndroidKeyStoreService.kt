@@ -23,7 +23,7 @@ class AndroidKeyStoreService {
 
     fun getKey(keyAlias: String) = androidKeyStore.getEntry(
         keyAlias,
-        protectionParam
+        null
     ) as KeyStore.SecretKeyEntry
     fun isKeySet(keyAlias: String): Boolean = androidKeyStore.containsAlias(keyAlias)
     fun clearKey(keyAlias: String) = androidKeyStore.deleteEntry(keyAlias)
