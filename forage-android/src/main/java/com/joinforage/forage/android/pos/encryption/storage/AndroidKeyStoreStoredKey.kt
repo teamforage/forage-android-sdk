@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.pos.encryption.AesBlock
 import com.joinforage.forage.android.pos.encryption.DerivationKeyAlias
-import com.joinforage.forage.android.pos.encryption.PinBlock
 import com.joinforage.forage.android.pos.encryption.dukpt.AesEcbDerivationData
 import com.joinforage.forage.android.pos.encryption.dukpt.DukptCounter
 import com.joinforage.forage.android.pos.encryption.dukpt.KsnComponent
@@ -18,11 +17,11 @@ internal val WORKING_KEY_ALIAS = "dukpt_working_key"
 internal class AndroidKeyStoreStoredKey(private val alias: String) : StoredKey, WorkingKey {
     private val androidKeyStore = AndroidKeyStoreService()
 
-    private fun aesEncryptEcb(dataToEncrypt: AesBlock): AesBlock {
+    override fun aesEncryptEcb(aesBlock: AesBlock): AesBlock {
         val keyEntry = androidKeyStore.getKey(alias)
         val cipher = Cipher.getInstance("AES/ECB/NoPadding")
             .apply { init(Cipher.ENCRYPT_MODE, keyEntry.secretKey) }
-        val result = cipher.doFinal(dataToEncrypt.data)
+        val result = cipher.doFinal(aesBlock.data)
         return AesBlock(result)
     }
 
@@ -78,7 +77,4 @@ internal class AndroidKeyStoreStoredKey(private val alias: String) : StoredKey, 
 
     override fun clear() = androidKeyStore.clearKey(alias)
 
-    override fun encryptPinBlock(pinBlock: PinBlock): AesBlock {
-        TODO("Not yet implemented")
-    }
 }
