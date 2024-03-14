@@ -18,7 +18,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.pos.keys.KsnManager
-import com.joinforage.forage.android.pos.keys.PinTranslationParams
 import com.joinforage.forage.android.pos.keys.PosTerminalInitializer
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -47,20 +46,7 @@ class ForageTerminalSDK(
     private val posTerminalId: String
 ) : ForageSDKInterface {
     private var calledInit = false
-    private var pinTranslationParams: PinTranslationParams? = null
-
-    private fun _assertInitialized(method: String) {
-        if (!calledInit) {
-            val errorMessage = """
-                    This instance of `ForageTerminalSDK` has not been pre-initialized 
-                    and will run the initialization process now instead. Consider 
-                    calling `.init(config: PosForageConfig)` ahead of calling $method
-                    to ensure any long-running init operations are completed beforehand.
-            """.trimIndent()
-
-            throw IllegalStateException(errorMessage)
-        }
-    }
+    private var initSucceeded = false
 
     private var createServiceFactory = {
             sessionToken: String, merchantId: String, logger: Log ->
@@ -79,12 +65,19 @@ class ForageTerminalSDK(
         posTerminalId: String,
         forageSdk: ForageSDK,
         createLogger: () -> Log,
-        createServiceFactory: ((String, String, Log) -> ForageSDK.ServiceFactory)? = null
+        createServiceFactory: ((String, String, Log) -> ForageSDK.ServiceFactory)? = null,
+        initSucceeded: Boolean = false
     ) : this(posTerminalId) {
         this.forageSdk = forageSdk
         this.createLogger = createLogger
         if (createServiceFactory != null) {
             this.createServiceFactory = createServiceFactory
+        }
+
+        if (initSucceeded) {
+            // STOPGAP to allow testing without depending on the init method.
+            this.initSucceeded = initSucceeded
+            this.calledInit = initSucceeded
         }
     }
 
@@ -119,20 +112,29 @@ class ForageTerminalSDK(
             logger.addAttribute("merchant_ref", merchantId)
             logger.i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
 
+//                        val dukptService = DukptService(
+//                deviceDerivationId = initialDerivationKey,
+//                keyRegisters = AndroidKeyStoreKeyRegisters(),
+//                txCounter = DukptCounter.fromZero()
+//            )
+
             val initializer = PosTerminalInitializer(
                 logger = createLogger(),
                 ksnManager = KsnManager.forJavaRuntime()
+//                dukptService = dukptService
             )
 
-            pinTranslationParams = initializer.getPinTranslationParams(
+            initializer.execute(
                 merchantId = merchantId,
                 sessionToken = sessionToken
             )
+            initSucceeded = true
 
             logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
         } catch (e: Exception) {
             logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
-            throw e
+            // TODO: to throw or not to throw, that is the question!
+//            throw e
         }
 
         return this
@@ -170,10 +172,9 @@ class ForageTerminalSDK(
         logger.addAttribute("reusable", reusable)
         logger.i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
 
-        // TODO: @devinmorgan if tokenize card doesn't depend on the init method result. Do we need this here?
-        _assertInitialized("tokenizeCard")
-        if (pinTranslationParams == null) {
-            return UnknownErrorApiResponse
+        val initializationException = isInitializationExceptionOrNull(logger, "tokenizeCard")
+        if (initializationException != null) {
+            return initializationException
         }
 
         val tokenizationResponse = forageSdk.tokenizeEBTCard(
@@ -216,9 +217,9 @@ class ForageTerminalSDK(
 
         logger.i("[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId")
 
-        _assertInitialized("tokenizeCard")
-        if (pinTranslationParams == null) {
-            return UnknownErrorApiResponse
+        val initializationException = isInitializationExceptionOrNull(logger, "tokenizeCard")
+        if (initializationException != null) {
+            return initializationException
         }
 
         val (merchantId, sessionToken) = posForageConfig
@@ -279,9 +280,9 @@ class ForageTerminalSDK(
 
         logger.i("[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId")
 
-        _assertInitialized("checkBalance")
-        if (pinTranslationParams == null) {
-            return UnknownErrorApiResponse
+        val initializationException = isInitializationExceptionOrNull(logger, "checkBalance")
+        if (initializationException != null) {
+            return initializationException
         }
 
         // This block is used for tracking Metrics!
@@ -300,8 +301,7 @@ class ForageTerminalSDK(
             merchantId = merchantId,
             paymentMethodRef = paymentMethodRef,
             posTerminalId = posTerminalId,
-            sessionToken = sessionToken,
-            pinTranslationParams = pinTranslationParams!!
+            sessionToken = sessionToken
         )
         forageSdk.processApiResponseForMetrics(balanceResponse, measurement)
 
@@ -317,8 +317,6 @@ class ForageTerminalSDK(
 
         return balanceResponse
     }
-
-    // ======= Same as online-only Forage SDK below =======
 
     /**
      * Immediately captures a payment via a
@@ -352,14 +350,17 @@ class ForageTerminalSDK(
     override suspend fun capturePayment(
         params: CapturePaymentParams
     ): ForageApiResponse<String> {
-        val (_, paymentRef) = params
-
+        val (foragePinEditText, paymentRef) = params
         val logger = createLogger().addAttribute("payment_ref", paymentRef)
         logger.i("[POS] Called capturePayment for Payment $paymentRef")
 
-        _assertInitialized("capturePayment")
-        if (pinTranslationParams == null) {
-            return UnknownErrorApiResponse
+        val illegalVaultException = isIllegalVaultExceptionOrNull(foragePinEditText, logger)
+        if (illegalVaultException != null) {
+            return illegalVaultException
+        }
+        val initializationException = isInitializationExceptionOrNull(logger, "capturePayment")
+        if (initializationException != null) {
+            return initializationException
         }
 
         val captureResponse = forageSdk.capturePayment(params)
@@ -399,12 +400,14 @@ class ForageTerminalSDK(
      * @return A [ForageApiResponse] object.
      */
     override suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
-        val (_, paymentRef) = params
-
+        val (foragePinEditText, paymentRef) = params
         val logger = createLogger().addAttribute("payment_ref", paymentRef)
         logger.i("[POS] Called deferPaymentCapture for Payment $paymentRef")
 
-        _assertInitialized("deferPaymentCapture")
+        val illegalVaultException = isIllegalVaultExceptionOrNull(foragePinEditText, logger)
+        if (illegalVaultException != null) {
+            return illegalVaultException
+        }
 
         val deferCaptureResponse = forageSdk.deferPaymentCapture(params)
 
@@ -458,9 +461,9 @@ class ForageTerminalSDK(
             """.trimIndent()
         )
 
-        _assertInitialized("refundPayment")
-        if (pinTranslationParams == null) {
-            return UnknownErrorApiResponse
+        val initializationException = isInitializationExceptionOrNull(logger, "refundPayment")
+        if (initializationException != null) {
+            return initializationException
         }
 
         // This block is used for tracking Metrics!
@@ -479,8 +482,7 @@ class ForageTerminalSDK(
             merchantId = merchantId,
             posTerminalId = posTerminalId,
             refundParams = params,
-            sessionToken = sessionToken,
-            pinTranslationParams = pinTranslationParams!!
+            sessionToken = sessionToken
         )
         forageSdk.processApiResponseForMetrics(refund, measurement)
 
@@ -527,9 +529,9 @@ class ForageTerminalSDK(
             """.trimIndent()
         )
 
-        _assertInitialized("deferPaymentRefund")
-        if (pinTranslationParams == null) {
-            return UnknownErrorApiResponse
+        val initializationException = isInitializationExceptionOrNull(logger, "deferPaymentRefund")
+        if (initializationException != null) {
+            return initializationException
         }
 
         // This block is used for tracking Metrics!
@@ -571,6 +573,25 @@ class ForageTerminalSDK(
                     httpStatusCode = 400
                 )
             )
+        }
+        return null
+    }
+
+    private fun isInitializationExceptionOrNull(logger: Log, methodName: String): ForageApiResponse<String>? {
+        if (!calledInit) {
+            val errorMessage = """
+                    This instance of `ForageTerminalSDK` has not been pre-initialized 
+                    and will run the initialization process now instead. Consider 
+                    calling `.init(config: PosForageConfig)` ahead of calling $methodName
+                    to ensure any long-running init operations are completed beforehand.
+            """.trimIndent()
+
+            throw IllegalStateException(errorMessage)
+        }
+
+        if (!initSucceeded) {
+            logger.e("[POS] $methodName failed because the ForageTerminalSDK init method failed.")
+            return UnknownErrorApiResponse
         }
         return null
     }
