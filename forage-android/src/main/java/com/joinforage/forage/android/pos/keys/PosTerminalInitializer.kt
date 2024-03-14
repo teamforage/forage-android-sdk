@@ -12,47 +12,31 @@ internal class PosInitializationException(
 ) : Exception("Failed to initialize POS terminal. $reason", throwable)
 
 internal interface PosInitializer {
-    /**
-     * @throws PosInitializationException if any of the initialization steps fail.
-     */
-    suspend fun getPinTranslationParams(
+    @Throws(PosInitializationException::class)
+    suspend fun execute(
         merchantId: String,
         sessionToken: String
-    ): PinTranslationParams
+    )
 }
-
-internal data class PinTranslationParams(
-    val ksn: String,
-    val txnCounter: String
-)
 
 /**
  * Handles the initialization steps for the [com.joinforage.forage.android.pos.ForageTerminalSDK.init] method.
  */
 @RequiresApi(Build.VERSION_CODES.M)
 internal class PosTerminalInitializer(
+//    private val dukptService: DukptService,
     private val ksnManager: KsnManager,
     private val logger: Log
 ) : PosInitializer {
     @Throws(PosInitializationException::class)
-    override suspend fun getPinTranslationParams(
+    override suspend fun execute(
         merchantId: String,
         sessionToken: String
-    ): PinTranslationParams {
+    ) {
         try {
             if (isKsnFileAvailable()) {
-                // TODO @devinmorgan: where do we increment the counter, after each /balance/, /capture/, /refund/, etc.?
-                // TODO @devinmorgan: are the lines below accurate?
-
-                val ksn = ksnManager.readInitialKeyId()
-                val txnCounterHex = ksnManager.readTxCountStr()
-
-                return PinTranslationParams(
-                    ksn = ksn,
-                    txnCounter = txnCounterHex
-                )
+                return
             }
-
             val vaultUrl = EnvConfig.fromSessionToken(sessionToken).vaultBaseUrl
             val rsaKeyManager = initRsaKeyManager(vaultUrl)
 
@@ -66,32 +50,23 @@ internal class PosTerminalInitializer(
             )
 
             val response = signCertificate(rosettaApi, base64encodedCsr)
-
             val initializePosResponse = initializePos(
                 rosettaApi,
                 base64PublicKeyPEM = response.signedCertificate
             )
 
-            ksnManager.init(initialKeyId = initializePosResponse.keySerialNumber)
+//            ksnManager.init(initializePosResponse)
 
             /**
              * Unpack:
              * encryptedIpek,
              * checkSum,
              * checksumAlgorithm,
-             * keySerialNumber
+             * keySerialNumber - KSN
              */
+            val initialDerivationKey = rsaKeyManager.decrypt(initializePosResponse.encryptedIpek.toByteArray())
 
-            // TODO: @devinmorgan 13. Decrypt key and generate first set of transaction keys
-            // TODO: @devinmorgan 14. Delete DUKPT base key and public/private key pair.
-
-            return PinTranslationParams(
-                ksn = initializePosResponse.keySerialNumber,
-                txnCounter = ksnManager.readTxCountStr()
-            )
-        } catch (e: PosInitializationException) {
-            logger.e("Failed to initialize the ForageTerminalSDK", e)
-            throw e
+            // dukptService.loadKey(decryptedInitialDerivationKey)
         } catch (e: Exception) {
             logger.e("Failed to initialize the ForageTerminalSDK", e)
             throw e
@@ -109,10 +84,10 @@ internal class PosTerminalInitializer(
     }
 
     /**
-     * @throws PosInitializationException
      *
      * @return true if the KSN file already exists, false otherwise.
      */
+    @Throws(PosInitializationException::class)
     private fun isKsnFileAvailable(): Boolean {
         try {
             val ksnManager = KsnManager.forJavaRuntime()

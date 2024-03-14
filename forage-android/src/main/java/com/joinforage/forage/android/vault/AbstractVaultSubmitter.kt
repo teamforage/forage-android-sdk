@@ -12,9 +12,7 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
-import com.joinforage.forage.android.pos.PosBaseVaultSubmitterParams
 import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
-import com.joinforage.forage.android.pos.keys.PinTranslationParams
 import com.joinforage.forage.android.ui.ForagePINEditText
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
@@ -182,7 +180,6 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         return when (vaultProxyRequest.params) {
             is PosBalanceVaultSubmitterParams -> buildPosBalanceCheckRequestBody(baseRequestBody, vaultProxyRequest.params)
             is PosRefundVaultSubmitterParams -> buildPosRefundRequestBody(baseRequestBody, vaultProxyRequest.params)
-            is PosBaseVaultSubmitterParams -> buildBasePosRequestBody(baseRequestBody, vaultProxyRequest.params)
             else -> baseRequestBody
         }
     }
@@ -194,27 +191,9 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         body[ForageConstants.RequestBody.AMOUNT] = posParams.refundParams.amount
         body[ForageConstants.RequestBody.REASON] = posParams.refundParams.reason
         body[ForageConstants.RequestBody.METADATA] = posParams.refundParams.metadata ?: HashMap<String, String>()
-
-        buildBasePosRequestBody(
-            body,
-            PosBaseVaultSubmitterParams(
-                baseVaultSubmitterParams = posParams.baseVaultSubmitterParams,
-                posTerminalId = posParams.posTerminalId,
-                pinTranslationParams = posParams.pinTranslationParams
-            )
+        body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
+            ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to posParams.posTerminalId
         )
-
-        return body
-    }
-
-    private fun buildBasePosRequestBody(
-        body: HashMap<String, Any>,
-        posParams: PosBaseVaultSubmitterParams
-    ): HashMap<String, Any> {
-        attachPosTerminalId(body, posParams.posTerminalId)
-        body[ForageConstants.PosRequestBody.KSN] = posParams.pinTranslationParams.ksn
-        body[ForageConstants.PosRequestBody.TXN_COUNTER] = posParams.pinTranslationParams.txnCounter
-
         return body
     }
 
@@ -222,15 +201,9 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         body: HashMap<String, Any>,
         posParams: PosBalanceVaultSubmitterParams
     ): HashMap<String, Any> {
-        buildBasePosRequestBody(
-            body,
-            PosBaseVaultSubmitterParams(
-                baseVaultSubmitterParams = posParams.baseVaultSubmitterParams,
-                posTerminalId = posParams.posTerminalId,
-                pinTranslationParams = posParams.pinTranslationParams
-            )
+        body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
+            ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to posParams.posTerminalId
         )
-
         return body
     }
 
@@ -238,17 +211,6 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         return hashMapOf(
             ForageConstants.RequestBody.CARD_NUMBER_TOKEN to vaultProxyRequest.vaultToken
         )
-    }
-
-    private fun attachPosTerminalId(body: HashMap<String, Any>, posTerminalId: String) {
-        body[ForageConstants.RequestBody.POS_TERMINAL] = hashMapOf(
-            ForageConstants.RequestBody.PROVIDER_TERMINAL_ID to posTerminalId
-        )
-    }
-
-    private fun attachPinTranslationParams(body: HashMap<String, Any>, pinTranslationParams: PinTranslationParams) {
-        body[ForageConstants.PosRequestBody.KSN] = pinTranslationParams.ksn
-        body[ForageConstants.PosRequestBody.TXN_COUNTER] = pinTranslationParams.txnCounter
     }
 
     internal companion object {

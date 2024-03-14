@@ -42,7 +42,17 @@ internal class ForagePinSubmitter(
             val apiUrl = buildVaultUrl(vaultProxyRequest.path)
 
             val baseRequestBody = buildRequestBody(vaultProxyRequest)
-            val requestBody = buildForageVaultRequestBody(foragePinEditText, baseRequestBody)
+            val plainTextPan = vaultProxyRequest.params?.paymentMethod?.card?.number
+
+            if (plainTextPan == null) {
+                logger.e("PaymentMethod.card.number was null")
+                return UnknownErrorApiResponse
+            }
+
+            val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
+            val encryptedPinBlock = encryptPin(plainTextPan, plainTextPin)
+
+            val requestBody = buildForageVaultRequestBody(encryptedPinBlock, baseRequestBody)
 
             val request = Request.Builder()
                 .url(apiUrl)
@@ -59,13 +69,28 @@ internal class ForagePinSubmitter(
             )
 
             val vaultService: NetworkService = object : NetworkService(okHttpClient, logger) {}
-
             val rawForageVaultResponse = vaultService.convertCallbackToCoroutine(request)
 
             vaultToForageResponse(rawForageVaultResponse)
         } catch (e: Exception) {
             logger.e("Failed to send request to Forage Vault.", e)
             UnknownErrorApiResponse
+        }
+    }
+
+    private fun encryptPin(plainTextPan: String, plainTextPin: String): String {
+        try {
+            //        val dukpt = DukptService(
+//            keyRegisters = AndroidKeyStoreKeyRegisters(),
+//            deviceDerivationId = ksnManager.getDeviceDerivationId(),
+//            txCounter = ksnManager.getDukptTxCount(),
+//        )
+//        val (workingKey, txCount) = dukpt.generateWorkingKey()
+//        return PinBlockIso4(plainTextPan, plainTextPin, workingKey).contents.toHexString().uppercase()
+            return ""
+        } catch (e: Exception) {
+            logger.e("Failed to encrypt pin using dukpt service", e)
+            throw e
         }
     }
 
@@ -115,9 +140,13 @@ internal class ForagePinSubmitter(
                 .addTrailingSlash()
                 .build()
 
-        private fun buildForageVaultRequestBody(foragePinEditText: ForagePINEditText, baseRequestBody: Map<String, Any>): RequestBody {
+        private fun buildForageVaultRequestBody(
+            encryptedPinBlock: String,
+            baseRequestBody: Map<String, Any>
+        ): RequestBody {
             val jsonBody = JSONObject(baseRequestBody)
-            jsonBody.put("pin", foragePinEditText.getForageTextElement().text.toString())
+
+//            jsonBody.put("pin", foragePinEditText.getForageTextElement().text.toString())
 
             val mediaType = "application/json".toMediaTypeOrNull()
             return jsonBody.toString().toRequestBody(mediaType)

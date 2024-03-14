@@ -71,7 +71,7 @@ class RsaKeyManager(
     }
 
     fun generateCSRBase64(): String {
-        val rawCsr = generateRawCsr(keyStoreEntry, alias = fqdnAlias)
+        val rawCsr = generateRawCsr(keyStoreEntry)
         return AndroidBase64.encodeToString(rawCsr.toByteArray(), AndroidBase64.DEFAULT)
     }
 

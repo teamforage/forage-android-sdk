@@ -16,6 +16,9 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.keys.KsnManager
+import com.joinforage.forage.android.pos.keys.PosTerminalInitializer
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -409,8 +412,6 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         return balanceResponse
     }
 
-    // ======= Same as online-only Forage SDK below =======
-
     /**
      * Immediately captures a payment via a
      * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
@@ -793,12 +794,22 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         return null
     }
 
-    private fun isInitializationExceptionOrNull(
-        logger: Log,
-        methodName: String
-    ): ForageApiResponse<String>? {
-        // The public distribution of the Forage Terminal SDK does not have an init method.
-        // So we always return null here!
+    private fun isInitializationExceptionOrNull(logger: Log, methodName: String): ForageApiResponse<String>? {
+        if (!calledInit) {
+            val errorMessage = """
+                    This instance of `ForageTerminalSDK` has not been pre-initialized 
+                    and will run the initialization process now instead. Consider 
+                    calling `.init(config: PosForageConfig)` ahead of calling $methodName
+                    to ensure any long-running init operations are completed beforehand.
+            """.trimIndent()
+
+            throw IllegalStateException(errorMessage)
+        }
+
+        if (!initSucceeded) {
+            logger.e("[POS] $methodName failed because the ForageTerminalSDK init method failed.")
+            return UnknownErrorApiResponse
+        }
         return null
     }
 

@@ -4,7 +4,9 @@ import org.json.JSONObject
 internal data class Card(
     val last4: String,
     val type: String = "",
-    val token: String
+    val token: String,
+    // POS-only
+    val number: String? = null
 )
 
 internal data class Balance(

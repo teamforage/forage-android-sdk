@@ -4,6 +4,7 @@ import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log
@@ -76,6 +77,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             sessionToken = expectedData.sessionToken
         )
         `when`(mockForagePinEditText.getForageConfig()).thenReturn(forageConfig)
+        `when`(mockForagePanEditText.getForageConfig()).thenReturn(forageConfig)
         `when`(mockForagePinEditText.getVaultType()).thenReturn(vaultSubmitter.getVaultType())
 
         terminalSdk = createMockTerminalSdk()

@@ -10,7 +10,6 @@ import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.Message
 import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
-import com.joinforage.forage.android.pos.keys.PinTranslationParams
 import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitterParams
@@ -76,8 +75,7 @@ internal class CheckBalanceRepository(
         merchantId: String,
         paymentMethodRef: String,
         posTerminalId: String,
-        sessionToken: String,
-        pinTranslationParams: PinTranslationParams
+        sessionToken: String
     ): ForageApiResponse<String> {
         return checkBalance(
             merchantId = merchantId,
@@ -91,8 +89,7 @@ internal class CheckBalanceRepository(
                         paymentMethod = paymentMethod,
                         sessionToken = sessionToken
                     ),
-                    posTerminalId = posTerminalId,
-                    pinTranslationParams = pinTranslationParams
+                    posTerminalId = posTerminalId
                 )
             }
         )
