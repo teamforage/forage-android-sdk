@@ -8,7 +8,26 @@ internal data class AesBlock(val data: ByteArray) {
         }
     }
 
+    fun xor(other: AesBlock) : AesBlock {
+        val xorData = data.zip(other.data) { a, b ->
+            (a.toInt() xor b.toInt()).toByte()
+        }.toByteArray()
+        return AesBlock(xorData)
+    }
+
     // for unit tests
     fun toHexString(): String =
         data.joinToString(separator = "", transform = { "%02x".format(it) })
+
+    companion object {
+
+        // NOTE: this function assumes there is no leading
+        // 0x<hex>... it assumes you just pass in <hex>...
+        fun fromHexString(hex: String) : AesBlock {
+            val bytearray = hex.chunked(2)
+                .map { it.toInt(16).toByte() }
+                .toByteArray()
+            return AesBlock(bytearray)
+        }
+    }
 }
