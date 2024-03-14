@@ -16,4 +16,17 @@ internal class InMemoryWorkingKey(
     }
     val keyMaterial: AesBlock
         get() = keyRegisters.getWorkingKeyMaterial()
+
+
+    companion object {
+        fun fromHex(
+            heyStringKeyMaterial: String
+        ) : InMemoryWorkingKey {
+            val keyRegisters = InMemoryKeyRegisters()
+            keyRegisters.setWorkingKey(
+                AesBlock.fromHexString(heyStringKeyMaterial)
+            )
+            return InMemoryWorkingKey(keyRegisters)
+        }
+    }
 }
