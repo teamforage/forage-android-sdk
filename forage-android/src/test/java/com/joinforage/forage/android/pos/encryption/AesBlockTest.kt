@@ -3,7 +3,6 @@ package com.joinforage.forage.android.pos.encryption
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-
 /**
  * I made this test while debugging the PinBlockIso4
  * module because I wasn't sure if the XOR logic was

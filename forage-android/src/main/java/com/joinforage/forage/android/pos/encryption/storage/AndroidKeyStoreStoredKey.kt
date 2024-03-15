@@ -76,5 +76,4 @@ internal class AndroidKeyStoreStoredKey(private val alias: String) : StoredKey, 
     }
 
     override fun clear() = androidKeyStore.clearKey(alias)
-
 }

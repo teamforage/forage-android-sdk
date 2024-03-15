@@ -17,8 +17,7 @@ import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.keys.KsnManager
-import com.joinforage.forage.android.pos.keys.PosTerminalInitializer
+import com.joinforage.forage.android.pos.encryption.KsnManager
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
