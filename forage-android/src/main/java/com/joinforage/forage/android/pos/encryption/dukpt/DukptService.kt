@@ -4,8 +4,8 @@ import com.joinforage.forage.android.pos.encryption.AesBlock
 import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 
 internal class DukptService(
-        private val ksn: KeySerialNumber,
-        private val keyRegisters: SecureKeyStorageRegisters,
+    private val ksn: KeySerialNumber,
+    private val keyRegisters: SecureKeyStorageRegisters
 ) {
     private val deviceDerivationId: KsnComponent = KsnComponent(ksn.deviceDerivationId)
     private var txCounter: DukptCounter = DukptCounter(ksn.txCount)
@@ -27,9 +27,9 @@ internal class DukptService(
             // corresponds to the offspring counter value of
             // txCount bitOR rightShifted
             baseKey.forceDeriveIntermediateDerivationKey(
-                    deviceDerivationId,
-                    txCounter.bitOr(rightShifted.contents),
-                    destinationKeyRegisterIndex = rightShifted.lsbOffset
+                deviceDerivationId,
+                txCounter.bitOr(rightShifted.contents),
+                destinationKeyRegisterIndex = rightShifted.lsbOffset
             )
         }
     }
@@ -39,27 +39,27 @@ internal class DukptService(
     private fun safeUpdateDerivationKeys(shiftRegister: ShiftRegister, baseKey: StoredKey) {
         ShiftRegister.forEachRightShift(shiftRegister) { rightShifted ->
             baseKey.safeDeriveIntermediateDerivationKey(
-                    deviceDerivationId,
-                    txCounter.bitOr(rightShifted.contents),
-                    destinationKeyRegisterIndex = rightShifted.lsbOffset
+                deviceDerivationId,
+                txCounter.bitOr(rightShifted.contents),
+                destinationKeyRegisterIndex = rightShifted.lsbOffset
             )
         }
     }
 
     private fun updateStateForNextTx() {
         txCounter =
-                if (txCounter.isLessThanMaxWork) {
-                    safeUpdateDerivationKeys(txCounter.shiftRegister, currentKey)
-                    currentKey.clear()
-                    // TODO: can anything bad happen if the app crashes right here?
-                    //  like can DUKPT recover from this?
-                    txCounter.inc()
-                } else {
-                    currentKey.clear()
-                    // TODO: can anything bad happen if the app crashes right here?
-                    //  like can DUKPT recover from this?
-                    txCounter.incByLsb()
-                }
+            if (txCounter.isLessThanMaxWork) {
+                safeUpdateDerivationKeys(txCounter.shiftRegister, currentKey)
+                currentKey.clear()
+                // TODO: can anything bad happen if the app crashes right here?
+                //  like can DUKPT recover from this?
+                txCounter.inc()
+            } else {
+                currentKey.clear()
+                // TODO: can anything bad happen if the app crashes right here?
+                //  like can DUKPT recover from this?
+                txCounter.incByLsb()
+            }
     }
 
     fun generateWorkingKey(): Pair<WorkingKey, KeySerialNumber> {
@@ -95,7 +95,7 @@ internal class DukptService(
     fun loadKey(initialDerivationKeyMaterial: AesBlock) {
         keyRegisters.reset()
         val initialDerivationKey =
-                keyRegisters.setInitialDerivationKey(initialDerivationKeyMaterial)
+            keyRegisters.setInitialDerivationKey(initialDerivationKeyMaterial)
         forceUpdateDerivationKeys(ShiftRegister.fromHighestValue(), initialDerivationKey)
         txCounter = txCounter.inc()
     }

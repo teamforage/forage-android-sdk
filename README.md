@@ -511,9 +511,12 @@ You can then use the instance to call methods that perform payment operations, a
 `init` returns the original instance.
 
 ```kotlin
-val forage = ForageTerminalSDK(posTerminalId)
-
-forage.init(sessionToken)
+val forage = ForageTerminalSDK.init(
+  context, 
+  posTerminalId, 
+  merchantId, 
+  sessionToken
+)
 ```
 
 ##### `init` parameters

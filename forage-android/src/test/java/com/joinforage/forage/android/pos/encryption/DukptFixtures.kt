@@ -10,7 +10,7 @@ internal object DukptFixtures {
         val keyRegisters = InMemoryKeyRegisters()
         val dukpt = DukptService(
             ksn = KeySerialNumber(Config.InitialKeyId),
-            keyRegisters = keyRegisters,
+            keyRegisters = keyRegisters
         )
         dukpt.loadKey(Config.InitialDerivationKeyMaterial)
         return Pair(dukpt, keyRegisters)
@@ -23,7 +23,7 @@ internal object DukptFixtures {
                 0x12.toByte(),
                 0x34.toByte(),
                 0x56.toByte(),
-                0x78.toByte(),
+                0x78.toByte()
             )
         )
         val DerivationDeviceId = KsnComponent(

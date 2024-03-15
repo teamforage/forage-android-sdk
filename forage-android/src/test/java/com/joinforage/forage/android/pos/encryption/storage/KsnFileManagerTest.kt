@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-
 val initialKeyId1 = "0123456789abcedf" // 16 chars
 val bdkId1 = initialKeyId1.substring(0, 8)
 val deviceId1 = initialKeyId1.substring(8, 16)
@@ -72,10 +71,12 @@ class KsnFileManagerAccessorsTest {
         // TODO: should probably move these tests to their own file
         //  since they test KeySerialNumber
         assertThat(ksnObj!!.apcKsn).isEqualTo(initialKeyId1)
-        assertThat(ksnObj.fileContent).isEqualTo("" +
+        assertThat(ksnObj.fileContent).isEqualTo(
+            "" +
                 "${bdkId1}\n" +
                 "${deviceId1}\n" +
-                "0\n")
+                "0\n"
+        )
         assertThat(ksnObj.txCount).isEqualTo(0u)
         assertThat(ksnObj.baseDerivationKeyId).isEqualTo(bdkId1)
         assertThat(ksnObj.deviceDerivationId).isEqualTo(deviceId1)
@@ -100,7 +101,7 @@ class KsnFileManagerAccessorsTest {
             KeySerialNumber(
                 baseDerivationKeyId = bdkId1,
                 deviceDerivationId = deviceId1,
-                txCount = expectedTxCount,
+                txCount = expectedTxCount
             )
         )
         assertThat(ksn.readTxCount()!!.toUInt()).isEqualTo(expectedTxCount)
@@ -122,7 +123,7 @@ class KsnFileManagerAccessorsTest {
                 KeySerialNumber(
                     baseDerivationKeyId = "ffffffff",
                     deviceDerivationId = deviceId1,
-                    txCount = expectedTxCount,
+                    txCount = expectedTxCount
                 )
             )
         }
@@ -138,7 +139,7 @@ class KsnFileManagerAccessorsTest {
                 KeySerialNumber(
                     baseDerivationKeyId = bdkId1,
                     deviceDerivationId = "ffffffff",
-                    txCount = expectedTxCount,
+                    txCount = expectedTxCount
                 )
             )
         }
