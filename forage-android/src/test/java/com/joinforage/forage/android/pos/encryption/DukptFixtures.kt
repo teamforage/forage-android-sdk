@@ -9,7 +9,7 @@ internal object DukptFixtures {
     fun newDukpt(): Pair<DukptService, InMemoryKeyRegisters> {
         val keyRegisters = InMemoryKeyRegisters()
         val dukpt = DukptService(
-            ksn = KeySerialNumber(Config.InitialKeyId.toHexString()),
+            ksn = KeySerialNumber(Config.InitialKeyId),
             keyRegisters = keyRegisters,
         )
         dukpt.loadKey(Config.InitialDerivationKeyMaterial)
@@ -18,18 +18,23 @@ internal object DukptFixtures {
 
     object Config {
         // KSN = DerivationID | Base Derivation Key ID | TxCounter
-        val InitialKeyId = KsnComponent(
+        val BaseDerivationKeyId = KsnComponent(
             byteArrayOf(
                 0x12.toByte(),
                 0x34.toByte(),
                 0x56.toByte(),
                 0x78.toByte(),
+            )
+        )
+        val DerivationDeviceId = KsnComponent(
+            byteArrayOf(
                 0x90.toByte(),
                 0x12.toByte(),
                 0x34.toByte(),
                 0x56.toByte()
             )
         )
+        val InitialKeyId = "${BaseDerivationKeyId.toHexString()}${DerivationDeviceId.toHexString()}"
 
         val InitialDerivationKeyMaterial = AesBlock(
             byteArrayOf(

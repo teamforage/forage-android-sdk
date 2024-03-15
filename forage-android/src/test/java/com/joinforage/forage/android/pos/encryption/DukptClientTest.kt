@@ -24,8 +24,17 @@ class DukptClientTest {
     fun `it correctly updates the intermediate derivation keys after first working key`() {
         val (dukpt, keyRegisters) = DukptFixtures.newDukpt()
         assertThat(dukpt.count).isEqualTo(1u)
-        val (key, txCount) = dukpt.generateWorkingKey()
-        assertThat(txCount).isEqualTo(1u)
+        // generate the second key, the one we care about
+        val (key, ksn) = dukpt.generateWorkingKey() // second key
+
+        // make sure ksn values are as we expect
+        assertThat(ksn.txCount).isEqualTo(1u)
+        assertThat(ksn.baseDerivationKeyId).isEqualTo(DukptFixtures.Config.BaseDerivationKeyId.toHexString())
+        assertThat(ksn.deviceDerivationId).isEqualTo(DukptFixtures.Config.DerivationDeviceId.toHexString())
+        assertThat(ksn.apcKsn).isEqualTo(DukptFixtures.Config.InitialKeyId)
+        assertThat(ksn.txCountAsBigEndian8CharHex).isEqualTo("00000001")
+
+        // make sure the working key is as we expect
         val keyHex = (key as InMemoryWorkingKey).keyMaterial.toHexString()
         assertThat(keyHex).isEqualTo("af8cb133a78f8dc2d1359f18527593fb")
 
@@ -53,8 +62,16 @@ class DukptClientTest {
         dukpt.generateWorkingKey()
 
         // generate the second key, the one we care about
-        val (key, txCount) = dukpt.generateWorkingKey() // second key
-        assertThat(txCount).isEqualTo(2u)
+        val (key, ksn) = dukpt.generateWorkingKey() // second key
+
+        // make sure ksn values are as we expect
+        assertThat(ksn.txCount).isEqualTo(2u)
+        assertThat(ksn.baseDerivationKeyId).isEqualTo(DukptFixtures.Config.BaseDerivationKeyId.toHexString())
+        assertThat(ksn.deviceDerivationId).isEqualTo(DukptFixtures.Config.DerivationDeviceId.toHexString())
+        assertThat(ksn.apcKsn).isEqualTo(DukptFixtures.Config.InitialKeyId)
+        assertThat(ksn.txCountAsBigEndian8CharHex).isEqualTo("00000002")
+
+        // make sure the working key is as we expect
         val keyHex = (key as InMemoryWorkingKey).keyMaterial.toHexString()
         assertThat(keyHex).isEqualTo("d30bdc73ec9714b000bec66bdb7b6d09")
 
@@ -81,13 +98,13 @@ class DukptClientTest {
         val (dukpt) = DukptFixtures.newDukpt()
 
         for ((i, expectedWorkingKey) in DukptFixtures.WorkingKeys.withIndex()) {
-            val (workingKey, actualTxCount) = dukpt.generateWorkingKey()
+            val (workingKey, ksn) = dukpt.generateWorkingKey()
 
             val actualWorkingKey = (workingKey as InMemoryWorkingKey).keyMaterial.toHexString()
             assertThat(actualWorkingKey).isEqualTo(expectedWorkingKey)
 
             val expectedTxCount = (i + 1).toUInt()
-            assertThat(actualTxCount).isEqualTo(expectedTxCount)
+            assertThat(ksn.txCount).isEqualTo(expectedTxCount)
         }
     }
 }
