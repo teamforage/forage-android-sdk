@@ -102,7 +102,8 @@ internal class PosTerminalInitializer(
             }
             return false
         } catch (e: Exception) {
-            throw PosInitializationException("Failed to check for existing KSN file", e)
+            logger.w("[POS] Failed to read KSN file.")
+            return false
         }
     }
 
