@@ -27,5 +27,3 @@ internal class PinBlockIso4(
         workingKey: WorkingKey
     ) : this(PanFieldIso4(rawPan), PinFieldIso4(plainTextPin), workingKey)
 }
-
-

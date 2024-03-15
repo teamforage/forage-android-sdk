@@ -11,7 +11,6 @@ internal val randomPadding = "2F69ADDE2E9E7ACE"
 internal val pin = PinFieldIso4("1234", randomPadding)
 internal val pan = PanFieldIso4("4111111111111111")
 
-
 class PinBlockIso4Test {
     @Test
     fun `it should correctly encrypt with wk1`() {

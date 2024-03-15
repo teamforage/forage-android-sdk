@@ -4,7 +4,7 @@ import com.joinforage.forage.android.pos.encryption.AesBlock
 import kotlin.random.Random
 
 internal interface Iso4Field {
-    fun toAesBlock() : AesBlock
+    fun toAesBlock(): AesBlock
 }
 
 internal fun makeRandomHexString(length: Int): String {

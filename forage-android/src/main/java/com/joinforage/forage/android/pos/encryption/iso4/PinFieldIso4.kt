@@ -11,7 +11,6 @@ internal class PinFieldIso4(
     val endRandomPadding: String = makeRandomHexString(16)
 ) : Iso4Field {
 
-
     val startPadding = "4" // nothing to do with pin length
     val pinSize = 4 // hard-coded to only handle length 4 PINs
     val padAs = "A".repeat(14 - pinSize) // 10 for pin.length == 4

@@ -17,8 +17,7 @@ import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.keys.KsnManager
-import com.joinforage.forage.android.pos.keys.PosTerminalInitializer
+import com.joinforage.forage.android.pos.encryption.KsnManager
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -112,16 +111,9 @@ class ForageTerminalSDK(
             logger.addAttribute("merchant_ref", merchantId)
             logger.i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
 
-//                        val dukptService = DukptService(
-//                deviceDerivationId = initialDerivationKey,
-//                keyRegisters = AndroidKeyStoreKeyRegisters(),
-//                txCounter = DukptCounter.fromZero()
-//            )
-
             val initializer = PosTerminalInitializer(
                 logger = createLogger(),
                 ksnManager = KsnManager.forJavaRuntime()
-//                dukptService = dukptService
             )
 
             initializer.execute(

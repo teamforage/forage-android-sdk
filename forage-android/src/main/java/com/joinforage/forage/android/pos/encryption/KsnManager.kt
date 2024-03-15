@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.keys
+package com.joinforage.forage.android.pos.encryption
 
 import android.content.Context
 import java.io.File

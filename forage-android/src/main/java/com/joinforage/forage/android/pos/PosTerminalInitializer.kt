@@ -1,10 +1,16 @@
-package com.joinforage.forage.android.pos.keys
+package com.joinforage.forage.android.pos
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.pos.PosForageConfig
+import com.joinforage.forage.android.pos.encryption.CertificateSigningRequest
+import com.joinforage.forage.android.pos.encryption.CertificateSigningResponse
+import com.joinforage.forage.android.pos.encryption.InitializePosRequest
+import com.joinforage.forage.android.pos.encryption.InitializePosResponse
+import com.joinforage.forage.android.pos.encryption.KsnManager
+import com.joinforage.forage.android.pos.encryption.RosettaProxyApi
+import com.joinforage.forage.android.pos.encryption.certificate.RsaKeyManager
 
 internal class PosInitializationException(
     val reason: String,
@@ -24,7 +30,6 @@ internal interface PosInitializer {
  */
 @RequiresApi(Build.VERSION_CODES.M)
 internal class PosTerminalInitializer(
-//    private val dukptService: DukptService,
     private val ksnManager: KsnManager,
     private val logger: Log
 ) : PosInitializer {
@@ -57,16 +62,9 @@ internal class PosTerminalInitializer(
 
 //            ksnManager.init(initializePosResponse)
 
-            /**
-             * Unpack:
-             * encryptedIpek,
-             * checkSum,
-             * checksumAlgorithm,
-             * keySerialNumber - KSN
-             */
-            val initialDerivationKey = rsaKeyManager.decrypt(initializePosResponse.encryptedIpek.toByteArray())
+            val decryptedInitialDerivationKey = rsaKeyManager.decrypt(initializePosResponse.encryptedIpek.toByteArray())
 
-            // dukptService.loadKey(decryptedInitialDerivationKey)
+//             dukptService.loadKey(decryptedInitialDerivationKey.toString())
         } catch (e: Exception) {
             logger.e("Failed to initialize the ForageTerminalSDK", e)
             throw e
@@ -138,9 +136,7 @@ internal class PosTerminalInitializer(
             logger.i("[Rosetta] Initializing POS terminal with /api/terminal/initialize")
 
             return rosettaApi.initializePos(
-                InitializePosRequest(
-                    base64PublicKeyPEM = base64PublicKeyPEM
-                )
+                InitializePosRequest(base64PublicKeyPEM = base64PublicKeyPEM)
             )
         } catch (e: Exception) {
             throw PosInitializationException("Failed to initialize POS terminal with Rosetta", e)

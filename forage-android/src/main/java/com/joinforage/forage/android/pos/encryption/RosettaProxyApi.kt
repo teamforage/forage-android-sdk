@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.keys
+package com.joinforage.forage.android.pos.encryption
 
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.pos.PosForageConfig
