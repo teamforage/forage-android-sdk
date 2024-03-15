@@ -46,7 +46,9 @@ internal data class KeySerialNumber(
         txCount = txCount.toUInt()
     )
 
-    val fileContent = "$baseDerivationKeyId\n" + "$deviceDerivationId\n" + "$txCount\n"
+    val fileContent = "$baseDerivationKeyId\n" +
+            "$deviceDerivationId\n" +
+            "$txCount\n"
 
     // this is the value that Amazon Payments Cryptography expects
     // as the `ksn` value sent up with each encrypted PIN block
@@ -101,14 +103,13 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         // that if the file does not exist, it does not
         // attempt to read the Device Derivation Id, which would
         // throw an error
+        val existingBdkId = readBaseDerivationKeyId()?.toHexString()
         val existingDeviceId = readDeviceDerivationId()?.toHexString()
-        val runInit =
-                !ksnFile.exists() // no ksn file? run init!
-                ||
-                        existingDeviceId == null // no device id? run init!
-                        ||
-                        ksn.deviceDerivationId !=
-                                existingDeviceId // mismatching device ids? run init!
+        val runInit = !ksnFile.exists() // no ksn file? run init!
+                || existingBdkId == null // no bdk id? run init!
+                || existingDeviceId == null // no device id? run init!
+                || ksn.baseDerivationKeyId != existingBdkId  // mismatching bdk ids? run init!
+                || ksn.deviceDerivationId != existingDeviceId  // mismatching device ids? run init!
         if (!runInit) return false
 
         // we're good to go? let's persist the ksn content
@@ -129,13 +130,13 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     // Base Derivation Key is line 0
     fun readBaseDerivationKeyId() : KsnComponent? {
         val deviceIdHexStr = ksnFile.read().getOrNull(0) ?: return null
-        return KsnComponent(deviceIdHexStr)
+        return if (deviceIdHexStr.isEmpty()) null else KsnComponent(deviceIdHexStr)
     }
 
     // Device Derivation Id is line 1
     fun readDeviceDerivationId(): KsnComponent? {
         val deviceIdHexStr = ksnFile.read().getOrNull(1) ?: return null
-        return KsnComponent(deviceIdHexStr)
+        return if (deviceIdHexStr.isEmpty()) null else KsnComponent(deviceIdHexStr)
     }
 
     // Tx Count is line 2
