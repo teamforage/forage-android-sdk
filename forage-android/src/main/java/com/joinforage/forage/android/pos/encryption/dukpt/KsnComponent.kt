@@ -16,5 +16,5 @@ internal data class KsnComponent(val bytes: ByteArray) {
     constructor(hex: String) : this(ByteUtils.hex2ByteArray(hex))
 
     fun toHexString(): String = ByteUtils.byteArray2Hex(bytes)
-    fun toUInt() : UInt = ByteUtils.byteArrayToUInt(bytes)
+    fun toUInt(): UInt = ByteUtils.byteArrayToUInt(bytes)
 }

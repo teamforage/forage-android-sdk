@@ -11,7 +11,7 @@ internal data class AesBlock(val data: ByteArray) {
 
     fun xor(other: AesBlock): AesBlock {
         val xorData =
-                data.zip(other.data) { a, b -> (a.toInt() xor b.toInt()).toByte() }.toByteArray()
+            data.zip(other.data) { a, b -> (a.toInt() xor b.toInt()).toByte() }.toByteArray()
         return AesBlock(xorData)
     }
 

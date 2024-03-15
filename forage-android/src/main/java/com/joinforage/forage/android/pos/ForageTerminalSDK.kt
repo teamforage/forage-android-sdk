@@ -17,9 +17,10 @@ import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.encryption.KsnManager
+import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.vault.ForagePinSubmitter
 
 /**
  * The entry point for **in-store POS Terminal** transactions.

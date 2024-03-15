@@ -13,6 +13,7 @@ import com.joinforage.forage.android.network.NetworkService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.ui.ForagePINEditText
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -21,6 +22,12 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+
+internal data class PinTranslationParams(
+    val encryptedPinBlock: String,
+    val keySerialNumber: String,
+    val txnCounter: String
+)
 
 internal class ForagePinSubmitter(
     context: Context,
@@ -49,17 +56,16 @@ internal class ForagePinSubmitter(
                 return UnknownErrorApiResponse
             }
 
-            val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
-            val encryptedPinBlock = encryptPin(plainTextPan, plainTextPin)
+            val pinTranslationParams = buildPinTranslationParams(vaultProxyRequest)
 
-            val requestBody = buildForageVaultRequestBody(encryptedPinBlock, baseRequestBody)
+            val requestBody = buildForageVaultRequestBody(pinTranslationParams, baseRequestBody)
 
             val request = Request.Builder()
                 .url(apiUrl)
                 .post(requestBody)
                 .build()
 
-            val headerValues = vaultProxyRequest.params!!
+            val headerValues = vaultProxyRequest.params
 
             val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                 sessionToken = headerValues.sessionToken,
@@ -80,11 +86,12 @@ internal class ForagePinSubmitter(
 
     private fun encryptPin(plainTextPan: String, plainTextPin: String): String {
         try {
-            //        val dukpt = DukptService(
-//            keyRegisters = AndroidKeyStoreKeyRegisters(),
-//            deviceDerivationId = ksnManager.getDeviceDerivationId(),
-//            txCounter = ksnManager.getDukptTxCount(),
-//        )
+            // does this need Context / KsnManager?
+//            val dukpt = DukptService(
+// //                keyRegisters = AndroidKeyStoreKeyRegisters(),
+// //                deviceDerivationId = ksnManager.getDeviceDerivationId(),
+// //                txCounter = ksnManager.getDukptTxCount(),
+//            )
 //        val (workingKey, txCount) = dukpt.generateWorkingKey()
 //        return PinBlockIso4(plainTextPan, plainTextPin, workingKey).contents.toHexString().uppercase()
             return ""
@@ -127,7 +134,43 @@ internal class ForagePinSubmitter(
         return null
     }
 
+    private fun buildPinTranslationParams(vaultProxyRequest: VaultProxyRequest): PinTranslationParams {
+        val plainTextPan = vaultProxyRequest.params?.paymentMethod?.card?.number
+
+        if (plainTextPan == null) {
+            val err = "PaymentMethod.card.number was null"
+            logger.e(err)
+            throw IllegalArgumentException(err)
+        }
+        if (ksnFileManager == null) {
+            val err = "ksnFileManager was null"
+            logger.e(err)
+            throw IllegalArgumentException(err)
+        }
+
+        val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
+        val encryptedPinBlock = encryptPin(plainTextPan, plainTextPin)
+
+        val ksn = ksnFileManager!!.readAll()
+
+//        val dukptService = DukptService(
+//            ksn = ksn,
+//           keyRegisters = AndroidKeyStoreKeyRegisters()
+//        )
+
+        val txnCounter = "..." // TODO!
+
+        return PinTranslationParams(
+            encryptedPinBlock = encryptedPinBlock,
+            keySerialNumber = "...", // TODO!
+            txnCounter = txnCounter
+        )
+    }
+
     companion object {
+        // STOPGAP: global static var needed to read from the KSN file.
+        internal var ksnFileManager: KsnFileManager? = null
+
         // this code assumes that .setForageConfig() has been called
         // on a Forage***EditText before VAULT_BASE_URL gets referenced
         private val VAULT_BASE_URL = StopgapGlobalState.envConfig.vaultBaseUrl
@@ -141,12 +184,14 @@ internal class ForagePinSubmitter(
                 .build()
 
         private fun buildForageVaultRequestBody(
-            encryptedPinBlock: String,
+            pinTranslationParams: PinTranslationParams,
             baseRequestBody: Map<String, Any>
         ): RequestBody {
             val jsonBody = JSONObject(baseRequestBody)
 
-//            jsonBody.put("pin", foragePinEditText.getForageTextElement().text.toString())
+            jsonBody.put("pin", pinTranslationParams.encryptedPinBlock)
+            jsonBody.put(ForageConstants.PosRequestBody.KSN, pinTranslationParams.keySerialNumber)
+            jsonBody.put(ForageConstants.PosRequestBody.TXN_COUNTER, pinTranslationParams.txnCounter)
 
             val mediaType = "application/json".toMediaTypeOrNull()
             return jsonBody.toString().toRequestBody(mediaType)
