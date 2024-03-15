@@ -37,6 +37,9 @@ data class ForageConfig(
  *
  * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
  * that is used to render text within the ForageElement.
+ * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
+ * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
+ * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
  */
 interface ForageElement<T : ElementState> {
     var typeface: Typeface?
@@ -47,8 +50,20 @@ interface ForageElement<T : ElementState> {
      *
      * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
      * **[setForageConfig] must be called before any other methods can be executed on the Element.**
-     *
-     * @see setPosForageConfig Use [setPosForageConfig] for the equivalent Terminal SDK.
+     * ```kotlin
+     * // Example: Call setForageConfig on a ForagePANEditText Element
+     * val onlineOnlyForagePanEditText = root?.findViewById<ForagePANEditText>(
+     *     R.id.tokenizeForagePanEditText
+     * )
+     * onlineOnlyForagePanEditText.setForageConfig(
+     *     ForageConfig(
+     *         merchantId = "mid/<merchant_id>",
+     *         sessionToken = "<session_token>"
+     *     )
+     * )
+     * ```
+     * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
+     * * [setPosForageConfig] for the equivalent Terminal SDK method.
      *
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
@@ -59,8 +74,18 @@ interface ForageElement<T : ElementState> {
      *
      * Sets the necessary [PosForageConfig] configuration properties for a ForageElement.
      * **[setPosForageConfig] must be called before any other methods can be executed on the Element.**
-     *
-     * @see setForageConfig Use [setForageConfig] for the equivalent online-only method.
+     * ```kotlin
+     * // Example: Call setPosForageConfig on a ForagePINEditText Element
+     * val posForagePinEditText = root?.findViewById<ForagePINEditText>(R.id.foragePinEditText)
+     * posForagePinEditText.setPosForageConfig(
+     *     PosForageConfig(
+     *         sessionToken = "<session_token>",
+     *         merchantId = "mid/<merchant_id>"
+     *     )
+     * )
+     * ```
+     * @see * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
+     * * [setForageConfig] for the equivalent online-only method.
      *
      * @param posForageConfig A [PosForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */

@@ -23,7 +23,6 @@ class ForageConfigNotSetException(override val message: String) : IllegalStateEx
 internal interface ForageSDKInterface {
     /**
      * A method to securely tokenize an EBT card via ForagePANEditText
-     *
      * @param params The parameters required for tokenization, including
      * reference to a ForagePANEditText view for card input.
      *
