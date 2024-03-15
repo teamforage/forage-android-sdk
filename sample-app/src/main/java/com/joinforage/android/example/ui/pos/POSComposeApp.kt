@@ -222,7 +222,7 @@ fun POSComposeApp(
                         if (panElement != null) {
                             panElement!!.clearFocus()
                             viewModel.tokenizeEBTCard(
-                                context = context,
+                                context,
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
                                 onSuccess = {
@@ -265,7 +265,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
                             pinElement!!.clearFocus()
                             viewModel.checkEBTCardBalance(
-                                context = context,
+                                context,
                                 pinElement as ForagePINEditText,
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
                                 k9SDK.terminalId,
@@ -460,7 +460,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
                             pinElement!!.clearFocus()
                             viewModel.capturePayment(
-                                context = context,
+                                context,
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
@@ -592,7 +592,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.localRefundState != null) {
                             pinElement!!.clearFocus()
                             viewModel.refundPayment(
-                                context = context,
+                                context,
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.localRefundState!!.paymentRef,

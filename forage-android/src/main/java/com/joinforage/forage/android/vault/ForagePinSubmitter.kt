@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.vault
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.addPathSegmentsSafe
@@ -13,6 +14,9 @@ import com.joinforage.forage.android.network.NetworkService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
+import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.ui.ForagePINEditText
 import okhttp3.HttpUrl
@@ -84,23 +88,6 @@ internal class ForagePinSubmitter(
         }
     }
 
-    private fun encryptPin(plainTextPan: String, plainTextPin: String): String {
-        try {
-            // does this need Context / KsnManager?
-//            val dukpt = DukptService(
-// //                keyRegisters = AndroidKeyStoreKeyRegisters(),
-// //                deviceDerivationId = ksnManager.getDeviceDerivationId(),
-// //                txCounter = ksnManager.getDukptTxCount(),
-//            )
-//        val (workingKey, txCount) = dukpt.generateWorkingKey()
-//        return PinBlockIso4(plainTextPan, plainTextPin, workingKey).contents.toHexString().uppercase()
-            return ""
-        } catch (e: Exception) {
-            logger.e("Failed to encrypt pin using dukpt service", e)
-            throw e
-        }
-    }
-
     override fun buildProxyRequest(
         params: VaultSubmitterParams,
         encryptionKey: String,
@@ -134,37 +121,34 @@ internal class ForagePinSubmitter(
         return null
     }
 
+    /**
+     * The `init` method of the SDK ensures the client is using Android M (23+) or later.
+     */
+    @SuppressLint("NewApi")
+    @Throws(Exception::class, IllegalArgumentException::class)
     private fun buildPinTranslationParams(vaultProxyRequest: VaultProxyRequest): PinTranslationParams {
         val plainTextPan = vaultProxyRequest.params?.paymentMethod?.card?.number
+            ?: throw IllegalArgumentException("PaymentMethod.card.number was null")
 
-        if (plainTextPan == null) {
-            val err = "PaymentMethod.card.number was null"
-            logger.e(err)
-            throw IllegalArgumentException(err)
+        val ksn = ksnFileManager!!.readAll() ?: throw IllegalArgumentException("Failed to get KSN from file")
+
+        try {
+            val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
+
+            val dukptService = DukptService(ksn = ksn, keyRegisters = AndroidKeyStoreKeyRegisters())
+            val (workingKey, latestKsn) = dukptService.generateWorkingKey()
+            ksnFileManager!!.updateKsn(latestKsn)
+
+            val encryptedPinBlock = PinBlockIso4(plainTextPan, plainTextPin, workingKey).contents.toHexString().uppercase()
+
+            return PinTranslationParams(
+                encryptedPinBlock = encryptedPinBlock,
+                keySerialNumber = latestKsn.apcKsn,
+                txnCounter = latestKsn.txCountAsBigEndian8CharHex
+            )
+        } catch (e: Exception) {
+            throw Exception("Failed to encrypt PIN using dukpt service", e)
         }
-        if (ksnFileManager == null) {
-            val err = "ksnFileManager was null"
-            logger.e(err)
-            throw IllegalArgumentException(err)
-        }
-
-        val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
-        val encryptedPinBlock = encryptPin(plainTextPan, plainTextPin)
-
-        val ksn = ksnFileManager!!.readAll()
-
-//        val dukptService = DukptService(
-//            ksn = ksn,
-//           keyRegisters = AndroidKeyStoreKeyRegisters()
-//        )
-
-        val txnCounter = "..." // TODO!
-
-        return PinTranslationParams(
-            encryptedPinBlock = encryptedPinBlock,
-            keySerialNumber = "...", // TODO!
-            txnCounter = txnCounter
-        )
     }
 
     companion object {
