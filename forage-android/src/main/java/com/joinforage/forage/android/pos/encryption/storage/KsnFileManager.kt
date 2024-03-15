@@ -9,9 +9,9 @@ private val KSN_FILE_NAME: String = "key_serial_number.txt"
 private val INITIAL_TX_COUNT = 0u
 
 internal data class KeySerialNumber(
-        val baseDerivationKeyId: String, // 8 hex chars, which is 32 bits
-        val deviceDerivationId: String, // 8 hex chars, which is 32 bits
-        val txCount: UInt
+    val baseDerivationKeyId: String, // 8 hex chars, which is 32 bits
+    val deviceDerivationId: String, // 8 hex chars, which is 32 bits
+    val txCount: UInt
 ) {
 
     init {
@@ -28,22 +28,22 @@ internal data class KeySerialNumber(
     // the Rosetta server returns all 64 bits. We make this
     // secondary constructor thus to play nice with Rosetta
     constructor(
-            // 16 chars or 64 bits [baseDerivationKeyId|derivationDeviceId]
-            initialKeyId: String
+        // 16 chars or 64 bits [baseDerivationKeyId|derivationDeviceId]
+        initialKeyId: String
     ) : this(
-            txCount = INITIAL_TX_COUNT,
-            baseDerivationKeyId = initialKeyId.substring(0, 8),
-            deviceDerivationId = initialKeyId.substring(8, 16)
+        txCount = INITIAL_TX_COUNT,
+        baseDerivationKeyId = initialKeyId.substring(0, 8),
+        deviceDerivationId = initialKeyId.substring(8, 16)
     )
 
     constructor(
-            baseDerivationKeyId: KsnComponent,
-            deviceId: KsnComponent,
-            txCount: KsnComponent
+        baseDerivationKeyId: KsnComponent,
+        deviceId: KsnComponent,
+        txCount: KsnComponent
     ) : this(
-            baseDerivationKeyId = baseDerivationKeyId.toHexString(),
-            deviceDerivationId = deviceId.toHexString(),
-            txCount = txCount.toUInt()
+        baseDerivationKeyId = baseDerivationKeyId.toHexString(),
+        deviceDerivationId = deviceId.toHexString(),
+        txCount = txCount.toUInt()
     )
 
     val fileContent = "$baseDerivationKeyId\n" + "$deviceDerivationId\n" + "$txCount\n"
@@ -55,14 +55,14 @@ internal data class KeySerialNumber(
     val apcKsn = bdkIdAndDeviceId
 
     val txCountAsBigEndian8CharHex: String =
-            ByteUtils.byteArray2Hex(ByteUtils.uintToByteArray(txCount))
+        ByteUtils.byteArray2Hex(ByteUtils.uintToByteArray(txCount))
 
     fun newKsnWithCount(txCount: KsnComponent): KeySerialNumber =
-            KeySerialNumber(
-                    baseDerivationKeyId = baseDerivationKeyId,
-                    deviceDerivationId = deviceDerivationId,
-                    txCount = txCount.toUInt()
-            )
+        KeySerialNumber(
+            baseDerivationKeyId = baseDerivationKeyId,
+            deviceDerivationId = deviceDerivationId,
+            txCount = txCount.toUInt()
+        )
 }
 
 internal interface PersistentStorage {
@@ -113,15 +113,12 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
             val existingBdkId = readBaseDerivationKeyId()?.toHexString()
             val existingDeviceId = readDeviceDerivationId()?.toHexString()
             val runInit =
-                    existingBdkId.isNullOrBlank() // no bdk id? run init!
-                    ||
-                            existingDeviceId.isNullOrBlank() // no device id? run init!
-                            ||
-                            ksn.baseDerivationKeyId !=
-                                    existingBdkId // mismatching bdk ids? run init!
-                            ||
-                            ksn.deviceDerivationId !=
-                                    existingDeviceId // mismatching device ids? run init!
+                existingBdkId.isNullOrBlank() || // no bdk id? run init!
+                    existingDeviceId.isNullOrBlank() || // no device id? run init!
+                    ksn.baseDerivationKeyId !=
+                    existingBdkId || // mismatching bdk ids? run init!
+                    ksn.deviceDerivationId !=
+                    existingDeviceId // mismatching device ids? run init!
             if (!runInit) return false
         }
 
