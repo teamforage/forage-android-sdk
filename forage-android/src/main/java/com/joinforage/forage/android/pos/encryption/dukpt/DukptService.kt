@@ -1,22 +1,14 @@
 package com.joinforage.forage.android.pos.encryption.dukpt
 
 import com.joinforage.forage.android.pos.encryption.AesBlock
-import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 
 internal class DukptService(
-    private val deviceDerivationId: KsnComponent,
-    private val keyRegisters: SecureKeyStorageRegisters,
-    private var txCounter: DukptCounter
+        private val ksn: KeySerialNumber,
+        private val keyRegisters: SecureKeyStorageRegisters,
 ) {
-    constructor(
-        ksn: KeySerialNumber,
-        keyRegisters: InMemoryKeyRegisters
-    ) : this(
-        KsnComponent(ksn.deviceDerivationId),
-        keyRegisters,
-        DukptCounter(ksn.txCount)
-    )
+    private val deviceDerivationId: KsnComponent = KsnComponent(ksn.deviceDerivationId)
+    private var txCounter: DukptCounter = DukptCounter(ksn.txCount)
 
     private val currentKey: StoredKey
         get() = keyRegisters.getKey(txCounter.currentKeyIndex)
@@ -35,9 +27,9 @@ internal class DukptService(
             // corresponds to the offspring counter value of
             // txCount bitOR rightShifted
             baseKey.forceDeriveIntermediateDerivationKey(
-                deviceDerivationId,
-                txCounter.bitOr(rightShifted.contents),
-                destinationKeyRegisterIndex = rightShifted.lsbOffset
+                    deviceDerivationId,
+                    txCounter.bitOr(rightShifted.contents),
+                    destinationKeyRegisterIndex = rightShifted.lsbOffset
             )
         }
     }
@@ -47,26 +39,23 @@ internal class DukptService(
     private fun safeUpdateDerivationKeys(shiftRegister: ShiftRegister, baseKey: StoredKey) {
         ShiftRegister.forEachRightShift(shiftRegister) { rightShifted ->
             baseKey.safeDeriveIntermediateDerivationKey(
-                deviceDerivationId,
-                txCounter.bitOr(rightShifted.contents),
-                destinationKeyRegisterIndex = rightShifted.lsbOffset
+                    deviceDerivationId,
+                    txCounter.bitOr(rightShifted.contents),
+                    destinationKeyRegisterIndex = rightShifted.lsbOffset
             )
         }
     }
 
     private fun updateStateForNextTx() {
-        txCounter = if (txCounter.isLessThanMaxWork) {
-            safeUpdateDerivationKeys(txCounter.shiftRegister, currentKey)
-            currentKey.clear()
-            // TODO: can anything bad happen if the app crashes right here?
-            //  like can DUKPT recover from this?
-            txCounter.inc()
-        } else {
-            currentKey.clear()
-            // TODO: can anything bad happen if the app crashes right here?
-            //  like can DUKPT recover from this?
-            txCounter.incByLsb()
-        }
+        txCounter =
+                if (txCounter.isLessThanMaxWork) {
+                    safeUpdateDerivationKeys(txCounter.shiftRegister, currentKey)
+                    currentKey.clear()
+                    txCounter.inc()
+                } else {
+                    currentKey.clear()
+                    txCounter.incByLsb()
+                }
     }
 
     fun generateWorkingKey(): Pair<WorkingKey, KeySerialNumber> {
@@ -82,12 +71,9 @@ internal class DukptService(
         // PIN encryption key. The intermediate keys were all created
         // using AES in derivative key more, which is no bueno for actual
         // working keys; they need to come from AES in PIN encryption mode
-        val workingKey = currentKey.derivePinEncryptionWorkingKey(
-            deviceDerivationId,
-            txCounter
-        )
+        val workingKey = currentKey.derivePinEncryptionWorkingKey(deviceDerivationId, txCounter)
         val currentTxCounter = KsnComponent(txCounter.count)
-        val nextKsnState = KeySerialNumber(deviceDerivationId, currentTxCounter)
+        val nextKsnState = ksn.newKsnWithCount(currentTxCounter)
 
         // we need to delete the intermediate key that we just used
         // to create the working key to satisfy the DUKPT constraint
@@ -104,12 +90,9 @@ internal class DukptService(
 
     fun loadKey(initialDerivationKeyMaterial: AesBlock) {
         keyRegisters.reset()
-        val initialDerivationKey = keyRegisters
-            .setInitialDerivationKey(initialDerivationKeyMaterial)
-        forceUpdateDerivationKeys(
-            ShiftRegister.fromHighestValue(),
-            initialDerivationKey
-        )
+        val initialDerivationKey =
+                keyRegisters.setInitialDerivationKey(initialDerivationKeyMaterial)
+        forceUpdateDerivationKeys(ShiftRegister.fromHighestValue(), initialDerivationKey)
         txCounter = txCounter.inc()
     }
 }
