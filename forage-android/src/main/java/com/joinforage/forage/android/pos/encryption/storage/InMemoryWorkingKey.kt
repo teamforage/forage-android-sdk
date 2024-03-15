@@ -23,7 +23,7 @@ internal class InMemoryWorkingKey(
         ): InMemoryWorkingKey {
             val keyRegisters = InMemoryKeyRegisters()
             keyRegisters.setWorkingKey(
-                AesBlock.fromHexString(heyStringKeyMaterial)
+                AesBlock(heyStringKeyMaterial)
             )
             return InMemoryWorkingKey(keyRegisters)
         }

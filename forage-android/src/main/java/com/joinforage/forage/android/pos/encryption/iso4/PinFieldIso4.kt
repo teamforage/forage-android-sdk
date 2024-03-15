@@ -24,5 +24,5 @@ internal class PinFieldIso4(
     override fun toString(): String =
         "$startPadding$pinSize$rawPin$padAs$endRandomPadding"
 
-    override fun toAesBlock(): AesBlock = AesBlock.fromHexString(toString())
+    override fun toAesBlock(): AesBlock = AesBlock(toString())
 }
