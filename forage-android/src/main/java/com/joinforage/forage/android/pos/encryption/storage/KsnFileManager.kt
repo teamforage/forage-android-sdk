@@ -11,7 +11,7 @@ private val INITIAL_TX_COUNT = 0u
 internal data class KeySerialNumber(
         val baseDerivationKeyId: String, // 8 hex chars, which is 32 bits
         val deviceDerivationId: String, // 8 hex chars, which is 32 bits
-        val txCount: UInt,
+        val txCount: UInt
 ) {
 
     init {
@@ -29,26 +29,24 @@ internal data class KeySerialNumber(
     // secondary constructor thus to play nice with Rosetta
     constructor(
             // 16 chars or 64 bits [baseDerivationKeyId|derivationDeviceId]
-            initialKeyId: String,
+            initialKeyId: String
     ) : this(
             txCount = INITIAL_TX_COUNT,
             baseDerivationKeyId = initialKeyId.substring(0, 8),
-            deviceDerivationId = initialKeyId.substring(8, 16),
+            deviceDerivationId = initialKeyId.substring(8, 16)
     )
 
     constructor(
-        baseDerivationKeyId: KsnComponent,
-        deviceId: KsnComponent,
-        txCount: KsnComponent,
+            baseDerivationKeyId: KsnComponent,
+            deviceId: KsnComponent,
+            txCount: KsnComponent
     ) : this(
-        baseDerivationKeyId = baseDerivationKeyId.toHexString(),
-        deviceDerivationId = deviceId.toHexString(),
-        txCount = txCount.toUInt()
+            baseDerivationKeyId = baseDerivationKeyId.toHexString(),
+            deviceDerivationId = deviceId.toHexString(),
+            txCount = txCount.toUInt()
     )
 
-    val fileContent = "$baseDerivationKeyId\n" +
-            "$deviceDerivationId\n" +
-            "$txCount\n"
+    val fileContent = "$baseDerivationKeyId\n" + "$deviceDerivationId\n" + "$txCount\n"
 
     // this is the value that Amazon Payments Cryptography expects
     // as the `ksn` value sent up with each encrypted PIN block
@@ -105,11 +103,17 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         // throw an error
         val existingBdkId = readBaseDerivationKeyId()?.toHexString()
         val existingDeviceId = readDeviceDerivationId()?.toHexString()
-        val runInit = !ksnFile.exists() // no ksn file? run init!
-                || existingBdkId == null // no bdk id? run init!
-                || existingDeviceId == null // no device id? run init!
-                || ksn.baseDerivationKeyId != existingBdkId  // mismatching bdk ids? run init!
-                || ksn.deviceDerivationId != existingDeviceId  // mismatching device ids? run init!
+        val runInit =
+                !ksnFile.exists() // no ksn file? run init!
+                ||
+                        existingBdkId == null // no bdk id? run init!
+                        ||
+                        existingDeviceId == null // no device id? run init!
+                        ||
+                        ksn.baseDerivationKeyId != existingBdkId // mismatching bdk ids? run init!
+                        ||
+                        ksn.deviceDerivationId !=
+                                existingDeviceId // mismatching device ids? run init!
         if (!runInit) return false
 
         // we're good to go? let's persist the ksn content
@@ -128,7 +132,7 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     fun isInitialized(): Boolean = readTxCount() != null
 
     // Base Derivation Key is line 0
-    fun readBaseDerivationKeyId() : KsnComponent? {
+    fun readBaseDerivationKeyId(): KsnComponent? {
         val deviceIdHexStr = ksnFile.read().getOrNull(0) ?: return null
         return if (deviceIdHexStr.isEmpty()) null else KsnComponent(deviceIdHexStr)
     }

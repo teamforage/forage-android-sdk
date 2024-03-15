@@ -12,7 +12,7 @@ import com.joinforage.forage.android.pos.encryption.InitializePosResponse
 import com.joinforage.forage.android.pos.encryption.RosettaProxyApi
 import com.joinforage.forage.android.pos.encryption.certificate.RsaKeyManager
 import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
-import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
+import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 
@@ -67,8 +67,7 @@ internal class PosTerminalInitializer(
 
             val dukptService = DukptService(
                 ksn = KeySerialNumber(ksnStr),
-                // TODO: use AndroidKeyStoreKeyRegisters
-                keyRegisters = InMemoryKeyRegisters()
+                keyRegisters = AndroidKeyStoreKeyRegisters()
             )
 
             val decryptedInitialDerivationKey = rsaKeyManager.decrypt(initializePosResponse.encryptedIpek.toByteArray())

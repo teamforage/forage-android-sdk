@@ -133,6 +133,8 @@ class ForageTerminalSDK(
             logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
         } catch (e: Exception) {
             logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
+
+            println(e)
             // TODO: to throw or not to throw, that is the question!
 //            throw e
         }
