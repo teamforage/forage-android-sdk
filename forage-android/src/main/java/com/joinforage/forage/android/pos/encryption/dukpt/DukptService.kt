@@ -1,12 +1,22 @@
 package com.joinforage.forage.android.pos.encryption.dukpt
 
 import com.joinforage.forage.android.pos.encryption.AesBlock
+import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
+import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 
 internal class DukptService(
     private val deviceDerivationId: KsnComponent,
     private val keyRegisters: SecureKeyStorageRegisters,
     private var txCounter: DukptCounter
 ) {
+    constructor(
+        ksn: KeySerialNumber,
+        keyRegisters: InMemoryKeyRegisters,
+    ) : this(
+        KsnComponent(ksn.deviceDerivationId),
+        keyRegisters,
+        DukptCounter(ksn.txCount),
+    )
 
     private val currentKey: StoredKey
         get() = keyRegisters.getKey(txCounter.currentKeyIndex)
@@ -48,14 +58,18 @@ internal class DukptService(
         txCounter = if (txCounter.isLessThanMaxWork) {
             safeUpdateDerivationKeys(txCounter.shiftRegister, currentKey)
             currentKey.clear()
+            // TODO: can anything bad happen if the app crashes right here?
+            //  like can DUKPT recover from this?
             txCounter.inc()
         } else {
             currentKey.clear()
+            // TODO: can anything bad happen if the app crashes right here?
+            //  like can DUKPT recover from this?
             txCounter.incByLsb()
         }
     }
 
-    fun generateWorkingKey(): Pair<WorkingKey, UInt> {
+    fun generateWorkingKey(): Pair<WorkingKey, KeySerialNumber> {
         // go to the next txCounter value that has computed key
         // NOTE: this won't change the txCounter if the current
         //  txCounter value already has a key associated with it
@@ -72,7 +86,8 @@ internal class DukptService(
             deviceDerivationId,
             txCounter
         )
-        val currentTxCounter: UInt = txCounter.count
+        val currentTxCounter= KsnComponent(txCounter.count)
+        val nextKsnState = KeySerialNumber(deviceDerivationId, currentTxCounter)
 
         // we need to delete the intermediate key that we just used
         // to create the working key to satisfy the DUKPT constraint
@@ -84,7 +99,7 @@ internal class DukptService(
         // host machine needs to know the txCounter used to
         // derive the current working key so that it can derive
         // the working key as well (it's a symmetric key after all)
-        return Pair(workingKey, currentTxCounter)
+        return Pair(workingKey, nextKsnState)
     }
 
     fun loadKey(initialDerivationKeyMaterial: AesBlock) {
