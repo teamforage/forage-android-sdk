@@ -1,17 +1,16 @@
 package com.joinforage.forage.android.pos.encryption
 
-import com.joinforage.forage.android.pos.encryption.dukpt.DukptCounter
 import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.encryption.dukpt.KsnComponent
 import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
+import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 
 internal object DukptFixtures {
     fun newDukpt(): Pair<DukptService, InMemoryKeyRegisters> {
         val keyRegisters = InMemoryKeyRegisters()
         val dukpt = DukptService(
-            deviceDerivationId = Config.InitialDerivationKeyId,
+            ksn = KeySerialNumber(Config.InitialKeyId.toHexString()),
             keyRegisters = keyRegisters,
-            txCounter = DukptCounter.fromZero()
         )
         dukpt.loadKey(Config.InitialDerivationKeyMaterial)
         return Pair(dukpt, keyRegisters)
@@ -19,8 +18,12 @@ internal object DukptFixtures {
 
     object Config {
         // KSN = DerivationID | Base Derivation Key ID | TxCounter
-        val InitialDerivationKeyId = KsnComponent(
+        val InitialKeyId = KsnComponent(
             byteArrayOf(
+                0x12.toByte(),
+                0x34.toByte(),
+                0x56.toByte(),
+                0x78.toByte(),
                 0x90.toByte(),
                 0x12.toByte(),
                 0x34.toByte(),
