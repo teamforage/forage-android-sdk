@@ -51,9 +51,13 @@ internal class DukptService(
                 if (txCounter.isLessThanMaxWork) {
                     safeUpdateDerivationKeys(txCounter.shiftRegister, currentKey)
                     currentKey.clear()
+                    // TODO: can anything bad happen if the app crashes right here?
+                    //  like can DUKPT recover from this?
                     txCounter.inc()
                 } else {
                     currentKey.clear()
+                    // TODO: can anything bad happen if the app crashes right here?
+                    //  like can DUKPT recover from this?
                     txCounter.incByLsb()
                 }
     }
