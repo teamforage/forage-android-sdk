@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.CapturePaymentParams
@@ -17,9 +18,10 @@ import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.encryption.KsnManager
+import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.vault.ForagePinSubmitter
 
 /**
  * The entry point for **in-store POS Terminal** transactions.
@@ -101,19 +103,25 @@ class ForageTerminalSDK(
      */
     @RequiresApi(Build.VERSION_CODES.M)
     suspend fun init(
+        context: Context,
         merchantId: String,
         sessionToken: String
     ): ForageTerminalSDK {
         calledInit = true
         val logger = createLogger()
+
         try {
             val logSuffix = getLogSuffix(merchantId)
             logger.addAttribute("merchant_ref", merchantId)
             logger.i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
 
+            val ksnFileManager = KsnFileManager.byFile(context)
+            // STOPGAP to feed `context` to ForagePinSubmitter
+            ForagePinSubmitter.ksnFileManager = ksnFileManager
+
             val initializer = PosTerminalInitializer(
                 logger = createLogger(),
-                ksnManager = KsnManager.forJavaRuntime()
+                ksnManager = ksnFileManager
             )
 
             initializer.execute(

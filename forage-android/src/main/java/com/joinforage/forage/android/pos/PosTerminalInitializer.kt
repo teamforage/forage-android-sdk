@@ -4,13 +4,17 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.pos.encryption.AesBlock
 import com.joinforage.forage.android.pos.encryption.CertificateSigningRequest
 import com.joinforage.forage.android.pos.encryption.CertificateSigningResponse
 import com.joinforage.forage.android.pos.encryption.InitializePosRequest
 import com.joinforage.forage.android.pos.encryption.InitializePosResponse
-import com.joinforage.forage.android.pos.encryption.KsnManager
 import com.joinforage.forage.android.pos.encryption.RosettaProxyApi
 import com.joinforage.forage.android.pos.encryption.certificate.RsaKeyManager
+import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
+import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
+import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 
 internal class PosInitializationException(
     val reason: String,
@@ -30,7 +34,7 @@ internal interface PosInitializer {
  */
 @RequiresApi(Build.VERSION_CODES.M)
 internal class PosTerminalInitializer(
-    private val ksnManager: KsnManager,
+    private val ksnManager: KsnFileManager,
     private val logger: Log
 ) : PosInitializer {
     @Throws(PosInitializationException::class)
@@ -44,7 +48,6 @@ internal class PosTerminalInitializer(
             }
             val vaultUrl = EnvConfig.fromSessionToken(sessionToken).vaultBaseUrl
             val rsaKeyManager = initRsaKeyManager(vaultUrl)
-
             val base64encodedCsr = getBase64CSR(rsaKeyManager)
 
             val rosettaApi = RosettaProxyApi.from(
@@ -59,12 +62,18 @@ internal class PosTerminalInitializer(
                 rosettaApi,
                 base64PublicKeyPEM = response.signedCertificate
             )
+            val ksnStr = initializePosResponse.keySerialNumber
+            ksnManager.init(ksnStr)
 
-//            ksnManager.init(initializePosResponse)
+            val dukptService = DukptService(
+                ksn = KeySerialNumber(ksnStr),
+                // TODO: use AndroidKeyStoreKeyRegisters
+                keyRegisters = InMemoryKeyRegisters()
+            )
 
             val decryptedInitialDerivationKey = rsaKeyManager.decrypt(initializePosResponse.encryptedIpek.toByteArray())
 
-//             dukptService.loadKey(decryptedInitialDerivationKey.toString())
+            dukptService.loadKey(AesBlock(decryptedInitialDerivationKey))
         } catch (e: Exception) {
             logger.e("Failed to initialize the ForageTerminalSDK", e)
             throw e
@@ -88,7 +97,6 @@ internal class PosTerminalInitializer(
     @Throws(PosInitializationException::class)
     private fun isKsnFileAvailable(): Boolean {
         try {
-            val ksnManager = KsnManager.forJavaRuntime()
             if (ksnManager.isInitialized()) {
                 logger.i("[POS] KSN Manager was already initialized. KSN file already exists on the device.")
                 return true

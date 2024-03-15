@@ -11,11 +11,11 @@ internal class DukptService(
 ) {
     constructor(
         ksn: KeySerialNumber,
-        keyRegisters: InMemoryKeyRegisters,
+        keyRegisters: InMemoryKeyRegisters
     ) : this(
         KsnComponent(ksn.deviceDerivationId),
         keyRegisters,
-        DukptCounter(ksn.txCount),
+        DukptCounter(ksn.txCount)
     )
 
     private val currentKey: StoredKey
@@ -86,7 +86,7 @@ internal class DukptService(
             deviceDerivationId,
             txCounter
         )
-        val currentTxCounter= KsnComponent(txCounter.count)
+        val currentTxCounter = KsnComponent(txCounter.count)
         val nextKsnState = KeySerialNumber(deviceDerivationId, currentTxCounter)
 
         // we need to delete the intermediate key that we just used

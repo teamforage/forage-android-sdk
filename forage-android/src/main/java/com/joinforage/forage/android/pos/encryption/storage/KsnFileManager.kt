@@ -5,13 +5,12 @@ import com.joinforage.forage.android.pos.encryption.ByteUtils
 import com.joinforage.forage.android.pos.encryption.dukpt.KsnComponent
 import java.io.File
 
-
 private val KSN_FILE_NAME: String = "key_serial_number.txt"
 private val INITIAL_TX_COUNT = 0u
 
 internal data class KeySerialNumber(
     val deviceDerivationId: String, // 8 chars or 32 bits
-    val txCount: UInt,
+    val txCount: UInt
 ) {
     val txCountAsBigEndian8CharHex: String
 
@@ -24,24 +23,23 @@ internal data class KeySerialNumber(
         )
     }
 
-
     // this constructor is used for creating the initial KSN
     // because the DUKPT client never uses all 64 bits but
     // the Rosetta server returns all 64 bits. We make this
     // secondary constructor thus to play nice with Rosetta
     constructor(
         // 16 chars or 64 bits [baseDerivationKeyId|derivationDeviceId]
-        initialKeyId: String,
+        initialKeyId: String
     ) : this(
         txCount = INITIAL_TX_COUNT,
         // only take the derivationDeviceId because the
         // DUKPT client never cares about the baseDerivationKeyId
-        deviceDerivationId = initialKeyId.substring(8, 16),
+        deviceDerivationId = initialKeyId.substring(8, 16)
     )
 
     constructor(
         deviceId: KsnComponent,
-        txCount: KsnComponent,
+        txCount: KsnComponent
     ) : this(deviceId.toHexString(), txCount.toUInt())
 
     // we expressly do not store the Base Derivation Key Id
@@ -51,9 +49,9 @@ internal data class KeySerialNumber(
 }
 
 internal interface PersistentStorage {
-    fun exists() : Boolean
+    fun exists(): Boolean
     fun write(content: String)
-    fun read() : List<String>
+    fun read(): List<String>
 }
 
 internal class PersistentFile(private val context: Context) : PersistentStorage {
@@ -77,7 +75,7 @@ internal class PersistentString(
 
 internal class KsnFileManager(private val ksnFile: PersistentStorage) {
 
-    fun init(initialKeyId: String) : Boolean {
+    fun init(initialKeyId: String): Boolean {
         require(initialKeyId.length == 16) {
             "The Initial Key Id must be exactly 16 characters, which is 64 bits."
         }
@@ -88,9 +86,9 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         // attempt to read the Device Derivation Id, which would
         // throw an error
         val existingDeviceId = readDeviceDerivationId()?.toHexString()
-        val runInit = !ksnFile.exists() // no ksn file? run init!
-                || existingDeviceId == null // no device id? run init!
-                || ksn.deviceDerivationId != existingDeviceId  // mismatching device ids? run init!
+        val runInit = !ksnFile.exists() || // no ksn file? run init!
+            existingDeviceId == null || // no device id? run init!
+            ksn.deviceDerivationId != existingDeviceId // mismatching device ids? run init!
         if (!runInit) return false
 
         // we're good to go? let's persist the ksn content
@@ -106,21 +104,21 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     // can be read and is an int seems like a
     // convenient way of killing two birds with
     // one stone
-    fun isInitialized() : Boolean = readTxCount() != null
+    fun isInitialized(): Boolean = readTxCount() != null
 
     // Device Derivation Id is the first line
-    fun readDeviceDerivationId() : KsnComponent? {
+    fun readDeviceDerivationId(): KsnComponent? {
         val deviceIdHexStr = ksnFile.read().firstOrNull() ?: return null
         return KsnComponent(deviceIdHexStr)
     }
 
     // Tx Count is the second line
-    fun readTxCount() : KsnComponent? {
+    fun readTxCount(): KsnComponent? {
         val txCount = ksnFile.read().getOrNull(1)?.toUIntOrNull() ?: return null
         return KsnComponent(txCount)
     }
 
-    fun readAll() : KeySerialNumber? {
+    fun readAll(): KeySerialNumber? {
         val deviceId = readDeviceDerivationId() ?: return null
         val txCount = readTxCount() ?: return null
         return KeySerialNumber(deviceId, txCount)
