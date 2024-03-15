@@ -37,13 +37,13 @@ internal data class KeySerialNumber(
     )
 
     constructor(
-            baseDerivationKeyId: KsnComponent,
-            deviceId: KsnComponent,
-            txCount: KsnComponent,
+        baseDerivationKeyId: KsnComponent,
+        deviceId: KsnComponent,
+        txCount: KsnComponent,
     ) : this(
-            baseDerivationKeyId = baseDerivationKeyId.toHexString(),
-            deviceDerivationId = deviceId.toHexString(),
-            txCount = txCount.toUInt()
+        baseDerivationKeyId = baseDerivationKeyId.toHexString(),
+        deviceDerivationId = deviceId.toHexString(),
+        txCount = txCount.toUInt()
     )
 
     val fileContent = "$baseDerivationKeyId\n" + "$deviceDerivationId\n" + "$txCount\n"
@@ -127,7 +127,7 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     fun isInitialized(): Boolean = readTxCount() != null
 
     // Base Derivation Key is line 0
-    fun readBaseDerivationKeyId(): KsnComponent? {
+    fun readBaseDerivationKeyId() : KsnComponent? {
         val deviceIdHexStr = ksnFile.read().getOrNull(0) ?: return null
         return KsnComponent(deviceIdHexStr)
     }
