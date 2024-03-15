@@ -1,5 +1,7 @@
 package com.joinforage.forage.android.pos.encryption.dukpt
 
+import com.joinforage.forage.android.pos.encryption.ByteUtils
+
 internal data class KsnComponent(val bytes: ByteArray) {
     init {
         // The Key Serial Number (KSN) consists of three words
@@ -9,18 +11,10 @@ internal data class KsnComponent(val bytes: ByteArray) {
             "A Key Serial Number component must be exactly 4 bytes."
         }
     }
-    companion object {
-        fun fromUnsignedInt(uint: UInt): KsnComponent {
-            val singleByteMask = 0xffu
-            return KsnComponent(
-                // big-endian order byte representation of an kotlin UInt
-                byteArrayOf(
-                    (uint shr 24 and singleByteMask).toByte(), // byte 0 is bits 31 to 24
-                    (uint shr 16 and singleByteMask).toByte(), // byte 1 is bits 23 to 16
-                    (uint shr 8 and singleByteMask).toByte(), // byte 2 is bits 15 to 8
-                    (uint and singleByteMask).toByte() // byte 3 is bits 7 to 0
-                )
-            )
-        }
-    }
+
+    constructor(uint: UInt) : this(ByteUtils.uintToByteArray(uint))
+    constructor(hex: String) : this(ByteUtils.hex2ByteArray(hex))
+
+    fun toHexString(): String = ByteUtils.byteArray2Hex(bytes)
+    fun toUInt() : UInt = ByteUtils.byteArrayToUInt(bytes)
 }

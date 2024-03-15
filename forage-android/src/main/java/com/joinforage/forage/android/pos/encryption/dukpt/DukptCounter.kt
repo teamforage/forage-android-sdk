@@ -20,7 +20,7 @@ internal class DukptCounter(val count: UInt) {
     fun inc(): DukptCounter = DukptCounter(count + 1u)
     fun incByLsb(): DukptCounter = DukptCounter(count + shiftRegister.lsbOffset)
     fun bitOr(other: UInt): DukptCounter = DukptCounter(count or other)
-    fun toKsnComponent(): KsnComponent = KsnComponent.fromUnsignedInt(count)
+    fun toKsnComponent(): KsnComponent = KsnComponent(count)
 
     companion object {
         tailrec fun incToNextExistingKey(
