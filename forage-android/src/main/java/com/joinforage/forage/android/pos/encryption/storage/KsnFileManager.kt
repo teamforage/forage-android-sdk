@@ -97,24 +97,27 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         }
         val ksn = KeySerialNumber(initialKeyId)
 
-        // group the conditions into a single expression so
-        // that if the file does not exist, it does not
-        // attempt to read the Device Derivation Id, which would
-        // throw an error
-        val existingBdkId = readBaseDerivationKeyId()?.toHexString()
-        val existingDeviceId = readDeviceDerivationId()?.toHexString()
-        val runInit =
-                !ksnFile.exists() // no ksn file? run init!
-                ||
-                        existingBdkId == null // no bdk id? run init!
-                        ||
-                        existingDeviceId == null // no device id? run init!
-                        ||
-                        ksn.baseDerivationKeyId != existingBdkId // mismatching bdk ids? run init!
-                        ||
-                        ksn.deviceDerivationId !=
-                                existingDeviceId // mismatching device ids? run init!
-        if (!runInit) return false
+        // if the a KSN file exists, there's a few other
+        // checks we should run to make sure it's OK to
+        // not run .init
+        // NOTE: an error will be thrown if we attempt to
+        // read the file (e.g. existing values) before
+        // writing (creating) the file in the first place.
+        // This is why we separate the subsequent checks
+        // for the ksnFile.exists() check
+        if (ksnFile.exists()) {
+            // group the conditions into a single expression so
+            // that if the file does not exist, it does not
+            // attempt to read the Device Derivation Id, which would
+            // throw an error
+            val existingBdkId = readBaseDerivationKeyId()?.toHexString()
+            val existingDeviceId = readDeviceDerivationId()?.toHexString()
+            val runInit = existingBdkId.isNullOrBlank() // no bdk id? run init!
+                    || existingDeviceId.isNullOrBlank() // no device id? run init!
+                    || ksn.baseDerivationKeyId != existingBdkId  // mismatching bdk ids? run init!
+                    || ksn.deviceDerivationId != existingDeviceId  // mismatching device ids? run init!
+            if (!runInit) return false
+        }
 
         // we're good to go? let's persist the ksn content
         ksnFile.write(ksn.fileContent)
