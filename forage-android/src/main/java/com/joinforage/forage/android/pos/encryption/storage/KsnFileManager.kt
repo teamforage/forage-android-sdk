@@ -112,10 +112,16 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
             // throw an error
             val existingBdkId = readBaseDerivationKeyId()?.toHexString()
             val existingDeviceId = readDeviceDerivationId()?.toHexString()
-            val runInit = existingBdkId.isNullOrBlank() // no bdk id? run init!
-                    || existingDeviceId.isNullOrBlank() // no device id? run init!
-                    || ksn.baseDerivationKeyId != existingBdkId  // mismatching bdk ids? run init!
-                    || ksn.deviceDerivationId != existingDeviceId  // mismatching device ids? run init!
+            val runInit =
+                    existingBdkId.isNullOrBlank() // no bdk id? run init!
+                    ||
+                            existingDeviceId.isNullOrBlank() // no device id? run init!
+                            ||
+                            ksn.baseDerivationKeyId !=
+                                    existingBdkId // mismatching bdk ids? run init!
+                            ||
+                            ksn.deviceDerivationId !=
+                                    existingDeviceId // mismatching device ids? run init!
             if (!runInit) return false
         }
 
