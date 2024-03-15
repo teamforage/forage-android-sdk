@@ -23,5 +23,5 @@ internal class PanFieldIso4(val rawPan: String) : Iso4Field {
 
     override fun toString(): String = "$lengthBeyond12$rawPan$endPadding"
 
-    override fun toAesBlock(): AesBlock = AesBlock.fromHexString(toString())
+    override fun toAesBlock(): AesBlock = AesBlock(toString())
 }
