@@ -92,11 +92,12 @@ internal class DukptService(
         return Pair(workingKey, nextKsnState)
     }
 
-    fun loadKey(initialDerivationKeyMaterial: AesBlock) {
+    fun loadKey(initialDerivationKeyMaterial: AesBlock) : KeySerialNumber {
         keyRegisters.reset()
         val initialDerivationKey =
             keyRegisters.setInitialDerivationKey(initialDerivationKeyMaterial)
         forceUpdateDerivationKeys(ShiftRegister.fromHighestValue(), initialDerivationKey)
         txCounter = txCounter.inc()
+        return ksn.newKsnWithCount(KsnComponent(txCounter.count))
     }
 }

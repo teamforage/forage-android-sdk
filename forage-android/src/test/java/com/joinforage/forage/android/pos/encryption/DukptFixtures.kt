@@ -6,14 +6,14 @@ import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 
 internal object DukptFixtures {
-    fun newDukpt(): Pair<DukptService, InMemoryKeyRegisters> {
+    fun newDukpt(): Triple<DukptService, InMemoryKeyRegisters, KeySerialNumber> {
         val keyRegisters = InMemoryKeyRegisters()
         val dukpt = DukptService(
             ksn = KeySerialNumber(Config.InitialKeyId),
             keyRegisters = keyRegisters
         )
-        dukpt.loadKey(Config.InitialDerivationKeyMaterial)
-        return Pair(dukpt, keyRegisters)
+        val nextKsn = dukpt.loadKey(Config.InitialDerivationKeyMaterial)
+        return Triple(dukpt, keyRegisters, nextKsn)
     }
 
     object Config {
