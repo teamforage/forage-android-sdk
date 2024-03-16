@@ -109,7 +109,7 @@ internal class ForagePinSubmitter(
         private fun buildVaultUrl(path: String): HttpUrl =
             VAULT_BASE_URL.toHttpUrlOrNull()!!
                 .newBuilder()
-                .scheme("https")
+                .addPathSegment("proxy")
                 .addPathSegmentsSafe(path)
                 .addTrailingSlash()
                 .build()
