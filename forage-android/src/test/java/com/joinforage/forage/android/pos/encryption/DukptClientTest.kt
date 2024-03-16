@@ -7,8 +7,8 @@ import org.junit.Test
 class DukptClientTest {
     @Test
     fun `it correctly instantiates the all intermediate derivation keys on key load`() {
-        val (dukpt, keyRegisters) = DukptFixtures.newDukpt()
-        assertThat(dukpt.count).isEqualTo(1u)
+        val (dukpt, keyRegisters, firstKsn) = DukptFixtures.newDukpt()
+        assertThat(firstKsn.txCount).isEqualTo(1u)
 
         // assert that all the initial keys were generated correctly
         for (keyIndex in 0u..31u) {
@@ -22,8 +22,8 @@ class DukptClientTest {
 
     @Test
     fun `it correctly updates the intermediate derivation keys after first working key`() {
-        val (dukpt, keyRegisters) = DukptFixtures.newDukpt()
-        assertThat(dukpt.count).isEqualTo(1u)
+        val (dukpt, keyRegisters, firstKsn) = DukptFixtures.newDukpt()
+        assertThat(firstKsn.txCount).isEqualTo(1u)
         // generate the second key, the one we care about
         val (key, ksn) = dukpt.generateWorkingKey() // second key
 
@@ -55,8 +55,8 @@ class DukptClientTest {
 
     @Test
     fun `it correctly updates the intermediate derivation keys after second working key`() {
-        val (dukpt, keyRegisters) = DukptFixtures.newDukpt()
-        assertThat(dukpt.count).isEqualTo(1u)
+        val (dukpt, keyRegisters, firstKsn) = DukptFixtures.newDukpt()
+        assertThat(firstKsn.txCount).isEqualTo(1u)
 
         // generate the first key
         dukpt.generateWorkingKey()
