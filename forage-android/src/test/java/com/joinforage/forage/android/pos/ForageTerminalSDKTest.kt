@@ -4,7 +4,6 @@ import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.telemetry.Log

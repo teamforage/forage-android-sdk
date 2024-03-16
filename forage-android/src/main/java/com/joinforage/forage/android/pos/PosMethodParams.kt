@@ -52,6 +52,25 @@ data class PosTokenizeCardParams(
 )
 
 /**
+ * A model that represents the parameters that Forage requires to collect a card PIN and defer
+ * the refund of the payment to the server.
+ * [PosDeferPaymentRefundParams] are passed to the
+ * [deferPaymentRefund][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund] method.
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setPosForageConfig][com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ */
+data class PosDeferPaymentRefundParams(
+    val foragePinEditText: ForagePINEditText,
+    val paymentRef: String
+)
+
+/**
  * A model that represents the parameters that [ForageTerminalSDK] requires to refund a Payment.
  * [PosRefundPaymentParams] are passed to the
  * [refundPayment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] method.
