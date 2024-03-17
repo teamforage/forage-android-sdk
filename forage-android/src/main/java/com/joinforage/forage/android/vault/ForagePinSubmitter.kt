@@ -144,7 +144,7 @@ internal class ForagePinSubmitter(
             return PinTranslationParams(
                 encryptedPinBlock = encryptedPinBlock,
                 keySerialNumber = latestKsn.apcKsn,
-                txnCounter = latestKsn.txCountAsBigEndian8CharHex
+                txnCounter = latestKsn.workingKeyTxCountAsBigEndian8CharHex
             )
         } catch (e: Exception) {
             throw Exception("Failed to encrypt PIN using dukpt service", e)

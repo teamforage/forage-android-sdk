@@ -52,7 +52,7 @@ class KsnFileManagerAccessorsTest {
     @Test
     fun `accessors should be null before init`() {
         val ksn = KsnFileManager.byString()
-        assertThat(ksn.readTxCount()).isNull()
+        assertThat(ksn.readDukptClientTxCount()).isNull()
         assertThat(ksn.readBaseDerivationKeyId()).isNull()
         assertThat(ksn.readDeviceDerivationId()).isNull()
         assertThat(ksn.readAll()).isNull()
@@ -62,7 +62,7 @@ class KsnFileManagerAccessorsTest {
     fun `accessors should return accurate values`() {
         val ksn = KsnFileManager.byString()
         ksn.init(initialKeyId1)
-        assertThat(ksn.readTxCount()!!.toUInt()).isEqualTo(0u)
+        assertThat(ksn.readDukptClientTxCount()!!.toUInt()).isEqualTo(0u)
         assertThat(ksn.readBaseDerivationKeyId()!!.toHexString()).isEqualTo(bdkId1)
         assertThat(ksn.readDeviceDerivationId()!!.toHexString()).isEqualTo(deviceId1)
         val ksnObj = ksn.readAll()
@@ -77,19 +77,30 @@ class KsnFileManagerAccessorsTest {
                 "${deviceId1}\n" +
                 "0\n"
         )
-        assertThat(ksnObj.txCount).isEqualTo(0u)
         assertThat(ksnObj.baseDerivationKeyId).isEqualTo(bdkId1)
         assertThat(ksnObj.deviceDerivationId).isEqualTo(deviceId1)
-        assertThat(ksnObj.txCountAsBigEndian8CharHex).isEqualTo("00000000")
+
+        // NOTE: we don't test ksnObj.workingKeyTxCount here
+        // because it's value has no meaning without calling
+        // .loadKey nor .generateWorkingKey. Only
+        // the value of dukptClientTxCount has meaning in this
+        // test
+        assertThat(ksnObj.dukptClientTxCount).isEqualTo(0u)
     }
 
     @Test
-    fun `txCount should be 0u right after init`() {
+    fun `working key dutkpClient = 0u right after init`() {
         val ksn = KsnFileManager.byString()
         ksn.init(initialKeyId1)
         ksn.init(initialKeyId2)
-        val result = ksn.readAll()?.txCount
-        assertThat(result).isEqualTo(0u)
+        val ksnObj = ksn.readAll()
+
+        // NOTE: we don't test ksnObj.workingKeyTxCount here
+        // because it's value has no meaning without calling
+        // .loadKey nor .generateWorkingKey. Only
+        // the value of dukptClientTxCount has meaning in this
+        // test
+        assertThat(ksnObj!!.dukptClientTxCount).isEqualTo(0u)
     }
 
     @Test
@@ -101,16 +112,17 @@ class KsnFileManagerAccessorsTest {
             KeySerialNumber(
                 baseDerivationKeyId = bdkId1,
                 deviceDerivationId = deviceId1,
-                txCount = expectedTxCount
+                dukptClientTxCount = expectedTxCount
             )
         )
-        assertThat(ksn.readTxCount()!!.toUInt()).isEqualTo(expectedTxCount)
+        assertThat(ksn.readDukptClientTxCount()!!.toUInt()).isEqualTo(expectedTxCount)
 
         // TODO: should probably move this to it's own test file since
         //  KeySerialNumber is different from KsnFileManager
         val ksnObj = ksn.readAll()!!
-        assertThat(ksnObj.txCount).isEqualTo(expectedTxCount)
-        assertThat(ksnObj.txCountAsBigEndian8CharHex).isEqualTo("00000011")
+        assertThat(ksnObj.dukptClientTxCount).isEqualTo(expectedTxCount)
+        assertThat(ksnObj.workingKeyTxCount).isEqualTo(16u)
+        assertThat(ksnObj.workingKeyTxCountAsBigEndian8CharHex).isEqualTo("00000010")
     }
 
     @Test
@@ -123,7 +135,7 @@ class KsnFileManagerAccessorsTest {
                 KeySerialNumber(
                     baseDerivationKeyId = "ffffffff",
                     deviceDerivationId = deviceId1,
-                    txCount = expectedTxCount
+                    dukptClientTxCount = expectedTxCount
                 )
             )
         }
@@ -139,7 +151,7 @@ class KsnFileManagerAccessorsTest {
                 KeySerialNumber(
                     baseDerivationKeyId = bdkId1,
                     deviceDerivationId = "ffffffff",
-                    txCount = expectedTxCount
+                    dukptClientTxCount = expectedTxCount
                 )
             )
         }
