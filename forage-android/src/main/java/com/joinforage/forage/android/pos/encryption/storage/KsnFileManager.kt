@@ -11,7 +11,7 @@ private val INITIAL_TX_COUNT = 0u
 internal data class KeySerialNumber(
     val baseDerivationKeyId: String, // 8 hex chars, which is 32 bits
     val deviceDerivationId: String, // 8 hex chars, which is 32 bits
-    val txCount: UInt
+    val dukptClientTxCount: UInt,
 ) {
 
     init {
@@ -31,7 +31,7 @@ internal data class KeySerialNumber(
         // 16 chars or 64 bits [baseDerivationKeyId|derivationDeviceId]
         initialKeyId: String
     ) : this(
-        txCount = INITIAL_TX_COUNT,
+        dukptClientTxCount = INITIAL_TX_COUNT,
         baseDerivationKeyId = initialKeyId.substring(0, 8),
         deviceDerivationId = initialKeyId.substring(8, 16)
     )
@@ -39,14 +39,14 @@ internal data class KeySerialNumber(
     constructor(
         baseDerivationKeyId: KsnComponent,
         deviceId: KsnComponent,
-        txCount: KsnComponent
+        dukptClientTxCount: KsnComponent
     ) : this(
         baseDerivationKeyId = baseDerivationKeyId.toHexString(),
         deviceDerivationId = deviceId.toHexString(),
-        txCount = txCount.toUInt()
+        dukptClientTxCount = dukptClientTxCount.toUInt()
     )
 
-    val fileContent = "$baseDerivationKeyId\n" + "$deviceDerivationId\n" + "$txCount\n"
+    val fileContent = "$baseDerivationKeyId\n" + "$deviceDerivationId\n" + "$dukptClientTxCount\n"
 
     // this is the value that Amazon Payments Cryptography expects
     // as the `ksn` value sent up with each encrypted PIN block
@@ -54,14 +54,21 @@ internal data class KeySerialNumber(
     val bdkIdAndDeviceId = "$baseDerivationKeyId$deviceDerivationId"
     val apcKsn = bdkIdAndDeviceId
 
-    val txCountAsBigEndian8CharHex: String =
-        ByteUtils.byteArray2Hex(ByteUtils.uintToByteArray(txCount))
+    // NOTE: this value is actually 1 less than the txCount
+    // from the dukpt's client point of view. The DUKPT
+    // client increments the counter of its state prior to
+    // returning the current working key that is used to
+    // encrypt the pin block. So, the dukpt client is always
+    // +1 ahead of the count associated with the current tx
+    val workingKeyTxCount = dukptClientTxCount - 1u
+    val workingKeyTxCountAsBigEndian8CharHex: String =
+        ByteUtils.byteArray2Hex(ByteUtils.uintToByteArray(workingKeyTxCount))
 
     fun newKsnWithCount(txCount: KsnComponent): KeySerialNumber =
         KeySerialNumber(
             baseDerivationKeyId = baseDerivationKeyId,
             deviceDerivationId = deviceDerivationId,
-            txCount = txCount.toUInt()
+            dukptClientTxCount = txCount.toUInt()
         )
 }
 
@@ -135,7 +142,7 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     // can be read and is an int seems like a
     // convenient way of killing two birds with
     // one stone
-    fun isInitialized(): Boolean = readTxCount() != null
+    fun isInitialized(): Boolean = readDukptClientTxCount() != null
 
     // Base Derivation Key is line 0
     fun readBaseDerivationKeyId(): KsnComponent? {
@@ -150,7 +157,13 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     }
 
     // Tx Count is line 2
-    fun readTxCount(): KsnComponent? {
+    // NOTE: this is the dukpt client's tx count
+    // and is *not* the tx count associated with
+    // the current working key. If you want the
+    // tx count associated with the current working
+    // key call readAll() since it returns a
+    // KeySerialManager which has the workingKeyTxCount
+    fun readDukptClientTxCount(): KsnComponent? {
         val txCount = ksnFile.read().getOrNull(2)?.toUIntOrNull() ?: return null
         return KsnComponent(txCount)
     }
@@ -158,8 +171,8 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     fun readAll(): KeySerialNumber? {
         val bdkId = readBaseDerivationKeyId() ?: return null
         val deviceId = readDeviceDerivationId() ?: return null
-        val txCount = readTxCount() ?: return null
-        return KeySerialNumber(baseDerivationKeyId = bdkId, deviceId = deviceId, txCount = txCount)
+        val txCount = readDukptClientTxCount() ?: return null
+        return KeySerialNumber(baseDerivationKeyId = bdkId, deviceId = deviceId, dukptClientTxCount = txCount)
     }
 
     // the KSN File manager is not responsible for

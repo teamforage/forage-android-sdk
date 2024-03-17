@@ -8,7 +8,7 @@ internal class DukptService(
     private val keyRegisters: SecureKeyStorageRegisters
 ) {
     private val deviceDerivationId: KsnComponent = KsnComponent(ksn.deviceDerivationId)
-    private var txCounter: DukptCounter = DukptCounter(ksn.txCount)
+    private var txCounter: DukptCounter = DukptCounter(ksn.dukptClientTxCount)
 
     private val currentKey: StoredKey
         get() = keyRegisters.getKey(txCounter.currentKeyIndex)
@@ -76,8 +76,6 @@ internal class DukptService(
         // using AES in derivative key more, which is no bueno for actual
         // working keys; they need to come from AES in PIN encryption mode
         val workingKey = currentKey.derivePinEncryptionWorkingKey(deviceDerivationId, txCounter)
-        val currentTxCounter = KsnComponent(txCounter.count)
-        val nextKsnState = ksn.newKsnWithCount(currentTxCounter)
 
         // we need to delete the intermediate key that we just used
         // to create the working key to satisfy the DUKPT constraint
@@ -85,10 +83,22 @@ internal class DukptService(
         // to rederive a working key
         updateStateForNextTx()
 
-        // return the working key and the txCounter because the
-        // host machine needs to know the txCounter used to
-        // derive the current working key so that it can derive
-        // the working key as well (it's a symmetric key after all)
+        // return the working key and the KsnNext state.
+        // NOTE: there are two things happening here with
+        // the txCounter:
+        //  1) we technically returning the txCounter for
+        //  the dukpt's client next state (i.e. after running
+        //  updateStateForNextTx). This txCounter value is
+        //  +1 ahead of the txCounter value associated with
+        //  the current working key returned.
+        //  2) we return via
+        //  nextKsnState.txCountAsBigEndian8CharHex the value
+        //  of the count associated with the current working
+        //  key. We return this value so the host machine may
+        //  derive the current working key as well (it's a
+        //  symmetric key after all)
+        val counterForNextState = KsnComponent(txCounter.count) // one ahead of current tx
+        val nextKsnState = ksn.newKsnWithCount(counterForNextState)
         return Pair(workingKey, nextKsnState)
     }
 
