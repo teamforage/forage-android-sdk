@@ -66,6 +66,8 @@ internal data class PaymentMethod(
             val last4 = card.getString("last_4")
             val token = card.getString("token")
 
+            val cardNumber = if (!card.isNull("number")) card.getString("number") else null
+
             var reusable: Boolean? = true
             if (!jsonObject.isNull("reusable")) {
                 reusable = jsonObject.getBoolean("reusable")
@@ -78,6 +80,7 @@ internal data class PaymentMethod(
                 card = Card(
                     last4 = last4,
                     type = "",
+                    number = cardNumber,
                     token = token
                 ),
                 customerId = customerId,
