@@ -130,13 +130,7 @@ class ForageTerminalSDK internal constructor(
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
             } catch (e: Exception) {
                 logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
-
-                android.util.Log.e("ForageTerminalSDK", "BOOOOOOO", e)
-                println("BOOOOOOO $e")
-                println(e)
-
-                // TODO: to throw or not to throw, that is the question!
-//            throw e
+                throw e
             }
 
             return ForageTerminalSDK(posTerminalId)
@@ -174,8 +168,8 @@ class ForageTerminalSDK internal constructor(
     }
 
     /**
-     * Tokenizes a card via a [ForagePANEdit
-     * Text][com.joinforage.forage.android.ui.ForagePANEditText] Element.
+     * Tokenizes a card via a [ForagePANEdit Text]
+     * [com.joinforage.forage.android.ui.ForagePANEditText] Element.
      * * On success, the object includes a `ref` token that represents an instance of a Forage
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods). You can store
      * the token in your database and reference it for future transactions, like to call
@@ -736,9 +730,13 @@ class ForageTerminalSDK internal constructor(
      * ```
      * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
      * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
-     * indicating the success or failure of the
-     * secure PIN submission.
-     * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+     * indicating the success or failure of the secure PIN submission. On success, returns `Nothing`. On
+     * failure, the response includes a list of [ForageError]
+     * [com.joinforage.forage.android.network.model.ForageError] objects that you can unpack to
+     * troubleshoot the issue.
+     * @see
+     * *
+     * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
