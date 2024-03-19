@@ -40,9 +40,9 @@ The `/sample-app/` folder in this repository contains a very simple integration 
 4. [Create an authentication token](https://docs.joinforage.app/reference/create-authentication-token) with `pinpad_only` scope.
    - **Warning**: To keep your app secure, use a long-lived authentication token for client-side requests in testing and development *only*. In production, client-side requests must use [session tokens](https://docs.joinforage.app/reference/create-session-token).
 5. Confirm your Forage Merchant ID in the dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/)).
-6. Save your authentication token and Merchant ID as constants in the `TokensViewModel.kt` file in the `/sample-app/`.
-   - The sample app will prompt you for an authentication token and Merchant ID on the first page of the app, but it takes defaults from this file.
-7. Run the sample-app on your emulated device of choice.
+6. Save your authentication token and Merchant ID as constants in the `TokensViewModel.kt` file.
+   - The app will prompt you for an authentication token and Merchant ID on the first page of the app, but it takes defaults from this file.
+7. Run the sample app on your emulated device of choice.
 8. Use any 16 to 19 digit card number starting with ["9999"](https://docs.joinforage.app/docs/test-ebt-cards#valid-ebt-test-card-numbers) to complete the payment flow.
    - Invalid cards will still be accepted by the Forage Sandbox API.
    - Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/test-ebt-cards#invalid-ebt-test-card-numbers).
