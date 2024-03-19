@@ -29,7 +29,10 @@ jobs:
       - name: Build AAR
         run: ./gradlew build -x test
 
-      - name: Create release with the tag name and attach APK
+      - name: Build AAR
+        run: ./gradlew 
+
+      - name: Create release with the tag name and attach AAR, pom.xml, and gradle metadata
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
@@ -41,4 +44,10 @@ jobs:
 
           gh release upload "$tag" \
               ./forage-android/build/outputs/aar/forage-android-release.aar
+          
+          gh release upload "$tag" \
+              ./forage-android/build/publications/release/pom-default.xml
+
+          gh release upload "$tag" \
+              ./forage-android/build/publications/release/metadata.json
           
