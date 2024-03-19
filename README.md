@@ -30,21 +30,22 @@ dependencies {
 
 ## Run the Sample App
 
-The sample-app/ folder in this repository contains a very simple integration of the Forage SDK. To get it running:
+The `/sample-app/` folder in this repository contains a very simple integration of the Forage SDK. To get it running:
 
 1. [Download Android Studio](https://developer.android.com/studio).
-   i. The app was developed with Android Studio Electric Eel.
+   - The app was developed with Android Studio Giraffe and Iguana.
 2. Clone this repo to your local machine.
-3. In Android Studio, open the cloned `forage-android-sdk` project folder
-   i. Android Studio will start downloading the Gradle dependencies. Wait for dependencies to download before moving forward.
-4. [Create a bearer token](https://docs.joinforage.app/recipes/generate-a-token) with `pinpad_only` scope.
-5. Confirm your FNS number on the Forage dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/)).
-6. Place your bearer token and FNS number in constants inside `sample-app/java/com.joinforage.android.example/ui/complete.flow/tokens/model/TokensUIDefaultState.kt`.
-   i. The sample-app will prompt you for a bearer token and FNS number on the first page of the app, but takes defaults from this file location.
+3. In Android Studio, open the cloned `forage-android-sdk` project folder.
+   - Android Studio will start downloading the Gradle dependencies. Wait for dependencies to download before moving forward.
+4. [Create an authentication token](https://docs.joinforage.app/reference/create-authentication-token) with `pinpad_only` scope.
+   - **Warning**: To keep your app secure, use a long-lived authentication token for client-side requests in testing and development *only*. In production, client-side requests must use [session tokens](https://docs.joinforage.app/reference/create-session-token).
+5. Confirm your Forage Merchant ID in the dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/)).
+6. Save your authentication token and Merchant ID as constants in the `TokensViewModel.kt` file in the `/sample-app/`.
+   - The sample app will prompt you for an authentication token and Merchant ID on the first page of the app, but it takes defaults from this file.
 7. Run the sample-app on your emulated device of choice.
 8. Use any 16 to 19 digit card number starting with ["9999"](https://docs.joinforage.app/docs/test-ebt-cards#valid-ebt-test-card-numbers) to complete the payment flow.
-   i. Invalid cards will still be accepted by the Forage Sandbox API.
-   ii. Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/test-ebt-cards#invalid-ebt-test-card-numbers).
+   - Invalid cards will still be accepted by the Forage Sandbox API.
+   - Trigger error scenarios with [these sample cards](https://docs.joinforage.app/docs/test-ebt-cards#invalid-ebt-test-card-numbers).
 
 ## Dependencies
 
