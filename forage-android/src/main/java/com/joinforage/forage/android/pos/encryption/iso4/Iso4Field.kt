@@ -8,7 +8,7 @@ internal interface Iso4Field {
 }
 
 internal fun makeRandomHexString(length: Int): String {
-    val bytes = ByteArray(length) // 2 hex chars per byte
+    val bytes = ByteArray(length / 2) // 2 hex chars per byte
     Random.nextBytes(bytes)
     return bytes.joinToString("") { "%02x".format(it) }
 }
