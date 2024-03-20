@@ -29,8 +29,8 @@ jobs:
       - name: Build AAR
         run: ./gradlew build -x test
 
-      - name: Build AAR
-        run: ./gradlew 
+      - name: Build POM file + Gradle Metadata
+        run: ./gradlew publishToMavenLocal
 
       - name: Create release with the tag name and attach AAR, pom.xml, and gradle metadata
         env:
