@@ -10,8 +10,6 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import org.bouncycastle.pkcs.PKCS10CertificationRequest
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder
 import java.security.KeyPair
-import java.security.KeyStore.PrivateKeyEntry
-import java.security.Security
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal fun generateRawCsr(keyPair: KeyPair): String {
