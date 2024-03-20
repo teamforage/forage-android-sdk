@@ -37,8 +37,8 @@ The `/sample-app/` folder in this repository contains a very simple integration 
 2. Clone this repo to your local machine.
 3. In Android Studio, open the cloned `forage-android-sdk` project folder.
    - Android Studio will start downloading the Gradle dependencies. Wait for dependencies to download before moving forward.
-4. [Create an authentication token](https://docs.joinforage.app/reference/create-authentication-token) with `pinpad_only` scope.
-   - **Warning**: To keep your app secure, use a long-lived authentication token for client-side requests in testing and development *only*. In production, client-side requests must use [session tokens](https://docs.joinforage.app/reference/create-session-token).
+4. [Create a session token](https://docs.joinforage.app/reference/create-session-token).
+   - **Warning**: While you can [create an authentication token](https://docs.joinforage.app/reference/create-authentication-token) during development instead, **in production client-side requests must use session tokens**.
 5. Confirm your Forage Merchant ID in the dashboard ([sandbox](https://dashboard.sandbox.joinforage.app/login/) | [prod](https://dashboard.joinforage.app/login/)).
 6. Save your authentication token and Merchant ID as constants in the `TokensViewModel.kt` file.
    - The app will prompt you for an authentication token and Merchant ID on the first page of the app, but it takes defaults from this file.
