@@ -185,13 +185,13 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     // incrementing the counter. It will blindly write
     // valid KSN content to the persistent file
     fun updateKsn(nextKsnState: KeySerialNumber) {
-        val actualBdkId = nextKsnState.baseDerivationKeyId
-        val expectedBdkId = readBaseDerivationKeyId()?.toHexString()
+        val actualBdkId = nextKsnState.baseDerivationKeyId.uppercase()
+        val expectedBdkId = readBaseDerivationKeyId()?.toHexString()?.uppercase()
         require(actualBdkId == expectedBdkId) {
             "Key Serial Number state can only be updated with same Base Derivation Key Id"
         }
-        val actualDeviceId = nextKsnState.deviceDerivationId
-        val expectedDeviceId = readDeviceDerivationId()?.toHexString()
+        val actualDeviceId = nextKsnState.deviceDerivationId.uppercase()
+        val expectedDeviceId = readDeviceDerivationId()?.toHexString()?.uppercase()
         require(actualDeviceId == expectedDeviceId) {
             "Key Serial Number state can only be updated with same Device Id"
         }
