@@ -42,7 +42,7 @@ internal data class InitializePosRequest(
 @JsonClass(generateAdapter = true)
 internal data class InitializePosResponse(
     // encrypted "intermediate pin encryption key"
-    @Json(name = "encrypted_ipek") val encryptedIpek: String,
+    @Json(name = "encrypted_ipek") val base64EncryptedIpek: String,
     @Json(name = "cksum") val checksum: String,
     @Json(name = "cksum_algo") val checksumAlgorithm: String, // ex: CMAC
     @Json(name = "ksn") val keySerialNumber: String

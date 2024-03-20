@@ -102,7 +102,7 @@ internal class DukptService(
         return Pair(workingKey, nextKsnState)
     }
 
-    fun loadKey(initialDerivationKeyMaterial: AesBlock) : KeySerialNumber {
+    fun loadKey(initialDerivationKeyMaterial: AesBlock): KeySerialNumber {
         keyRegisters.reset()
         val initialDerivationKey =
             keyRegisters.setInitialDerivationKey(initialDerivationKeyMaterial)

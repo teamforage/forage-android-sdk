@@ -1,10 +1,8 @@
 package com.joinforage.forage.android.pos
 
-import android.content.Context
 import android.os.Build
 import android.util.Base64
 import androidx.annotation.RequiresApi
-import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.pos.encryption.AesBlock
 import com.joinforage.forage.android.pos.encryption.CertificateSigningRequest
@@ -17,7 +15,6 @@ import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
-import org.bouncycastle.jcajce.provider.symmetric.ARC4.Base
 
 internal class PosInitializationException(
     val reason: String,
@@ -50,8 +47,7 @@ internal class PosTerminalInitializer(
                 logger.i("[POS] KSN file already exists on the device. Skipping initialization.")
                 return
             }
-            val vaultUrl = EnvConfig.fromSessionToken(sessionToken).vaultBaseUrl
-            val rsaKeyManager = initRsaKeyManager(vaultUrl)
+            val rsaKeyManager = initRsaKeyManager()
             val base64encodedCsr = getBase64CSR(rsaKeyManager)
 
             val rosettaApi = RosettaProxyApi.from(
@@ -69,18 +65,15 @@ internal class PosTerminalInitializer(
             val ksnStr = initializePosResponse.keySerialNumber
             ksnManager.init(ksnStr) // store the KSN in the KSN file
 
-            /// =========== ksn.txt - tx_counter = 0
-
             val dukptService = DukptService(
                 ksn = KeySerialNumber(ksnStr),
                 keyRegisters = AndroidKeyStoreKeyRegisters()
             )
 
-            // THROWS!
-            val base64EncryptedIpek = Base64.decode(initializePosResponse.encryptedIpek, Base64.DEFAULT)
+            val base64EncryptedIpek = Base64.decode(initializePosResponse.base64EncryptedIpek, Base64.DEFAULT)
             val decryptedInitialDerivationKey = rsaKeyManager.decrypt(base64EncryptedIpek)
+            rsaKeyManager.deleteKeyPair()
 
-            // we've never called loadkey
             val ksn = dukptService.loadKey(AesBlock(decryptedInitialDerivationKey))
             ksnManager.updateKsn(ksn)
         } catch (e: Exception) {
@@ -90,9 +83,9 @@ internal class PosTerminalInitializer(
     }
 
     companion object {
-        private fun initRsaKeyManager(vaultUrl: String): RsaKeyManager {
+        private fun initRsaKeyManager(): RsaKeyManager {
             try {
-                return RsaKeyManager.fromAndroidKeystore(vaultUrl)
+                return RsaKeyManager.fromAndroidKeystore()
             } catch (e: Exception) {
                 throw PosInitializationException("Failed to initialize RSA Key Manager", e)
             }
@@ -105,15 +98,10 @@ internal class PosTerminalInitializer(
      */
     @Throws(PosInitializationException::class)
     private fun isKsnFileAvailable(): Boolean {
-        try {
-            if (ksnManager.isInitialized()) {
-                logger.i("[POS] KSN Manager was already initialized. KSN file already exists on the device.")
-                return true
-            }
-            return false
+        return try {
+            ksnManager.isInitialized()
         } catch (e: Exception) {
-            logger.w("[POS] Failed to read KSN file.")
-            return false
+            false
         }
     }
 

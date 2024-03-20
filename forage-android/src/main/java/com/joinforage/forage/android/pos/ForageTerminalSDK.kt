@@ -113,12 +113,9 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 initSucceeded = true
 
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
-            } catch (e: Exception) {
-                logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
-
-                android.util.Log.e("BELLO", "Hello", e)
-                // TODO: rethrow!
-//                throw e
+            } catch (err: Exception) {
+                logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", err)
+                throw err
             }
 
             return ForageTerminalSDK(posTerminalId)

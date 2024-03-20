@@ -11,7 +11,7 @@ private val INITIAL_TX_COUNT = 0u
 internal data class KeySerialNumber(
     val baseDerivationKeyId: String, // 8 hex chars, which is 32 bits
     val deviceDerivationId: String, // 8 hex chars, which is 32 bits
-    val dukptClientTxCount: UInt,
+    val dukptClientTxCount: UInt
 ) {
 
     init {
@@ -175,8 +175,6 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         val bdkId = readBaseDerivationKeyId() ?: return null
         val deviceId = readDeviceDerivationId() ?: return null
         val txCount = readDukptClientTxCount() ?: return null
-
-        println("KSNNNNN in file $txCount")
 
         return KeySerialNumber(baseDerivationKeyId = bdkId, deviceId = deviceId, dukptClientTxCount = txCount)
     }

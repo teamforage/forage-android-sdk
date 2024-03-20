@@ -61,9 +61,7 @@ internal class ForagePinSubmitter(
             }
 
             val pinTranslationParams = buildPinTranslationParams(vaultProxyRequest)
-
             val requestBody = buildForageVaultRequestBody(pinTranslationParams, baseRequestBody)
-
             val request = Request.Builder()
                 .url(apiUrl)
                 .post(requestBody)
