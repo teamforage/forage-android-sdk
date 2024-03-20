@@ -1,6 +1,8 @@
 package com.joinforage.forage.android.pos
 
+import android.content.Context
 import android.os.Build
+import android.util.Base64
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.telemetry.Log
@@ -15,6 +17,7 @@ import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
+import org.bouncycastle.jcajce.provider.symmetric.ARC4.Base
 
 internal class PosInitializationException(
     val reason: String,
@@ -44,6 +47,7 @@ internal class PosTerminalInitializer(
     ) {
         try {
             if (isKsnFileAvailable()) {
+                logger.i("[POS] KSN file already exists on the device. Skipping initialization.")
                 return
             }
             val vaultUrl = EnvConfig.fromSessionToken(sessionToken).vaultBaseUrl
@@ -63,16 +67,22 @@ internal class PosTerminalInitializer(
                 base64PublicKeyPEM = response.signedCertificate
             )
             val ksnStr = initializePosResponse.keySerialNumber
-            ksnManager.init(ksnStr)
+            ksnManager.init(ksnStr) // store the KSN in the KSN file
+
+            /// =========== ksn.txt - tx_counter = 0
 
             val dukptService = DukptService(
                 ksn = KeySerialNumber(ksnStr),
                 keyRegisters = AndroidKeyStoreKeyRegisters()
             )
 
-            val decryptedInitialDerivationKey = rsaKeyManager.decrypt(initializePosResponse.encryptedIpek.toByteArray())
+            // THROWS!
+            val base64EncryptedIpek = Base64.decode(initializePosResponse.encryptedIpek, Base64.DEFAULT)
+            val decryptedInitialDerivationKey = rsaKeyManager.decrypt(base64EncryptedIpek)
 
-            dukptService.loadKey(AesBlock(decryptedInitialDerivationKey))
+            // we've never called loadkey
+            val ksn = dukptService.loadKey(AesBlock(decryptedInitialDerivationKey))
+            ksnManager.updateKsn(ksn)
         } catch (e: Exception) {
             logger.e("Failed to initialize the ForageTerminalSDK", e)
             throw e

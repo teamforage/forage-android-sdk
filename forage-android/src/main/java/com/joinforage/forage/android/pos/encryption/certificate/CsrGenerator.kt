@@ -4,18 +4,25 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import org.bouncycastle.pkcs.PKCS10CertificationRequest
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder
+import java.security.KeyPair
 import java.security.KeyStore.PrivateKeyEntry
+import java.security.Security
 
 @RequiresApi(Build.VERSION_CODES.M)
-internal fun generateRawCsr(keyEntry: PrivateKeyEntry): String {
-    val subject = X500Name(RsaKeyManager.CERT_SUBJECT)
-    val csrBuilder = PKCS10CertificationRequestBuilder(subject, SubjectPublicKeyInfo.getInstance(keyEntry.certificate.publicKey.encoded))
+internal fun generateRawCsr(keyPair: KeyPair): String {
+//    Security.addProvider(BouncyCastleProvider())
 
-    val signer = JcaContentSignerBuilder("SHA256withRSA").build(keyEntry.privateKey)
+    val subject = X500Name(RsaKeyManager.CERT_SUBJECT)
+    val csrBuilder = PKCS10CertificationRequestBuilder(subject, SubjectPublicKeyInfo.getInstance(keyPair.public.encoded))
+
+    val signerBuilder = JcaContentSignerBuilder("SHA256withRSA")
+    signerBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME)
+    val signer = signerBuilder.build(keyPair.private)
     val csr = csrBuilder.build(signer)
 
     return csr.toPemString()

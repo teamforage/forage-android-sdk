@@ -139,10 +139,13 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
 
     // we care about the KSN file existing and not
     // being corrupted. Checking that the txCount
-    // can be read and is an int seems like a
+    // can be read and is an int (greater than 0) seems like a
     // convenient way of killing two birds with
     // one stone
-    fun isInitialized(): Boolean = readDukptClientTxCount() != null
+    fun isInitialized(): Boolean {
+        val res = readDukptClientTxCount()
+        return res != null && res.toUInt() > 0u
+    }
 
     // Base Derivation Key is line 0
     fun readBaseDerivationKeyId(): KsnComponent? {
@@ -172,6 +175,9 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         val bdkId = readBaseDerivationKeyId() ?: return null
         val deviceId = readDeviceDerivationId() ?: return null
         val txCount = readDukptClientTxCount() ?: return null
+
+        println("KSNNNNN in file $txCount")
+
         return KeySerialNumber(baseDerivationKeyId = bdkId, deviceId = deviceId, dukptClientTxCount = txCount)
     }
 
