@@ -104,7 +104,10 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 ForagePinSubmitter.ksnFileManager = ksnFileManager
 
                 val initializer =
-                    PosTerminalInitializer(logger = logger, ksnManager = ksnFileManager)
+                    PosTerminalInitializer(
+                        logger = logger,
+                        ksnManager = ksnFileManager
+                    )
 
                 initializer.execute(merchantId = merchantId, sessionToken = sessionToken)
                 initSucceeded = true
@@ -112,7 +115,10 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
             } catch (e: Exception) {
                 logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
-                throw e
+
+                android.util.Log.e("BELLO", "Hello", e)
+                // TODO: rethrow!
+//                throw e
             }
 
             return ForageTerminalSDK(posTerminalId)
