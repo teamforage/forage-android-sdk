@@ -109,7 +109,11 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                         ksnManager = ksnFileManager
                     )
 
-                initializer.execute(merchantId = merchantId, sessionToken = sessionToken)
+                initializer.execute(
+                    posTerminalId = posTerminalId,
+                    merchantId = merchantId,
+                    sessionToken = sessionToken
+                )
                 initSucceeded = true
 
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")

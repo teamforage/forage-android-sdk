@@ -65,11 +65,12 @@ internal interface RosettaProxyApi {
     ): InitializePosResponse
 
     companion object {
-        internal fun from(posForageConfig: PosForageConfig): RosettaProxyApi {
+        internal fun from(posTerminalId: String, posForageConfig: PosForageConfig): RosettaProxyApi {
             val commonHeadersInterceptor = Interceptor { chain ->
                 val newRequest = chain.request().newBuilder()
                     .addHeader("Authorization", "Bearer ${posForageConfig.sessionToken}")
                     .addHeader("Merchant-Account", posForageConfig.merchantId)
+                    .addHeader("X-TERMINAL-ID", posTerminalId)
                     .build()
                 chain.proceed(newRequest)
             }
