@@ -122,6 +122,7 @@ class ForageTerminalSDK internal constructor(
                 )
 
                 initializer.execute(
+                    posTerminalId = posTerminalId,
                     merchantId = merchantId,
                     sessionToken = sessionToken
                 )

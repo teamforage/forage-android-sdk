@@ -24,6 +24,7 @@ internal class PosInitializationException(
 internal interface PosInitializer {
     @Throws(PosInitializationException::class)
     suspend fun execute(
+        posTerminalId: String,
         merchantId: String,
         sessionToken: String
     )
@@ -39,6 +40,7 @@ internal class PosTerminalInitializer(
 ) : PosInitializer {
     @Throws(PosInitializationException::class)
     override suspend fun execute(
+        posTerminalId: String,
         merchantId: String,
         sessionToken: String
     ) {
@@ -51,6 +53,7 @@ internal class PosTerminalInitializer(
             val base64encodedCsr = getBase64CSR(rsaKeyManager)
 
             val rosettaApi = RosettaProxyApi.from(
+                posTerminalId = posTerminalId,
                 PosForageConfig(
                     sessionToken = sessionToken,
                     merchantId = merchantId

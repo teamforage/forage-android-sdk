@@ -13,8 +13,6 @@ import java.security.KeyPair
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal fun generateRawCsr(keyPair: KeyPair): String {
-//    Security.addProvider(BouncyCastleProvider())
-
     val subject = X500Name(RsaKeyManager.CERT_SUBJECT)
     val csrBuilder = PKCS10CertificationRequestBuilder(subject, SubjectPublicKeyInfo.getInstance(keyPair.public.encoded))
 
