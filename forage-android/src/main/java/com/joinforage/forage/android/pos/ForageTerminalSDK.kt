@@ -65,6 +65,8 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
          * infrequently. It is required to call [ForageTerminalSDK.init] ahead of calling any other
          * methods on a [ForageTerminalSDK] instance.
          *
+         * @throws Exception If the initialization fails.
+         *
          * @param context The Android application context.
          *
          * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
@@ -82,7 +84,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
          * endpoint.
          */
         @RequiresApi(Build.VERSION_CODES.M)
-        @Throws(PosInitializationException::class)
+        @Throws(Exception::class)
         suspend fun init(
             context: Context,
             posTerminalId: String,
@@ -119,7 +121,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
             } catch (err: Exception) {
                 logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", err)
-                throw err
+                throw Exception("Failed to initialize the ForageTerminalSDK")
             }
 
             return ForageTerminalSDK(posTerminalId)
