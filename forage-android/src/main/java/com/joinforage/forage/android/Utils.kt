@@ -26,7 +26,7 @@ internal fun TypedArray.getBoxCornerRadius(styleIndex: Int, defaultBoxCornerRadi
 
 // This extension splits the path by "/" and adds each segment individually to the path.
 // This is to prevent the URL from getting corrupted through internal OKHttp URL encoding.
-fun HttpUrl.Builder.addPathSegmentsSafe(path: String): HttpUrl.Builder {
+internal fun HttpUrl.Builder.addPathSegmentsSafe(path: String): HttpUrl.Builder {
     path.split("/").forEach { segment ->
         if (segment.isNotEmpty()) {
             this.addPathSegment(segment)
