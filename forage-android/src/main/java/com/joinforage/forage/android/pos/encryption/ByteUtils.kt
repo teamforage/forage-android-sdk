@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos.encryption
 
-val singleByteMask = 0xffu
-object ByteUtils {
+internal val singleByteMask = 0xffu
+internal object ByteUtils {
     // NOTE: this function assumes there is no leading
     // 0x<hex>... it assumes you just pass in <hex>...
     fun hex2ByteArray(hex: String): ByteArray = hex.chunked(2)

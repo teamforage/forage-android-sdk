@@ -13,7 +13,7 @@ import javax.crypto.Cipher
 import android.util.Base64 as AndroidBase64
 
 @RequiresApi(Build.VERSION_CODES.M)
-class RsaKeyManager() {
+internal class RsaKeyManager() {
     private var keyPair: KeyPair? = null
 
     init {
