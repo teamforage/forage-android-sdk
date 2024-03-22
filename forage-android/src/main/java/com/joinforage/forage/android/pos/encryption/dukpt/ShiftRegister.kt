@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.pos.encryption.dukpt
 
-val NUM_KEY_REGISTERS = 32u
+internal val NUM_KEY_REGISTERS = 32u
 
 internal class ShiftRegister(val lsbOffset: UInt) {
     val contents: UInt = 1u shl lsbOffset.toInt()
