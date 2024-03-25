@@ -450,7 +450,7 @@ class POSViewModel : ViewModel() {
         // without raising a "NotImplementedError".
         return ForageTerminalSDK.init(
             context = context,
-            posTerminalId = "pos-sample-app-override",
+            posTerminalId = terminalId,
             posForageConfig = PosForageConfig(
                 merchantId = _uiState.value.merchantId,
                 sessionToken = _uiState.value.sessionToken

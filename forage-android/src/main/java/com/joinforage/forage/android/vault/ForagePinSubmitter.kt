@@ -47,7 +47,6 @@ internal class ForagePinSubmitter(
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return ""
     }
-
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
         return try {
             val apiUrl = buildVaultUrl(vaultProxyRequest.path)

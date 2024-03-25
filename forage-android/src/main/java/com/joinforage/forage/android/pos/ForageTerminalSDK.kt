@@ -26,7 +26,9 @@ import com.joinforage.forage.android.vault.ForagePinSubmitter
  * The entry point for **in-store POS Terminal** transactions.
  *
  * A [ForageTerminalSDK] instance interacts with the Forage API.
- * Provide a unique POS Terminal ID, the `posTerminalId` parameter, to perform operations like:
+ *
+ * ℹ️ Call [`ForageTerminalSDK.init`][init] before performing operations like:
+ * <br><br>
  *
  * **You need to call [`ForageTerminalSDK.init`][init] to initialize the SDK.**
  * Then you can perform operations like:
@@ -81,33 +83,46 @@ class ForageTerminalSDK internal constructor(
          * required to call [ForageTerminalSDK.init] ahead of calling any other methods on
          * a [ForageTerminalSDK] instance.
          *
+         * ⚠️The [ForageTerminalSDK.init] method is only available in the private
+         * distribution of the Forage Terminal SDK.
+         *
+         *```kotlin
+         * // Example: Initialize the Forage Terminal SDK
+         * try {
+         *     val forageTerminalSdk = ForageTerminalSDK.init(
+         *         context = androidContext,
+         *         posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
+         *         posForageConfig = PosForageConfig(
+         *             merchantId = "mid/123ab45c67",
+         *             sessionToken = "sandbox_ey123..."
+         *         )
+         *     )
+         *
+         *     // Use the forageTerminalSdk to call other methods
+         *     // (e.g. tokenizeCard, checkBalance, etc.)
+         * } catch (e: Exception) {
+         *     // handle initialization error
+         * }
+         * ```
+         *
          * @throws Exception If the initialization fails.
          *
-         * @param context The Android application context.
-         *
+         * @param context **Required**. The Android application context.
          * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
          * used for a transaction. The max length of the string is 255 characters.
-         *
-         * @param merchantId A unique Merchant ID that Forage provides during onboarding
-         *  * preceded by "mid/".
-         *  * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage
-         *  * [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
-         *  * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
-         *
-         * @param sessionToken A short-lived token that authenticates front-end requests to Forage.
-         *  * To create one, send a server-side `POST` request from your backend to the
-         *  * [`/session_token/`](https://docs.joinforage.app/reference/create-session-token) endpoint.
+         * @param posForageConfig **Required**. A [PosForageConfig] instance that specifies a
+         * `merchantId` and `sessionToken`.
          */
         @RequiresApi(Build.VERSION_CODES.M)
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
             posTerminalId: String,
-            merchantId: String,
-            sessionToken: String
+            posForageConfig: PosForageConfig,
         ): ForageTerminalSDK {
             calledInit = true
             val logger = createLogger(posTerminalId)
+            val (merchantId, sessionToken) = posForageConfig
 
             try {
                 val logSuffix = getLogSuffix(posTerminalId, merchantId)
@@ -132,6 +147,8 @@ class ForageTerminalSDK internal constructor(
 
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
             } catch (e: Exception) {
+                // clear file!
+
                 logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
                 throw Exception("Failed to initialize the ForageTerminalSDK")
             }
