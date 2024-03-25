@@ -24,7 +24,9 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  *
  * A [ForageTerminalSDK] instance interacts with the Forage API.
  *
- * ℹ️ Call [`ForageTerminalSDK.init`][init] before performing operations like:
+ * **You need to call [`ForageTerminalSDK.init`][init] to initialize the SDK.**
+ * Then you can perform operations like:
+ *
  * <br><br>
  *
  * * [Tokenizing card information][tokenizeCard]
@@ -69,10 +71,14 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         private var initSucceeded = false
 
         /**
-         * The [ForageTerminalSDK] may perform some long running initialization operations in
+         * A method that initializes the [ForageTerminalSDK].
+         *
+         * **You must call [init] ahead of calling
+         * any other methods on a ForageTerminalSDK instance.**
+         *
+         * Forage may perform some long running initialization operations in
          * certain circumstances. The operations typically last less than 10 seconds and only occur
-         * infrequently. It is required to call [init] ahead of calling any other
-         * methods on a [ForageTerminalSDK] instance.
+         * infrequently.
          *
          * ⚠️The [ForageTerminalSDK.init] method is only available in the private
          * distribution of the Forage Terminal SDK.
