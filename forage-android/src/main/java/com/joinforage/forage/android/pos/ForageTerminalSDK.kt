@@ -118,7 +118,7 @@ class ForageTerminalSDK internal constructor(
         suspend fun init(
             context: Context,
             posTerminalId: String,
-            posForageConfig: PosForageConfig,
+            posForageConfig: PosForageConfig
         ): ForageTerminalSDK {
             calledInit = true
             val logger = createLogger(posTerminalId)
