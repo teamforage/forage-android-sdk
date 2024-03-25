@@ -41,9 +41,11 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  * // Example: Initialize the Forage Terminal SDK
  * val forageTerminalSdk = ForageTerminalSDK.init(
  *     context = androidContext,
- *     posTerminalId = "<uniquely-identifies-the-pos-terminal>",
- *     merchantId = "mid/<merchant_id>",
- *     sessionToken = "sandbox_ey123..."
+ *     posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
+ *     posForageConfig = PosForageConfig(
+ *         merchantId = "mid/123ab45c67",
+ *         sessionToken = "sandbox_ey123..."
+ *     )
  * )
  * ```
  *
@@ -81,8 +83,10 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
          *     val forageTerminalSdk = ForageTerminalSDK.init(
          *         context = androidContext,
          *         posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
-         *         merchantId = "mid/<merchant_id>",
-         *         sessionToken = "sandbox_ey123..."
+         *         posForageConfig = PosForageConfig(
+         *             merchantId = "mid/123ab45c67",
+         *             sessionToken = "sandbox_ey123..."
+         *         )
          *     )
          *
          *     // Use the forageTerminalSdk to call other methods
@@ -94,29 +98,18 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
          *
          * @throws Exception If the initialization fails.
          *
-         * @param context The Android application context.
-         *
+         * @param context **Required**. The Android application context.
          * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
          * used for a transaction. The max length of the string is 255 characters.
-         *
-         * @param merchantId **Required**. A unique Merchant ID that Forage provides during onboarding
-         * * preceded by "mid/".
-         * * For example, `mid/123ab45c67`. The Merchant ID can be found in the Forage
-         * * [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
-         * * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
-         *
-         * @param sessionToken **Required**. A short-lived token that authenticates front-end requests to Forage.
-         * * To create one, send a server-side `POST` request from your backend to the
-         * * [`/session_token/`](https://docs.joinforage.app/reference/create-session-token)
-         * endpoint.
+         * @param posForageConfig **Required**. A [PosForageConfig] instance that specifies a
+         * `merchantId` and `sessionToken`.
          */
         @RequiresApi(Build.VERSION_CODES.M)
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
             posTerminalId: String,
-            merchantId: String,
-            sessionToken: String
+            posForageConfig: PosForageConfig
         ): ForageTerminalSDK {
             if (posTerminalId == "pos-sample-app-override") {
                 return ForageTerminalSDK(posTerminalId)
@@ -174,7 +167,6 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      *     val sessionToken = "<session_token>"
      *
      *     fun tokenizeCard(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
-     *
      *         val response = forageTerminalSdk.tokenizeCard(
      *           foragePanEditText = foragePanEditText,
      *           reusable = true

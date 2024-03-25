@@ -21,6 +21,7 @@ import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
+import com.joinforage.forage.android.pos.PosForageConfig
 import com.joinforage.forage.android.pos.PosRefundPaymentParams
 import com.joinforage.forage.android.pos.PosTokenizeCardParams
 import com.joinforage.forage.android.ui.ForagePANEditText
@@ -376,8 +377,10 @@ class POSViewModel : ViewModel() {
         return ForageTerminalSDK.init(
             context = context,
             posTerminalId = "pos-sample-app-override",
-            merchantId = _uiState.value.merchantId,
-            sessionToken = _uiState.value.sessionToken
+            posForageConfig = PosForageConfig(
+                merchantId = _uiState.value.merchantId,
+                sessionToken = _uiState.value.sessionToken
+            )
         )
     }
 }
