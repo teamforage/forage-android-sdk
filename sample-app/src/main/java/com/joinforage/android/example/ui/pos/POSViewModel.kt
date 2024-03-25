@@ -1,5 +1,7 @@
 package com.joinforage.android.example.ui.pos
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,6 +36,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.UUID
 
+@SuppressLint("NewApi")
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
@@ -136,9 +139,10 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+    fun tokenizeEBTCard(context: Context, foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId).tokenizeCard(
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.tokenizeCard(
                 foragePanEditText = foragePanEditText,
                 reusable = true
             )
@@ -159,10 +163,10 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(track2Data: String, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+    fun tokenizeEBTCard(context: Context, track2Data: String, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
-            val forage = ForageTerminalSDK(terminalId)
-            val response = forage.tokenizeCard(
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.tokenizeCard(
                 PosTokenizeCardParams(
                     uiState.value.posForageConfig,
                     track2Data
@@ -185,9 +189,10 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun checkEBTCardBalance(foragePinEditText: ForagePINEditText, paymentMethodRef: String, terminalId: String, onSuccess: (response: BalanceCheck?) -> Unit) {
+    fun checkEBTCardBalance(context: Context, foragePinEditText: ForagePINEditText, paymentMethodRef: String, terminalId: String, onSuccess: (response: BalanceCheck?) -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId).checkBalance(
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.checkBalance(
                 CheckBalanceParams(
                     foragePinEditText = foragePinEditText,
                     paymentMethodRef = paymentMethodRef
@@ -220,9 +225,10 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: () -> Unit, onFailure: (sequenceNumber: String?) -> Unit) {
+    fun capturePayment(context: Context, foragePinEditText: ForagePINEditText, terminalId: String, paymentRef: String, onSuccess: () -> Unit, onFailure: (sequenceNumber: String?) -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId).capturePayment(
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.capturePayment(
                 CapturePaymentParams(
                     foragePinEditText = foragePinEditText,
                     paymentRef = paymentRef
@@ -261,9 +267,10 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun refundPayment(foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun refundPayment(context: Context, foragePinEditText: ForagePINEditText, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         viewModelScope.launch {
-            val response = ForageTerminalSDK(terminalId).refundPayment(
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.refundPayment(
                 PosRefundPaymentParams(
                     foragePinEditText = foragePinEditText,
                     amount = amount,
@@ -360,5 +367,17 @@ class POSViewModel : ViewModel() {
                 _uiState.update { it.copy(voidRefundError = e.toString(), voidRefundResponse = null) }
             }
         }
+    }
+
+    private suspend fun initForageTerminalSDK(context: Context, terminalId: String): ForageTerminalSDK {
+        // Setting `posTerminalId = "pos-sample-app-override"` allows
+        // us to run the POS sample app from the public repository
+        // without raising a "NotImplementedError".
+        return ForageTerminalSDK.init(
+            context = context,
+            posTerminalId = "pos-sample-app-override",
+            merchantId = _uiState.value.merchantId,
+            sessionToken = _uiState.value.sessionToken
+        )
     }
 }
