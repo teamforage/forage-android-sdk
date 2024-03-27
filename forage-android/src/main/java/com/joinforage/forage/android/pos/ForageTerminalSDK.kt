@@ -26,9 +26,7 @@ import com.joinforage.forage.android.ui.ForagePINEditText
  *
  * **You need to call [`ForageTerminalSDK.init`][init] to initialize the SDK.**
  * Then you can perform operations like:
- *
  * <br><br>
- *
  * * [Tokenizing card information][tokenizeCard]
  * * [Checking the balance of a card][checkBalance]
  * * [Collecting a card PIN for a payment and
