@@ -70,19 +70,15 @@ class ForageTerminalSDKTest : MockServerSuite() {
         mockForagePanEditText = mock(ForagePANEditText::class.java)
         mockForagePinEditText = mock(ForagePINEditText::class.java)
         mockForageSdk = mock(ForageSDK::class.java)
-        `when`(mockForagePinEditText.getForageConfig()).thenReturn(
-            ForageConfig(
-                merchantId = expectedData.merchantId,
-                sessionToken = expectedData.sessionToken
-            )
+
+        val forageConfig = ForageConfig(
+            merchantId = expectedData.merchantId,
+            sessionToken = expectedData.sessionToken
         )
+        `when`(mockForagePinEditText.getForageConfig()).thenReturn(forageConfig)
         `when`(mockForagePinEditText.getVaultType()).thenReturn(vaultSubmitter.getVaultType())
 
-        terminalSdk = ForageTerminalSDK(
-            posTerminalId = expectedData.posTerminalId,
-            forageSdk = mockForageSdk,
-            createLogger = { mockLogger }
-        )
+        terminalSdk = createMockTerminalSdk()
     }
 
     @Test
@@ -159,6 +155,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
         ).thenReturn(
             ForageApiResponse.Success("Success")
         )
+
+        val terminalSdk = createMockTerminalSdk(false)
 
         val response = terminalSdk.tokenizeCard(
             foragePanEditText = mockForagePanEditText
@@ -318,6 +316,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             ForageApiResponse.Success("Success")
         )
 
+        val terminalSdk = createMockTerminalSdk(false)
         val params = CapturePaymentParams(
             foragePinEditText = mockForagePinEditText,
             paymentRef = "payment1234"
@@ -375,6 +374,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
             foragePinEditText = mockForagePinEditText,
             paymentRef = "payment1234"
         )
+        val terminalSdk = createMockTerminalSdk(false)
         val response = terminalSdk.deferPaymentCapture(params)
         assertTrue(response is ForageApiResponse.Success)
         assertTrue((response as ForageApiResponse.Success).data == "")
@@ -487,18 +487,29 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
     }
 
-    private fun createMockTerminalSdk() = ForageTerminalSDK(
-        posTerminalId = expectedData.posVaultRequestParams.posTerminalId,
-        forageSdk = ForageSDK(),
-        createLogger = { mockLogger },
-        createServiceFactory = { _: String, _: String, logger: Log ->
-            MockServiceFactory(
-                mockVaultSubmitter = vaultSubmitter,
-                logger = logger,
-                server = server
+    private fun createMockTerminalSdk(withMockServiceFactory: Boolean = true): ForageTerminalSDK {
+        if (withMockServiceFactory) {
+            return ForageTerminalSDK(
+                posTerminalId = expectedData.posVaultRequestParams.posTerminalId,
+                forageSdk = ForageSDK(),
+                createLogger = { mockLogger },
+                createServiceFactory = { _: String, _: String, logger: Log ->
+                    MockServiceFactory(
+                        mockVaultSubmitter = vaultSubmitter,
+                        logger = logger,
+                        server = server
+                    )
+                },
+                initSucceeded = true
             )
         }
-    )
+        return ForageTerminalSDK(
+            posTerminalId = expectedData.posTerminalId,
+            forageSdk = mockForageSdk,
+            createLogger = { mockLogger },
+            initSucceeded = true
+        )
+    }
 
     private fun assertLoggedError(expectedMessage: String, failureResponse: ForageApiResponse.Failure) {
         val firstForageError = failureResponse.errors.first()
