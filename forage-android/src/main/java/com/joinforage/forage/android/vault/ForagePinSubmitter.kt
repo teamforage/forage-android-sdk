@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.vault
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.addPathSegmentsSafe
@@ -13,6 +14,10 @@ import com.joinforage.forage.android.network.NetworkService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
+import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
+import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
+import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.ui.ForagePINEditText
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -21,6 +26,12 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+
+internal data class PinTranslationParams(
+    val encryptedPinBlock: String,
+    val keySerialNumber: String,
+    val txnCounter: String
+)
 
 internal class ForagePinSubmitter(
     context: Context,
@@ -36,19 +47,26 @@ internal class ForagePinSubmitter(
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return ""
     }
-
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
         return try {
             val apiUrl = buildVaultUrl(vaultProxyRequest.path)
-            val baseRequestBody = buildRequestBody(vaultProxyRequest)
-            val requestBody = buildForageVaultRequestBody(foragePinEditText, baseRequestBody)
 
+            val baseRequestBody = buildRequestBody(vaultProxyRequest)
+            val plainTextPan = vaultProxyRequest.params?.paymentMethod?.card?.number
+
+            if (plainTextPan == null) {
+                logger.e("PaymentMethod.card.number was null")
+                return UnknownErrorApiResponse
+            }
+
+            val pinTranslationParams = buildPinTranslationParams(vaultProxyRequest)
+            val requestBody = buildForageVaultRequestBody(pinTranslationParams, baseRequestBody)
             val request = Request.Builder()
                 .url(apiUrl)
                 .post(requestBody)
                 .build()
 
-            val headerValues = vaultProxyRequest.params!!
+            val headerValues = vaultProxyRequest.params
 
             val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                 sessionToken = headerValues.sessionToken,
@@ -58,7 +76,6 @@ internal class ForagePinSubmitter(
             )
 
             val vaultService: NetworkService = object : NetworkService(okHttpClient, logger) {}
-
             val rawForageVaultResponse = vaultService.convertCallbackToCoroutine(request)
 
             vaultToForageResponse(rawForageVaultResponse)
@@ -101,7 +118,40 @@ internal class ForagePinSubmitter(
         return null
     }
 
+    /**
+     * The `init` method of the SDK ensures the client is using Android M (23+) or later.
+     */
+    @SuppressLint("NewApi")
+    @Throws(Exception::class, IllegalArgumentException::class)
+    private fun buildPinTranslationParams(vaultProxyRequest: VaultProxyRequest): PinTranslationParams {
+        val plainTextPan = vaultProxyRequest.params?.paymentMethod?.card?.number
+            ?: throw IllegalArgumentException("PaymentMethod.card.number was null")
+
+        val ksn = ksnFileManager!!.readAll() ?: throw IllegalArgumentException("Failed to get KSN from file")
+
+        try {
+            val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
+
+            val dukptService = DukptService(ksn = ksn, keyRegisters = AndroidKeyStoreKeyRegisters())
+            val (workingKey, latestKsn) = dukptService.generateWorkingKey()
+            ksnFileManager!!.updateKsn(latestKsn)
+
+            val encryptedPinBlock = PinBlockIso4(plainTextPan, plainTextPin, workingKey).contents.toHexString().uppercase()
+
+            return PinTranslationParams(
+                encryptedPinBlock = encryptedPinBlock,
+                keySerialNumber = latestKsn.apcKsn,
+                txnCounter = latestKsn.workingKeyTxCountAsBigEndian8CharHex
+            )
+        } catch (e: Exception) {
+            throw Exception("Failed to encrypt PIN using dukpt service", e)
+        }
+    }
+
     companion object {
+        // STOPGAP: global static var needed to read from the KSN file.
+        internal var ksnFileManager: KsnFileManager? = null
+
         // this code assumes that .setForageConfig() has been called
         // on a Forage***EditText before VAULT_BASE_URL gets referenced
         private val VAULT_BASE_URL = StopgapGlobalState.envConfig.vaultBaseUrl
@@ -109,14 +159,20 @@ internal class ForagePinSubmitter(
         private fun buildVaultUrl(path: String): HttpUrl =
             VAULT_BASE_URL.toHttpUrlOrNull()!!
                 .newBuilder()
-                .scheme("https")
+                .addPathSegment("proxy")
                 .addPathSegmentsSafe(path)
                 .addTrailingSlash()
                 .build()
 
-        private fun buildForageVaultRequestBody(foragePinEditText: ForagePINEditText, baseRequestBody: Map<String, Any>): RequestBody {
+        private fun buildForageVaultRequestBody(
+            pinTranslationParams: PinTranslationParams,
+            baseRequestBody: Map<String, Any>
+        ): RequestBody {
             val jsonBody = JSONObject(baseRequestBody)
-            jsonBody.put("pin", foragePinEditText.getForageTextElement().text.toString())
+
+            jsonBody.put("pin", pinTranslationParams.encryptedPinBlock)
+            jsonBody.put(ForageConstants.PosRequestBody.KSN, pinTranslationParams.keySerialNumber)
+            jsonBody.put(ForageConstants.PosRequestBody.TXN_COUNTER, pinTranslationParams.txnCounter)
 
             val mediaType = "application/json".toMediaTypeOrNull()
             return jsonBody.toString().toRequestBody(mediaType)

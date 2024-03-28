@@ -35,7 +35,7 @@ internal sealed class EnvConfig(
         vgsVaultId = "tntlqkidhc6",
         vgsVaultType = "sandbox",
         apiBaseUrl = "http://10.0.2.2:8000/",
-        vaultBaseUrl = "http://10.0.2.2:3999/proxy/",
+        vaultBaseUrl = "http://10.0.2.2:3999/",
         ldMobileKey = "mob-03e025cb-5b4e-4d97-8685-39a22316d601",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -47,7 +47,7 @@ internal sealed class EnvConfig(
         vgsVaultId = "tntlqkidhc6",
         vgsVaultType = "sandbox",
         apiBaseUrl = "https://api.dev.joinforage.app/",
-        vaultBaseUrl = "https://vault.dev.joinforage.app/proxy/",
+        vaultBaseUrl = "https://vault.dev.joinforage.app/",
         ldMobileKey = "mob-03e025cb-5b4e-4d97-8685-39a22316d601",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -59,7 +59,7 @@ internal sealed class EnvConfig(
         vgsVaultId = "tnteykuh975",
         vgsVaultType = "sandbox",
         apiBaseUrl = "https://api.staging.joinforage.app/",
-        vaultBaseUrl = "https://vault.staging.joinforage.app/proxy/",
+        vaultBaseUrl = "https://vault.staging.joinforage.app/",
         ldMobileKey = "mob-a9903698-759b-48e2-86e1-c551e2b69118",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -71,7 +71,7 @@ internal sealed class EnvConfig(
         vgsVaultId = "tntagcot4b1",
         vgsVaultType = "sandbox",
         apiBaseUrl = "https://api.sandbox.joinforage.app/",
-        vaultBaseUrl = "https://vault.sandbox.joinforage.app/proxy/",
+        vaultBaseUrl = "https://vault.sandbox.joinforage.app/",
         ldMobileKey = "mob-22024b85-05b7-4e24-b290-a071310dfc3d",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -83,7 +83,7 @@ internal sealed class EnvConfig(
         vgsVaultId = "tntpnht7psv",
         vgsVaultType = "sandbox",
         apiBaseUrl = "https://api.cert.joinforage.app/",
-        vaultBaseUrl = "https://vault.cert.joinforage.app/proxy/",
+        vaultBaseUrl = "https://vault.cert.joinforage.app/",
         ldMobileKey = "mob-d2261a08-784b-4300-a45f-ce0e46324d66",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
@@ -95,7 +95,7 @@ internal sealed class EnvConfig(
         vgsVaultId = "tntbcrncmgi",
         vgsVaultType = "live",
         apiBaseUrl = "https://api.joinforage.app/",
-        vaultBaseUrl = "https://vault.joinforage.app/proxy/",
+        vaultBaseUrl = "https://vault.joinforage.app/",
         ldMobileKey = "mob-5c3dfa7a-fa6d-4cdf-93e8-d28ef8080696",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )

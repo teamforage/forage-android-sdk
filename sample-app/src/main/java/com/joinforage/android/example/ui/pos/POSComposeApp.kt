@@ -214,6 +214,7 @@ fun POSComposeApp(
                         if (panElement != null) {
                             panElement!!.clearFocus()
                             viewModel.tokenizeEBTCard(
+                                context,
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
                                 onSuccess = {
@@ -235,7 +236,7 @@ fun POSComposeApp(
                 MagSwipePANEntryScreen(
                     onLaunch = {
                         k9SDK.listenForMagneticCardSwipe { track2Data ->
-                            viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) {
+                            viewModel.tokenizeEBTCard(context, track2Data, k9SDK.terminalId) {
                                 if (it?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
                                     viewModel.resetPinActionErrors()
@@ -256,6 +257,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
                             pinElement!!.clearFocus()
                             viewModel.checkEBTCardBalance(
+                                context,
                                 pinElement as ForagePINEditText,
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
                                 k9SDK.terminalId,
@@ -396,6 +398,7 @@ fun POSComposeApp(
                         if (panElement != null) {
                             panElement!!.clearFocus()
                             viewModel.tokenizeEBTCard(
+                                context,
                                 panElement as ForagePANEditText,
                                 k9SDK.terminalId,
                                 onSuccess = { tokenizedCard ->
@@ -423,7 +426,7 @@ fun POSComposeApp(
                 MagSwipePANEntryScreen(
                     onLaunch = {
                         k9SDK.listenForMagneticCardSwipe { track2Data ->
-                            viewModel.tokenizeEBTCard(track2Data, k9SDK.terminalId) { tokenizedCard ->
+                            viewModel.tokenizeEBTCard(context, track2Data, k9SDK.terminalId) { tokenizedCard ->
                                 if (tokenizedCard?.ref != null) {
                                     Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $tokenizedCard.ref")
                                     val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
@@ -449,6 +452,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
                             pinElement!!.clearFocus()
                             viewModel.capturePayment(
+                                context,
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
@@ -547,6 +551,7 @@ fun POSComposeApp(
                         if (pinElement != null && uiState.localRefundState != null) {
                             pinElement!!.clearFocus()
                             viewModel.refundPayment(
+                                context,
                                 foragePinEditText = pinElement as ForagePINEditText,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.localRefundState!!.paymentRef,

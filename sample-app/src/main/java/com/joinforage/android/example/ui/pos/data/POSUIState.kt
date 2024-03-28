@@ -5,7 +5,7 @@ import com.joinforage.forage.android.pos.PosForageConfig
 
 data class POSUIState(
     val merchantId: String = "1234567", // <your_merchant_id>
-    val sessionToken: String = "sandbox_eyabcdef....", // <your_oauth_or_session_token>
+    val sessionToken: String = "sandbox_eyabcdef...", // <your_oauth_or_session_token>
 
     // Tokenizing EBT Cards
     val tokenizedPaymentMethod: PosPaymentMethod? = null,
