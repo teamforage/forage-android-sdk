@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
 apply plugin: ShadowAarDependenciesPlugin
+apply plugin: 'maven-publish'
 
 ext {
     PUBLISH_GROUP_ID = 'com.joinforage'
@@ -25,7 +26,7 @@ ext {
     PUBLISH_SCM_DEVELOPER_CONNECTION =
             'scm:git:ssh://github.com:teamforage/forage-android-sdk.git'
     PUBLISH_SCM_URL =
-            'https://github.com/teamforage/forage-android-sdk/tree/main'
+            'https://github.com/Forage-PCI-CDE/forage-android-sdk/tree/main'
 }
 
 android {
@@ -161,6 +162,39 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }
 
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            groupId = 'com.joinforage.forage'
+            artifactId = 'android'
+            version = PUBLISH_VERSION
 
+            artifact("$buildDir/outputs/aar/${project.name}-release.aar")
+
+            pom.withXml {
+                final Node root = asNode()
+                root.appendNode('description', 'Forages Android SDK for POS Terminals')
+                root.appendNode('name', 'Forage POS Terminal SDK')
+                root.appendNode('url', 'https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk')
+            }
+        }
+    }
+
+    publications.mavenAar.artifactId 'forage-android-release.aar'
+
+    repositories {
+        maven {
+            url = uri("${project.buildDir}/repos")
+        }
+    }
+}
+
+tasks.withType(Sign).configureEach {
+    onlyIf { false }
+}
+
+tasks.named("publishMavenAarPublicationToMavenLocal").configure {
+    dependsOn 'bundleReleaseAar'
+}
 
 apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
