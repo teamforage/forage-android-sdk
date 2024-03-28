@@ -167,7 +167,7 @@ publishing {
         mavenAar(MavenPublication) {
             groupId = 'com.joinforage.forage'
             artifactId = 'android'
-            version = '3.8.0'
+            version = PUBLISH_VERSION
 
             artifact("$buildDir/outputs/aar/${project.name}-release.aar")
 
