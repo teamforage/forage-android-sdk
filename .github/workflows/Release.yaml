@@ -49,5 +49,5 @@ jobs:
               ./forage-android/build/publications/release/pom-default.xml
 
           gh release upload "$tag" \
-              ./forage-android/build/publications/release/metadata.json
+              ./forage-android/build/publications/release/module.json
           
