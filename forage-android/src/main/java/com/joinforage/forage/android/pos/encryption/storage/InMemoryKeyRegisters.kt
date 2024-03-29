@@ -48,7 +48,7 @@ internal class InMemoryKeyRegisters : SecureKeyStorageRegisters {
     }
 
     fun getKeyOrNone(alias: String): SecretKeySpec? {
-        return keyStore.getOrDefault(alias, null)
+        return if (keyStore.containsKey(alias)) keyStore[alias] else  null
     }
 
     // the whole point of this method is so the callee
