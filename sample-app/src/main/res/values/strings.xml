@@ -52,5 +52,7 @@
     <string name="title_pos_void_refund">Void a Refund</string>
     <string name="title_pos_void_payment_result">Void Payment Result</string>
     <string name="title_pos_void_refund_result">Void Refund Result</string>
+    <string name="title_pos_defer_payment_result">Deferred Payment Capture Result</string>
+    <string name="title_pos_defer_refund_result">Deferred Payment Refund Result</string>
     <string name="pos_restart">Restart</string>
 </resources>
