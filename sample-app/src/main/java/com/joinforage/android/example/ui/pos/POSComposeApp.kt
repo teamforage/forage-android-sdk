@@ -41,6 +41,8 @@ import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.screens.ActionSelectionScreen
 import com.joinforage.android.example.ui.pos.screens.MerchantSetupScreen
 import com.joinforage.android.example.ui.pos.screens.balance.BalanceResultScreen
+import com.joinforage.android.example.ui.pos.screens.deferred.DeferredPaymentCaptureResultScreen
+import com.joinforage.android.example.ui.pos.screens.deferred.DeferredPaymentRefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashPurchaseWithCashBackScreen
 import com.joinforage.android.example.ui.pos.screens.payment.EBTCashWithdrawalScreen
@@ -91,7 +93,9 @@ enum class POSScreen(@StringRes val title: Int) {
     VOIDPaymentScreen(title = R.string.title_pos_void_payment),
     VOIDRefundScreen(title = R.string.title_pos_void_refund),
     VOIDPaymentResultScreen(title = R.string.title_pos_void_payment_result),
-    VOIDRefundResultScreen(title = R.string.title_pos_void_refund_result)
+    VOIDRefundResultScreen(title = R.string.title_pos_void_refund_result),
+    DEFERPaymentCaptureResultScreen(title = R.string.title_pos_defer_payment_result),
+    DEFERPaymentRefundResultScreen(title = R.string.title_pos_defer_refund_result)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -467,9 +471,42 @@ fun POSComposeApp(
                             )
                         }
                     },
+                    onDeferButtonClicked = {
+                        if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
+                            pinElement!!.clearFocus()
+                            viewModel.deferPaymentCapture(
+                                context = context,
+                                foragePinEditText = pinElement as ForagePINEditText,
+                                terminalId = k9SDK.terminalId,
+                                paymentRef = uiState.createPaymentResponse!!.ref!!,
+                                onSuccess = {
+                                    navController.navigate(POSScreen.DEFERPaymentCaptureResultScreen.name)
+                                },
+                                onFailure = {
+                                    navController.navigate(POSScreen.PAYErrorResultScreen.name)
+                                }
+                            )
+                        }
+                    },
                     onBackButtonClicked = { navController.popBackStack(POSScreen.PAYTransactionTypeSelectionScreen.name, inclusive = false) },
                     withPinElementReference = { pinElement = it },
                     errorText = uiState.capturePaymentError
+                )
+            }
+            composable(route = POSScreen.DEFERPaymentCaptureResultScreen.name) {
+                DeferredPaymentCaptureResultScreen(
+                    terminalId = k9SDK.terminalId,
+                    paymentRef = uiState.createPaymentResponse!!.ref!!,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.PAYPINEntryScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
+                )
+            }
+            composable(route = POSScreen.DEFERPaymentRefundResultScreen.name) {
+                DeferredPaymentRefundResultScreen(
+                    terminalId = k9SDK.terminalId,
+                    paymentRef = uiState.localRefundState!!.paymentRef,
+                    onBackButtonClicked = { navController.popBackStack(POSScreen.REFUNDPINEntryScreen.name, inclusive = false) },
+                    onDoneButtonClicked = { navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false) }
                 )
             }
             composable(route = POSScreen.PAYErrorResultScreen.name) {
@@ -559,6 +596,23 @@ fun POSComposeApp(
                                 reason = uiState.localRefundState!!.reason,
                                 onSuccess = {
                                     navController.navigate(POSScreen.REFUNDResultScreen.name)
+                                },
+                                onFailure = {
+                                    navController.navigate(POSScreen.REFUNDErrorResultScreen.name)
+                                }
+                            )
+                        }
+                    },
+                    onDeferButtonClicked = {
+                        if (pinElement != null && uiState.localRefundState != null) {
+                            pinElement!!.clearFocus()
+                            viewModel.deferPaymentRefund(
+                                context = context,
+                                foragePinEditText = pinElement as ForagePINEditText,
+                                terminalId = k9SDK.terminalId,
+                                paymentRef = uiState.localRefundState!!.paymentRef,
+                                onSuccess = {
+                                    navController.navigate(POSScreen.DEFERPaymentRefundResultScreen.name)
                                 },
                                 onFailure = {
                                     navController.navigate(POSScreen.REFUNDErrorResultScreen.name)

@@ -1,17 +1,23 @@
 package com.joinforage.android.example.ui.pos.screens.shared
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
@@ -25,6 +31,7 @@ fun PINEntryScreen(
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     withPinElementReference: (element: ForagePINEditText) -> Unit,
+    onDeferButtonClicked: (() -> Unit)? = null,
     errorText: String? = null
 ) {
     ScreenWithBottomRow(
@@ -42,8 +49,27 @@ fun PINEntryScreen(
                     posForageConfig = posForageConfig,
                     withPinElementReference = withPinElementReference
                 )
-                Button(onClick = onSubmitButtonClicked) {
-                    Text("Submit")
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    OutlinedButton(
+                        onClick = onSubmitButtonClicked,
+                        modifier = Modifier.withTestId("pos_client_complete_pin_transaction_button")
+                    ) {
+                        Text("Complete Now")
+                    }
+
+                    if (onDeferButtonClicked != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = onDeferButtonClicked,
+                            modifier = Modifier.withTestId("pos_collect_pin_defer_button")
+                        ) {
+                            Text("Defer to Server")
+                        }
+                    }
                 }
             } else {
                 Text("There was an issue adding your card")
