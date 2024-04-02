@@ -18,7 +18,17 @@ internal object OkHttpClientBuilder {
                         .addHeader(
                             ForageConstants.Headers.AUTHORIZATION,
                             "${ForageConstants.Headers.BEARER} $sessionToken"
-                        ).run {
+                        )
+                        .run {
+                            chain.request().headers[ForageConstants.Headers.API_VERSION]?.let {
+                                this
+                            }
+                                ?: addHeader(
+                                    ForageConstants.Headers.API_VERSION,
+                                    "default"
+                                )
+                        }
+                        .run {
                             merchantId?.let {
                                 addHeader(
                                     ForageConstants.Headers.MERCHANT_ACCOUNT,

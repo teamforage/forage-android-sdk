@@ -131,6 +131,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
         .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, params.merchantId)
         .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, params.idempotencyKey)
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())
+        .setHeader(ForageConstants.Headers.API_VERSION, "default")
         .setToken(vaultToken)
 
     // PaymentMethod.card.token is in the comma-separated format <vgs-token>,<basis-theory-token>,<forage-token>
