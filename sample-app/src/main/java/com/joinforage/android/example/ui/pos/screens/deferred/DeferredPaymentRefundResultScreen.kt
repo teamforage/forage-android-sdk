@@ -20,6 +20,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joinforage.android.example.ui.pos.ui.PaymentRefView
 
 @Composable
 internal fun DeferredPaymentRefundResultScreen(
@@ -63,12 +64,7 @@ internal fun DeferredPaymentRefundResultScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("Payment Ref: $paymentRef")
-                Button(onClick = {
-                    clipboardManager.setText(AnnotatedString(paymentRef))
-                }, colors = ButtonDefaults.elevatedButtonColors()) {
-                    Text("Copy")
-                }
+                PaymentRefView(paymentRef = paymentRef)
             }
             Spacer(modifier = Modifier.height(48.dp))
 

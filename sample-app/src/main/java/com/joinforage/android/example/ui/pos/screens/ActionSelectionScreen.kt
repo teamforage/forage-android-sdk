@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
@@ -34,19 +35,31 @@ fun ActionSelectionScreen(
             Column(
                 modifier = Modifier.padding(48.dp)
             ) {
-                Button(onClick = onBalanceButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onBalanceButtonClicked,
+                    modifier = Modifier.fillMaxWidth().withTestId("pos_select_balance_inquiry_button")
+                ) {
                     Text("Balance Inquiry")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onPaymentButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onPaymentButtonClicked,
+                    modifier = Modifier.fillMaxWidth().withTestId("pos_select_purchase_button")
+                ) {
                     Text("Create a Payment / Purchase")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onRefundButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onRefundButtonClicked,
+                    modifier = Modifier.fillMaxWidth().withTestId("pos_select_refund_button")
+                ) {
                     Text("Make a Refund / Return")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onVoidButtonClicked, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onVoidButtonClicked,
+                    modifier = Modifier.fillMaxWidth().withTestId("pos_select_void_button")
+                ) {
                     Text("Void / Reverse a Transaction")
                 }
             }

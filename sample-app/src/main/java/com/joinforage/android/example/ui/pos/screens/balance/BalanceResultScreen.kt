@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.joinforage.android.example.pos.receipts.templates.BalanceInquiryReceipt
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.data.Merchant
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
@@ -44,11 +45,11 @@ fun BalanceResultScreen(
             }
         }
         if (paymentMethod?.balance == null) {
-            Button(onClick = onBackButtonClicked) {
+            Button(onClick = onBackButtonClicked, modifier = Modifier.withTestId("pos_try_again_button")) {
                 Text("Try Again")
             }
         } else {
-            Button(onClick = onDoneButtonClicked) {
+            Button(onClick = onDoneButtonClicked, modifier = Modifier.withTestId("pos_done_button")) {
                 Text("Done")
             }
         }

@@ -40,7 +40,10 @@ fun PINEntryScreen(
                 Card {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Payment Method", fontWeight = FontWeight.SemiBold)
-                        Text("Ref: " + paymentMethodRef)
+                        Text(
+                            "Ref: $paymentMethodRef",
+                            modifier = Modifier.withTestId("pos_payment_method_ref_text")
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(18.dp))
@@ -56,7 +59,7 @@ fun PINEntryScreen(
                 ) {
                     OutlinedButton(
                         onClick = onSubmitButtonClicked,
-                        modifier = Modifier.withTestId("pos_client_complete_pin_transaction_button")
+                        modifier = Modifier.withTestId("pos_submit_button")
                     ) {
                         Text("Complete Now")
                     }

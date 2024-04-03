@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
@@ -31,14 +32,20 @@ fun ManualPANEntryScreen(
                 withPanElementReference = withPanElementReference
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onSubmitButtonClicked) {
+            Button(
+                onClick = onSubmitButtonClicked,
+                modifier = Modifier.withTestId("pos_submit_button")
+            ) {
                 Text("Submit")
             }
             Spacer(modifier = Modifier.height(16.dp))
             ErrorText(errorText)
         },
         bottomRowContent = {
-            Button(onClick = onBackButtonClicked) {
+            Button(
+                onClick = onBackButtonClicked,
+                modifier = Modifier.withTestId("pos_back_button")
+            ) {
                 Text("Back")
             }
         }

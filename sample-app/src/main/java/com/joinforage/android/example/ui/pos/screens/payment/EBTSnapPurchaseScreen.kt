@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
@@ -40,7 +41,8 @@ fun EBTSnapPurchaseScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
-                )
+                ),
+                modifier = Modifier.withTestId("pos_amount_text_field")
             )
         },
         bottomRowContent = {
@@ -48,7 +50,10 @@ fun EBTSnapPurchaseScreen(
                 Text("Cancel")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onConfirmButtonClicked(snapAmount) }) {
+            Button(
+                onClick = { onConfirmButtonClicked(snapAmount) },
+                modifier = Modifier.withTestId("pos_submit_button")
+            ) {
                 Text("Confirm")
             }
         }
