@@ -114,6 +114,7 @@ class ReceiptView(
             ConstraintLayout.LayoutParams.MATCH_PARENT,
             ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
+        tag = "pos_receipt_view"
         val rootPaddingInPixels = (16 * context.resources.displayMetrics.density).toInt()
         setPadding(rootPaddingInPixels, rootPaddingInPixels, rootPaddingInPixels, rootPaddingInPixels)
 
