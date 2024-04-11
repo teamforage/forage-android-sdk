@@ -159,32 +159,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods). You can store
      * the token in your database and reference it for future transactions, like to call
      * [checkBalance] or to [create a Payment](https://docs.joinforage.app/reference/create-a-payment)
-     * in Forage's database.
-     * ```kotlin
-     * // Success response schema
-     * {
-     *   "ref": "String",
-     *   "type": "String",
-     *   "reusable": "Boolean",
-     *   "card": {
-     *     "last_4": "String",
-     *     "created": "String",
-     *     "token": "String",
-     *     "state": "String?"
-     *   }?,
-     *   "balance": {
-     *     "snap": "String",
-     *     "non_snap": "String",
-     *     "updated": "String",
-     *     "pos_terminal": {
-     *       "terminal_id": "String",
-     *       "provider_terminal_id": "String"
-     *     }?,
-     *     "sequence_number": "String?"
-     *   }?,
-     *   "customer_id": "String?"
-     * }
-     * ```
+     * in Forage's database. *(Example [PosPaymentMethod](https://github.com/teamforage/forage-android-sdk/blob/229a0c7d38dcae751070aed45ff2f7e7ea2a5abb/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/tokenize/PosPaymentMethod.kt#L7) class)*
      * * On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
      * the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError]
      * objects that you can unpack to programmatically handle the error and display the appropriate
@@ -330,13 +305,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * method if your customers can opt for guest checkout. If guest checkout is not an option, then
      * it's up to you whether or not to add a balance inquiry feature. No FNS regulations apply._
      * * On success, the response object includes `snap` and `cash` fields that indicate
-     * the EBT Card's current SNAP and EBT Cash balances.
-     * ```kotlin
-     * {
-     *   "snap": "String",
-     *   "cash": "String"
-     * }
-     * ```
+     * the EBT Card's current SNAP and EBT Cash balances. *(Example [BalanceCheck](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/BalanceCheck.kt) class)*
      * * On failure, for example in the case of
      * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
      * the response includes a list of
@@ -445,64 +414,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
      * * On success, the object confirms the transaction. The response includes a Forage
-     * [`Payment`](https://docs.joinforage.app/reference/payments) object.
-     * ```kotlin
-     * // Success response schema
-     * {
-     *   "ref": "String?",
-     *   "merchant": "String?",
-     *   "funding_type": "String?",
-     *   "amount": "Float?",
-     *   "description": "String?",
-     *   "metadata": "Map<String, String>?",
-     *   "payment_method": "String",
-     *   "delivery_address": {
-     *     "city": "String",
-     *     "country": "String",
-     *     "line1": "String",
-     *     "line2": "String?",
-     *     "state": "String",
-     *     "zipcode": "String"
-     *   }?,
-     *   "is_delivery": "Boolean?",
-     *   "created": "String",
-     *   "updated": "String?",
-     *   "status": "String?",
-     *   "last_processing_error": "String?",
-     *   "success_date": "String?",
-     *   "receipt": {
-     *     "ref_number": "String",
-     *     "is_voided": "Boolean",
-     *     "snap_amount": "String",
-     *     "ebt_cash_amount": "String",
-     *     "cash_back_amount": "String",
-     *     "other_amount": "String",
-     *     "sales_tax_applied": "String",
-     *     "balance": {
-     *       "id": "Double",
-     *       "snap": "String?",
-     *       "non_snap": "String?",
-     *       "updated": "String"
-     *     }?,
-     *     "last_4": "String",
-     *     "message": "String", // "Approved" if it succeeded
-     *     "transaction_type": "String", // "Payment", "Refund"
-     *     "created": "String",
-     *     "sequence_number": "String"
-     *   }?,
-     *   "refunds": "List<String>",
-     *   "pos_terminal": {
-     *     "terminal_id": "String",
-     *     "provider_terminal_id": "String"
-     *   }?,
-     *   "customer_id": "String?",
-     *   "cash_back_amount": "Float?",
-     *   "sequence_number": "String?",
-     *   "transaction_type": "String?"
-     *   "external_location_id": "String?",
-     *   "merchant_destination_account": "String?",
-     * }
-     * ```
+     * [`Payment`](https://docs.joinforage.app/reference/payments) object. *(Example [PosPaymentResponse](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosPaymentResponse.kt#L8) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
      * * On failure, for example in the case of
      * [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or
      * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
@@ -668,55 +580,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * You must use [ForageTerminalSDK].
      *
      * * On success, the response includes a Forage
-     * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object.
-     * ```kotlin
-     * // Success response schema
-     * {
-     *   "ref": "String",
-     *   "payment_ref": "String",
-     *   "funding_type": "String",
-     *   "amount": "String",
-     *   "reason": "String",
-     *   "metadata": "Map<String, String>",
-     *   "created": "String",
-     *   "updated": "String",
-     *   "status": "String",
-     *   "last_processing_error": "String?",
-     *   "receipt": {
-     *     "ref_number": "String",
-     *     "is_voided": "Boolean",
-     *     "snap_amount": "String",
-     *     "ebt_cash_amount": "String",
-     *     "cash_back_amount": "String",
-     *     "other_amount": "String",
-     *     "sales_tax_applied": "String",
-     *     "balance": {
-     *       "id": "Double",
-     *       "snap": "String?",
-     *       "non_snap": "String?",
-     *       "updated": "String"
-     *     }?,
-     *     "last_4": "String",
-     *     "message": "String",
-     *     "transaction_type": "String",
-     *     "created": "String",
-     *     "sequence_number": "String"
-     *   }?,
-     *   "pos_terminal": {
-     *     "terminal_id": "String",
-     *     "provider_terminal_id": "String"
-     *   },
-     *   "external_order_id": "String?",
-     *   "message": {
-     *     "content_id": "String",
-     *     "message_type": "String",
-     *     "status": "String",
-     *     "failed": "Boolean",
-     *     "errors": "Array<String>"
-     *   }?,
-     *   "sequence_number": "String?"
-     * }
-     * ```
+     * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object. *(Example [Refund](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/0d845ea57d901bbca13775f4f2de4d4ed6f74791/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/Refund.kt#L7-L23) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
      * * On failure, for example in the case of
      * [`ebt_error_61`](https://docs.joinforage.app/reference/errors#ebt_error_61), the response
      * includes a list of [ForageError] objects. You can unpack the list to programmatically handle
