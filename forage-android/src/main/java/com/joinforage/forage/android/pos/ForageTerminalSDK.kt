@@ -159,7 +159,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods). You can store
      * the token in your database and reference it for future transactions, like to call
      * [checkBalance] or to [create a Payment](https://docs.joinforage.app/reference/create-a-payment)
-     * in Forage's database.
+     * in Forage's database. *(Example [PosPaymentMethod](https://github.com/teamforage/forage-android-sdk/blob/229a0c7d38dcae751070aed45ff2f7e7ea2a5abb/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/tokenize/PosPaymentMethod.kt#L7) class)*
      * * On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
      * the response includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError]
      * objects that you can unpack to programmatically handle the error and display the appropriate
@@ -305,7 +305,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * method if your customers can opt for guest checkout. If guest checkout is not an option, then
      * it's up to you whether or not to add a balance inquiry feature. No FNS regulations apply._
      * * On success, the response object includes `snap` and `cash` fields that indicate
-     * the EBT Card's current SNAP and EBT Cash balances.
+     * the EBT Card's current SNAP and EBT Cash balances. *(Example [BalanceCheck](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/BalanceCheck.kt) class)*
      * * On failure, for example in the case of
      * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
      * the response includes a list of
@@ -414,7 +414,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
      * * On success, the object confirms the transaction. The response includes a Forage
-     * [`Payment`](https://docs.joinforage.app/reference/payments) object.
+     * [`Payment`](https://docs.joinforage.app/reference/payments) object. *(Example [PosPaymentResponse](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosPaymentResponse.kt#L8) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
      * * On failure, for example in the case of
      * [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or
      * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
@@ -580,7 +580,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * You must use [ForageTerminalSDK].
      *
      * * On success, the response includes a Forage
-     * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object.
+     * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object. *(Example [Refund](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/0d845ea57d901bbca13775f4f2de4d4ed6f74791/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/Refund.kt#L7-L23) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
      * * On failure, for example in the case of
      * [`ebt_error_61`](https://docs.joinforage.app/reference/errors#ebt_error_61), the response
      * includes a list of [ForageError] objects. You can unpack the list to programmatically handle
@@ -684,6 +684,10 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
     /**
      * Collects a card PIN for an EBT payment and defers
      * the refund of the payment to the server.
+     * * On success, the `data` property of the [ForageApiResponse.Success] object resolves with an empty string.
+     * * On failure, the response includes a list of
+     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * unpack to troubleshoot the issue.
      * ```kotlin
      * // Example deferPaymentRefund call in a PosDeferPaymentRefundViewModel.kt
      * class PosDeferPaymentRefundViewModel : ViewModel() {
@@ -708,14 +712,10 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      *   }
      * }
      * ```
-     *
      * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
      * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
      * indicating the success or failure of the
-     * PIN capture. On success, returns `Nothing`.
-     * On failure, the response includes a list of
-     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to troubleshoot the issue.
+     * secure PIN submission.
      * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
