@@ -715,7 +715,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * @param params The [PosRefundPaymentParams] parameters required for refunding a Payment.
      * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
      * indicating the success or failure of the
-     * PIN capture.
+     * secure PIN submission.
      * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
