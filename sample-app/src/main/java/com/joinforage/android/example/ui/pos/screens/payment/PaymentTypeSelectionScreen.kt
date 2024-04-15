@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
@@ -24,19 +25,31 @@ fun PaymentTypeSelectionScreen(
         mainContent = {
             Text("Select a transaction type", fontSize = 18.sp)
             Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = onSnapPurchaseClicked, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onSnapPurchaseClicked,
+                modifier = Modifier.fillMaxWidth().withTestId("pos_select_snap_purchase_button")
+            ) {
                 Text("EBT SNAP Purchase")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onCashPurchaseClicked, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onCashPurchaseClicked,
+                modifier = Modifier.fillMaxWidth().withTestId("pos_select_cash_purchase_button")
+            ) {
                 Text("EBT Cash Purchase")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onCashWithdrawalClicked, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onCashWithdrawalClicked,
+                modifier = Modifier.fillMaxWidth().withTestId("pos_select_cash_withdrawal_button")
+            ) {
                 Text("EBT Cash Withdrawal (no purchase)")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onCashPurchaseCashbackClicked, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onCashPurchaseCashbackClicked,
+                modifier = Modifier.fillMaxWidth().withTestId("pos_select_cash_purchase_cashback_button")
+            ) {
                 Text("EBT Cash Purchase + Cashback")
             }
         },

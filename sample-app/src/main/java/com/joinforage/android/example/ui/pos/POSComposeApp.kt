@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.pos.k9sdk.K9SDK
 import com.joinforage.android.example.pos.receipts.templates.txs.TxType
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.Receipt
 import com.joinforage.android.example.ui.pos.data.ReceiptBalance
@@ -150,11 +151,14 @@ fun POSComposeApp(
                     val isMerchantScreen = navController.currentBackStackEntry?.destination?.route == POSScreen.MerchantSetupScreen.name
                     val isActionScreen = navController.currentBackStackEntry?.destination?.route == POSScreen.ActionSelectionScreen.name
                     if (!isMerchantScreen && !isActionScreen) {
-                        IconButton(onClick = {
-                            navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false)
-                            pageTitle = null
-                            viewModel.resetUiState()
-                        }) {
+                        IconButton(
+                            onClick = {
+                                navController.popBackStack(POSScreen.ActionSelectionScreen.name, inclusive = false)
+                                pageTitle = null
+                                viewModel.resetUiState()
+                            },
+                            modifier = Modifier.withTestId("pos_back_to_action_selection_button")
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.Refresh,
                                 contentDescription = stringResource(R.string.pos_restart)

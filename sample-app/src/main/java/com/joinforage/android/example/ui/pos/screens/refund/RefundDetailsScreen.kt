@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
@@ -48,7 +49,8 @@ fun RefundDetailsScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
-                )
+                ),
+                modifier = Modifier.withTestId("pos_refund_payment_ref_text_field")
             )
             OutlinedTextField(
                 value = refundAmountInput,
@@ -58,7 +60,8 @@ fun RefundDetailsScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
-                )
+                ),
+                modifier = Modifier.withTestId("pos_refund_amount_text_field")
             )
             OutlinedTextField(
                 value = reasonInput,
@@ -67,7 +70,8 @@ fun RefundDetailsScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
-                )
+                ),
+                modifier = Modifier.withTestId("pos_refund_reason_text_field")
             )
         },
         bottomRowContent = {
@@ -75,7 +79,10 @@ fun RefundDetailsScreen(
                 Text("Cancel")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onConfirmButtonClicked(paymentRefInput, refundAmountInput.toFloat(), reasonInput) }) {
+            Button(
+                onClick = { onConfirmButtonClicked(paymentRefInput, refundAmountInput.toFloat(), reasonInput) },
+                modifier = Modifier.withTestId("pos_submit_button")
+            ) {
                 Text("Confirm")
             }
         }
