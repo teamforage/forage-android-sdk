@@ -152,12 +152,10 @@ internal class ForagePinSubmitter(
         // STOPGAP: global static var needed to read from the KSN file.
         internal var ksnFileManager: KsnFileManager? = null
 
-        // this code assumes that .setForageConfig() has been called
-        // on a Forage***EditText before VAULT_BASE_URL gets referenced
-        private val VAULT_BASE_URL = StopgapGlobalState.envConfig.vaultBaseUrl
-
         private fun buildVaultUrl(path: String): HttpUrl =
-            VAULT_BASE_URL.toHttpUrlOrNull()!!
+            // this code assumes that .setForageConfig() has been called
+            // on a Forage***EditText before .vaultBaseUrl gets referenced
+            StopgapGlobalState.envConfig.vaultBaseUrl.toHttpUrlOrNull()!!
                 .newBuilder()
                 .addPathSegment("proxy")
                 .addPathSegmentsSafe(path)
