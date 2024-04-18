@@ -130,16 +130,6 @@ dependencies {
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
-    // VGS Collect SDK
-    api 'com.verygoodsecurity:vgscollect:1.7.3'
-
-    // Basis Theory SDK
-    implementation ('com.github.basis-theory:basistheory-android:2.5.0') {
-        // Unable to build without excluding this dependency
-        // based on advice from this thread: https://github.com/gradle/gradle/issues/3065#issuecomment-341418873
-        exclude group: 'javax.ws.rs'
-    }
-    implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
 
     testImplementation 'androidx.test:core-ktx:1.5.0'
 
