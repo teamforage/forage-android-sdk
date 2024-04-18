@@ -11,17 +11,15 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.widget.EditText
 import android.widget.LinearLayout
-import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
-import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 internal class ForageVaultWrapper @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : VaultWrapper(context, attrs, defStyleAttr) {
+) : VaultWrapper<EditText>(context, attrs, defStyleAttr) {
     private val _editText: EditText
     override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
 
@@ -100,17 +98,8 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
         _editText.setText("")
     }
 
-    override fun getForageTextElement(): EditText {
-        return _editText
-    }
+    override fun getTextElement(): EditText = _editText
 
-    override fun getTextElement(): TextElement {
-        throw RuntimeException("Unimplemented for this vault!")
-    }
-
-    override fun getVGSEditText(): VGSEditText {
-        throw RuntimeException("Unimplemented for this vault!")
-    }
 
     override fun getUnderlying(): EditText {
         return _editText

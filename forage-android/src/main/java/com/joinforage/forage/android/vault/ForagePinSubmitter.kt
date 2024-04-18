@@ -18,7 +18,7 @@ import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
 import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.ForagePinElement
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -35,7 +35,7 @@ internal data class PinTranslationParams(
 
 internal class ForagePinSubmitter(
     context: Context,
-    foragePinEditText: ForagePINEditText,
+    foragePinEditText: ForagePinElement,
     logger: Log
 ) : AbstractVaultSubmitter<ForageApiResponse<String>>(
     context = context,
@@ -130,7 +130,7 @@ internal class ForagePinSubmitter(
         val ksn = ksnFileManager!!.readAll() ?: throw IllegalArgumentException("Failed to get KSN from file")
 
         try {
-            val plainTextPin = foragePinEditText.getForageTextElement().text.toString()
+            val plainTextPin = foragePinEditText.getTextElement().text.toString()
 
             val dukptService = DukptService(ksn = ksn, keyRegisters = AndroidKeyStoreKeyRegisters())
             val (workingKey, latestKsn) = dukptService.generateWorkingKey()

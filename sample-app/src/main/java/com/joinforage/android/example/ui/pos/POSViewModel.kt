@@ -26,8 +26,8 @@ import com.joinforage.forage.android.pos.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.pos.PosForageConfig
 import com.joinforage.forage.android.pos.PosRefundPaymentParams
 import com.joinforage.forage.android.pos.PosTokenizeCardParams
-import com.joinforage.forage.android.ui.ForagePANEditText
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.pos.ForagePANEditText
+import com.joinforage.forage.android.pos.ForagePINEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.delay

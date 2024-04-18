@@ -1,8 +1,8 @@
 package com.joinforage.forage.android
 
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForagePANEditText
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.ForagePanElement
+import com.joinforage.forage.android.core.ForagePinElement
 
 /**
  * An [Exception](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/) thrown if a
@@ -98,7 +98,7 @@ internal interface ForageSDKInterface {
  * to create multiple payments, set to true by default.
  */
 data class TokenizeEBTCardParams(
-    val foragePanEditText: ForagePANEditText,
+    val foragePanEditText: ForagePanElement,
     val customerId: String? = null,
     val reusable: Boolean = true
 )
@@ -120,7 +120,7 @@ data class TokenizeEBTCardParams(
  * endpoint.
  */
 data class CheckBalanceParams(
-    val foragePinEditText: ForagePINEditText,
+    val foragePinEditText: ForagePinElement,
     val paymentMethodRef: String
 )
 
@@ -138,7 +138,7 @@ data class CheckBalanceParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class CapturePaymentParams(
-    val foragePinEditText: ForagePINEditText,
+    val foragePinEditText: ForagePinElement,
     val paymentRef: String
 )
 
@@ -163,6 +163,25 @@ data class CapturePaymentParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class DeferPaymentCaptureParams(
-    val foragePinEditText: ForagePINEditText,
+    val foragePinEditText: ForagePinElement,
+    val paymentRef: String
+)
+
+/**
+ * A model that represents the parameters that Forage requires to collect a card PIN and defer
+ * the refund of the payment to the server.
+ * [PosDeferPaymentRefundParams] are passed to the
+ * [deferPaymentRefund][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund] method.
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ */
+data class PosDeferPaymentRefundParams(
+    val foragePinEditText: ForagePinElement,
     val paymentRef: String
 )

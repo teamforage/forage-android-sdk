@@ -9,9 +9,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.FrameLayout
-import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.core.element.SimpleElementListener
@@ -19,7 +17,6 @@ import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.element.state.PinElementStateManager
 import com.joinforage.forage.android.getBoxCornerRadius
-import com.verygoodsecurity.vgscollect.widget.VGSEditText
 
 internal data class ParsedStyles(
     val textInputLayoutStyleAttribute: Int,
@@ -37,7 +34,7 @@ internal data class ParsedStyles(
     val textColor: Int
 )
 
-internal abstract class VaultWrapper @JvmOverloads constructor(
+internal abstract class VaultWrapper<Element> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -59,9 +56,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun setHint(hint: String)
     abstract fun setHintTextColor(hintTextColor: Int)
     abstract fun getUnderlying(): View
-    abstract fun getVGSEditText(): VGSEditText
-    abstract fun getTextElement(): TextElement
-    abstract fun getForageTextElement(): EditText
+    abstract fun getTextElement(): Element
     abstract fun getVaultType(): VaultType
 
     fun parseStyles(context: Context, attrs: AttributeSet?): ParsedStyles {
