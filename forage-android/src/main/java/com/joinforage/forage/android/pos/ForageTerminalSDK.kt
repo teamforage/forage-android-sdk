@@ -228,11 +228,11 @@ class ForageTerminalSDK internal constructor(
      * }
      * ```
      * @param foragePanEditText **Required**. A reference to a [ForagePANEditText] instance that
-     * collects the customer's card number.
-     * [setPosForageConfig][com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] must
-     * have been called on the instance before it can be passed.
-     * @param reusable Optional. A boolean that indicates whether the same card can be used to create
-     * multiple payments. Defaults to true.
+     * collects the customer's card number. [setPosForageConfig]
+     * [com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] must have been called on
+     * the instance before it can be passed.
+     * @param reusable Optional. A boolean that indicates whether the same card can be used to
+     * create multiple payments. Defaults to true.
      * @throws ForageConfigNotSetException If the [PosForageConfig] is not set for the provided
      * [ForagePANEditText] instance.
      *
@@ -338,8 +338,8 @@ class ForageTerminalSDK internal constructor(
 
     /**
      * Checks the balance of a previously created
-     * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods)
-     * via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) via a
+     * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
      * ⚠️ _FNS prohibits balance inquiries on sites and apps that offer guest checkout. Skip this
      * method if your customers can opt for guest checkout. If guest checkout is not an option, then
@@ -347,10 +347,9 @@ class ForageTerminalSDK internal constructor(
      * * On success, the response object includes `snap` and `cash` fields that indicate
      * the EBT Card's current SNAP and EBT Cash balances. *(Example [BalanceCheck](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/BalanceCheck.kt) class)*
      * * On failure, for example in the case of
-     * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
-     * the response includes a list of
-     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
-     * unpack to programmatically handle the error and display the appropriate
+     * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14), the response
+     * includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError]
+     * objects that you can unpack to programmatically handle the error and display the appropriate
      * customer-facing message based on the `ForageError.code`.
      * ```kotlin
      * // Example checkBalance call in a BalanceCheckViewModel.kt
@@ -384,9 +383,11 @@ class ForageTerminalSDK internal constructor(
      *
      * @throws [ForageConfigNotSetException] If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more
-     * information on error handling.
-     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions)
+     * @see
+     * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
+     * on error handling.
+     * *
+     * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions)
      * to trigger balance inquiry exceptions during testing.
      * @return A [ForageApiResponse] object.
      */
@@ -428,12 +429,13 @@ class ForageTerminalSDK internal constructor(
 
         val serviceFactory = createServiceFactory(sessionToken, merchantId, logger)
         val balanceCheckService = serviceFactory.createCheckBalanceRepository(foragePinEditText)
-        val balanceResponse = balanceCheckService.posCheckBalance(
-            merchantId = merchantId,
-            paymentMethodRef = paymentMethodRef,
-            posTerminalId = posTerminalId,
-            sessionToken = sessionToken
-        )
+        val balanceResponse =
+            balanceCheckService.posCheckBalance(
+                merchantId = merchantId,
+                paymentMethodRef = paymentMethodRef,
+                posTerminalId = posTerminalId,
+                sessionToken = sessionToken
+            )
         forageSdk.processApiResponseForMetrics(balanceResponse, measurement)
 
         if (balanceResponse is ForageApiResponse.Failure) {
@@ -451,8 +453,8 @@ class ForageTerminalSDK internal constructor(
     }
 
     /**
-     * Immediately captures a payment via a
-     * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * Immediately captures a payment via a [ForagePINEditText]
+     * [com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
      * * On success, the object confirms the transaction. The response includes a Forage
      * [`Payment`](https://docs.joinforage.app/reference/payments) object. *(Example [PosPaymentResponse](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosPaymentResponse.kt#L8) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
@@ -509,7 +511,8 @@ class ForageTerminalSDK internal constructor(
      * @see
      * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
      * on error handling.
-     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
+     * *
+     * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
      * to trigger payment capture exceptions during testing.
      * @return A [ForageApiResponse] object.
      */
@@ -538,9 +541,9 @@ class ForageTerminalSDK internal constructor(
     }
 
     /**
-     * Submits a card PIN via a
-     * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element and defers
-     * payment capture to the server.
+     * Submits a card PIN via a [ForagePINEditText]
+     * [com.joinforage.forage.android.ui.ForagePINEditText] Element and defers payment capture to
+     * the server.
      *
      * * On success, the `data` property of the [ForageApiResponse.Success] object resolves with an empty string.
      * * On failure, for example in the case of [`expired_session_token`](https://docs.joinforage.app/reference/errors#expired_session_token) errors, the
@@ -585,10 +588,12 @@ class ForageTerminalSDK internal constructor(
      *
      * @throws [ForageConfigNotSetException] If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+     * @see
+     * *
+     * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
-     * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment)
-     * for the API endpoint to call after [deferPaymentCapture].
+     * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment) for the
+     * API endpoint to call after [deferPaymentCapture].
      * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
      * on error handling.
      * @return A [ForageApiResponse] object.
@@ -616,9 +621,9 @@ class ForageTerminalSDK internal constructor(
     }
 
     /**
-     * Refunds a Payment via a [ForagePinEditText][com.joinforage.forage.android.ui.ForagePINEditText]
-     * Element. This method is only available for POS Terminal transactions.
-     * You must use [ForageTerminalSDK].
+     * Refunds a Payment via a [ForagePinEditText]
+     * [com.joinforage.forage.android.ui.ForagePINEditText] Element. This method is only available
+     * for POS Terminal transactions. You must use [ForageTerminalSDK].
      *
      * * On success, the response includes a Forage
      * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object. *(Example [Refund](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/0d845ea57d901bbca13775f4f2de4d4ed6f74791/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/Refund.kt#L7-L23) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
@@ -662,7 +667,8 @@ class ForageTerminalSDK internal constructor(
      * endpoint, an `amount`, and a `reason` as the PosRefundPaymentParams.
      * @throws ForageConfigNotSetException If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
+     * @see
+     * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
      * on error handling.
      * @return A [ForageApiResponse] object.
      */
@@ -763,8 +769,8 @@ class ForageTerminalSDK internal constructor(
      * *
      * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
-     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
-     * hasn't had its ForageConfig set via .setForageConfig().
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance hasn't had its
+     * ForageConfig set via .setForageConfig().
      */
     suspend fun deferPaymentRefund(params: PosDeferPaymentRefundParams): ForageApiResponse<String> {
         val logger = createLogger(posTerminalId)
@@ -824,11 +830,14 @@ class ForageTerminalSDK internal constructor(
         logger: Log
     ): ForageApiResponse<String>? {
         if (foragePinEditText.getVaultType() != VaultType.FORAGE_VAULT_TYPE) {
-            logger.e("[POS] checkBalance failed on Terminal $posTerminalId because the vault type is not forage")
+            logger.e(
+                "[POS] checkBalance failed on Terminal $posTerminalId because the vault type is not forage"
+            )
             return ForageApiResponse.Failure.fromError(
                 ForageError(
                     code = "invalid_input_data",
-                    message = "IllegalStateException: Use ForageElement.setPosForageConfig, instead of ForageElement.setForageConfig.",
+                    message =
+                    "IllegalStateException: Use ForageElement.setPosForageConfig, instead of ForageElement.setForageConfig.",
                     httpStatusCode = 400
                 )
             )

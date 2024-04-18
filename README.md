@@ -171,6 +171,177 @@ You have now synced the private fork with changes from the public SDK upstream.
 
 We are using Github's Releases feature to pass built APKs to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the APK and upload it to the release as a release asset.
 
+# Forked for POS Terminal Key Management
+
+Forage maintains an additional layer of PIN security for POS terminals, specifically the use of the DUKPT key rotation protocol. We maintain a private fork of our public Android SDK in order to keep the key management code private.
+
+## Maintaining the POS Terminal fork
+
+### Setting the public SDK as a remote
+
+In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
+
+`git remote add upstream https://github.com/teamforage/forage-android-sdk.git`
+
+### Rebasing on the public SDK
+
+If you want to pull changes from the public SDK into your branch, use the following steps in your local repo,
+
+1. `git fetch upstream`
+1. `git rebase upstream/main`
+
+You have now synced the private fork with changes from the public SDK upstream.
+
+### Release process
+
+We are using Github's Releases feature to pass built AAR files to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the AAR and upload it to the release as a release asset.
+
+The commands are,
+
+```
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+See .github/workflows/Release.yaml for more insight into the build process. If you are seeing errors, it might be due to reliance on pre-installed build tools on Github's Ubuntu runners. Consult the runner docs [here](https://github.com/actions/runner-images#available-images).
+
+### Semantic Versioning
+
+We will retain the same versions as the public SDK, in order to reduce the number of versioning schemes.
+
+### Keeping the fork slim
+
+We should endeavor to make rebases in this repository as easy as possible. The following principles should guide our changes here,
+
+1. For any key management functions/utilities, keep them in new files as much as possible. There will be no rebase conflicts on files added in this repository.
+2. Use shim functions inside the public SDK code that call out to code in separate files. There should only be 3 places that we need to make updates,
+  - An initialization function to the ForageTerminalSDK class. Immediately call another function that is contained in a separate file.
+  - A function for field level encryption on the PIN before balance checks. Again, immediately call another function that is contained in a separate file.
+  - A function for field level encryption on the PIN before capture attempts
+
+# Forked for POS Terminal Key Management
+
+Forage maintains an additional layer of PIN security for POS terminals, specifically the use of the DUKPT key rotation protocol. We maintain a private fork of our public Android SDK in order to keep the key management code private.
+
+## Maintaining the POS Terminal fork
+
+### Setting the public SDK as a remote 
+
+In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
+
+`git remote add upstream https://github.com/teamforage/forage-android-sdk.git`
+
+### Rebasing on the public SDK
+
+If you want to pull changes from the public SDK into your branch, use the following steps in your local repo,
+
+1. `git fetch upstream`
+1. `git rebase upstream/main`
+
+You have now synced the private fork with changes from the public SDK upstream.
+
+### Release process
+
+We are using Github's Releases feature to pass built APKs to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the APK and upload it to the release as a release asset.
+
+# Forked for POS Terminal Key Management
+
+Forage maintains an additional layer of PIN security for POS terminals, specifically the use of the DUKPT key rotation protocol. We maintain a private fork of our public Android SDK in order to keep the key management code private.
+
+## Maintaining the POS Terminal fork
+
+### Setting the public SDK as a remote 
+
+In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
+
+`git remote add upstream https://github.com/teamforage/forage-android-sdk.git`
+
+### Rebasing on the public SDK
+
+If you want to pull changes from the public SDK into your branch, use the following steps in your local repo,
+
+1. `git fetch upstream`
+1. `git rebase upstream/main`
+
+You have now synced the private fork with changes from the public SDK upstream.
+
+### Release process
+
+We are using Github's Releases feature to pass built APKs to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the APK and upload it to the release as a release asset.
+
+# Forked for POS Terminal Key Management
+
+Forage maintains an additional layer of PIN security for POS terminals, specifically the use of the DUKPT key rotation protocol. We maintain a private fork of our public Android SDK in order to keep the key management code private.
+
+## Maintaining the POS Terminal fork
+
+### Setting the public SDK as a remote 
+
+In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
+
+`git remote add upstream https://github.com/teamforage/forage-android-sdk.git`
+
+### Rebasing on the public SDK
+
+If you want to pull changes from the public SDK into your branch, use the following steps in your local repo,
+
+1. `git fetch upstream`
+1. `git rebase upstream/main`
+
+You have now synced the private fork with changes from the public SDK upstream.
+
+### Release process
+
+We are using Github's Releases feature to pass built AAR files to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the AAR and upload it to the release as a release asset.
+
+The commands are,
+
+```
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+See .github/workflows/Release.yaml for more insight into the build process. If you are seeing errors, it might be due to reliance on pre-installed build tools on Github's Ubuntu runners. Consult the runner docs [here](https://github.com/actions/runner-images#available-images).
+
+### Semantic Versioning
+
+We will retain the same versions as the public SDK, in order to reduce the number of versioning schemes.
+
+### Keeping the fork slim
+
+We should endeavor to make rebases in this repository as easy as possible. The following principles should guide our changes here,
+
+1. For any key management functions/utilities, keep them in new files as much as possible. There will be no rebase conflicts on files added in this repository.
+2. Use shim functions inside the public SDK code that call out to code in separate files. There should only be 3 places that we need to make updates,
+  - An initialization function to the ForageTerminalSDK class. Immediately call another function that is contained in a separate file.
+  - A function for field level encryption on the PIN before balance checks. Again, immediately call another function that is contained in a separate file.
+  - A function for field level encryption on the PIN before capture attempts
+
+# Forked for POS Terminal Key Management
+
+Forage maintains an additional layer of PIN security for POS terminals, specifically the use of the DUKPT key rotation protocol. We maintain a private fork of our public Android SDK in order to keep the key management code private.
+
+## Maintaining the POS Terminal fork
+
+### Setting the public SDK as a remote 
+
+In your local copy of THIS repository, you will need to set up the public SDK as a remote repo. There will be two remotes: origin (this repo) and upstream (the public SDK repo). Run this command to set the public SDK repo as upstream,
+
+`git remote add upstream https://github.com/teamforage/forage-android-sdk.git`
+
+### Rebasing on the public SDK
+
+If you want to pull changes from the public SDK into your branch, use the following steps in your local repo,
+
+1. `git fetch upstream`
+1. `git rebase upstream/main`
+
+You have now synced the private fork with changes from the public SDK upstream.
+
+### Release process
+
+We are using Github's Releases feature to pass built APKs to Forage's customers. All you need to do is push a tag to this repository. A tag will automatically create a release. A separate GH action will trigger on the tag push, which builds the APK and upload it to the release as a release asset.
+
 ## Table of contents
 
 <!--ts-->
