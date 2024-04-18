@@ -11,7 +11,6 @@ import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
 import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
 import com.joinforage.forage.android.ui.ForagePINEditText
 
@@ -214,28 +213,6 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
     }
 
     internal companion object {
-        internal fun create(foragePinEditText: ForagePINEditText, logger: Log): VaultSubmitter {
-            val vaultType = foragePinEditText.getVaultType()
-            if (vaultType == VaultType.BT_VAULT_TYPE) {
-                return BasisTheoryPinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                )
-            }
-            if (vaultType == VaultType.VGS_VAULT_TYPE) {
-                return VgsPinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                )
-            }
-            return ForagePinSubmitter(
-                context = foragePinEditText.context,
-                foragePinEditText = foragePinEditText,
-                logger = logger
-            )
-        }
 
         const val TOKEN_DELIMITER = ","
 
