@@ -1,14 +1,13 @@
 package com.joinforage.forage.android
 
 import android.content.res.TypedArray
-import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.core.element.state.ElementState
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.EventOutcome
-import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.ui.AbstractForageElement
+import com.joinforage.forage.android.ui.ForageConfig
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import kotlin.random.Random
 
 /**
@@ -52,7 +51,6 @@ internal enum class VaultType(val value: String) {
     }
 }
 
-
 /**
  * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
  * ForageConfig is not set.
@@ -69,7 +67,7 @@ internal fun <T : ElementState> getForageConfigOrThrow(element: AbstractForageEl
     a request via Forage SDK, your ForageElement MUST have a ForageConfig.
     Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
     immediately on your ForageElement 
-            """.trimIndent()
+        """.trimIndent()
     )
 }
 

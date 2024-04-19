@@ -33,7 +33,7 @@ internal object OkHttpClientBuilder {
                         chain.request().headers[ForageConstants.Headers.API_VERSION]?.let {
                             this
                         }
-                        // Otherwise, set the default API_VERSION header
+                            // Otherwise, set the default API_VERSION header
                             ?: addHeader(
                                 ForageConstants.Headers.API_VERSION,
                                 "default"

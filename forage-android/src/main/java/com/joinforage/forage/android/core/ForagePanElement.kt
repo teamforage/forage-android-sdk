@@ -10,21 +10,21 @@ import android.util.TypedValue
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.ForageConfigNotSetException
-import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.core.element.state.PanElementState
+import com.joinforage.forage.android.core.element.state.PanElementStateManager
+import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.ui.AbstractForageElement
+import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.ui.FormatPanTextWatcher
 import com.joinforage.forage.android.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.ui.getBoxCornerRadiusTopEnd
 import com.joinforage.forage.android.ui.getBoxCornerRadiusTopStart
-import com.joinforage.forage.android.ui.getThemeAccentColor
-import com.joinforage.forage.android.core.element.state.PanElementState
-import com.joinforage.forage.android.core.element.state.PanElementStateManager
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.ui.ForageConfig
-import com.joinforage.forage.android.ui.FormatPanTextWatcher
 import com.joinforage.forage.android.ui.getLogoImageViewLayout
+import com.joinforage.forage.android.ui.getThemeAccentColor
 
 /**
  * A [ForageElement] that securely collects a customer's card number. You need a [ForagePanElement]

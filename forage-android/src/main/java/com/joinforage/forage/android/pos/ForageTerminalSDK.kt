@@ -9,13 +9,11 @@ import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ForageSDKInterface
 import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.core.EnvConfig
-import com.joinforage.forage.android.getForageConfigOrThrow
-import com.joinforage.forage.android.processApiResponseForMetrics
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
+import com.joinforage.forage.android.getForageConfigOrThrow
 import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.vault.ForagePinSubmitter
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -30,6 +28,8 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
+import com.joinforage.forage.android.processApiResponseForMetrics
+import com.joinforage.forage.android.vault.ForagePinSubmitter
 
 /**
  * The entry point for **in-store POS Terminal** transactions.
@@ -251,7 +251,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         logger.addAttribute("merchant_ref", merchantId)
         logger.i("[POS] Tokenizing Payment Method")
 
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -349,7 +349,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         logger.addAttribute("merchant_ref", merchantId)
         logger.i("[POS] Tokenizing Payment Method")
 
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -453,7 +453,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         // ------------------------------------------------------
 
         val config = EnvConfig.fromSessionToken(sessionToken)
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -586,7 +586,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         measurement.start()
         // ------------------------------------------------------
         val config = EnvConfig.fromSessionToken(sessionToken)
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -688,7 +688,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
 
         val (merchantId, sessionToken) = getForageConfigOrThrow(foragePinEditText)
         val config = EnvConfig.fromSessionToken(sessionToken)
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -707,7 +707,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
             ),
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-            paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
+            paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
         ).deferPaymentCapture(
             merchantId = merchantId,
             paymentRef = paymentRef,
@@ -807,7 +807,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         measurement.start()
         // ------------------------------------------------------
         val config = EnvConfig.fromSessionToken(sessionToken)
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -919,7 +919,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         measurement.start()
         // ------------------------------------------------------
         val config = EnvConfig.fromSessionToken(sessionToken)
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
@@ -933,7 +933,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 ),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
+                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
             ).deferPaymentRefund(
                 merchantId = merchantId,
                 paymentRef = paymentRef,

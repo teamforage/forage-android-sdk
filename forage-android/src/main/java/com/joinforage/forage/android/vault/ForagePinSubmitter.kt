@@ -5,6 +5,7 @@ import android.content.Context
 import com.joinforage.forage.android.VaultType
 import com.joinforage.forage.android.addPathSegmentsSafe
 import com.joinforage.forage.android.addTrailingSlash
+import com.joinforage.forage.android.core.ForagePinElement
 import com.joinforage.forage.android.core.StopgapGlobalState
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.model.EncryptionKeys
@@ -18,7 +19,6 @@ import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
 import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.core.ForagePinElement
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
