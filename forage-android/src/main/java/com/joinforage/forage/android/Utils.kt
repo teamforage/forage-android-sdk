@@ -96,9 +96,3 @@ internal fun processApiResponseForMetrics(
     }
     measurement.setEventOutcome(outcome).logResult()
 }
-
-internal fun shutDownHttpClient(client: OkHttpClient) {
-//    client.connectionPool.evictAll()
-//    client.dispatcher.executorService.shutdown()
-//    client.cache?.close()
-}

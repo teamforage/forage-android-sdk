@@ -11,7 +11,6 @@ import com.joinforage.forage.android.TokenizeEBTCardParams
 import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.getForageConfigOrThrow
 import com.joinforage.forage.android.processApiResponseForMetrics
-import com.joinforage.forage.android.shutDownHttpClient
 import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
@@ -269,8 +268,6 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
             reusable = reusable ?: true
         )
 
-        shutDownHttpClient(okHttpClient)
-
         if (tokenizationResponse is ForageApiResponse.Failure) {
             logger.e(
                 "[POS] tokenizeCard failed on Terminal $posTerminalId: ${tokenizationResponse.errors[0]}"
@@ -365,8 +362,6 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
             okHttpClient,
             logger
         ).tokenizePosCard(track2Data = track2Data, reusable = reusable)
-
-        shutDownHttpClient(okHttpClient)
 
         return tokenizedCard
     }
@@ -485,8 +480,6 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
             )
 
         processApiResponseForMetrics(balanceResponse, measurement)
-
-        shutDownHttpClient(okHttpClient)
 
         if (balanceResponse is ForageApiResponse.Failure) {
             logger.e(
@@ -617,8 +610,9 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
             paymentRef = paymentRef,
             sessionToken = sessionToken
         )
+
         processApiResponseForMetrics(captureResponse, measurement)
-        shutDownHttpClient(okHttpClient)
+
         if (captureResponse is ForageApiResponse.Failure) {
             logger.e(
                 "[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId: ${captureResponse.errors[0]}"
