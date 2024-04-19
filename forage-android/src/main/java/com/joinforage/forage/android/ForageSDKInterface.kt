@@ -1,8 +1,8 @@
 package com.joinforage.forage.android
 
-import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.core.ForagePanElement
 import com.joinforage.forage.android.core.ForagePinElement
+import com.joinforage.forage.android.network.model.ForageApiResponse
 
 /**
  * An [Exception](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/) thrown if a

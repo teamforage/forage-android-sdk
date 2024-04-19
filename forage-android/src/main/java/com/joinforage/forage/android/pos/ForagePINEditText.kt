@@ -33,7 +33,6 @@ class ForagePINEditText @JvmOverloads constructor(
 
                     // initialize here since these params are available
                     forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
-
                 } finally {
                     recycle()
                 }
@@ -45,5 +44,4 @@ class ForagePINEditText @JvmOverloads constructor(
     override var typeface: Typeface?
         get() = forageVaultWrapper.typeface
         set(value) { forageVaultWrapper.typeface = value }
-
 }

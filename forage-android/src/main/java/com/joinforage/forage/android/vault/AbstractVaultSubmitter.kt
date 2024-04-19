@@ -2,6 +2,7 @@ package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.joinforage.forage.android.VaultType
+import com.joinforage.forage.android.core.ForagePinElement
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
@@ -11,9 +12,8 @@ import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
-import com.joinforage.forage.android.core.ForagePinElement
 import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
+import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
     ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")

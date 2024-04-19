@@ -9,14 +9,14 @@ import android.widget.LinearLayout
 import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
-import com.joinforage.forage.android.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ui.VaultWrapper
+import com.joinforage.forage.android.ui.getLogoImageViewLayout
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -107,7 +107,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
             }
     }
 
-    internal abstract fun determineBackingVault() : VaultWrapper<EditText>
+    internal abstract fun determineBackingVault(): VaultWrapper<EditText>
 
     override fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
@@ -157,7 +157,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
     internal fun getVaultType(): VaultType {
         return vault.getVaultType()
     }
-
 
     internal fun getTextElement(): EditText {
         return vault.getTextElement()

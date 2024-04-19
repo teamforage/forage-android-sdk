@@ -100,7 +100,6 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
 
     override fun getTextElement(): EditText = _editText
 
-
     override fun getUnderlying(): EditText {
         return _editText
     }
