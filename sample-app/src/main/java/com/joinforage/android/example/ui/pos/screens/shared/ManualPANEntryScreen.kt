@@ -13,7 +13,7 @@ import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 import com.joinforage.forage.android.pos.PosForageConfig
-import com.joinforage.forage.android.ui.ForagePANEditText
+import com.joinforage.forage.android.pos.ForagePANEditText
 
 @Composable
 fun ManualPANEntryScreen(

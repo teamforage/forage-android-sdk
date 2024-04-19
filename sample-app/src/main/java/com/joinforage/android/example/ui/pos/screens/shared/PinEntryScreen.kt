@@ -22,7 +22,7 @@ import com.joinforage.android.example.ui.pos.ui.ComposableForagePINEditText
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 import com.joinforage.forage.android.pos.PosForageConfig
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.pos.ForagePINEditText
 
 @Composable
 fun PINEntryScreen(

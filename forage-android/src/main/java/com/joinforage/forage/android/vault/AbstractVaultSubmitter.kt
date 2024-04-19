@@ -11,9 +11,9 @@ import com.joinforage.forage.android.network.ForageConstants
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
 import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.ForagePinElement
+import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
     ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
@@ -37,7 +37,7 @@ internal interface VaultSubmitter {
 
 internal abstract class AbstractVaultSubmitter<VaultResponse>(
     protected val context: Context,
-    protected val foragePinEditText: ForagePINEditText,
+    protected val foragePinEditText: ForagePinElement,
     protected val logger: Log,
     private val vaultType: VaultType
 ) : VaultSubmitter {
@@ -214,28 +214,6 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
     }
 
     internal companion object {
-        internal fun create(foragePinEditText: ForagePINEditText, logger: Log): VaultSubmitter {
-            val vaultType = foragePinEditText.getVaultType()
-            if (vaultType == VaultType.BT_VAULT_TYPE) {
-                return BasisTheoryPinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                )
-            }
-            if (vaultType == VaultType.VGS_VAULT_TYPE) {
-                return VgsPinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                )
-            }
-            return ForagePinSubmitter(
-                context = foragePinEditText.context,
-                foragePinEditText = foragePinEditText,
-                logger = logger
-            )
-        }
 
         const val TOKEN_DELIMITER = ","
 

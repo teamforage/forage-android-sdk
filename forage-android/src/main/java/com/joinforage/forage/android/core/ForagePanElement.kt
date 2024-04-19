@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.ui
+package com.joinforage.forage.android.core
 
 import android.content.Context
 import android.graphics.Color
@@ -10,16 +10,24 @@ import android.util.TypedValue
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.ForageConfigNotSetException
+import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.EnvConfig
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
+import com.joinforage.forage.android.ui.getBoxCornerRadiusBottomEnd
+import com.joinforage.forage.android.ui.getBoxCornerRadiusBottomStart
+import com.joinforage.forage.android.ui.getBoxCornerRadiusTopEnd
+import com.joinforage.forage.android.ui.getBoxCornerRadiusTopStart
+import com.joinforage.forage.android.ui.getThemeAccentColor
 import com.joinforage.forage.android.core.element.state.PanElementState
 import com.joinforage.forage.android.core.element.state.PanElementStateManager
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.ui.FormatPanTextWatcher
+import com.joinforage.forage.android.ui.getLogoImageViewLayout
 
 /**
- * A [ForageElement] that securely collects a customer's card number. You need a [ForagePANEditText]
+ * A [ForageElement] that securely collects a customer's card number. You need a [ForagePanElement]
  * to call the ForageSDK online-only method to
  * [tokenize an EBT Card][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard], or
  * the ForageTerminalSDK POS method to
@@ -49,7 +57,7 @@ import com.joinforage.forage.android.core.telemetry.Log
  * * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
  * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
  */
-class ForagePANEditText @JvmOverloads constructor(
+abstract class ForagePanElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle

@@ -61,8 +61,8 @@ import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
-import com.joinforage.forage.android.ui.ForagePANEditText
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.pos.ForagePANEditText
+import com.joinforage.forage.android.pos.ForagePINEditText
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Locale

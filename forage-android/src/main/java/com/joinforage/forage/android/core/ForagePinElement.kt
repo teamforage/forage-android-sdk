@@ -1,21 +1,22 @@
-package com.joinforage.forage.android.ui
+package com.joinforage.forage.android.core
 
 import android.content.Context
-import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.ForageConfigNotSetException
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.VaultType
+import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.PinElementState
 import com.joinforage.forage.android.core.telemetry.Log
-import com.verygoodsecurity.vgscollect.widget.VGSEditText
+import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.ui.getLogoImageViewLayout
+import com.joinforage.forage.android.ui.VaultWrapper
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -51,15 +52,12 @@ import com.verygoodsecurity.vgscollect.widget.VGSEditText
  * * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
  * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
  */
-class ForagePINEditText @JvmOverloads constructor(
+abstract class ForagePinElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : AbstractForageElement<PinElementState>(context, attrs, defStyleAttr) {
     private val _linearLayout: LinearLayout
-    private val btVaultWrapper: BTVaultWrapper
-    private val vgsVaultWrapper: VGSVaultWrapper
-    private val forageVaultWrapper: ForageVaultWrapper
 
     /**
      * The `vault` property acts as an abstraction for the actual code
@@ -73,8 +71,8 @@ class ForagePINEditText @JvmOverloads constructor(
      * initialized for this instance. If `vault` is accessed before
      * `_SET_ONLY_vault` is set, a runtime exception is thrown.
      */
-    private var _SET_ONLY_vault: VaultWrapper? = null
-    private val vault: VaultWrapper
+    private var _SET_ONLY_vault: VaultWrapper<EditText>? = null
+    private val vault: VaultWrapper<EditText>
         get() {
             if (_SET_ONLY_vault == null) {
                 throw ForageConfigNotSetException(
@@ -96,21 +94,6 @@ class ForagePINEditText @JvmOverloads constructor(
                     orientation = VERTICAL
                     gravity = Gravity.CENTER
 
-                    // at this point in time, we do not know the environment and
-                    // we are operating and thus do not know whether to add
-                    // BTVaultWrapper, VGSVaultWrapper, or ForageVaultWrapper to the UI.
-                    // But that's OK. We can hedge and instantiate all of them.
-                    // Then, within setForageConfig, once we know the environment
-                    // and are thus able to initial LaunchDarkly and find out
-                    // whether to use BT or VGS. So, below we are hedging.
-                    btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
-                    vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
-                    forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
-                    // ensure all wrappers init with the
-                    // same typeface (or the attributes)
-                    btVaultWrapper.typeface = vgsVaultWrapper.typeface
-                    forageVaultWrapper.typeface = vgsVaultWrapper.typeface
-
                     val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementWidth, ViewGroup.LayoutParams.MATCH_PARENT)
                     val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
 
@@ -124,6 +107,8 @@ class ForagePINEditText @JvmOverloads constructor(
             }
     }
 
+    internal abstract fun determineBackingVault() : VaultWrapper<EditText>
+
     override fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
@@ -131,18 +116,11 @@ class ForagePINEditText @JvmOverloads constructor(
         val logger = Log.getInstance()
         logger.initializeDD(context, forageConfig)
 
-        if (isPos) {
-            // only use Forage Vault for POS traffic!
-            _SET_ONLY_vault = forageVaultWrapper
-        } else {
-            // decide on a vault provider and the corresponding vault wrapper
-            val vaultType = VaultType.FORAGE_VAULT_TYPE
-            _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
-                btVaultWrapper
-            } else {
-                vgsVaultWrapper
-            }
-        }
+        // defer to the concrete subclass for the details of obtaining
+        // and instantiating the backing vault instance. We just need
+        // to guarantee that the vault is instantiated prior to adding
+        // it to the parent view
+        _SET_ONLY_vault = determineBackingVault()
 
         _linearLayout.addView(vault.getUnderlying())
         _linearLayout.addView(getLogoImageViewLayout(context))
@@ -180,16 +158,9 @@ class ForagePINEditText @JvmOverloads constructor(
         return vault.getVaultType()
     }
 
-    internal fun getTextInputEditText(): VGSEditText {
-        return vault.getVGSEditText()
-    }
 
-    internal fun getTextElement(): TextElement {
+    internal fun getTextElement(): EditText {
         return vault.getTextElement()
-    }
-
-    internal fun getForageTextElement(): EditText {
-        return vault.getForageTextElement()
     }
 
     override fun setTextColor(textColor: Int) {
@@ -199,14 +170,6 @@ class ForagePINEditText @JvmOverloads constructor(
         vault.setTextSize(textSize)
     }
 
-    override var typeface: Typeface?
-        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface
-        set(value) {
-            // keep all vault providers in sync regardless of
-            // whether they were added to the UI
-            btVaultWrapper.typeface = value
-            vgsVaultWrapper.typeface = value
-        }
     override fun setHint(hint: String) {
         vault.setHint(hint)
     }
