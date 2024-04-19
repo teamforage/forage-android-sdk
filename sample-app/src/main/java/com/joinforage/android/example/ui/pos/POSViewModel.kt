@@ -19,8 +19,10 @@ import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethodJsonA
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.CapturePaymentParams
 import com.joinforage.forage.android.CheckBalanceParams
+import com.joinforage.forage.android.DeferPaymentCaptureParams
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.pos.ForageTerminalSDK
+import com.joinforage.forage.android.pos.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.pos.PosForageConfig
 import com.joinforage.forage.android.pos.PosRefundPaymentParams
 import com.joinforage.forage.android.pos.PosTokenizeCardParams
@@ -221,6 +223,78 @@ class POSViewModel : ViewModel() {
                 is ForageApiResponse.Failure -> {
                     Log.e("POSViewModel", response.toString())
                     _uiState.update { it.copy(balanceCheckError = response.toString(), balance = null) }
+                }
+            }
+        }
+    }
+
+    fun deferPaymentCapture(
+        context: Context,
+        foragePinEditText: ForagePINEditText,
+        terminalId: String,
+        paymentRef: String,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.deferPaymentCapture(
+                DeferPaymentCaptureParams(
+                    foragePinEditText = foragePinEditText,
+                    paymentRef = paymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    onSuccess()
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.e("POSViewModel", response.errors[0].message)
+                    var payment: PosPaymentResponse? = null
+                    try {
+                        payment = api.getPayment(paymentRef)
+                    } catch (e: HttpException) {
+                        Log.e("POSViewModel", "Failed to re-fetch payment $paymentRef after failed deferred capture")
+                    }
+                    _uiState.update { it.copy(capturePaymentError = response.errors[0].message, capturePaymentResponse = payment) }
+                    onFailure()
+                }
+            }
+        }
+    }
+
+    fun deferPaymentRefund(
+        context: Context,
+        foragePinEditText: ForagePINEditText,
+        terminalId: String,
+        paymentRef: String,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
+            val response = forageTerminalSdk.deferPaymentRefund(
+                PosDeferPaymentRefundParams(
+                    foragePinEditText = foragePinEditText,
+                    paymentRef = paymentRef
+                )
+            )
+
+            when (response) {
+                is ForageApiResponse.Success -> {
+                    onSuccess()
+                }
+                is ForageApiResponse.Failure -> {
+                    Log.e("POSViewModel", response.errors[0].message)
+                    var payment: PosPaymentResponse? = null
+                    try {
+                        payment = api.getPayment(paymentRef)
+                    } catch (e: HttpException) {
+                        Log.e("POSViewModel", "Failed to re-fetch payment after failed deferred refund attempt. PaymentRef: $paymentRef")
+                    }
+                    _uiState.update { it.copy(refundPaymentError = response.errors[0].message, capturePaymentResponse = payment) }
+                    onFailure()
                 }
             }
         }

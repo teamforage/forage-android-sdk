@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 
 @Composable
@@ -20,7 +21,10 @@ fun PANMethodSelectionScreen(
         mainContent = {
             Text("How do you want to read your EBT card?")
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onManualEntryButtonClicked) {
+            Button(
+                onClick = onManualEntryButtonClicked,
+                modifier = Modifier.withTestId("pos_select_pan_ui_entry_button")
+            ) {
                 Text("Manually Enter Card Number")
             }
             Button(onClick = onSwipeButtonClicked) {
@@ -28,7 +32,10 @@ fun PANMethodSelectionScreen(
             }
         },
         bottomRowContent = {
-            Button(onClick = onBackButtonClicked) {
+            Button(
+                onClick = onBackButtonClicked,
+                modifier = Modifier.withTestId("pos_back_button")
+            ) {
                 Text("Back")
             }
         }
