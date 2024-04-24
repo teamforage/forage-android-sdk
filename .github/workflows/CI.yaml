@@ -42,33 +42,12 @@ jobs:
       - name: Build release and debug variants
         run: ./gradlew assemble --stacktrace
 
+      # for now, we only upload the app to BrowserStack in this workflow
+      # TODO (once we figure out how to "checkout" the mobile-qa-tests) from the
+      # teamforage GH organization, we can run the mobile-qa-tests here
       - name: Upload App to BrowserStack
         run: |
           curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" -X POST \
           https://api-cloud.browserstack.com/app-automate/upload \
           -F "file=@${{ github.workspace }}/sample-app/build/outputs/apk/debug/sample-app-debug.apk" \
           -F "custom_id=${{ env.BROWSERSTACK_CUSTOM_ID }}"
-
-      - name: Checkout Integration Test Repo
-        uses: actions/checkout@v3
-        with:
-          repository: teamforage/mobile-qa-tests
-          ref: main
-          ssh-key: ${{ secrets.MOBILE_QA_DEPLOY_KEY }}
-          path: 'mobile-qa-tests/'
-
-      - name: Run Integration Tests
-        run: |
-          cd mobile-qa-tests
-          pip install -r requirements.txt
-          export BROWSERSTACK_CUSTOM_ID=${{ env.BROWSERSTACK_CUSTOM_ID }}
-          pytest android/tests/test_pos_flows.py || true
-          pytest --lf --last-failed-no-failures none  --suppress-no-test-exit-code android/tests/test_pos_flows.py
-
-    #   - name: Upload build outputs (APKs and SDK AARs)
-    #     uses: actions/upload-artifact@v3
-    #     with:
-    #       name: build-outputs
-    #       path: |
-    #         sample-app/build/outputs/
-    #         forage-android/build/outputs/
