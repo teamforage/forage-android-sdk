@@ -54,8 +54,6 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
 
     abstract fun setTextColor(textColor: Int)
     abstract fun setTextSize(textSize: Float)
-    abstract fun setHint(hint: String)
-    abstract fun setHintTextColor(hintTextColor: Int)
     abstract fun getUnderlying(): View
     abstract fun getVGSEditText(): VGSEditText
     abstract fun getTextElement(): TextElement

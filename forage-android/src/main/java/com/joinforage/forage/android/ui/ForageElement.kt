@@ -110,19 +110,6 @@ interface ForageElement<T : ElementState> {
      */
     fun setTextSize(textSize: Float)
 
-    /**
-     * Sets the text to be displayed when the ForageElement input field is empty.
-     *
-     * @param hint The text to display.
-     */
-    fun setHint(hint: String)
-
-    /**
-     * Sets the hint text color.
-     *
-     * @param hintTextColor The color value in the form `0xAARRGGBB`.
-     */
-    fun setHintTextColor(hintTextColor: Int)
 
     /**
      * Sets the border color of the input field.

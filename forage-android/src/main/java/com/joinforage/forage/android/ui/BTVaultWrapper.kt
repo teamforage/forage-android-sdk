@@ -130,11 +130,4 @@ internal class BTVaultWrapper @JvmOverloads constructor(
         _internalTextElement.textSize = textSize
     }
 
-    override fun setHint(hint: String) {
-        _internalTextElement.hint = hint
-    }
-
-    override fun setHintTextColor(hintTextColor: Int) {
-        _internalTextElement.hintTextColor = hintTextColor
-    }
 }

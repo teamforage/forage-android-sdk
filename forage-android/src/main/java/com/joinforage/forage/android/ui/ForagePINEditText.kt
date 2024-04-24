@@ -216,12 +216,6 @@ class ForagePINEditText @JvmOverloads constructor(
             btVaultWrapper.typeface = value
             vgsVaultWrapper.typeface = value
         }
-    override fun setHint(hint: String) {
-        vault.setHint(hint)
-    }
-    override fun setHintTextColor(hintTextColor: Int) {
-        vault.setHintTextColor(hintTextColor)
-    }
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         // no-ops for now
     }

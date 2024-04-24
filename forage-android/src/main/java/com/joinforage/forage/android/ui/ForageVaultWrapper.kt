@@ -130,11 +130,4 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
         _editText.textSize = textSize
     }
 
-    override fun setHint(hint: String) {
-        _editText.hint = hint
-    }
-
-    override fun setHintTextColor(hintTextColor: Int) {
-        _editText.setHintTextColor(hintTextColor)
-    }
 }

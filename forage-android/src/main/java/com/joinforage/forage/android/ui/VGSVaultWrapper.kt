@@ -58,11 +58,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                                 inputHeight
                             )
 
-                        setHint(hint)
-                        hintTextColor?.let {
-                            setHintTextColor(hintTextColor)
-                        }
-
                         val customBackground = GradientDrawable().apply {
                             setPaddingRelative(20, 20, 20, 20)
                             shape = GradientDrawable.RECTANGLE
@@ -154,11 +149,4 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
         _internalEditText.setTextSize(textSize)
     }
 
-    override fun setHint(hint: String) {
-        _internalEditText.setHint(hint)
-    }
-
-    override fun setHintTextColor(hintTextColor: Int) {
-        _internalEditText.setHintTextColor(hintTextColor)
-    }
 }
