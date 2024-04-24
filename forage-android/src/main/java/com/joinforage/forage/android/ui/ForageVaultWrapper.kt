@@ -56,8 +56,6 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
 
                         gravity = Gravity.CENTER
-                        hint = parsedStyles.hint
-                        setHintTextColor(parsedStyles.hintTextColor)
 
                         val customBackground = GradientDrawable().apply {
                             setPaddingRelative(20, 20, 20, 20)

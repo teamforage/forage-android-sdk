@@ -29,7 +29,6 @@
         <!-- Style attribute for the TextInputLayout  -->
         <attr name="pinInputLayoutStyle" format="reference" />
 
-        <attr name="hint" />
         <attr name="text" />
         <attr name="textSize" />
         <attr name="textColor" />

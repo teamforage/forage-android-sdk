@@ -41,8 +41,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                 val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(boxCornerRadius)
                 val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(boxCornerRadius)
                 val boxCornerRadiusBottomEnd = getBoxCornerRadiusBottomEnd(boxCornerRadius)
-                val hintTextColorVal =
-                    getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_hintTextColor, getThemeAccentColor(context))
 
                 val inputWidth: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_inputWidth, ViewGroup.LayoutParams.MATCH_PARENT)
                 val inputHeight: Int = getDimensionPixelSize(com.joinforage.forage.android.R.styleable.ForagePINEditText_inputHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -57,8 +55,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                         inputType = com.basistheory.android.model.InputType.NUMBER_PASSWORD
                         val digit = Regex("""\d""")
                         mask = ElementMask(listOf(digit, digit, digit, digit))
-                        hint = getString(com.joinforage.forage.android.R.styleable.ForagePINEditText_hint)
-                        hintTextColor = hintTextColorVal
                         textSize = getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_textSize, -1f)
                         textColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_textColor, Color.BLACK)
                         var customBackground = GradientDrawable().apply {

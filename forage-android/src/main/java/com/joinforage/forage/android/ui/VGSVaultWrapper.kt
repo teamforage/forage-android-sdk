@@ -31,7 +31,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, com.joinforage.forage.android.R.styleable.ForagePINEditText, defStyleAttr, 0)
             .apply {
                 try {
-                    val hint = getString(com.joinforage.forage.android.R.styleable.ForagePINEditText_hint)
                     val textInputLayoutStyleAttribute =
                         getResourceId(com.joinforage.forage.android.R.styleable.ForagePINEditText_pinInputLayoutStyle, 0)
                     val boxStrokeColor = getColor(
@@ -46,8 +45,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     val boxCornerRadiusTopEnd = getBoxCornerRadiusTopEnd(boxCornerRadius)
                     val boxCornerRadiusBottomStart = getBoxCornerRadiusBottomStart(boxCornerRadius)
                     val boxCornerRadiusBottomEnd = getBoxCornerRadiusBottomEnd(boxCornerRadius)
-                    val hintTextColor =
-                        getColorStateList(com.joinforage.forage.android.R.styleable.ForagePINEditText_hintTextColor)
                     val textSize = getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_textSize, -1f)
                     val textColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_textColor, Color.BLACK)
 
