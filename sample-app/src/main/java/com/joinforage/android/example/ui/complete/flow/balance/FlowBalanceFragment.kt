@@ -28,6 +28,13 @@ class FlowBalanceFragment : Fragment() {
     private lateinit var snap: TextView
     private lateinit var nonSnap: TextView
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        foragePinEditText.requestFocus()
+        foragePinEditText.showKeyboard()
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,8 +63,6 @@ class FlowBalanceFragment : Fragment() {
                 sessionToken = viewModel.bearer
             )
         )
-
-        foragePinEditText.requestFocus()
 
         val isFocused: TextView = binding.isFocused
         val isComplete: TextView = binding.isComplete

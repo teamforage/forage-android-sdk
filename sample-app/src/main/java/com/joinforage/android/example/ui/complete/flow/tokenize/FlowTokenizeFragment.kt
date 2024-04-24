@@ -24,6 +24,12 @@ class FlowTokenizeFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.tokenizeForagePanEditText.requestFocus()
+        binding.tokenizeForagePanEditText.showKeyboard()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
