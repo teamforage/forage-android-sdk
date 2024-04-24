@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '0 12 * * *' # Run every day at 7/8 AM Eastern
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      # Avoid concurrency issues
+      # note: the ecommerce repo intentionally uses a different "default" custom ID ("AndroidPOSTerminalApp") to avoid conflicts
+      BROWSERSTACK_CUSTOM_ID: ${{ (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch') && format('pr-{0}', github.sha) || 'AndroidPOSTerminalApp' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Run unit tests for the debug build
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Build release and debug variants
+        run: ./gradlew assemble --stacktrace
+
+      # for now, we only upload the app to BrowserStack in this workflow
+      # TODO (once we figure out how to "checkout" the mobile-qa-tests) from the
+      # teamforage GH organization, we can run the mobile-qa-tests here
+      - name: Upload App to BrowserStack
+        run: |
+          curl -u "${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_ACCESS_KEY }}" -X POST \
+          https://api-cloud.browserstack.com/app-automate/upload \
+          -F "file=@${{ github.workspace }}/sample-app/build/outputs/apk/debug/sample-app-debug.apk" \
+          -F "custom_id=${{ env.BROWSERSTACK_CUSTOM_ID }}"
