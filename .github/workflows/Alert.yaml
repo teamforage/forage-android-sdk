@@ -2,9 +2,9 @@ name: Alert
 
 on:
   workflow_run:
-    workflows: ["CI"]
-    types: ["completed"]
-    branches: ["main"]
+    workflows: ['CI']
+    types: ['completed']
+    branches: ['main']
 
 jobs:
   send-alert:
@@ -18,7 +18,7 @@ jobs:
         with:
           payload: |
             {
-              "message": "CI failed on main branch in forage-android-sdk! https://github.com/teamforage/forage-android-sdk/actions"
+              "message": "CI failed on main branch in android-pos-terminal-sdk! https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/actions"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_POS }}
