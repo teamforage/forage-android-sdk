@@ -34,7 +34,6 @@ class FlowBalanceFragment : Fragment() {
         foragePinEditText.showKeyboard()
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

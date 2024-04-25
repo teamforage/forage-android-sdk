@@ -66,10 +66,11 @@ class ForagePINEditText @JvmOverloads constructor(
     private val forageVaultWrapper: ForageVaultWrapper
 
     override fun showKeyboard() {
-        if (vault.getVaultType() == VaultType.VGS_VAULT_TYPE)
+        if (vault.getVaultType() == VaultType.VGS_VAULT_TYPE) {
             vault.getVGSEditText().showKeyboard()
+        }
         if (vault.getVaultType() == VaultType.BT_VAULT_TYPE) {
-            TODO("currently blocked by BT's lack of this functionality")
+            vault.getTextElement().showKeyboard(0)
         }
     }
 
