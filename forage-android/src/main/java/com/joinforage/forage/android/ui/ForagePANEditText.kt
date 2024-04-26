@@ -7,6 +7,8 @@ import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.ForageConfigNotSetException
@@ -171,6 +173,11 @@ class ForagePANEditText @JvmOverloads constructor(
                     recycle()
                 }
             }
+    }
+
+    override fun showKeyboard() {
+        val imm = context.getSystemService<InputMethodManager>()
+        imm!!.showSoftInput(textInputEditText, 0)
     }
 
     override fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean) {

@@ -92,6 +92,14 @@ interface ForageElement<T : ElementState> {
     fun setPosForageConfig(posForageConfig: PosForageConfig)
 
     /**
+     * Explicitly request that the current input method's soft
+     * input be shown to the user, if needed. This only has an
+     * effect if the ForageElement is focused, which can be
+     * done using `.requestFocus()`
+     */
+    fun showKeyboard()
+
+    /**
      * Clears the text input field of the ForageElement.
      */
     fun clearText()

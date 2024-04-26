@@ -65,6 +65,15 @@ class ForagePINEditText @JvmOverloads constructor(
     private val vgsVaultWrapper: VGSVaultWrapper
     private val forageVaultWrapper: ForageVaultWrapper
 
+    override fun showKeyboard() {
+        if (vault.getVaultType() == VaultType.VGS_VAULT_TYPE) {
+            vault.getVGSEditText().showKeyboard()
+        }
+        if (vault.getVaultType() == VaultType.BT_VAULT_TYPE) {
+            vault.getTextElement().showKeyboard(0)
+        }
+    }
+
     /**
      * The `vault` property acts as an abstraction for the actual code
      * in ForagePINEditText, allowing it to work with a non-nullable

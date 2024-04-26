@@ -24,6 +24,16 @@ class FlowTokenizeFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.tokenizeForagePanEditText.requestFocus()
+        // our CI tests fail when we automatically show the keyboard
+        // because it covers certain elements. So this code is
+        // commented out by default. Uncomment it to make your
+        // dev experience slightly better :)
+//        foragePinEditText.showKeyboard()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
