@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.navigation_complete_flow,
                 R.id.navigation_catalog,
-                R.id.navigation_pos
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

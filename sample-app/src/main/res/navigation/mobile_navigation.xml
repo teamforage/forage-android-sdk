@@ -5,10 +5,6 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_complete_flow">
 
-    <fragment
-        android:id="@+id/navigation_pos"
-        android:name="com.joinforage.android.example.ui.pos.POSFragment"
-        android:label="@string/title_pos" />
 
     <fragment
         android:id="@+id/navigation_catalog"

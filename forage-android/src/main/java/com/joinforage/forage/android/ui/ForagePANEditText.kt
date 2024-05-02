@@ -180,7 +180,7 @@ class ForagePANEditText @JvmOverloads constructor(
         imm!!.showSoftInput(textInputEditText, 0)
     }
 
-    override fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean) {
+    override fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.

@@ -6,7 +6,6 @@ import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.network.model.PaymentMethodRequestBody
 import com.joinforage.forage.android.network.model.RequestBody
-import com.joinforage.forage.android.pos.PosPaymentMethodRequestBody
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -36,19 +35,6 @@ internal class TokenizeCardService(
         )
     } catch (ex: IOException) {
         logger.e("[HTTP] Failed while tokenizing PaymentMethod", ex, attributes = mapOf("customer_id" to customerId))
-        ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
-    }
-
-    suspend fun tokenizePosCard(track2Data: String, reusable: Boolean = true): ForageApiResponse<String> = try {
-        logger.i("[POS] POST request for Payment Method with Track 2 data")
-        tokenizeCardCoroutine(
-            PosPaymentMethodRequestBody(
-                track2Data = track2Data,
-                reusable = reusable
-            )
-        )
-    } catch (ex: IOException) {
-        logger.e("[POS] Failed while tokenizing PaymentMethod", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
 

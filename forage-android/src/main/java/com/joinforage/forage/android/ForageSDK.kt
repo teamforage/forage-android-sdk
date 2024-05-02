@@ -18,8 +18,6 @@ import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
 import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.pos.PosRefundPaymentRepository
-import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.ui.AbstractForageElement
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -460,7 +458,6 @@ class ForageSDK : ForageSDKInterface {
         private val paymentService by lazy { createPaymentService() }
         private val messageStatusService by lazy { createMessageStatusService() }
         private val pollingService by lazy { createPollingService() }
-        private val posRefundService by lazy { PosRefundService(config.apiBaseUrl, logger, okHttpClient) }
 
         open fun createTokenizeCardService() = TokenizeCardService(
             config.apiBaseUrl,
@@ -504,18 +501,6 @@ class ForageSDK : ForageSDKInterface {
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService
-            )
-        }
-
-        open fun createRefundPaymentRepository(foragePinEditText: ForagePINEditText): PosRefundPaymentRepository {
-            return PosRefundPaymentRepository(
-                vaultSubmitter = createVaultSubmitter(foragePinEditText),
-                encryptionKeyService = encryptionKeyService,
-                paymentMethodService = paymentMethodService,
-                paymentService = paymentService,
-                pollingService = pollingService,
-                logger = logger,
-                refundService = posRefundService
             )
         }
 

@@ -2,7 +2,6 @@ package com.joinforage.forage.android
 
 import android.content.res.TypedArray
 import okhttp3.HttpUrl
-import org.json.JSONObject
 import kotlin.random.Random
 
 /**
@@ -23,29 +22,4 @@ internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
 internal fun TypedArray.getBoxCornerRadius(styleIndex: Int, defaultBoxCornerRadius: Float): Float {
     val styledBoxCornerRadius = getDimension(styleIndex, 0f)
     return if (styledBoxCornerRadius == 0f) defaultBoxCornerRadius else styledBoxCornerRadius
-}
-
-// This extension splits the path by "/" and adds each segment individually to the path.
-// This is to prevent the URL from getting corrupted through internal OKHttp URL encoding.
-internal fun HttpUrl.Builder.addPathSegmentsSafe(path: String): HttpUrl.Builder {
-    path.split("/").forEach { segment ->
-        if (segment.isNotEmpty()) {
-            this.addPathSegment(segment)
-        }
-    }
-    return this
-}
-
-/**
- * [JSONObject.optString] has trouble falling back to `null` and seems to fallback to `"null"` (string) instead
- */
-internal fun JSONObject.getStringOrNull(fieldName: String): String? {
-    if (!has(fieldName) || isNull(fieldName)) {
-        return null
-    }
-    return optString(fieldName)
-}
-
-internal fun JSONObject.hasNonNull(fieldName: String): Boolean {
-    return has(fieldName) && !isNull(fieldName)
 }

@@ -4,7 +4,6 @@ import android.graphics.Typeface
 import com.joinforage.forage.android.core.element.SimpleElementListener
 import com.joinforage.forage.android.core.element.StatefulElementListener
 import com.joinforage.forage.android.core.element.state.ElementState
-import com.joinforage.forage.android.pos.PosForageConfig
 
 /**
  * The configuration details that Forage needs to create a functional [ForageElement].
@@ -68,28 +67,6 @@ interface ForageElement<T : ElementState> {
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
     fun setForageConfig(forageConfig: ForageConfig)
-
-    /**
-     * ⚠️ **The [setPosForageConfig] method is only valid for in-store POS Terminal transactions.**
-     *
-     * Sets the necessary [PosForageConfig] configuration properties for a ForageElement.
-     * **[setPosForageConfig] must be called before any other methods can be executed on the Element.**
-     * ```kotlin
-     * // Example: Call setPosForageConfig on a ForagePINEditText Element
-     * val posForagePinEditText = root?.findViewById<ForagePINEditText>(R.id.foragePinEditText)
-     * posForagePinEditText.setPosForageConfig(
-     *     PosForageConfig(
-     *         sessionToken = "<session_token>",
-     *         merchantId = "mid/<merchant_id>"
-     *     )
-     * )
-     * ```
-     * @see * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
-     * * [setForageConfig] for the equivalent online-only method.
-     *
-     * @param posForageConfig A [PosForageConfig] instance that specifies a `merchantId` and `sessionToken`.
-     */
-    fun setPosForageConfig(posForageConfig: PosForageConfig)
 
     /**
      * Explicitly request that the current input method's soft

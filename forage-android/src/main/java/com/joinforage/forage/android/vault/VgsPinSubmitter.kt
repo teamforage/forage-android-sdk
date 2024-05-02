@@ -52,7 +52,7 @@ internal class VgsPinSubmitter(
             .setMethod(HTTPMethod.POST)
             .setPath(vaultProxyRequest.path)
             .setCustomHeader(vaultProxyRequest.headers)
-            .setCustomData(buildRequestBody(vaultProxyRequest))
+            .setCustomData(buildBaseRequestBody(vaultProxyRequest))
             .build()
 
         vgsCollect.asyncSubmit(request)

@@ -137,29 +137,24 @@ class ForagePINEditText @JvmOverloads constructor(
             }
     }
 
-    override fun initWithForageConfig(forageConfig: ForageConfig, isPos: Boolean) {
+    override fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
         val logger = Log.getInstance()
         logger.initializeDD(context, forageConfig)
 
-        if (isPos) {
-            // only use Forage Vault for POS traffic!
-            _SET_ONLY_vault = forageVaultWrapper
-        } else {
-            // initialize Launch Darkly singleton
-            val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
-            val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
-            LDManager.initialize(context.applicationContext as Application, ldConfig)
+        // initialize Launch Darkly singleton
+        val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
+        val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
+        LDManager.initialize(context.applicationContext as Application, ldConfig)
 
-            // decide on a vault provider and the corresponding vault wrapper
-            val vaultType = LDManager.getVaultProvider(logger)
-            _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
-                btVaultWrapper
-            } else {
-                vgsVaultWrapper
-            }
+        // decide on a vault provider and the corresponding vault wrapper
+        val vaultType = LDManager.getVaultProvider(logger)
+        _SET_ONLY_vault = if (vaultType == VaultType.BT_VAULT_TYPE) {
+            btVaultWrapper
+        } else {
+            vgsVaultWrapper
         }
 
         _linearLayout.addView(vault.getUnderlying())

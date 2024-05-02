@@ -2,8 +2,8 @@ package com.joinforage.forage.android.mock
 
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.model.USState
 import com.joinforage.forage.android.network.EncryptionKeyService
+import com.joinforage.forage.android.model.USState
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
 import com.joinforage.forage.android.network.PaymentMethodService
@@ -15,11 +15,7 @@ import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
-import com.joinforage.forage.android.network.model.Balance
 import com.joinforage.forage.android.network.model.EbtBalance
-import com.joinforage.forage.android.pos.PosRefundPaymentRepository
-import com.joinforage.forage.android.pos.PosRefundService
-import com.joinforage.forage.android.pos.PosVaultRequestParams
 import com.joinforage.forage.android.ui.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer
 
@@ -55,17 +51,6 @@ internal class MockServiceFactory(
             encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
         )
 
-        // POS
-        const val posTerminalId: String = "pos-terminal-id-123"
-        const val refundRef: String = "refund123"
-        const val track2Data: String = "5077081212341234=491212012345"
-        const val refundAmount: Float = 1.23f
-        const val refundReason: String = "I feel like refunding this payment!"
-        val posVaultRequestParams: PosVaultRequestParams = PosVaultRequestParams(
-            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE",
-            posTerminalId = "pos-terminal-id-123"
-        )
     }
 
     private val okHttpClient by lazy {
@@ -80,7 +65,6 @@ internal class MockServiceFactory(
     private val paymentService by lazy { createPaymentService() }
     private val messageStatusService by lazy { createMessageStatusService() }
     private val pollingService by lazy { createPollingService() }
-    private val posRefundService by lazy { createPosRefundService() }
 
     private fun emptyUrl() = server.url("").toUrl().toString()
 
@@ -129,17 +113,6 @@ internal class MockServiceFactory(
         )
     }
 
-    override fun createRefundPaymentRepository(foragePinEditText: ForagePINEditText): PosRefundPaymentRepository {
-        return PosRefundPaymentRepository(
-            vaultSubmitter = mockVaultSubmitter,
-            encryptionKeyService = encryptionKeyService,
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
-            pollingService = pollingService,
-            logger = logger,
-            refundService = posRefundService
-        )
-    }
 
     private fun createEncryptionKeyService() = EncryptionKeyService(emptyUrl(), okHttpClient, logger)
     private fun createPaymentMethodService() = PaymentMethodService(emptyUrl(), okHttpClient, logger)
@@ -149,5 +122,4 @@ internal class MockServiceFactory(
         messageStatusService = messageStatusService,
         logger = logger
     )
-    private fun createPosRefundService() = PosRefundService(emptyUrl(), logger, okHttpClient)
 }
