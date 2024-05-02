@@ -1,8 +1,10 @@
 package com.joinforage.forage.android.core.element.state
 
-import com.joinforage.forage.android.core.element.IncompleteEbtPinError
-import com.joinforage.forage.android.core.element.StatefulElementListener
-import com.joinforage.forage.android.core.element.WrongEbtPinError
+import com.joinforage.forage.android.core.ui.element.IncompleteEbtPinError
+import com.joinforage.forage.android.core.ui.element.StatefulElementListener
+import com.joinforage.forage.android.core.ui.element.WrongEbtPinError
+import com.joinforage.forage.android.core.ui.element.state.PinElementState
+import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

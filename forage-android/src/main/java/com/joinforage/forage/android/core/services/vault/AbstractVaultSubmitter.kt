@@ -1,17 +1,19 @@
-package com.joinforage.forage.android.vault
+package com.joinforage.forage.android.core.services.vault
 
 import android.content.Context
-import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.UserAction
-import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
-import com.joinforage.forage.android.model.EncryptionKeys
-import com.joinforage.forage.android.model.PaymentMethod
-import com.joinforage.forage.android.network.ForageConstants
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.services.launchdarkly.VaultType
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.UserAction
+import com.joinforage.forage.android.core.services.telemetry.VaultProxyResponseMonitor
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.ForageConstants
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
+import com.joinforage.forage.android.ecom.services.vault.bt.BasisTheoryPinSubmitter
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.ecom.services.vault.vgs.VgsPinSubmitter
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
     ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")

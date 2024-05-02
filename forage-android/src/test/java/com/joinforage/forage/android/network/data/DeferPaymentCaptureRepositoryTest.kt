@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.network.data
 
-import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.givenPaymentRef
@@ -12,9 +13,9 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.ForageError
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat

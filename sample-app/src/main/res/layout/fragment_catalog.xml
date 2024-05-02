@@ -24,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.joinforage.forage.android.ui.ForagePANEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePANEditText
                 android:id="@+id/firstForageEditText"
                 style="?attr/catalogFirstForagePanEditTextStyle"
                 android:layout_width="0dp"
@@ -36,7 +36,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <com.joinforage.forage.android.ui.ForagePANEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePANEditText
                 android:id="@+id/secondEditText"
                 style="?catalogSecondForagePanEditTextStyle"
                 android:layout_width="0dp"
@@ -46,7 +46,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/firstForageEditText" />
 
-            <com.joinforage.forage.android.ui.ForagePANEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePANEditText
                 android:id="@+id/thirdEditText"
                 style="?catalogThirdForagePanEditTextStyle"
                 android:layout_width="0dp"
@@ -56,7 +56,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/secondEditText" />
 
-            <com.joinforage.forage.android.ui.ForagePANEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePANEditText
                 android:id="@+id/fourthEditText"
                 style="?catalogFourthForagePanEditTextStyle"
                 android:layout_width="200dp"
@@ -65,7 +65,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/thirdEditText" />
 
-            <com.joinforage.forage.android.ui.ForagePINEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePINEditText
                 android:id="@+id/foragePinEditText"
                 style="@style/ForagePINEditTextStyle"
                 android:layout_width="0dp"
@@ -76,7 +76,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fourthEditText" />
 
-            <com.joinforage.forage.android.ui.ForagePINEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePINEditText
                 android:id="@+id/secondForagePINEditText"
                 style="@style/SecondForagePINEditTextStyle"
                 android:layout_width="0dp"
@@ -87,7 +87,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/foragePinEditText" />
 
-            <com.joinforage.forage.android.ui.ForagePINEditText
+            <com.joinforage.forage.android.ecom.ui.ForagePINEditText
                 android:id="@+id/thirdForagePINEditText"
                 style="@style/ThirdForagePINEditTextStyle"
                 android:layout_width="80dp"

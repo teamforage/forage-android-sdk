@@ -1,22 +1,22 @@
 package com.joinforage.forage.android.mock
 
-import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.model.USState
-import com.joinforage.forage.android.network.MessageStatusService
-import com.joinforage.forage.android.network.OkHttpClientBuilder
-import com.joinforage.forage.android.network.PaymentMethodService
-import com.joinforage.forage.android.network.PaymentService
-import com.joinforage.forage.android.network.PollingService
-import com.joinforage.forage.android.network.TokenizeCardService
-import com.joinforage.forage.android.network.data.BaseVaultRequestParams
-import com.joinforage.forage.android.network.data.CapturePaymentRepository
-import com.joinforage.forage.android.network.data.CheckBalanceRepository
-import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
-import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
-import com.joinforage.forage.android.network.model.EbtBalance
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.ecom.services.ForageSDK
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
+import com.joinforage.forage.android.core.ui.element.state.USState
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
+import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
+import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
+import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
+import com.joinforage.forage.android.core.services.vault.TokenizeCardService
+import com.joinforage.forage.android.core.services.vault.BaseVaultRequestParams
+import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
+import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
+import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer
 
 internal class MockServiceFactory(
@@ -103,16 +103,6 @@ internal class MockServiceFactory(
             paymentMethodService = paymentMethodService
         )
     }
-
-    override fun createDeferPaymentRefundRepository(foragePinEditText: ForagePINEditText): DeferPaymentRefundRepository {
-        return DeferPaymentRefundRepository(
-            vaultSubmitter = mockVaultSubmitter,
-            encryptionKeyService = encryptionKeyService,
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService
-        )
-    }
-
 
     private fun createEncryptionKeyService() = EncryptionKeyService(emptyUrl(), okHttpClient, logger)
     private fun createPaymentMethodService() = PaymentMethodService(emptyUrl(), okHttpClient, logger)

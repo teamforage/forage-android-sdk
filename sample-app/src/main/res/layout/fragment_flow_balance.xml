@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.complete.flow.balance.FlowBalanceFragment">
 
-    <com.joinforage.forage.android.ui.ForagePINEditText
+    <com.joinforage.forage.android.ecom.ui.ForagePINEditText
         android:id="@+id/foragePinEditText"
         style="@style/ForagePINEditTextStyle"
         android:layout_width="0dp"

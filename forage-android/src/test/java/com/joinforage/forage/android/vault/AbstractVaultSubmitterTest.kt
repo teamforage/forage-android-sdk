@@ -1,17 +1,17 @@
 package com.joinforage.forage.android.vault
 
 import android.content.Context
-import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.element.state.INITIAL_PIN_ELEMENT_STATE
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.UserAction
+import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.ui.element.state.INITIAL_PIN_ELEMENT_STATE
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.mock.MockLogger
-import com.joinforage.forage.android.model.EncryptionKeys
-import com.joinforage.forage.android.network.model.EbtCard
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.PaymentMethod
-import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat

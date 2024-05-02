@@ -7,7 +7,7 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.databinding.FragmentFlowCapturePaymentBinding
 import com.joinforage.android.example.ext.hideKeyboard
 import com.joinforage.android.example.ui.base.BaseFragment
-import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.core.ui.element.ForageConfig
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

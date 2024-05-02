@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.model
 
-import com.joinforage.forage.android.network.model.SQSError
+import com.joinforage.forage.android.core.services.forageapi.polling.SQSError
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

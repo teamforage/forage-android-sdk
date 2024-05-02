@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.joinforage.android.example.databinding.FragmentCatalogBinding
-import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.core.ui.element.ForageConfig
 
 class CatalogFragment : Fragment() {
 

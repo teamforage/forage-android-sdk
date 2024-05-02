@@ -1,5 +1,8 @@
 package com.joinforage.forage.android.core.element.state
 
+import com.joinforage.forage.android.core.ui.element.state.DerivedCardInfoDto
+import com.joinforage.forage.android.core.ui.element.state.INITIAL_PAN_ELEMENT_STATE
+import com.joinforage.forage.android.core.ui.element.state.INITIAL_PIN_ELEMENT_STATE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

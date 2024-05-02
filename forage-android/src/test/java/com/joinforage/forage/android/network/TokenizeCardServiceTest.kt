@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsMissingCustomerIdPaymentMethodSuccessfully
 import com.joinforage.forage.android.fixtures.returnsNonReusablePaymentMethodSuccessfully
@@ -8,10 +8,11 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
-import com.joinforage.forage.android.network.model.EbtCard
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.ForageError
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.vault.TokenizeCardService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.Method

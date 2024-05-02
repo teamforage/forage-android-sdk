@@ -2,7 +2,7 @@ package com.joinforage.forage.android.model
 
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.network.model.Address
-import com.joinforage.forage.android.network.model.EbtBalance
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.network.model.Payment
 import com.joinforage.forage.android.network.model.Receipt
 import junit.framework.TestCase.assertEquals

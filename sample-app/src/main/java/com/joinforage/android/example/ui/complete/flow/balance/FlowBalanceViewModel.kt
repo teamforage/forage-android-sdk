@@ -7,11 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joinforage.forage.android.CheckBalanceParams
-import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.network.model.EbtBalance
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.CheckBalanceParams
+import com.joinforage.forage.android.ecom.services.ForageSDK
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
