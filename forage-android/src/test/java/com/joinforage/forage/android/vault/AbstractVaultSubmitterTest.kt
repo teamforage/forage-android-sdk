@@ -36,7 +36,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             ref = "1f148fe399",
             type = "ebt",
             balance = null,
-            card = Card(
+            card = Card.EbtCard(
                 last4 = "7845",
                 token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token"
             ),

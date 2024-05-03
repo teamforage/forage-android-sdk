@@ -2,6 +2,7 @@ package com.joinforage.forage.android
 
 import android.content.res.TypedArray
 import okhttp3.HttpUrl
+import org.json.JSONObject
 import kotlin.random.Random
 
 /**
@@ -33,4 +34,12 @@ internal fun HttpUrl.Builder.addPathSegmentsSafe(path: String): HttpUrl.Builder 
         }
     }
     return this
+}
+
+internal fun JSONObject.getStringOrNull(fieldName: String): String? {
+    return if (has(fieldName)) {
+        getString(fieldName)
+    } else {
+        null
+    }
 }

@@ -20,8 +20,8 @@ data class Address(
     val line1: String,
     val line2: String,
     val state: String,
-    val zipcode: String,
-): ForageModel
+    val zipcode: String
+) : ForageModel
 
 /**
  * @property created A UTC-8 timestamp of when the Receipt was created, represented as an ISO 8601 date-time string.
@@ -43,8 +43,8 @@ data class Receipt(
     val otherAmount: String,
     val salesTaxApplied: String,
     val snapAmount: String,
-    val balance: Balance?,
-): ForageModel
+    val balance: Balance?
+) : ForageModel
 
 /**
  * @property amount A positive decimal number that represents how much the PaymentMethod
@@ -87,8 +87,8 @@ data class Payment(
     val refunds: List<String>,
     val status: String,
     val successDate: String?,
-    val updated: String,
-): ForageModel {
+    val updated: String
+) : ForageModel {
     internal object ModelMapper {
         fun from(jsonString: String): Payment {
             val jsonObject = JSONObject(jsonString)
@@ -155,7 +155,7 @@ internal fun toReceipt(jsonObject: JSONObject): Receipt {
         message = jsonObject.getString("message"),
         otherAmount = jsonObject.getString("other_amount"),
         salesTaxApplied = jsonObject.getString("sales_tax_applied"),
-        snapAmount = jsonObject.getString("snap_amount"),
+        snapAmount = jsonObject.getString("snap_amount")
     )
 }
 

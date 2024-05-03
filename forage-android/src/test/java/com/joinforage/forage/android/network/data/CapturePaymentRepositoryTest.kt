@@ -214,7 +214,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
-                val paymentMethod = Payment.ModelMapper.from(response.data).paymentMethod
+                val paymentMethod = Payment.ModelMapper.from(response.data).paymentMethodRef
                 assertThat(paymentMethod).isEqualTo(expectedData.paymentMethodRef)
             }
             else -> {

@@ -133,9 +133,10 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 ref = "2f148fe399",
                 type = "ebt",
                 balance = null,
-                card = Card(
+                card = Card.EbtCard(
                     last4 = "7845",
-                    token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7"
+                    token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
+                    usState = (response.card as Card.EbtCard).usState
                 ),
                 reusable = true,
                 customerId = null

@@ -1,5 +1,8 @@
 package com.joinforage.forage.android.network.model
 
+import com.joinforage.forage.android.model.Balance
+import com.joinforage.forage.android.model.Payment
+import com.joinforage.forage.android.model.PaymentMethod
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -22,7 +25,22 @@ sealed class ForageApiResponse<out T> {
      * }
      * ```
      */
-    data class Success<out T>(val data: T) : ForageApiResponse<T>()
+    data class Success<out T>(val data: T) : ForageApiResponse<T>() {
+        fun toPaymentMethod(): PaymentMethod {
+            return PaymentMethod.ModelMapper.from(data as String)
+        }
+
+        fun toBalance(): Balance {
+            // The ForageApiResponse.data string is already formatted to
+            // { snap: ..., cash: ... }
+            // so we use fromSdkResponse() instead of fromApiResponse()
+            return Balance.EbtBalance.ModelMapper.fromSdkResponse(data as String)
+        }
+
+        fun toPayment(): Payment {
+            return Payment.ModelMapper.from(data as String)
+        }
+    }
 
     /**
      * A model that represents a failure response from the API.

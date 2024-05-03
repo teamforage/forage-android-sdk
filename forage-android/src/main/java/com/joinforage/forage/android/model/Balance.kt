@@ -43,5 +43,3 @@ sealed class Balance : ForageModel {
         }
     }
 }
-
-

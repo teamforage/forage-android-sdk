@@ -41,10 +41,11 @@ internal class PosRefundPaymentRepository(
                 else -> return response
             }
             val payment = when (val response = paymentService.getPayment(paymentRef)) {
-                is ForageApiResponse.Success -> Payment.ModelMapper.from(response.data)
+                is ForageApiResponse.Success ->
+                    Payment.ModelMapper.from(response.data)
                 else -> return response
             }
-            val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethod)) {
+            val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethodRef)) {
                 is ForageApiResponse.Success -> PaymentMethod.ModelMapper.from(response.data)
                 else -> return response
             }
