@@ -10,8 +10,8 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiEr
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
@@ -19,34 +19,59 @@ import com.verygoodsecurity.vgscollect.core.VGSCollect
 import com.verygoodsecurity.vgscollect.core.VgsCollectResponseListener
 import com.verygoodsecurity.vgscollect.core.model.network.VGSRequest
 import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
+import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import org.json.JSONException
 import kotlin.coroutines.suspendCoroutine
 
 internal class VgsPinSubmitter(
     context: Context,
-    foragePinEditText: ForagePINEditText,
+    foragePinEditText: ForagePinElement,
     logger: Log,
     private val buildVaultProvider: (context: Context) -> VGSCollect = { buildVGSCollect(context) }
-) : AbstractVaultSubmitter<VGSResponse?>(
+) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
     logger = logger,
-    vaultType = VaultType.VGS_VAULT_TYPE
 ) {
+    override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
     override suspend fun submitProxyRequest(
         vaultProxyRequest: VaultProxyRequest
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         val vgsCollect = buildVaultProvider(context)
-        vgsCollect.bindView(foragePinEditText.getTextInputEditText())
+        vgsCollect.bindView(foragePinEditText.getTextElement() as VGSEditText)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
                 // Clear all information collected before by VGSCollect
                 vgsCollect.onDestroy()
 
-                continuation.resumeWith(
-                    Result.success(vaultToForageResponse(response))
-                )
+                if (response == null) {
+                    logger.e("[$vaultType] Received null response from $vaultType")
+                    return continuation.resumeWith(Result.success(UnknownErrorApiResponse))
+                }
+
+                val vaultError = toVaultErrorOrNull(response)
+                if (vaultError != null) {
+                    val rawVaultError = parseVaultErrorMessage(response)
+                    logger.e("[$vaultType] Received error from $vaultType: $rawVaultError")
+                    return continuation.resumeWith(Result.success(vaultError))
+                }
+
+                val forageApiErrorResponse = toForageErrorOrNull(response)
+                if (forageApiErrorResponse != null) {
+                    val firstError = forageApiErrorResponse.errors[0]
+                    logger.e("[$vaultType] Received ForageError from $vaultType: $firstError")
+                    return continuation.resumeWith(Result.success(forageApiErrorResponse))
+                }
+
+                val forageApiSuccess = toForageSuccessOrNull(response)
+                if (forageApiSuccess != null) {
+                    logger.i("[$vaultType] Received successful response from $vaultType")
+                    return continuation.resumeWith(Result.success(forageApiSuccess))
+                }
+                logger.e("[$vaultType] Received malformed response from $vaultType: $response")
+
+                return continuation.resumeWith(Result.success(UnknownErrorApiResponse))
             }
         })
 
@@ -82,7 +107,7 @@ internal class VgsPinSubmitter(
         }
     }
 
-    override fun toVaultErrorOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Failure? {
+    fun toVaultErrorOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Failure? {
         if (vaultResponse == null) return null
         if (vaultResponse is VGSResponse.SuccessResponse) return null
 
@@ -102,7 +127,7 @@ internal class VgsPinSubmitter(
         }
     }
 
-    override fun toForageErrorOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Failure? {
+    fun toForageErrorOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Failure? {
         if (vaultResponse == null) return null
         if (vaultResponse is VGSResponse.SuccessResponse) return null
 
@@ -129,7 +154,7 @@ internal class VgsPinSubmitter(
     /**
      * @pre toVaultErrorOrNull(vaultResponse) == null && toForageErrorOrNull(vaultResponse) == null
      */
-    override fun toForageSuccessOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Success<String>? {
+    fun toForageSuccessOrNull(vaultResponse: VGSResponse?): ForageApiResponse.Success<String>? {
         if (vaultResponse == null) return null
         if (vaultResponse is VGSResponse.ErrorResponse) return null
 
@@ -145,7 +170,7 @@ internal class VgsPinSubmitter(
         return ForageApiResponse.Success(successResponse.body.toString())
     }
 
-    override fun parseVaultErrorMessage(vaultResponse: VGSResponse?): String {
+    fun parseVaultErrorMessage(vaultResponse: VGSResponse?): String {
         return vaultResponse?.body.toString()
     }
 }

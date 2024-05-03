@@ -6,20 +6,21 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
-import com.joinforage.forage.android.core.services.launchdarkly.VaultType
+import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopStart
-import com.joinforage.forage.android.ecom.ui.vault.VaultWrapper
-import com.verygoodsecurity.vgscollect.widget.VGSEditText
+import com.joinforage.forage.android.ecom.services.vault.bt.BasisTheoryPinSubmitter
+import com.joinforage.forage.android.core.ui.VaultWrapper
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 internal class BTVaultWrapper @JvmOverloads constructor(
     context: Context,
@@ -28,6 +29,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalTextElement: TextElement
     override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
+    override val vaultType: VaultType = VaultType.BT_VAULT_TYPE
 
     init {
         context.obtainStyledAttributes(attrs, com.joinforage.forage.android.R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -101,28 +103,25 @@ internal class BTVaultWrapper @JvmOverloads constructor(
             }
     }
 
-    override fun getVaultType(): VaultType {
-        return VaultType.BT_VAULT_TYPE
-    }
-
     override fun clearText() {
         _internalTextElement.setText("")
-    }
-
-    override fun getVGSEditText(): VGSEditText {
-        throw RuntimeException("Unimplemented for this vault!")
     }
 
     override fun getTextElement(): TextElement {
         return _internalTextElement
     }
 
-    override fun getForageTextElement(): EditText {
-        throw RuntimeException("Unimplemented for this vault!")
-    }
+    override fun getVaultSubmitter(
+        foragePinElement: ForagePinElement,
+        logger: Log
+    ): AbstractVaultSubmitter = BasisTheoryPinSubmitter(
+        foragePinElement.context,
+        foragePinElement,
+        logger
+    )
 
-    override fun getUnderlying(): View {
-        return _internalTextElement
+    override fun showKeyboard() {
+        _internalTextElement.showKeyboard(0)
     }
 
     override var typeface: Typeface?

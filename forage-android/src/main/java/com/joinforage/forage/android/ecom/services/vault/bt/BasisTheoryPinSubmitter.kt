@@ -3,6 +3,7 @@ package com.joinforage.forage.android.ecom.services.vault.bt
 import android.content.Context
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
+import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiError
@@ -16,21 +17,21 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 internal typealias BasisTheoryResponse = Result<Any?>
 
 internal class BasisTheoryPinSubmitter(
     context: Context,
-    foragePinEditText: ForagePINEditText,
+    foragePinEditText: ForagePinElement,
     logger: Log,
     private val buildVaultProvider: () -> BasisTheoryElements = { buildBt() }
-) : AbstractVaultSubmitter<BasisTheoryResponse>(
+) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
     logger = logger,
-    vaultType = VaultType.BT_VAULT_TYPE
 ) {
+    override val vaultType: VaultType = VaultType.BT_VAULT_TYPE
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return encryptionKeys.btAlias
     }
@@ -56,7 +57,7 @@ internal class BasisTheoryPinSubmitter(
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = vaultProxyRequest.headers
             body = ProxyRequestObject(
-                pin = foragePinEditText.getTextElement(),
+                pin = foragePinEditText.getTextElement() as TextElement,
                 card_number_token = vaultProxyRequest.vaultToken
             )
             path = vaultProxyRequest.path
@@ -66,14 +67,40 @@ internal class BasisTheoryPinSubmitter(
             bt.proxy.post(proxyRequest)
         }
 
-        return vaultToForageResponse(vaultResponse)
+        if (vaultResponse == null) {
+            logger.e("[$vaultType] Received null response from $vaultType")
+            return UnknownErrorApiResponse
+        }
+
+        val vaultError = toVaultErrorOrNull(vaultResponse)
+        if (vaultError != null) {
+            val rawVaultError = parseVaultErrorMessage(vaultResponse)
+            logger.e("[$vaultType] Received error from $vaultType: $rawVaultError")
+            return vaultError
+        }
+
+        val forageApiErrorResponse = toForageErrorOrNull(vaultResponse)
+        if (forageApiErrorResponse != null) {
+            val firstError = forageApiErrorResponse.errors[0]
+            logger.e("[$vaultType] Received ForageError from $vaultType: $firstError")
+            return forageApiErrorResponse
+        }
+
+        val forageApiSuccess = toForageSuccessOrNull(vaultResponse)
+        if (forageApiSuccess != null) {
+            logger.i("[$vaultType] Received successful response from $vaultType")
+            return forageApiSuccess
+        }
+        logger.e("[$vaultType] Received malformed response from $vaultType: $vaultResponse")
+
+        return UnknownErrorApiResponse
     }
 
-    override fun parseVaultErrorMessage(vaultResponse: BasisTheoryResponse): String {
+    fun parseVaultErrorMessage(vaultResponse: BasisTheoryResponse): String {
         return vaultResponse.exceptionOrNull().toString()
     }
 
-    override fun toForageSuccessOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Success<String>? {
+    fun toForageSuccessOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Success<String>? {
         // The caller should have already performed the error checks.
         // We add these error checks as a safeguard, just in case.
         if (vaultResponse.isFailure ||
@@ -88,7 +115,7 @@ internal class BasisTheoryPinSubmitter(
         return ForageApiResponse.Success(vaultResponse.getOrNull().toString())
     }
 
-    override fun toForageErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
+    fun toForageErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
         return try {
             val matchedStatusCode = getBasisTheoryExceptionStatusCode(vaultResponse)!!
             val basisTheoryExceptionBody = getBasisTheoryExceptionBody(vaultResponse)!!
@@ -106,7 +133,7 @@ internal class BasisTheoryPinSubmitter(
         }
     }
 
-    override fun toVaultErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
+    fun toVaultErrorOrNull(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
         if (vaultResponse.isSuccess) return null
 
         try {

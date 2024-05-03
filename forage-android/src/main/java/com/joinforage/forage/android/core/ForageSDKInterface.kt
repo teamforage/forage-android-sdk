@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.core
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.ecom.ui.ForagePANEditText
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.core.ui.element.ForagePanElement
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 /**
  * An [Exception](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/) thrown if a
@@ -98,7 +98,7 @@ internal interface ForageSDKInterface {
  * to create multiple payments, set to true by default.
  */
 data class TokenizeEBTCardParams(
-    val foragePanEditText: ForagePANEditText,
+    val foragePanEditText: ForagePanElement,
     val customerId: String? = null,
     val reusable: Boolean = true
 )
@@ -120,7 +120,7 @@ data class TokenizeEBTCardParams(
  * endpoint.
  */
 data class CheckBalanceParams(
-    val foragePinEditText: ForagePINEditText,
+    val foragePinEditText: ForagePinElement,
     val paymentMethodRef: String
 )
 
@@ -138,7 +138,7 @@ data class CheckBalanceParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class CapturePaymentParams(
-    val foragePinEditText: ForagePINEditText,
+    val foragePinEditText: ForagePinElement,
     val paymentRef: String
 )
 
@@ -163,6 +163,6 @@ data class CapturePaymentParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class DeferPaymentCaptureParams(
-    val foragePinEditText: ForagePINEditText,
+    val foragePinEditText: ForagePinElement,
     val paymentRef: String
 )

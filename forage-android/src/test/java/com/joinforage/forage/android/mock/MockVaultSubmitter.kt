@@ -5,9 +5,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.vault.VaultSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
 
-internal class MockVaultSubmitter(
-    private val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
-) : VaultSubmitter {
+internal class MockVaultSubmitter : VaultSubmitter {
     private var responses =
         HashMap<String, ForageApiResponse<String>>()
 
@@ -35,9 +33,5 @@ internal class MockVaultSubmitter(
                 )
             )
         )
-    }
-
-    override fun getVaultType(): VaultType {
-        return this.vaultType
     }
 }

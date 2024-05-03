@@ -28,7 +28,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     private lateinit var mockLogger: MockLogger
     private lateinit var mockForagePinEditText: ForagePINEditText
     private lateinit var mockContext: Context
-    private lateinit var abstractVaultSubmitter: AbstractVaultSubmitter<Any>
+    private lateinit var abstractVaultSubmitter: AbstractVaultSubmitter
 
     companion object {
         private val mockEncryptionKeys = EncryptionKeys("vgs-alias", "bt-alias")
@@ -70,7 +70,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.BT_VAULT_TYPE
         )
     }
 
@@ -92,7 +91,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.VGS_VAULT_TYPE
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -112,7 +110,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.VGS_VAULT_TYPE
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -132,7 +129,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.BT_VAULT_TYPE
         ) {
             // Mock missing token
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
@@ -161,7 +157,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.BT_VAULT_TYPE
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
                 return pickVaultTokenByIndex(paymentMethod, 1)
@@ -172,7 +167,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.VGS_VAULT_TYPE
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
                 return pickVaultTokenByIndex(paymentMethod, 0)
@@ -192,7 +186,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.VGS_VAULT_TYPE
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -222,7 +215,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
-            vaultType = VaultType.BT_VAULT_TYPE
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -247,11 +239,11 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val metricsLog = mockLogger.getMetricsLog()
 
         assertThat(mockLogger.infoLogs).anyMatch { logEntry ->
-            logEntry.getMessage().contains("[Metrics] Received response from basis_theory proxy")
+            logEntry.getMessage().contains("[Metrics] Received response from vgs proxy")
         }
         val attributes = metricsLog.getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("basis_theory")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
         assertThat(attributes.getValue("action").toString()).isEqualTo("balance")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("vault_response")
         assertThat(attributes.getValue("path").toString()).isEqualTo("/api/payment_methods/abcdefg123/balance/")
@@ -259,35 +251,18 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         assertThat(attributes.getValue("forage_error_code").toString()).isEqualTo("unknown_server_error")
     }
 
-    @Test
-    fun `creates the correct vault submitter`() = runTest {
-        val mockBasisTheoryPinEditText = mock(ForagePINEditText::class.java)
-        `when`(mockBasisTheoryPinEditText.getVaultType()).thenReturn(VaultType.BT_VAULT_TYPE)
-        `when`(mockBasisTheoryPinEditText.context).thenReturn(mockContext)
-
-        val mockVgsPinEditText = mock(ForagePINEditText::class.java)
-        `when`(mockVgsPinEditText.getVaultType()).thenReturn(VaultType.VGS_VAULT_TYPE)
-        `when`(mockVgsPinEditText.context).thenReturn(mockContext)
-
-        val btVaultSubmitter = AbstractVaultSubmitter.create(mockBasisTheoryPinEditText, mockLogger)
-        val vgsVaultSubmitter = AbstractVaultSubmitter.create(mockVgsPinEditText, mockLogger)
-
-        assertTrue(vgsVaultSubmitter is VgsPinSubmitter)
-        assertTrue(btVaultSubmitter is BasisTheoryPinSubmitter)
-    }
 }
 
 internal open class ConcreteVaultSubmitter(
     context: Context,
     foragePinEditText: ForagePINEditText,
     logger: Log,
-    vaultType: VaultType = VaultType.VGS_VAULT_TYPE
-) : AbstractVaultSubmitter<Any>(
+) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
     logger = logger,
-    vaultType = vaultType
 ) {
+    override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
         return "mock-encryption-key-alias"
     }
@@ -302,19 +277,4 @@ internal open class ConcreteVaultSubmitter(
         return "mock-vault-token"
     }
 
-    override fun parseVaultErrorMessage(vaultResponse: Any): String {
-        return "Mock Forage Vault Error"
-    }
-
-    override fun toForageSuccessOrNull(vaultResponse: Any): ForageApiResponse.Success<String>? {
-        return null
-    }
-
-    override fun toForageErrorOrNull(vaultResponse: Any): ForageApiResponse.Failure? {
-        return null
-    }
-
-    override fun toVaultErrorOrNull(vaultResponse: Any): ForageApiResponse.Failure? {
-        return null
-    }
 }

@@ -42,7 +42,7 @@ class VgsPinSubmitterTest() : MockServerSuite() {
         mockForagePinEditText = mock(ForagePINEditText::class.java)
         val mockContext = mock(Context::class.java)
         mockVgsCollect = mock(VGSCollect::class.java)
-        `when`(mockForagePinEditText.getTextInputEditText()).thenReturn(mock(VGSEditText::class.java))
+        `when`(mockForagePinEditText.getTextElement()).thenReturn(mock(VGSEditText::class.java))
         `when`(mockVgsCollect.asyncSubmit(anyOrNull())).thenAnswer {}
 
         vgsPinSubmitter = VgsPinSubmitter(

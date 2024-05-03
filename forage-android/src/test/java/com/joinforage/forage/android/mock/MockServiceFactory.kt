@@ -74,7 +74,7 @@ internal class MockServiceFactory(
         logger = logger
     )
 
-    override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
+    override fun createCheckBalanceRepository(foragePinEditText: ForagePinElement): CheckBalanceRepository {
         return CheckBalanceRepository(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
@@ -84,7 +84,7 @@ internal class MockServiceFactory(
         )
     }
 
-    override fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
+    override fun createCapturePaymentRepository(foragePinEditText: ForagePinElement): CapturePaymentRepository {
         return CapturePaymentRepository(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
@@ -95,7 +95,7 @@ internal class MockServiceFactory(
         )
     }
 
-    override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
+    override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePinElement): DeferPaymentCaptureRepository {
         return DeferPaymentCaptureRepository(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,

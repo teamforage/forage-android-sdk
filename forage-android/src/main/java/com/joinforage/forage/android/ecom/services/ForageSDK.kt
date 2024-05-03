@@ -25,7 +25,7 @@ import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepo
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.ui.element.AbstractForageElement
 import com.joinforage.forage.android.core.ui.element.ForageConfig
-import com.joinforage.forage.android.ecom.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 
 /**
@@ -470,9 +470,9 @@ class ForageSDK : ForageSDKInterface {
             logger
         )
 
-        open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
+        open fun createCheckBalanceRepository(foragePinEditText: ForagePinElement): CheckBalanceRepository {
             return CheckBalanceRepository(
-                vaultSubmitter = createVaultSubmitter(foragePinEditText),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
                 pollingService = pollingService,
@@ -480,9 +480,9 @@ class ForageSDK : ForageSDKInterface {
             )
         }
 
-        open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
+        open fun createCapturePaymentRepository(foragePinEditText: ForagePinElement): CapturePaymentRepository {
             return CapturePaymentRepository(
-                vaultSubmitter = createVaultSubmitter(foragePinEditText),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
@@ -491,19 +491,15 @@ class ForageSDK : ForageSDKInterface {
             )
         }
 
-        open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
+        open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePinElement): DeferPaymentCaptureRepository {
             return DeferPaymentCaptureRepository(
-                vaultSubmitter = createVaultSubmitter(foragePinEditText),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService
             )
         }
 
-        private fun createVaultSubmitter(foragePinEditText: ForagePINEditText) = AbstractVaultSubmitter.create(
-            foragePinEditText = foragePinEditText,
-            logger = logger
-        )
         private fun createEncryptionKeyService() = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPaymentMethodService() = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPaymentService() = PaymentService(config.apiBaseUrl, okHttpClient, logger)
