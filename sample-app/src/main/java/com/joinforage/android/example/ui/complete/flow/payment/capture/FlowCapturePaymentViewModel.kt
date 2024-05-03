@@ -55,6 +55,8 @@ class FlowCapturePaymentViewModel @Inject constructor(
             when (response) {
                 is ForageApiResponse.Success -> {
                     Log.d(TAG, "Capture Snap Payment Response: ${response.data}")
+                    val payment = response.toPayment()
+                    Log.d(TAG, "Typed Payment: $payment")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
@@ -119,6 +121,9 @@ class FlowCapturePaymentViewModel @Inject constructor(
             when (response) {
                 is ForageApiResponse.Success -> {
                     Log.d(TAG, "Capture Cash Payment Response: ${response.data}")
+
+                    val payment = response.toPayment()
+                    Log.d(TAG, "Typed Payment: $payment")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,

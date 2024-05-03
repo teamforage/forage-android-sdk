@@ -6,15 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePANEditText
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import com.squareup.moshi.addAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,13 +58,7 @@ class FlowTokenizeViewModel @Inject constructor(
         when (response) {
             is ForageApiResponse.Success -> {
                 Log.d(TAG, "Tokenize EBT card Response: ${response.data}")
-                val moshi = Moshi.Builder()
-                    .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
-                    .build()
-                val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
-
-                val result = adapter.fromJson(response.data)
-
+                val result = response.toPaymentMethod()
                 _paymentMethod.value = result
             }
             is ForageApiResponse.Failure -> {

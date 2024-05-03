@@ -7,15 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joinforage.android.example.network.model.balance.BalanceResponse
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.ForageSDK
+import com.joinforage.forage.android.model.Balance
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import com.squareup.moshi.addAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -71,20 +67,11 @@ class FlowBalanceViewModel @Inject constructor(
             when (response) {
                 is ForageApiResponse.Success -> {
                     Log.d(TAG, "Check Balance Response: ${response.data}")
+                    val balance = response.toBalance() as Balance.EbtBalance
 
-                    val moshi = Moshi.Builder()
-                        .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
-                        .build()
-                    val adapter: JsonAdapter<BalanceResponse> =
-                        moshi.adapter(BalanceResponse::class.java)
-
-                    val result = adapter.fromJson(response.data)
-
-                    if (result != null) {
-                        _snap.value = "SNAP: ${result.snap}"
-                        _nonSnap.value = "NON SNAP: ${result.cash}"
-                        _isLoading.value = false
-                    }
+                    _snap.value = "SNAP: ${balance.snap}"
+                    _nonSnap.value = "NON SNAP: ${balance.cash}"
+                    _isLoading.value = false
                 }
                 is ForageApiResponse.Failure -> {
                     Log.d(TAG, "Check Balance Response: ${response.errors[0].message}")
