@@ -40,9 +40,8 @@ internal fun HttpUrl.Builder.addPathSegmentsSafe(path: String): HttpUrl.Builder 
  * [JSONObject.optString] has trouble falling back to `null` and seems to fallback to `"null"` (string) instead
  */
 internal fun JSONObject.getStringOrNull(fieldName: String): String? {
-    return if (has(fieldName)) {
-        getString(fieldName)
-    } else {
-        null
-    }
+    if (!has(fieldName)) return null
+    if (isNull(fieldName)) return null
+
+    return optString(fieldName)
 }

@@ -25,6 +25,7 @@ import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.mock.mockSuccessfulPosDeferredRefund
 import com.joinforage.forage.android.mock.mockSuccessfulPosRefund
+import com.joinforage.forage.android.model.Balance
 import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.model.ForageApiResponse
@@ -184,8 +185,9 @@ class ForageTerminalSDKTest : MockServerSuite() {
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         val successResponse = response as ForageApiResponse.Success
-        assertThat(successResponse.data).contains(expectedData.balance.cash)
-        assertThat(successResponse.data).contains(expectedData.balance.snap)
+        val balance = expectedData.balance as Balance.EbtBalance
+        assertThat(successResponse.data).contains(balance.cash)
+        assertThat(successResponse.data).contains(balance.snap)
 
         assertMetricsLog()
         val attributes = mockLogger.getMetricsLog().getAttributes()

@@ -42,7 +42,7 @@ internal class MockServiceFactory(
         const val paymentRef: String = "6ae6a45ff1"
         const val paymentMethodRef: String = "1f148fe399"
         const val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65"
-        val balance: Balance = Balance(
+        val balance: Balance = Balance.EbtBalance(
             snap = "100.00",
             cash = "100.00"
         )
