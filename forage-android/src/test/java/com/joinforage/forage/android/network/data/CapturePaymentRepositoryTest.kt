@@ -18,9 +18,9 @@ import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.getVaultMessageResponse
-import com.joinforage.forage.android.model.Payment
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.Payment
 import com.joinforage.forage.android.ui.ForagePINEditText
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
@@ -214,7 +214,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
-                val paymentMethod = Payment.ModelMapper.from(response.data).paymentMethodRef
+                val paymentMethod = Payment(response.data).paymentMethodRef
                 assertThat(paymentMethod).isEqualTo(expectedData.paymentMethodRef)
             }
             else -> {

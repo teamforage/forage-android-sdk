@@ -15,7 +15,7 @@ import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.getVaultMessageResponse
-import com.joinforage.forage.android.model.Balance
+import com.joinforage.forage.android.network.model.EbtBalance
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -119,7 +119,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         when (response) {
             is ForageApiResponse.Success -> {
-                val balance = expectedData.balance as Balance.EbtBalance
+                val balance = expectedData.balance as EbtBalance
                 assertThat(response.data).contains(balance.cash)
                 assertThat(response.data).contains(balance.snap)
             }

@@ -6,10 +6,10 @@ import com.joinforage.forage.android.core.element.state.INITIAL_PIN_ELEMENT_STAT
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.mock.MockLogger
-import com.joinforage.forage.android.model.Card
 import com.joinforage.forage.android.model.EncryptionKeys
-import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.model.EbtCard
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
 import kotlinx.coroutines.test.runTest
@@ -36,7 +36,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             ref = "1f148fe399",
             type = "ebt",
             balance = null,
-            card = Card.EbtCard(
+            card = EbtCard(
                 last4 = "7845",
                 token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token"
             ),

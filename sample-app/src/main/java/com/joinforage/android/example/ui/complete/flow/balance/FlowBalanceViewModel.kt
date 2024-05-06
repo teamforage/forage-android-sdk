@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.forage.android.CheckBalanceParams
 import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.model.Balance
+import com.joinforage.forage.android.network.model.EbtBalance
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.ui.ForagePINEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,7 +67,7 @@ class FlowBalanceViewModel @Inject constructor(
             when (response) {
                 is ForageApiResponse.Success -> {
                     Log.d(TAG, "Check Balance Response: ${response.data}")
-                    val balance = response.toBalance() as Balance.EbtBalance
+                    val balance = response.toBalance() as EbtBalance
 
                     _snap.value = "SNAP: ${balance.snap}"
                     _nonSnap.value = "NON SNAP: ${balance.cash}"

@@ -3,12 +3,12 @@ package com.joinforage.forage.android.network.data
 import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.model.EncryptionKeys
-import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PollingService
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.Message
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
 import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitter
@@ -40,7 +40,7 @@ internal class CheckBalanceRepository(
             else -> return response
         }
         val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
-            is ForageApiResponse.Success -> PaymentMethod.ModelMapper.from(response.data)
+            is ForageApiResponse.Success -> PaymentMethod(response.data)
             else -> return response
         }
 
@@ -64,7 +64,7 @@ internal class CheckBalanceRepository(
         return when (val paymentMethodResponse = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> {
                 logger.i("[HTTP] Received updated balance information for Payment Method $paymentMethodRef")
-                val paymentMethodWithBalance = PaymentMethod.ModelMapper.from(paymentMethodResponse.data)
+                val paymentMethodWithBalance = PaymentMethod(paymentMethodResponse.data)
                 return ForageApiResponse.Success(paymentMethodWithBalance.balance.toString())
             }
             else -> paymentMethodResponse

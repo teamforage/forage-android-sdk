@@ -2,12 +2,12 @@ package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.model.EncryptionKeys
-import com.joinforage.forage.android.model.Payment
-import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.PaymentMethodService
 import com.joinforage.forage.android.network.PaymentService
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.Payment
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitter
 import com.joinforage.forage.android.vault.VaultSubmitterParams
@@ -32,11 +32,11 @@ internal class DeferPaymentCaptureRepository(
             else -> return response
         }
         val payment = when (val response = paymentService.getPayment(paymentRef)) {
-            is ForageApiResponse.Success -> Payment.ModelMapper.from(response.data)
+            is ForageApiResponse.Success -> Payment(response.data)
             else -> return response
         }
         val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethodRef)) {
-            is ForageApiResponse.Success -> PaymentMethod.ModelMapper.from(response.data)
+            is ForageApiResponse.Success -> PaymentMethod(response.data)
             else -> return response
         }
 

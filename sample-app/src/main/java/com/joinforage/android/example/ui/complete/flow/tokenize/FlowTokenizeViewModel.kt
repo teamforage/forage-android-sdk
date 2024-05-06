@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
-import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.model.Card
+import com.joinforage.forage.android.network.model.EbtCard
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.ui.ForagePANEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -59,6 +61,19 @@ class FlowTokenizeViewModel @Inject constructor(
             is ForageApiResponse.Success -> {
                 Log.d(TAG, "Tokenize EBT card Response: ${response.data}")
                 val result = response.toPaymentMethod()
+                // We include the `as` casting and the `when` block below
+                // to ensure that the models are exported as desired
+                // And support the desired casting + language features
+                Log.d(TAG, "EBT Card: ${result.card.last4}")
+
+                val ebtCard = result.card as EbtCard
+                Log.d(TAG, "EBT Card: ${ebtCard.last4} ${ebtCard.usState}")
+                when (val card: Card = result.card) {
+                    is EbtCard -> {
+                        assert(card.last4.length == 4)
+                        Log.d(TAG, "EBT Card: ${card.last4} ${card.usState}")
+                    }
+                }
                 _paymentMethod.value = result
             }
             is ForageApiResponse.Failure -> {

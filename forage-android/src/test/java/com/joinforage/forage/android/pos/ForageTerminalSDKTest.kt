@@ -25,11 +25,11 @@ import com.joinforage.forage.android.mock.MockVaultSubmitter
 import com.joinforage.forage.android.mock.getVaultMessageResponse
 import com.joinforage.forage.android.mock.mockSuccessfulPosDeferredRefund
 import com.joinforage.forage.android.mock.mockSuccessfulPosRefund
-import com.joinforage.forage.android.model.Balance
-import com.joinforage.forage.android.model.Card
-import com.joinforage.forage.android.model.PaymentMethod
+import com.joinforage.forage.android.network.model.EbtBalance
+import com.joinforage.forage.android.network.model.EbtCard
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.ui.ForageConfig
 import com.joinforage.forage.android.ui.ForagePANEditText
 import com.joinforage.forage.android.ui.ForagePINEditText
@@ -128,16 +128,16 @@ class ForageTerminalSDKTest : MockServerSuite() {
         )
         assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         val response =
-            PaymentMethod.ModelMapper.from((paymentMethodResponse as ForageApiResponse.Success).data)
+            PaymentMethod((paymentMethodResponse as ForageApiResponse.Success).data)
         assertThat(response).isEqualTo(
             PaymentMethod(
                 ref = "2f148fe399",
                 type = "ebt",
                 balance = null,
-                card = Card.EbtCard(
+                card = EbtCard(
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-                    usState = (response.card as Card.EbtCard).usState
+                    usState = (response.card as EbtCard).usState
                 ),
                 reusable = true,
                 customerId = null
@@ -185,7 +185,7 @@ class ForageTerminalSDKTest : MockServerSuite() {
 
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Success::class.java)
         val successResponse = response as ForageApiResponse.Success
-        val balance = expectedData.balance as Balance.EbtBalance
+        val balance = expectedData.balance as EbtBalance
         assertThat(successResponse.data).contains(balance.cash)
         assertThat(successResponse.data).contains(balance.snap)
 

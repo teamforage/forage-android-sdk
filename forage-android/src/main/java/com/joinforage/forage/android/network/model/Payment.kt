@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.model
+package com.joinforage.forage.android.network.model
 
 import com.joinforage.forage.android.getStringOrNull
 import org.json.JSONArray
@@ -19,7 +19,17 @@ data class Address(
     val line2: String,
     val state: String,
     val zipcode: String
-)
+) {
+    internal constructor(jsonString: String) : this(JSONObject(jsonString))
+    internal constructor(jsonObject: JSONObject) : this(
+        city = jsonObject.getString("city"),
+        country = jsonObject.getString("country"),
+        line1 = jsonObject.getString("line1"),
+        line2 = jsonObject.getString("line2"),
+        zipcode = jsonObject.getString("zipcode"),
+        state = jsonObject.getString("state")
+    )
+}
 
 /**
  * @property created A UTC-8 timestamp of when the Receipt was created, represented as an ISO 8601 date-time string.
@@ -41,7 +51,24 @@ data class Receipt(
     val salesTaxApplied: String,
     val snapAmount: String,
     val balance: Balance?
-)
+) {
+    internal constructor(jsonString: String) : this(JSONObject(jsonString))
+    internal constructor(jsonObject: JSONObject) : this(
+        balance = if (!jsonObject.isNull("balance")) {
+            EbtBalance(jsonObject.getJSONObject("balance"))
+        } else {
+            null
+        },
+        created = jsonObject.getString("created"),
+        ebtCashAmount = jsonObject.getString("ebt_cash_amount"),
+        isVoided = jsonObject.getBoolean("is_voided"),
+        last4 = jsonObject.getString("last_4"),
+        message = jsonObject.getString("message"),
+        otherAmount = jsonObject.getString("other_amount"),
+        salesTaxApplied = jsonObject.getString("sales_tax_applied"),
+        snapAmount = jsonObject.getString("snap_amount")
+    )
+}
 
 /**
  * @property amount A positive decimal number that represents how much the PaymentMethod
@@ -85,73 +112,28 @@ data class Payment(
     val successDate: String?,
     val updated: String
 ) {
-    internal object ModelMapper {
-        fun from(jsonString: String): Payment {
-            val jsonObject = JSONObject(jsonString)
-            println("MOSS: $jsonObject")
-            val receipt = if (!jsonObject.isNull("receipt")) {
-                toReceipt(jsonObject.getJSONObject("receipt"))
-            } else {
-                null
-            }
-
-            return Payment(
-                amount = jsonObject.getString("amount"),
-                created = jsonObject.getString("created"),
-                deliveryAddress = toAddress(jsonObject.getJSONObject("delivery_address")),
-                description = jsonObject.getString("description"),
-                fundingType = jsonObject.getString("funding_type"),
-                isDelivery = jsonObject.getBoolean("is_delivery"),
-                lastProcessingError = jsonObject.getStringOrNull("last_processing_error"),
-                merchant = jsonObject.getString("merchant"),
-                metadata = jsonObject.getJSONObject("metadata").toMap(),
-                paymentMethodRef = jsonObject.getString("payment_method"),
-                receipt = receipt,
-                ref = jsonObject.getString("ref"),
-                refunds = jsonObject.getJSONArray("refunds").toListOfStrings(),
-                status = jsonObject.getString("status"),
-                successDate = jsonObject.getStringOrNull("success_date"),
-                updated = jsonObject.getString("updated")
-            )
-        }
-    }
-}
-
-internal fun toAddress(jsonObject: JSONObject): Address {
-    val city = jsonObject.getString("city")
-    val country = jsonObject.getString("country")
-    val line1 = jsonObject.getString("line1")
-    val line2 = jsonObject.getString("line2")
-    val zipcode = jsonObject.getString("zipcode")
-    val state = jsonObject.getString("state")
-
-    return Address(
-        city = city,
-        country = country,
-        line1 = line1,
-        line2 = line2,
-        zipcode = zipcode,
-        state = state
-    )
-}
-
-internal fun toReceipt(jsonObject: JSONObject): Receipt {
-    val balance = if (!jsonObject.isNull("balance")) {
-        Balance.EbtBalance.ModelMapper.fromApiResponse(jsonObject.getJSONObject("balance"))
-    } else {
-        null
-    }
-
-    return Receipt(
-        balance = balance,
+    internal constructor(jsonString: String) : this(JSONObject(jsonString)) // you get json string constructor for free!
+    internal constructor(jsonObject: JSONObject) : this(
+        amount = jsonObject.getString("amount"),
         created = jsonObject.getString("created"),
-        ebtCashAmount = jsonObject.getString("ebt_cash_amount"),
-        isVoided = jsonObject.getBoolean("is_voided"),
-        last4 = jsonObject.getString("last_4"),
-        message = jsonObject.getString("message"),
-        otherAmount = jsonObject.getString("other_amount"),
-        salesTaxApplied = jsonObject.getString("sales_tax_applied"),
-        snapAmount = jsonObject.getString("snap_amount")
+        deliveryAddress = Address(jsonObject.getJSONObject("delivery_address")),
+        description = jsonObject.getString("description"),
+        fundingType = jsonObject.getString("funding_type"),
+        isDelivery = jsonObject.getBoolean("is_delivery"),
+        lastProcessingError = jsonObject.getStringOrNull("last_processing_error"),
+        merchant = jsonObject.getString("merchant"),
+        metadata = jsonObject.getJSONObject("metadata").toMap(),
+        paymentMethodRef = jsonObject.getString("payment_method"),
+        receipt = if (!jsonObject.isNull("balance")) {
+            Receipt(jsonObject.getJSONObject("receipt"))
+        } else {
+            null
+        },
+        ref = jsonObject.getString("ref"),
+        refunds = jsonObject.getJSONArray("refunds").toListOfStrings(),
+        status = jsonObject.getString("status"),
+        successDate = jsonObject.getStringOrNull("success_date"),
+        updated = jsonObject.getString("updated")
     )
 }
 

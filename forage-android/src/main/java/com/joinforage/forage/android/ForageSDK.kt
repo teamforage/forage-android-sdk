@@ -100,8 +100,10 @@ class ForageSDK : ForageSDKInterface {
      *             is ForageApiResponse.Success -> {
      *                 val paymentMethod = response.toPaymentMethod()
      *                 // Unpack paymentMethod.ref, paymentMethod.card, etc.
-     *                 val card = paymentMethod.card as Card.EbtCard
-     *                 // Unpack card.last4, card.usState, etc.
+     *                 val card = paymentMethod.card
+     *                 // Unpack card.last4, ...
+     *                 val ebtCard = card as EbtCard
+     *                 // Unpack ebtCard.usState
      *             }
      *             is ForageApiResponse.Failure -> {
      *                 val error = response.errors[0]
@@ -118,7 +120,7 @@ class ForageSDK : ForageSDKInterface {
      * `foragePanEditText`.
      * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more
      * information on error handling.
-     * @return A [ForageApiResponse] object.
+     * @return A [ForageApiResponse] object. Use [toPaymentMethod()][ForageApiResponse.Success.toPaymentMethod] to convert the `data` string to a [PaymentMethod][com.joinforage.forage.android.model.PaymentMethod].
      */
     override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
@@ -171,8 +173,9 @@ class ForageSDK : ForageSDKInterface {
      *
      *         when (response) {
      *             is ForageApiResponse.Success -> {
-     *                 val balance = response.toBalance() as Balance.EbtBalance
-     *                 // Unpack balance.snap, balance.cash
+     *                 val balance = response.toBalance()
+     *                 val ebtBalance = balance as EbtBalance
+     *                 // Unpack ebtBalance.snap, ebtBalance.cash
      *             }
      *             is ForageApiResponse.Failure -> {
      *                 val error = response.errors[0]
@@ -194,7 +197,8 @@ class ForageSDK : ForageSDKInterface {
      * information on error handling.
      * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions)
      * to trigger balance inquiry exceptions during testing.
-     * @return A [ForageApiResponse] object.
+     * @return A [ForageApiResponse] object. Use [toBalance()][ForageApiResponse.Success.toBalance]
+     * to convert the `data` string to a [Balance][com.joinforage.forage.android.model.Balance].
      */
     override suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
@@ -290,7 +294,7 @@ class ForageSDK : ForageSDKInterface {
      * on error handling.
      * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
      * to trigger payment capture exceptions during testing.
-     * @return A [ForageApiResponse] object. Use [ForageApiResponse.Success.toPayment] to convert the `data` string to a [Payment][com.joinforage.forage.android.model.Payment].
+     * @return A [ForageApiResponse] object. Use [toPayment()][ForageApiResponse.Success.toPayment] to convert the `data` string to a [Payment][com.joinforage.forage.android.model.Payment].
      */
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params

@@ -45,3 +45,7 @@ internal fun JSONObject.getStringOrNull(fieldName: String): String? {
 
     return optString(fieldName)
 }
+
+internal fun JSONObject.hasNonNull(fieldName: String): Boolean {
+    return has(fieldName) && !isNull(fieldName)
+}

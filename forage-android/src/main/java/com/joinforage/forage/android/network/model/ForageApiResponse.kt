@@ -1,8 +1,5 @@
 package com.joinforage.forage.android.network.model
 
-import com.joinforage.forage.android.model.Balance
-import com.joinforage.forage.android.model.Payment
-import com.joinforage.forage.android.model.PaymentMethod
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -36,15 +33,17 @@ sealed class ForageApiResponse<out T> {
          *     is ForageApiResponse.Success -> {
          *         val paymentMethod = forageApiResponse.toPaymentMethod()
          *         // Unpack paymentMethod.ref, paymentMethod.card, etc.
-         *         val card = paymentMethod.card as Card.EbtCard
-         *         // Unpack card.last4, card.usState, etc.
+         *         val card = paymentMethod.card
+         *         // Unpack card.last4, ...
+         *         val ebtCard = card as EbtCard
+         *         // Unpack ebtCard.usState, ...
          *     }
          * }
          * ```
          * @return A [PaymentMethod] instance.
          */
         fun toPaymentMethod(): PaymentMethod {
-            return PaymentMethod.ModelMapper.from(data as String)
+            return PaymentMethod(data as String)
         }
 
         /**
@@ -52,7 +51,7 @@ sealed class ForageApiResponse<out T> {
          * ```kotlin
          * when (forageApiResponse) {
          *     is ForageApiResponse.Success -> {
-         *         val balance = forageApiResponse.toBalance() as Balance.EbtBalance
+         *         val balance = forageApiResponse.toBalance() as EbtBalance
          *         // Unpack balance.snap, balance.cash
          *     }
          * }
@@ -62,8 +61,8 @@ sealed class ForageApiResponse<out T> {
         fun toBalance(): Balance {
             // The ForageApiResponse.data string is already formatted to
             // { snap: ..., cash: ... }
-            // so we use fromSdkResponse() instead of fromApiResponse()
-            return Balance.EbtBalance.ModelMapper.fromSdkResponse(data as String)
+            // so we use fromSdkResponse() instead of the typical constructor
+            return EbtBalance.fromSdkResponse(data as String)
         }
 
         /**
@@ -79,7 +78,7 @@ sealed class ForageApiResponse<out T> {
          * @return A [Payment] instance.
          */
         fun toPayment(): Payment {
-            return Payment.ModelMapper.from(data as String)
+            return Payment(data as String)
         }
     }
 
