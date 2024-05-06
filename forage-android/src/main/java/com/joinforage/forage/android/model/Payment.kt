@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.model
 
 import com.joinforage.forage.android.getStringOrNull
-import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -13,7 +12,6 @@ import org.json.JSONObject
  * @property state The two-letter abbreviation, can be upper or lowercase, for the US state.
  * @property zipcode The zip or postal code.
  */
-@Parcelize
 data class Address(
     val city: String,
     val country: String,
@@ -21,7 +19,7 @@ data class Address(
     val line2: String,
     val state: String,
     val zipcode: String
-) : ForageModel
+)
 
 /**
  * @property created A UTC-8 timestamp of when the Receipt was created, represented as an ISO 8601 date-time string.
@@ -33,7 +31,6 @@ data class Address(
  * @property snapAmount The USD amount charged/refunded to the SNAP balance of the EBT Card, represented as a numeric string.
  * @property balance The remaining balance on the EBT Card after the Payment was processed.
  */
-@Parcelize
 data class Receipt(
     val created: String,
     val ebtCashAmount: String,
@@ -44,7 +41,7 @@ data class Receipt(
     val salesTaxApplied: String,
     val snapAmount: String,
     val balance: Balance?
-) : ForageModel
+)
 
 /**
  * @property amount A positive decimal number that represents how much the PaymentMethod
@@ -70,7 +67,6 @@ data class Receipt(
  * @property status The status of the Payment. [Learn more](https://docs.joinforage.app/reference/payments#payment-lifecycle)
  * @property successDate A UTC-8 timestamp of when the Payment was successfully processed, represented as an ISO 8601 date-time string.
  */
-@Parcelize
 data class Payment(
     val amount: String,
     val created: String,
@@ -88,7 +84,7 @@ data class Payment(
     val status: String,
     val successDate: String?,
     val updated: String
-) : ForageModel {
+) {
     internal object ModelMapper {
         fun from(jsonString: String): Payment {
             val jsonObject = JSONObject(jsonString)

@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.model
 import com.joinforage.forage.android.getStringOrNull
-import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
 /**
@@ -11,7 +10,6 @@ import org.json.JSONObject
  * @param card Refer to the [Card] model.
  * @param reusable Whether the PaymentMethod can be reused. If false, then the PaymentMethod can only be used for a single transaction.
  */
-@Parcelize
 data class PaymentMethod(
     val ref: String,
     val type: String,
@@ -19,7 +17,7 @@ data class PaymentMethod(
     val balance: Balance?,
     val card: Card,
     val reusable: Boolean? = true
-) : ForageModel {
+) {
     internal object ModelMapper {
         internal fun from(string: String): PaymentMethod {
             val jsonObject = JSONObject(string)

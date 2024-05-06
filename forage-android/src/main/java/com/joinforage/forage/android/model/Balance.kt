@@ -1,15 +1,12 @@
 package com.joinforage.forage.android.model
 
-import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
-@Parcelize
-sealed class Balance : ForageModel {
+sealed class Balance {
     /**
      * @param snap The available SNAP balance on the customer’s EBT Card, represented as a numeric string.
      * @param cash The available EBT Cash balance on the customer’s EBT Card, represented as a numeric string.
      */
-    @Parcelize
     data class EbtBalance(
         val snap: String,
         val cash: String
