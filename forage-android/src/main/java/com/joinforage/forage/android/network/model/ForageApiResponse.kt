@@ -24,12 +24,41 @@ sealed class ForageApiResponse<out T> {
      *   response.data // { "ref": "abcde123", ... }
      * }
      * ```
+     *
+     * Use the [toPaymentMethod], [toBalance], or [toPayment] methods to convert the [data] string
+     * to a [PaymentMethod], [Balance], or [Payment] instance, respectively.
      */
     data class Success<out T>(val data: T) : ForageApiResponse<T>() {
+        /**
+         * Converts the [data] string to a [PaymentMethod] instance.
+         * ```kotlin
+         * when (forageApiResponse) {
+         *     is ForageApiResponse.Success -> {
+         *         val paymentMethod = forageApiResponse.toPaymentMethod()
+         *         // Unpack paymentMethod.ref, paymentMethod.card, etc.
+         *         val card = paymentMethod.card as Card.EbtCard
+         *         // Unpack card.last4, card.usState, etc.
+         *     }
+         * }
+         * ```
+         * @return A [PaymentMethod] instance.
+         */
         fun toPaymentMethod(): PaymentMethod {
             return PaymentMethod.ModelMapper.from(data as String)
         }
 
+        /**
+         * Converts the [data] string to a [Balance] instance.
+         * ```kotlin
+         * when (forageApiResponse) {
+         *     is ForageApiResponse.Success -> {
+         *         val balance = forageApiResponse.toBalance() as Balance.EbtBalance
+         *         // Unpack balance.snap, balance.cash
+         *     }
+         * }
+         * ```
+         * @return A [Balance] instance.
+         */
         fun toBalance(): Balance {
             // The ForageApiResponse.data string is already formatted to
             // { snap: ..., cash: ... }
@@ -37,6 +66,18 @@ sealed class ForageApiResponse<out T> {
             return Balance.EbtBalance.ModelMapper.fromSdkResponse(data as String)
         }
 
+        /**
+         * Converts the [data] string to a [Payment] instance.
+         * ```kotlin
+         * when (forageApiResponse) {
+         *     is ForageApiResponse.Success -> {
+         *         val payment = forageApiResponse.toPayment()
+         *         // Unpack payment.ref, payment.amount, payment.receipt, etc.
+         *     }
+         * }
+         * ```
+         * @return A [Payment] instance.
+         */
         fun toPayment(): Payment {
             return Payment.ModelMapper.from(data as String)
         }

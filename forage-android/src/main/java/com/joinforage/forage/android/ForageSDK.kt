@@ -98,10 +98,14 @@ class ForageSDK : ForageSDKInterface {
      *
      *         when (response) {
      *             is ForageApiResponse.Success -> {
-     *                 // parse response.data for the PaymentMethod object
+     *                 val paymentMethod = response.toPaymentMethod()
+     *                 // Unpack paymentMethod.ref, paymentMethod.card, etc.
+     *                 val card = paymentMethod.card as Card.EbtCard
+     *                 // Unpack card.last4, card.usState, etc.
      *             }
      *             is ForageApiResponse.Failure -> {
-     *                 // do something with error text (i.e. response.message)
+     *                 val error = response.errors[0]
+     *                 // handle error.code here
      *             }
      *         }
      *     }
@@ -167,10 +171,12 @@ class ForageSDK : ForageSDKInterface {
      *
      *         when (response) {
      *             is ForageApiResponse.Success -> {
-     *                 // response.data will have a .snap and a .cash value
+     *                 val balance = response.toBalance() as Balance.EbtBalance
+     *                 // Unpack balance.snap, balance.cash
      *             }
      *             is ForageApiResponse.Failure -> {
-     *                 // do something with error text (i.e. response.message)
+     *                 val error = response.errors[0]
+     *                 // handle error.code here
      *             }
      *         }
      *     }
@@ -253,7 +259,8 @@ class ForageSDK : ForageSDKInterface {
      *
      *             when (response) {
      *                 is ForageApiResponse.Success -> {
-     *                     // handle successful capture
+     *                     val payment = response.toPayment()
+     *                     // Unpack payment.ref, payment.receipt, etc.
      *                 }
      *                 is ForageApiResponse.Failure -> {
      *                     val error = response.errors[0]
@@ -263,7 +270,7 @@ class ForageSDK : ForageSDKInterface {
      *                         val details = error.details as ForageErrorDetails.EbtError51Details
      *                         val (snapBalance, cashBalance) = details
      *
-     *                         // do something with balances ...
+     *                         // display balance to the customer...
      *                     }
      *                 }
      *             }
@@ -283,7 +290,7 @@ class ForageSDK : ForageSDKInterface {
      * on error handling.
      * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
      * to trigger payment capture exceptions during testing.
-     * @return A [ForageApiResponse] object.
+     * @return A [ForageApiResponse] object. Use [ForageApiResponse.Success.toPayment] to convert the `data` string to a [Payment][com.joinforage.forage.android.model.Payment].
      */
     override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params

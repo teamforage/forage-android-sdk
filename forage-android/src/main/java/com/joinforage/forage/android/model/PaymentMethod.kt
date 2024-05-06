@@ -7,7 +7,7 @@ import org.json.JSONObject
  * @param ref A string identifier that refers to an instance in Forage's database of a PaymentMethod, a tokenized representation of a customer's card.
  * @param type The type of the customer’s payment instrument. ex: "ebt".
  * @param customerId A unique identifier for the end customer making the payment.
- * @param balance Refer to the [Balance] model. [null] until a balance inquiry has been performed.
+ * @param balance Refer to the [Balance] model. `null` until a balance inquiry has been performed.
  * @param card Refer to the [Card] model.
  * @param reusable Whether the PaymentMethod can be reused. If false, then the PaymentMethod can only be used for a single transaction.
  */
@@ -34,12 +34,7 @@ data class PaymentMethod(
             var balance: Balance? = null
             if (!jsonObject.isNull("balance")) {
                 val parsedBalance = jsonObject.getJSONObject("balance")
-                val snap = parsedBalance.getString("snap")
-                val cash = parsedBalance.getString("non_snap")
-                balance = Balance.EbtBalance(
-                    snap = snap,
-                    cash = cash
-                )
+                balance = Balance.EbtBalance.ModelMapper.fromApiResponse(parsedBalance)
             }
 
             val rawCard = jsonObject.getJSONObject("card")
