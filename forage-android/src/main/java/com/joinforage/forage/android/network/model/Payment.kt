@@ -1,33 +1,34 @@
 package com.joinforage.forage.android.network.model
 
 import com.joinforage.forage.android.getStringOrNull
+import com.joinforage.forage.android.hasNonNull
 import org.json.JSONArray
 import org.json.JSONObject
 
 /**
  * @property city The name of the city.
  * @property country Either us or US. Defaults to US if not provided.
- * @property line1 The first line of the street address.
- * @property line2 The second line of the street address.
  * @property state The two-letter abbreviation, can be upper or lowercase, for the US state.
  * @property zipcode The zip or postal code.
+ * @property line1 The first line of the street address.
+ * @property line2 The second line of the street address.
  */
 data class Address(
     val city: String,
     val country: String,
-    val line1: String,
-    val line2: String,
     val state: String,
-    val zipcode: String
+    val zipcode: String,
+    val line1: String?,
+    val line2: String?
 ) {
     internal constructor(jsonString: String) : this(JSONObject(jsonString))
     internal constructor(jsonObject: JSONObject) : this(
         city = jsonObject.getString("city"),
         country = jsonObject.getString("country"),
-        line1 = jsonObject.getString("line1"),
-        line2 = jsonObject.getString("line2"),
         zipcode = jsonObject.getString("zipcode"),
-        state = jsonObject.getString("state")
+        state = jsonObject.getString("state"),
+        line1 = jsonObject.getStringOrNull("line1"),
+        line2 = jsonObject.getStringOrNull("line2")
     )
 }
 
@@ -93,6 +94,7 @@ data class Receipt(
  * that were created for this Payment.
  * @property status The status of the Payment. [Learn more](https://docs.joinforage.app/reference/payments#payment-lifecycle)
  * @property successDate A UTC-8 timestamp of when the Payment was successfully processed, represented as an ISO 8601 date-time string.
+ * @property updated A UTC-8 timestamp of when the Payment was last updated, represented as an ISO 8601 date-time string.
  */
 data class Payment(
     val amount: String,
@@ -101,9 +103,8 @@ data class Payment(
     val description: String,
     val fundingType: String,
     val isDelivery: Boolean,
-    val lastProcessingError: String?,
     val merchant: String,
-    val metadata: Map<String, String>,
+    val metadata: Map<String, String>?,
     val paymentMethodRef: String,
     val receipt: Receipt?,
     val ref: String,
@@ -120,11 +121,14 @@ data class Payment(
         description = jsonObject.getString("description"),
         fundingType = jsonObject.getString("funding_type"),
         isDelivery = jsonObject.getBoolean("is_delivery"),
-        lastProcessingError = jsonObject.getStringOrNull("last_processing_error"),
         merchant = jsonObject.getString("merchant"),
-        metadata = jsonObject.getJSONObject("metadata").toMap(),
+        metadata = if (jsonObject.hasNonNull("metadata")) {
+            jsonObject.getJSONObject("metadata").toMap()
+        } else {
+            null
+        },
         paymentMethodRef = jsonObject.getString("payment_method"),
-        receipt = if (!jsonObject.isNull("balance")) {
+        receipt = if (jsonObject.hasNonNull("receipt")) {
             Receipt(jsonObject.getJSONObject("receipt"))
         } else {
             null
