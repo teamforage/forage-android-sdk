@@ -6,12 +6,9 @@ import org.json.JSONObject
 
 /**
  * @property last4 The last 4 digits of the card number.
- * @property fingerprint A unique hash based on the card PAN. The fingerprint is constant for a card PAN,
- * no matter the `customerId`. Use the [fingerprint] to track card usage details for fraud prevention.
  */
 interface Card {
     val last4: String
-    val fingerprint: String
 }
 
 /**
@@ -22,7 +19,7 @@ interface Card {
  */
 data class EbtCard(
     override val last4: String,
-    override val fingerprint: String,
+    val fingerprint: String,
     internal val token: String,
     val usState: USState? = null
 ) : Card {

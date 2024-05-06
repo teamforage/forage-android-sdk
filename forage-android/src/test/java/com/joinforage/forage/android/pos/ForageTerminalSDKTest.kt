@@ -137,7 +137,8 @@ class ForageTerminalSDKTest : MockServerSuite() {
                 card = EbtCard(
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-                    usState = (response.card as EbtCard).usState
+                    usState = (response.card as EbtCard).usState,
+                    fingerprint = (response.card as EbtCard).fingerprint
                 ),
                 reusable = true,
                 customerId = null

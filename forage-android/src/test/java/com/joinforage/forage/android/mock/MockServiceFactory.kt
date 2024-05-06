@@ -2,6 +2,7 @@ package com.joinforage.forage.android.mock
 
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.model.USState
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
@@ -38,6 +39,8 @@ internal class MockServiceFactory(
         // card tokenization
         const val cardNumber: String = "5076801234567845"
         const val customerId: String = "test-android-customer-id"
+        val cardUsState: USState = USState.PENNSYLVANIA
+        const val cardFingerprint: String = "470dda97b63f016a962de150cf53ad72a93aaea4c2a59de2541e0994f48e02ef"
 
         // PIN-related interactions
         const val paymentRef: String = "6ae6a45ff1"

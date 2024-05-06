@@ -8,7 +8,6 @@ import com.joinforage.forage.android.fixtures.returnsPaymentMethodFailed
 import com.joinforage.forage.android.fixtures.returnsPaymentMethodSuccessfully
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
-import com.joinforage.forage.android.model.USState
 import com.joinforage.forage.android.network.model.EbtCard
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
@@ -84,7 +83,8 @@ class TokenizeCardServiceTest : MockServerSuite() {
                 card = EbtCard(
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-                    usState = USState.PENNSYLVANIA
+                    usState = testData.cardUsState,
+                    fingerprint = testData.cardFingerprint
                 ),
                 customerId = "test-android-customer-id",
                 reusable = true
@@ -109,7 +109,8 @@ class TokenizeCardServiceTest : MockServerSuite() {
                 card = EbtCard(
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-                    usState = USState.PENNSYLVANIA
+                    usState = testData.cardUsState,
+                    fingerprint = testData.cardFingerprint
                 ),
                 reusable = true,
                 customerId = null
@@ -136,7 +137,8 @@ class TokenizeCardServiceTest : MockServerSuite() {
                 card = EbtCard(
                     last4 = "7845",
                     token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-                    usState = USState.PENNSYLVANIA
+                    usState = testData.cardUsState,
+                    fingerprint = testData.cardFingerprint
                 ),
                 customerId = "test-android-customer-id",
                 reusable = false

@@ -38,7 +38,8 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
             balance = null,
             card = EbtCard(
                 last4 = "7845",
-                token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token"
+                token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token",
+                fingerprint = "fingerprint"
             ),
             customerId = "test-android-customer-id",
             reusable = true
