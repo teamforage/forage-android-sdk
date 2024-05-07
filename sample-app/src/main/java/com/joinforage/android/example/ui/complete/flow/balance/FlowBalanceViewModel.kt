@@ -67,11 +67,12 @@ class FlowBalanceViewModel @Inject constructor(
             when (response) {
                 is ForageApiResponse.Success -> {
                     Log.d(TAG, "Check Balance Response: ${response.data}")
-                    val balance = response.toBalance() as EbtBalance
-
-                    _snap.value = "SNAP: ${balance.snap}"
-                    _nonSnap.value = "NON SNAP: ${balance.cash}"
-                    _isLoading.value = false
+                    val balance = response.toBalance()
+                    if (balance is EbtBalance) {
+                        _snap.value = "SNAP: ${balance.snap}"
+                        _nonSnap.value = "NON SNAP: ${balance.cash}"
+                        _isLoading.value = false
+                    }
                 }
                 is ForageApiResponse.Failure -> {
                     Log.d(TAG, "Check Balance Response: ${response.errors[0].message}")
