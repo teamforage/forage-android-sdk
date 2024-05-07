@@ -102,8 +102,9 @@ class ForageSDK : ForageSDKInterface {
      *                 // Unpack paymentMethod.ref, paymentMethod.card, etc.
      *                 val card = paymentMethod.card
      *                 // Unpack card.last4, ...
-     *                 val ebtCard = card as EbtCard
-     *                 // Unpack ebtCard.usState
+     *                 if (card is EbtCard) {
+     *                     // Unpack card.usState
+     *                 }
      *             }
      *             is ForageApiResponse.Failure -> {
      *                 val error = response.errors[0]
@@ -174,8 +175,9 @@ class ForageSDK : ForageSDKInterface {
      *         when (response) {
      *             is ForageApiResponse.Success -> {
      *                 val balance = response.toBalance()
-     *                 val ebtBalance = balance as EbtBalance
-     *                 // Unpack ebtBalance.snap, ebtBalance.cash
+     *                 if (balance is EbtBalance) {
+     *                     // Unpack balance.snap, ebtBalance.cash
+     *                 }
      *             }
      *             is ForageApiResponse.Failure -> {
      *                 val error = response.errors[0]

@@ -35,8 +35,9 @@ sealed class ForageApiResponse<out T> {
          *         // Unpack paymentMethod.ref, paymentMethod.card, etc.
          *         val card = paymentMethod.card
          *         // Unpack card.last4, ...
-         *         val ebtCard = card as EbtCard
-         *         // Unpack ebtCard.usState, ...
+         *         if (card is EbtCard) {
+         *             // Unpack ebtCard.usState, ...
+         *         }
          *     }
          * }
          * ```
@@ -52,7 +53,9 @@ sealed class ForageApiResponse<out T> {
          * when (forageApiResponse) {
          *     is ForageApiResponse.Success -> {
          *         val balance = forageApiResponse.toBalance() as EbtBalance
-         *         // Unpack balance.snap, balance.cash
+         *         if (balance is EbtBalance) {
+         *             // Unpack balance.snap, balance.cash
+         *         }
          *     }
          * }
          * ```
