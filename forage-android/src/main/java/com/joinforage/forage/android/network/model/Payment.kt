@@ -82,14 +82,13 @@ data class Receipt(
  * @property description A human-readable description of the Payment.
  * @property fundingType The payment instrument type. Use [fundingType] to differentiate between a SNAP (`ebt_snap`) and an EBT Cash (`ebt_cash`) charge on the same EBT Card.
  * @property isDelivery A boolean that indicates whether the Payment is for delivery (true) or pickup (false).
- * @property lastProcessingError The code and message values corresponding to the most recent Payments API error.
  * @property merchant A string that represents a unique merchant ID that Forage provides during onboarding.
  * @property metadata A map of key-value pairs that you can use to store additional information about the Payment.
  * @property paymentMethodRef The unique reference hash for the existing Forage PaymentMethod that was charged in this transaction.
  * @property receipt Most of the information that you're required to display to the customer, according to FNS regulations.
  * [receipt] is null if the data that populates the receipt is not yet available.
  * @property ref A string identifier that refers to an instance in Forage's database of a Payment object,
- * which is a  one-time charge to a previously created PaymentMethod.
+ * which is a one-time charge to a previously created PaymentMethod.
  * @property refunds A list of unique reference hashes for the Refund objects
  * that were created for this Payment.
  * @property status The status of the Payment. [Learn more](https://docs.joinforage.app/reference/payments#payment-lifecycle)
@@ -113,7 +112,7 @@ data class Payment(
     val successDate: String?,
     val updated: String
 ) {
-    internal constructor(jsonString: String) : this(JSONObject(jsonString)) // you get json string constructor for free!
+    internal constructor(jsonString: String) : this(JSONObject(jsonString))
     internal constructor(jsonObject: JSONObject) : this(
         amount = jsonObject.getString("amount"),
         created = jsonObject.getString("created"),
