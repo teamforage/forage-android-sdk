@@ -138,6 +138,18 @@ data class Payment(
         successDate = jsonObject.getStringOrNull("success_date"),
         updated = jsonObject.getString("updated")
     )
+
+    internal companion object {
+        /**
+         * @djoksimo (2024-05-08) The deferred flows return a "thin" Payment object
+         * where most fields are null or empty.
+         * This utility helps us safely grab the paymentMethodRef
+         * for VaultSubmitter requests without unpacking the "full" Payment object.
+         */
+        internal fun getPaymentMethodRef(jsonString: String): String {
+            return JSONObject(jsonString).getString("payment_method")
+        }
+    }
 }
 
 internal fun JSONArray.toListOfStrings(): List<String> =

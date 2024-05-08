@@ -75,6 +75,15 @@ class PaymentModelTests {
                 "balance": null
             }
         """.trimIndent()
+
+        val thinPaymentJsonString = """
+            {
+              "metadata": {},
+              "funding_type": "ebt_snap",
+              "description": "a description",
+              "payment_method": "$paymentMethodRef"
+            }
+        """.trimIndent()
     }
 
     @Test
@@ -178,5 +187,11 @@ class PaymentModelTests {
         val payment = Payment(baseJson)
 
         assertEquals(listOf("refun123", "abcde456", "defg890"), payment.refunds)
+    }
+
+    @Test
+    fun `getPaymentMethodRef succeeds`() {
+        val actualPaymentMethodRef = Payment.getPaymentMethodRef(thinPaymentJsonString)
+        assertEquals(paymentMethodRef, actualPaymentMethodRef)
     }
 }

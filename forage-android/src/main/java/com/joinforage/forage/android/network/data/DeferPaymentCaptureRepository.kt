@@ -31,11 +31,11 @@ internal class DeferPaymentCaptureRepository(
             is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
             else -> return response
         }
-        val payment = when (val response = paymentService.getPayment(paymentRef)) {
-            is ForageApiResponse.Success -> Payment(response.data)
+        val paymentMethodRef = when (val response = paymentService.getPayment(paymentRef)) {
+            is ForageApiResponse.Success -> Payment.getPaymentMethodRef(response.data)
             else -> return response
         }
-        val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(payment.paymentMethodRef)) {
+        val paymentMethod = when (val response = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
             is ForageApiResponse.Success -> PaymentMethod(response.data)
             else -> return response
         }
