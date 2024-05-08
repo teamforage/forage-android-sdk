@@ -38,7 +38,6 @@ data class Address(
  * @property isVoided A boolean that indicates whether the Receipt is voided.
  * @property last4 The last four digits of the EBT Card number that was charged.
  * @property message A message from the EBT payment network that must be displayed to the EBT cardholder.
- * @property salesTaxApplied The USD amount of taxes charged to the customer’s non-EBT payment instrument, represented as a numeric string.
  * @property snapAmount The USD amount charged/refunded to the SNAP balance of the EBT Card, represented as a numeric string.
  * @property balance The remaining balance on the EBT Card after the Payment was processed.
  */
@@ -48,8 +47,6 @@ data class Receipt(
     val isVoided: Boolean,
     val last4: String,
     val message: String,
-    val otherAmount: String,
-    val salesTaxApplied: String,
     val snapAmount: String,
     val balance: Balance?
 ) {
@@ -65,8 +62,6 @@ data class Receipt(
         isVoided = jsonObject.getBoolean("is_voided"),
         last4 = jsonObject.getString("last_4"),
         message = jsonObject.getString("message"),
-        otherAmount = jsonObject.getString("other_amount"),
-        salesTaxApplied = jsonObject.getString("sales_tax_applied"),
         snapAmount = jsonObject.getString("snap_amount")
     )
 }

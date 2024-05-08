@@ -142,8 +142,6 @@ class PaymentModelTests {
                 isVoided = false,
                 last4 = "4201",
                 message = "Receipt message",
-                otherAmount = "4.56",
-                salesTaxApplied = "0.01",
                 snapAmount = "5.67"
             ),
             payment.receipt
@@ -170,8 +168,6 @@ class PaymentModelTests {
                 isVoided = false,
                 last4 = "4201",
                 message = "Receipt message",
-                otherAmount = "4.56",
-                salesTaxApplied = "0.01",
                 snapAmount = "5.67"
             ),
             payment.receipt
