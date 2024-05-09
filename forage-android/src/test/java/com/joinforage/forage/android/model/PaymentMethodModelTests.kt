@@ -3,6 +3,7 @@ package com.joinforage.forage.android.model
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.ui.element.state.USState
 import junit.framework.TestCase.assertEquals
 import org.json.JSONObject
 import org.junit.Test

@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.core.services.forageapi.paymentmethod
 
-import com.joinforage.forage.android.getStringOrNull
-import com.joinforage.forage.android.model.USState
+import com.joinforage.forage.android.core.services.getStringOrNull
+import com.joinforage.forage.android.core.ui.element.state.USState
 import org.json.JSONObject
 
 /**

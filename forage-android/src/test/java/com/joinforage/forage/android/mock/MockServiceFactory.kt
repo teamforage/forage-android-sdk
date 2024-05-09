@@ -16,7 +16,7 @@ import com.joinforage.forage.android.core.services.vault.BaseVaultRequestParams
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import okhttp3.mockwebserver.MockWebServer
 
 internal class MockServiceFactory(

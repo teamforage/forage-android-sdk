@@ -11,6 +11,9 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCa
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
+import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite

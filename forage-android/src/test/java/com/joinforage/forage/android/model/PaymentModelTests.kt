@@ -1,10 +1,10 @@
 package com.joinforage.forage.android.model
 
 import com.joinforage.forage.android.mock.MockServiceFactory
-import com.joinforage.forage.android.network.model.Address
+import com.joinforage.forage.android.core.services.forageapi.payment.Address
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
-import com.joinforage.forage.android.network.model.Payment
-import com.joinforage.forage.android.network.model.Receipt
+import com.joinforage.forage.android.core.services.forageapi.payment.Payment
+import com.joinforage.forage.android.core.services.forageapi.payment.Receipt
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.json.JSONArray

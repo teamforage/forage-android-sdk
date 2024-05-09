@@ -21,7 +21,7 @@ class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
         // BT returns a Result<Any?> so it's never null
         vaultError = parseVaultError(btRes)
         forageError = parseForageError(BaseResponseRegExp(btRes))
-        isSuccessful = btRes.isSuccess && vaultError != null && forageError != null
+        isSuccessful = btRes.isSuccess && vaultError == null && forageError == null
         successfulResponse = parseSuccessfulResponse(btRes)
     }
 

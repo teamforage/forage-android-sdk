@@ -11,6 +11,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
@@ -117,7 +118,7 @@ internal abstract class AbstractVaultSubmitter(
 
     // PaymentMethod.card.token is in the comma-separated format <vgs-token>,<basis-theory-token>,<forage-token>
     protected fun pickVaultTokenByIndex(paymentMethod: PaymentMethod, index: Int): String? {
-        val tokensString = paymentMethod.card.token
+        val tokensString = (paymentMethod.card as EbtCard).token
         val tokensList = tokensString.split(TOKEN_DELIMITER)
 
         val noTokenStoredInVault = tokensList.size <= index
