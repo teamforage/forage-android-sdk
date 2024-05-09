@@ -126,6 +126,35 @@ internal abstract class AbstractVaultSubmitter(
         return tokensList[index]
     }
 
+    protected fun vaultToForageResponse(parser: VaultResponseParser): ForageApiResponse<String> {
+        if (parser.isNullResponse) {
+            logger.e("[$vaultType] Received null response from $vaultType")
+            return UnknownErrorApiResponse
+        }
+
+        val vaultError = parser.vaultError
+        if (vaultError != null) {
+            logger.e("[$vaultType] Received error from $vaultType: ${parser.vaultErrorMsg}")
+            return vaultError
+        }
+
+        val forageError = parser.forageError
+        if (forageError != null) {
+            val firstError = forageError.errors[0]
+            logger.e("[$vaultType] Received ForageError from $vaultType: $firstError")
+            return forageError
+        }
+
+        val successfulResponse = parser.successfulResponse
+        if (successfulResponse != null) {
+            logger.i("[$vaultType] Received successful response from $vaultType")
+            return successfulResponse
+        }
+
+        logger.e("[$vaultType] Received malformed response from $vaultType: ${parser.rawResponse}")
+        return UnknownErrorApiResponse
+    }
+
     protected fun buildBaseRequestBody(vaultProxyRequest: VaultProxyRequest): HashMap<String, Any> {
         return hashMapOf(
             ForageConstants.RequestBody.CARD_NUMBER_TOKEN to vaultProxyRequest.vaultToken

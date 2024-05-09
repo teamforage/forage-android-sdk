@@ -23,6 +23,7 @@ import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import org.json.JSONException
 import kotlin.coroutines.suspendCoroutine
 
+
 internal class VgsPinSubmitter(
     context: Context,
     foragePinEditText: ForagePinElement,
@@ -45,33 +46,9 @@ internal class VgsPinSubmitter(
                 // Clear all information collected before by VGSCollect
                 vgsCollect.onDestroy()
 
-                if (response == null) {
-                    logger.e("[$vaultType] Received null response from $vaultType")
-                    return continuation.resumeWith(Result.success(UnknownErrorApiResponse))
-                }
-
-                val vaultError = toVaultErrorOrNull(response)
-                if (vaultError != null) {
-                    val rawVaultError = parseVaultErrorMessage(response)
-                    logger.e("[$vaultType] Received error from $vaultType: $rawVaultError")
-                    return continuation.resumeWith(Result.success(vaultError))
-                }
-
-                val forageApiErrorResponse = toForageErrorOrNull(response)
-                if (forageApiErrorResponse != null) {
-                    val firstError = forageApiErrorResponse.errors[0]
-                    logger.e("[$vaultType] Received ForageError from $vaultType: $firstError")
-                    return continuation.resumeWith(Result.success(forageApiErrorResponse))
-                }
-
-                val forageApiSuccess = toForageSuccessOrNull(response)
-                if (forageApiSuccess != null) {
-                    logger.i("[$vaultType] Received successful response from $vaultType")
-                    return continuation.resumeWith(Result.success(forageApiSuccess))
-                }
-                logger.e("[$vaultType] Received malformed response from $vaultType: $response")
-
-                return continuation.resumeWith(Result.success(UnknownErrorApiResponse))
+                continuation.resumeWith(
+                    Result.success(vaultToForageResponse(VGSResponseParser(response)))
+                )
             }
         })
 
