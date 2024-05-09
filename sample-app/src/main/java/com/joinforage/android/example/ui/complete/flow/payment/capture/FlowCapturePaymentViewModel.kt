@@ -23,8 +23,6 @@ class FlowCapturePaymentViewModel @Inject constructor(
     private val TAG = FlowCapturePaymentViewModel::class.java.simpleName
 
     private val args = FlowCapturePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
-    private val snapAmount = args.snapAmount
-    private val cashAmount = args.cashAmount
     internal val merchantAccount = args.merchantAccount
     internal val bearer = args.bearer
     private val snapPaymentRef = args.snapPaymentRef
@@ -32,8 +30,6 @@ class FlowCapturePaymentViewModel @Inject constructor(
 
     private val _uiState = MutableLiveData(
         FlowCapturePaymentUIState(
-            snapAmount = snapAmount,
-            cashAmount = cashAmount,
             snapPaymentRef = snapPaymentRef,
             cashPaymentRef = cashPaymentRef
         )

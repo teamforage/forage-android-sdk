@@ -24,60 +24,107 @@
             android:text="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/submitSnapAmount"
+    <LinearLayout
+        android:id="@+id/snapContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Submit Snap Amount"
-        app:layout_constraintBottom_toTopOf="@id/snapResponse"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/snapAmountLayout" />
+        app:layout_constraintBottom_toTopOf="@id/snapPaymentRefResponse"
+        app:layout_constraintTop_toBottomOf="@id/snapAmountLayout">
+        <Button
+            android:id="@+id/setSnapRef"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Set SNAP ref" />
+        <Button
+            android:id="@+id/submitSnapAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Set Snap Amount" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/snapResponse"
+        android:id="@+id/snapPaymentRefResponse"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/snapPaymentResponse"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/snapContainer" />
+
+    <TextView
+        android:id="@+id/snapPaymentResponse"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:layout_constraintBottom_toTopOf="@id/nonSnapAmountLayout"
+        app:layout_constraintBottom_toTopOf="@id/ebtCashAmountLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/submitNonSnapAmount" />
+        app:layout_constraintTop_toBottomOf="@id/snapPaymentRefResponse" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/nonSnapAmountLayout"
+        android:id="@+id/ebtCashAmountLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/snapResponse">
+        app:layout_constraintTop_toBottomOf="@id/snapPaymentResponse">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/nonSnapAmountEditText"
+            android:id="@+id/ebtCashAmountEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Non Snap amount"
             android:text="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/submitNonSnapAmount"
+    <LinearLayout
+        android:id="@+id/ebtCashContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Submit Non Snap Amount"
+        android:orientation="horizontal"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nonSnapAmountLayout" />
+        app:layout_constraintBottom_toTopOf="@id/ebtCashResponse"
+        app:layout_constraintTop_toBottomOf="@id/ebtCashAmountLayout">
+        <Button
+            android:id="@+id/setEbtCashRef"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Set SNAP ref" />
+        <Button
+            android:id="@+id/submitEbtCashAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Set Snap Amount" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/nonSnapResponse"
+        android:id="@+id/ebtCashPaymentRefResponse"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/ebtCashResponse"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ebtCashContainer" />
+
+    <TextView
+        android:id="@+id/ebtCashResponse"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/submitNonSnapAmount" />
+        app:layout_constraintTop_toBottomOf="@id/ebtCashContainer" />
 
 
     <Button
@@ -87,7 +134,6 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="64dp"
         android:text="@string/next_button"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
