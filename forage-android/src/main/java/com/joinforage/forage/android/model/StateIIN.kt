@@ -62,7 +62,13 @@ enum class USState(val abbreviation: String) {
     WASHINGTON("WA"),
     WEST_VIRGINIA("WV"),
     WISCONSIN("WI"),
-    WYOMING("WY")
+    WYOMING("WY");
+
+    internal companion object {
+        fun fromAbbreviation(abbreviation: String?): USState? {
+            return values().find { it.abbreviation == abbreviation }
+        }
+    }
 }
 
 internal enum class StateIIN(

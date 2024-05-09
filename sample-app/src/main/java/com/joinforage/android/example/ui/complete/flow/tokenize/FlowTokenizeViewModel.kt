@@ -6,15 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joinforage.android.example.network.model.tokenize.PaymentMethod
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.TokenizeEBTCardParams
+import com.joinforage.forage.android.network.model.Card
+import com.joinforage.forage.android.network.model.EbtCard
 import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.ui.ForagePANEditText
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import com.squareup.moshi.addAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,14 +60,21 @@ class FlowTokenizeViewModel @Inject constructor(
         when (response) {
             is ForageApiResponse.Success -> {
                 Log.d(TAG, "Tokenize EBT card Response: ${response.data}")
-                val moshi = Moshi.Builder()
-                    .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
-                    .build()
-                val adapter: JsonAdapter<PaymentMethod> = moshi.adapter(PaymentMethod::class.java)
+                val paymentMethod = response.toPaymentMethod()
+                // We include the `as` casting and the `when` block below
+                // to ensure that the models are exported as desired
+                // And support the desired casting + language features
+                Log.d(TAG, "EBT Card: ${paymentMethod.card.last4}")
 
-                val result = adapter.fromJson(response.data)
-
-                _paymentMethod.value = result
+                val ebtCard = paymentMethod.card as EbtCard
+                Log.d(TAG, "EBT Card: ${ebtCard.last4} ${ebtCard.usState}")
+                when (val card: Card = paymentMethod.card) {
+                    is EbtCard -> {
+                        assert(card.last4.length == 4)
+                        Log.d(TAG, "EBT Card: ${card.last4} ${card.usState}")
+                    }
+                }
+                _paymentMethod.value = paymentMethod
             }
             is ForageApiResponse.Failure -> {
                 _error.value = response.errors[0].message

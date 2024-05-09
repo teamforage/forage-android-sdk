@@ -2,7 +2,7 @@ package com.joinforage.forage.android.mock
 
 import com.joinforage.forage.android.ForageSDK
 import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.model.Balance
+import com.joinforage.forage.android.model.USState
 import com.joinforage.forage.android.network.EncryptionKeyService
 import com.joinforage.forage.android.network.MessageStatusService
 import com.joinforage.forage.android.network.OkHttpClientBuilder
@@ -15,6 +15,8 @@ import com.joinforage.forage.android.network.data.CapturePaymentRepository
 import com.joinforage.forage.android.network.data.CheckBalanceRepository
 import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
+import com.joinforage.forage.android.network.model.Balance
+import com.joinforage.forage.android.network.model.EbtBalance
 import com.joinforage.forage.android.pos.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.PosRefundService
 import com.joinforage.forage.android.pos.PosVaultRequestParams
@@ -37,12 +39,14 @@ internal class MockServiceFactory(
         // card tokenization
         const val cardNumber: String = "5076801234567845"
         const val customerId: String = "test-android-customer-id"
+        val cardUsState: USState = USState.PENNSYLVANIA
+        const val cardFingerprint: String = "470dda97b63f016a962de150cf53ad72a93aaea4c2a59de2541e0994f48e02ef"
 
         // PIN-related interactions
         const val paymentRef: String = "6ae6a45ff1"
         const val paymentMethodRef: String = "1f148fe399"
         const val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65"
-        val balance: Balance = Balance(
+        val balance: Balance = EbtBalance(
             snap = "100.00",
             cash = "100.00"
         )

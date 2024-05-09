@@ -6,10 +6,11 @@ import com.joinforage.forage.android.core.telemetry.Log
 import com.joinforage.forage.android.core.telemetry.UserAction
 import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.model.EncryptionKeys
-import com.joinforage.forage.android.model.PaymentMethod
 import com.joinforage.forage.android.network.ForageConstants
+import com.joinforage.forage.android.network.model.EbtCard
 import com.joinforage.forage.android.network.model.ForageApiResponse
 import com.joinforage.forage.android.network.model.ForageError
+import com.joinforage.forage.android.network.model.PaymentMethod
 import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
 import com.joinforage.forage.android.pos.PosBalanceVaultSubmitterParams
 import com.joinforage.forage.android.pos.PosRefundVaultSubmitterParams
@@ -136,7 +137,7 @@ internal abstract class AbstractVaultSubmitter<VaultResponse>(
 
     // PaymentMethod.card.token is in the comma-separated format <vgs-token>,<basis-theory-token>,<forage-token>
     protected fun pickVaultTokenByIndex(paymentMethod: PaymentMethod, index: Int): String? {
-        val tokensString = paymentMethod.card.token
+        val tokensString = (paymentMethod.card as EbtCard).token
         val tokensList = tokensString.split(TOKEN_DELIMITER)
 
         val noTokenStoredInVault = tokensList.size <= index

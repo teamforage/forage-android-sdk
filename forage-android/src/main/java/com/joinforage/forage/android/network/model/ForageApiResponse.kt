@@ -21,8 +21,69 @@ sealed class ForageApiResponse<out T> {
      *   response.data // { "ref": "abcde123", ... }
      * }
      * ```
+     *
+     * Use the [toPaymentMethod], [toBalance], or [toPayment] methods to convert the [data] string
+     * to a [PaymentMethod], [Balance], or [Payment] instance, respectively.
      */
-    data class Success<out T>(val data: T) : ForageApiResponse<T>()
+    data class Success<out T>(val data: T) : ForageApiResponse<T>() {
+        /**
+         * Converts the [data] string to a [PaymentMethod] instance.
+         * ```kotlin
+         * when (forageApiResponse) {
+         *     is ForageApiResponse.Success -> {
+         *         val paymentMethod = forageApiResponse.toPaymentMethod()
+         *         // Unpack paymentMethod.ref, paymentMethod.card, etc.
+         *         val card = paymentMethod.card
+         *         // Unpack card.last4, ...
+         *         if (card is EbtCard) {
+         *             // Unpack ebtCard.usState, ...
+         *         }
+         *     }
+         * }
+         * ```
+         * @return A [PaymentMethod] instance.
+         */
+        fun toPaymentMethod(): PaymentMethod {
+            return PaymentMethod(data as String)
+        }
+
+        /**
+         * Converts the [data] string to a [Balance] instance.
+         * ```kotlin
+         * when (forageApiResponse) {
+         *     is ForageApiResponse.Success -> {
+         *         val balance = forageApiResponse.toBalance() as EbtBalance
+         *         if (balance is EbtBalance) {
+         *             // Unpack balance.snap, balance.cash
+         *         }
+         *     }
+         * }
+         * ```
+         * @return A [Balance] instance.
+         */
+        fun toBalance(): Balance {
+            // The ForageApiResponse.data string is already formatted to
+            // { snap: ..., cash: ... }
+            // so we use fromSdkResponse() instead of the typical constructor
+            return EbtBalance.fromSdkResponse(data as String)
+        }
+
+        /**
+         * Converts the [data] string to a [Payment] instance.
+         * ```kotlin
+         * when (forageApiResponse) {
+         *     is ForageApiResponse.Success -> {
+         *         val payment = forageApiResponse.toPayment()
+         *         // Unpack payment.ref, payment.amount, payment.receipt, etc.
+         *     }
+         * }
+         * ```
+         * @return A [Payment] instance.
+         */
+        fun toPayment(): Payment {
+            return Payment(data as String)
+        }
+    }
 
     /**
      * A model that represents a failure response from the API.
