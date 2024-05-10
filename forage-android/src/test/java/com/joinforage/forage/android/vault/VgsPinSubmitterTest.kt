@@ -1,12 +1,12 @@
 package com.joinforage.forage.android.vault
 
 import android.content.Context
-import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.ecom.services.vault.vgs.VgsPinSubmitter
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.mock.MockLogger
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
 import com.verygoodsecurity.vgscollect.core.VGSCollect
 import com.verygoodsecurity.vgscollect.core.VgsCollectResponseListener

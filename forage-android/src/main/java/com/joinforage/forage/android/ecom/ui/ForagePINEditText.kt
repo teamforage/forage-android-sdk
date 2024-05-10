@@ -4,15 +4,15 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
-import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.ui.VaultWrapper
+import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
-import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.ecom.ui.vault.vgs.VGSVaultWrapper
 import com.launchdarkly.sdk.android.LDConfig
 
@@ -83,7 +83,7 @@ class ForagePINEditText @JvmOverloads constructor(
             }
     }
 
-    override fun determineBackingVault(forageConfig: ForageConfig, logger: Log) : VaultWrapper {
+    override fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper {
         // initialize Launch Darkly singleton
         val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
         val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()

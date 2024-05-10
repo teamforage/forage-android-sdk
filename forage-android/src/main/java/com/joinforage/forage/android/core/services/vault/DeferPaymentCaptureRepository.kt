@@ -1,13 +1,13 @@
 package com.joinforage.forage.android.core.services.vault
 
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
-import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
-import com.joinforage.forage.android.core.services.forageapi.payment.Payment
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.payment.Payment
+import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import java.util.UUID
 
 internal class DeferPaymentCaptureRepository(

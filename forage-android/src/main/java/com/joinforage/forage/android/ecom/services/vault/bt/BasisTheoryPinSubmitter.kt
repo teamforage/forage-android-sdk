@@ -5,13 +5,13 @@ import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.core.services.ForageConstants
+import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
-import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
@@ -26,7 +26,7 @@ internal class BasisTheoryPinSubmitter(
 ) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
-    logger = logger,
+    logger = logger
 ) {
     override val vaultType: VaultType = VaultType.BT_VAULT_TYPE
     override fun parseEncryptionKey(keys: EncryptionKeys): String = keys.btAlias

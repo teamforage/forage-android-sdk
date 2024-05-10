@@ -1,9 +1,9 @@
 package com.joinforage.forage.android.core.services.forageapi.payment
 
-import com.joinforage.forage.android.core.services.getStringOrNull
-import com.joinforage.forage.android.core.services.hasNonNull
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
+import com.joinforage.forage.android.core.services.getStringOrNull
+import com.joinforage.forage.android.core.services.hasNonNull
 import org.json.JSONArray
 import org.json.JSONObject
 

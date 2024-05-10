@@ -29,9 +29,7 @@ class VGSResponseParser(vgsRes: VGSResponse?) : VaultResponseParser {
             forageError = parseForageError(vgsRes)
             successfulResponse = parseSuccessfulResponse(vgsRes)
         }
-
     }
-
 
     private fun parseVaultError(res: VGSResponse): ForageApiResponse.Failure? {
         if (res is VGSResponse.SuccessResponse) return null

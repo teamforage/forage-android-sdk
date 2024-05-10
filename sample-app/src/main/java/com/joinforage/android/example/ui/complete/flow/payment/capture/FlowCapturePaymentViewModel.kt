@@ -9,8 +9,8 @@ import com.joinforage.android.example.ui.base.BaseViewModel
 import com.joinforage.android.example.ui.complete.flow.payment.capture.model.FlowCapturePaymentUIState
 import com.joinforage.forage.android.core.CapturePaymentParams
 import com.joinforage.forage.android.core.DeferPaymentCaptureParams
-import com.joinforage.forage.android.ecom.services.ForageSDK
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.ecom.services.ForageSDK
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

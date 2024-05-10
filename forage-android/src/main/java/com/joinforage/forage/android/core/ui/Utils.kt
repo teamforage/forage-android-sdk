@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.core.ui
 
-import android.content.res.TypedArray
 import android.content.Context
+import android.content.res.TypedArray
 import android.util.TypedValue
 
 internal fun getThemeAccentColor(context: Context): Int {

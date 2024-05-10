@@ -1,16 +1,16 @@
 package com.joinforage.forage.android.core.services.vault
 
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
-import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
-import com.joinforage.forage.android.core.services.forageapi.payment.Payment
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.payment.Payment
+import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.polling.Message
+import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 
 internal class CapturePaymentRepository(
     private val vaultSubmitter: VaultSubmitter,

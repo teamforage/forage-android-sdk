@@ -34,7 +34,6 @@ internal fun MockWebServer.givenPaymentMethod(cardNumber: String, reusable: Bool
     }
 )
 
-
 internal fun PotentialRequestChain.returnsPaymentMethodSuccessfully() = thenRespond(
     success(
         jsonBody = fileBody(

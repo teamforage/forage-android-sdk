@@ -1,17 +1,17 @@
 package com.joinforage.forage.android.core.services.vault
 
 import android.content.Context
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.telemetry.VaultProxyResponseMonitor
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.ForageConstants
+import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
-import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.UserAction
+import com.joinforage.forage.android.core.services.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
@@ -35,7 +35,7 @@ internal interface VaultSubmitter {
 internal abstract class AbstractVaultSubmitter(
     protected val context: Context,
     protected val foragePinEditText: ForagePinElement,
-    protected val logger: Log,
+    protected val logger: Log
 ) : VaultSubmitter {
 
     abstract val vaultType: VaultType
@@ -174,6 +174,5 @@ internal abstract class AbstractVaultSubmitter(
 
         internal fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
-
     }
 }

@@ -9,11 +9,11 @@ import android.widget.LinearLayout
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.state.PinElementState
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
-import com.joinforage.forage.android.core.ui.VaultWrapper
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -104,7 +104,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
             }
     }
 
-    internal abstract fun determineBackingVault(forageConfig: ForageConfig, logger: Log) : VaultWrapper
+    internal abstract fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper
 
     override fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
@@ -130,7 +130,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
         vault.clearText()
     }
 
-    internal fun getVaultSubmitter(logger: Log) : AbstractVaultSubmitter =
+    internal fun getVaultSubmitter(logger: Log): AbstractVaultSubmitter =
         vault.getVaultSubmitter(this, logger)
 
     // While the events that ForageElements expose mirrors the

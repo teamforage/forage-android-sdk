@@ -1,22 +1,22 @@
 package com.joinforage.forage.android.mock
 
-import com.joinforage.forage.android.ecom.services.ForageSDK
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
-import com.joinforage.forage.android.core.ui.element.state.USState
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
-import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
+import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
 import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
-import com.joinforage.forage.android.core.services.vault.TokenizeCardService
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.BaseVaultRequestParams
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
+import com.joinforage.forage.android.core.services.vault.TokenizeCardService
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.core.ui.element.state.USState
+import com.joinforage.forage.android.ecom.services.ForageSDK
 import okhttp3.mockwebserver.MockWebServer
 
 internal class MockServiceFactory(
@@ -50,7 +50,6 @@ internal class MockServiceFactory(
             cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
             encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
         )
-
     }
 
     private val okHttpClient by lazy {

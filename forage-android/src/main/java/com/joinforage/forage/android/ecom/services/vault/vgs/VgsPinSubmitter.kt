@@ -2,17 +2,17 @@ package com.joinforage.forage.android.ecom.services.vault.vgs
 
 import android.content.Context
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
-import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
 import com.verygoodsecurity.vgscollect.core.VGSCollect
@@ -23,7 +23,6 @@ import com.verygoodsecurity.vgscollect.widget.VGSEditText
 import org.json.JSONException
 import kotlin.coroutines.suspendCoroutine
 
-
 internal class VgsPinSubmitter(
     context: Context,
     foragePinEditText: ForagePinElement,
@@ -32,7 +31,7 @@ internal class VgsPinSubmitter(
 ) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
-    logger = logger,
+    logger = logger
 ) {
     override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
     override suspend fun submitProxyRequest(

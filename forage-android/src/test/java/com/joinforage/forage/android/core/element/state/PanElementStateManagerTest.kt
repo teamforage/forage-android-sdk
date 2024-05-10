@@ -4,10 +4,10 @@ import com.joinforage.forage.android.core.ui.element.IncompleteEbtPanError
 import com.joinforage.forage.android.core.ui.element.InvalidEbtPanError
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
 import com.joinforage.forage.android.core.ui.element.TooLongEbtPanError
-import com.joinforage.forage.android.core.ui.element.state.USState
 import com.joinforage.forage.android.core.ui.element.state.DerivedCardInfoDto
 import com.joinforage.forage.android.core.ui.element.state.PanElementState
 import com.joinforage.forage.android.core.ui.element.state.PanElementStateManager
+import com.joinforage.forage.android.core.ui.element.state.USState
 import com.joinforage.forage.android.core.ui.element.state.WhitelistedCards
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

@@ -7,8 +7,8 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.element.SimpleElementListener
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
@@ -43,7 +43,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun getVaultSubmitter(
         foragePinElement: ForagePinElement,
         logger: Log
-    ) : AbstractVaultSubmitter
+    ): AbstractVaultSubmitter
 
     fun getThemeAccentColor(context: Context): Int {
         val outValue = TypedValue()

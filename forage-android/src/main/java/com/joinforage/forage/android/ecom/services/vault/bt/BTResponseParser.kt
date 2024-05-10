@@ -30,7 +30,7 @@ class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
         val resRegExp = BtResponseRegExp(vaultResponse)
         return try {
             // TODO: add DD metric to track frequency of proxy errors
-            if(resRegExp.containsProxyError) UnknownErrorApiResponse else null
+            if (resRegExp.containsProxyError) UnknownErrorApiResponse else null
         } catch (_: Exception) {
             null
         }
@@ -52,8 +52,9 @@ class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
     }
 
     private fun parseSuccessfulResponse(vaultResponse: Result<Any?>): ForageApiResponse.Success<String>? {
-        return if (!isSuccessful) null
-        else {
+        return if (!isSuccessful) {
+            null
+        } else {
             // note: Result.toString() wraps the actual response as
             // "Success(<actual-value-here>)"
             ForageApiResponse.Success(vaultResponse.getOrNull().toString())

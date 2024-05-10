@@ -2,19 +2,19 @@ package com.joinforage.forage.android.vault
 
 import android.content.Context
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.ui.element.state.INITIAL_PIN_ELEMENT_STATE
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
+import com.joinforage.forage.android.core.ui.element.state.INITIAL_PIN_ELEMENT_STATE
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.mock.MockLogger
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat
@@ -72,7 +72,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         abstractVaultSubmitter = ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         )
     }
 
@@ -93,7 +93,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val concreteSubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -112,7 +112,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -131,7 +131,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val concreteSubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             // Mock missing token
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
@@ -159,7 +159,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val basisTheorySubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
                 return pickVaultTokenByIndex(paymentMethod, 1)
@@ -169,7 +169,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val vgsSubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
                 return pickVaultTokenByIndex(paymentMethod, 0)
@@ -188,7 +188,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -217,7 +217,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
-            logger = mockLogger,
+            logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
                 vaultProxyRequest: VaultProxyRequest
@@ -253,17 +253,16 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
         assertThat(attributes.getValue("forage_error_code").toString()).isEqualTo("unknown_server_error")
     }
-
 }
 
 internal open class ConcreteVaultSubmitter(
     context: Context,
     foragePinEditText: ForagePINEditText,
-    logger: Log,
+    logger: Log
 ) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
-    logger = logger,
+    logger = logger
 ) {
     override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
     override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
@@ -279,5 +278,4 @@ internal open class ConcreteVaultSubmitter(
     override fun getVaultToken(paymentMethod: PaymentMethod): String? {
         return "mock-vault-token"
     }
-
 }

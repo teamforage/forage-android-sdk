@@ -1,13 +1,13 @@
 package com.joinforage.forage.android.network
 
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
-import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
-import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.Method

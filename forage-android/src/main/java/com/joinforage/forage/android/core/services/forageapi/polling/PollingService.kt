@@ -1,10 +1,10 @@
 package com.joinforage.forage.android.core.services.forageapi.polling
 
-import com.joinforage.forage.android.core.services.launchdarkly.LDManager
-import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.getJitterAmount
+import com.joinforage.forage.android.core.services.launchdarkly.LDManager
+import com.joinforage.forage.android.core.services.telemetry.Log
 import kotlinx.coroutines.delay
 
 internal class PollingService(
