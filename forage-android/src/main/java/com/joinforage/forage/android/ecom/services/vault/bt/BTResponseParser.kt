@@ -29,7 +29,14 @@ class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
         if (vaultResponse.isSuccess) return null
         val resRegExp = BtResponseRegExp(vaultResponse)
         return try {
-            // TODO: add DD metric to track frequency of proxy errors
+            // In AbstractVaultSubmitter we track the forageError
+            // and the forage status code of the UnknownErrorApiResponse
+            // via the VaultProxyResponseMonitor. This keeps us informed
+            // of *when* erroroneous BT response happen. Unfortunately,
+            // we do not currently track the specifics of the proxy_error
+            // that that BT returned to us.
+            // TODO: log the specific error that BT responds with when
+            //  resRegExp.containsProxyError == true
             if (resRegExp.containsProxyError) UnknownErrorApiResponse else null
         } catch (_: Exception) {
             null

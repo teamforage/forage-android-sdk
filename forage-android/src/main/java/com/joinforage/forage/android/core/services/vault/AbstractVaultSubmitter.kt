@@ -127,6 +127,10 @@ internal abstract class AbstractVaultSubmitter(
         return tokensList[index]
     }
 
+    // TODO: this method should really live on the VaultResponseParser
+    //  interface's companion object. The specifics how how a parser
+    //  get's transformed into a ForageApiResponse are not something
+    //  the AbstractVaultSubmitter needs to know about
     protected fun vaultToForageResponse(parser: VaultResponseParser): ForageApiResponse<String> {
         if (parser.isNullResponse) {
             logger.e("[$vaultType] Received null response from $vaultType")
