@@ -2,6 +2,7 @@ package com.joinforage.forage.android.ui
 
 import android.widget.EditText
 import androidx.test.core.app.ApplicationProvider
+import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith

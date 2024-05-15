@@ -7,11 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.ui.base.BaseViewModel
 import com.joinforage.android.example.ui.complete.flow.payment.capture.model.FlowCapturePaymentUIState
-import com.joinforage.forage.android.CapturePaymentParams
-import com.joinforage.forage.android.DeferPaymentCaptureParams
-import com.joinforage.forage.android.ForageSDK
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.ui.ForagePINEditText
+import com.joinforage.forage.android.core.CapturePaymentParams
+import com.joinforage.forage.android.core.DeferPaymentCaptureParams
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.ecom.services.ForageSDK
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

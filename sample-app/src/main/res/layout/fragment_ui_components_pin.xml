@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.joinforage.forage.android.ui.ForagePINEditText
+    <com.joinforage.forage.android.ecom.ui.ForagePINEditText
         android:id="@+id/foragePinEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

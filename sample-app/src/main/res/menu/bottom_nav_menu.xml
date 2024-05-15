@@ -11,9 +11,4 @@
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_dashboard" />
 
-    <item
-        android:id="@+id/navigation_pos"
-        android:icon="@drawable/ic_credit_card_24"
-        android:title="@string/title_pos" />
-
 </menu>

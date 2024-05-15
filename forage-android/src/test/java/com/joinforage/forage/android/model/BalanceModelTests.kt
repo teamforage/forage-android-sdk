@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.model
 
-import com.joinforage.forage.android.network.model.EbtBalance
-import com.joinforage.forage.android.network.model.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Test
