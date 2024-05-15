@@ -17,24 +17,6 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             tools:context=".ui.complete.flow.tokens.FlowTokensFragment">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/snapAmountLayout"
-                isVisible="@{viewModel.uiState.captureSnapVisible}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:enabled="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/snapAmountEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.uiState.snapAmountString}" />
-            </com.google.android.material.textfield.TextInputLayout>
-
             <com.joinforage.forage.android.ui.ForagePINEditText
                 android:id="@+id/snapPinEditText"
                 style="@style/ForagePINEditTextStyle"
@@ -44,7 +26,7 @@
                 app:layout_constraintBottom_toTopOf="@id/snapContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/snapAmountLayout" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <LinearLayout
                 android:id="@+id/snapContainer"
@@ -90,25 +72,7 @@
                 app:layout_constraintTop_toBottomOf="@id/snapResponse"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/nonSnapAmountLayout" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/nonSnapAmountLayout"
-                isVisible="@{viewModel.uiState.captureCashVisible}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:enabled="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/snapResponseError">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/nonSnapAmountEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.uiState.cashAmountString}" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:layout_constraintBottom_toTopOf="@id/cashPinEditText" />
 
             <com.joinforage.forage.android.ui.ForagePINEditText
                 android:id="@+id/cashPinEditText"
@@ -119,7 +83,7 @@
                 app:layout_constraintBottom_toTopOf="@id/cashContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/nonSnapAmountLayout" />
+                app:layout_constraintTop_toBottomOf="@id/snapResponseError" />
 
             <LinearLayout
                 android:id="@+id/cashContainer"

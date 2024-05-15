@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputEditText
 import com.joinforage.android.example.databinding.FragmentFlowCreatePaymentBinding
 import com.joinforage.android.example.ext.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +21,9 @@ class FlowCreatePaymentFragment : Fragment() {
     private var _binding: FragmentFlowCreatePaymentBinding? = null
 
     private val binding get() = _binding!!
+
+    private var lastUsedSnapPaymentRef: String? = null
+    private var lastUsedEbtCashPaymentRef: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,36 +48,66 @@ class FlowCreatePaymentFragment : Fragment() {
             it.context.hideKeyboard(it)
         }
 
-        binding.submitNonSnapAmount.setOnClickListener {
-            viewModel.submitNonSnapAmount(
-                getNonSnapAmount()
+        binding.setSnapRef.setOnClickListener {
+            viewModel.setSnapRef(
+                getPaymentRef(binding.snapAmountEditText)
+            )
+            it.context.hideKeyboard(it)
+        }
+
+        binding.submitEbtCashAmount.setOnClickListener {
+            viewModel.submitEbtCashAmount(
+                getEbtCashAmount()
+            )
+            it.context.hideKeyboard(it)
+        }
+
+        binding.setEbtCashRef.setOnClickListener {
+            viewModel.setEbtCashRef(
+                getPaymentRef(binding.ebtCashAmountEditText)
             )
             it.context.hideKeyboard(it)
         }
 
         viewModel.snapPaymentResult.observe(viewLifecycleOwner) {
+            binding.snapPaymentRefResponse.text = ""
             it?.let {
-                binding.snapResponse.text = """
+                binding.snapPaymentResponse.text = """
                     Amount: ${it.amount}
                     Funding Type: ${it.fundingType}
                     
                     $it
                 """.trimIndent()
-
-                binding.nextButton.visibility = View.VISIBLE
+                lastUsedSnapPaymentRef = it.ref
             }
         }
 
-        viewModel.nonSnapPaymentResult.observe(viewLifecycleOwner) {
+        viewModel.snapPaymentRefResult.observe(viewLifecycleOwner) {
+            binding.snapPaymentResponse.text = ""
             it?.let {
-                binding.nonSnapResponse.text = """
+                binding.snapPaymentRefResponse.text = "PaymentRef: $it"
+                lastUsedSnapPaymentRef = it
+            }
+        }
+
+        viewModel.ebtCashPaymentResult.observe(viewLifecycleOwner) {
+            binding.ebtCashPaymentRefResponse.text = ""
+            it?.let {
+                binding.ebtCashResponse.text = """
                     Amount: ${it.amount}
                     Funding Type: ${it.fundingType}
                     
                     $it
                 """.trimIndent()
+                lastUsedEbtCashPaymentRef = it.ref
+            }
+        }
 
-                binding.nextButton.visibility = View.VISIBLE
+        viewModel.ebtCashPaymentRefResult.observe(viewLifecycleOwner) {
+            binding.ebtCashResponse.text = ""
+            it?.let {
+                binding.ebtCashPaymentRefResponse.text = "PaymentRef: $it"
+                lastUsedEbtCashPaymentRef = it
             }
         }
 
@@ -83,10 +117,8 @@ class FlowCreatePaymentFragment : Fragment() {
                     bearer = viewModel.bearer,
                     merchantAccount = viewModel.merchantAccount,
                     paymentMethodRef = viewModel.paymentMethodRef,
-                    snapAmount = getSnapAmount(),
-                    cashAmount = getNonSnapAmount(),
-                    snapPaymentRef = viewModel.snapPaymentResult.value?.ref.orEmpty(),
-                    cashPaymentRef = viewModel.nonSnapPaymentResult.value?.ref.orEmpty()
+                    snapPaymentRef = lastUsedSnapPaymentRef.orEmpty(),
+                    cashPaymentRef = lastUsedEbtCashPaymentRef.orEmpty()
                 )
             )
         }
@@ -107,9 +139,17 @@ class FlowCreatePaymentFragment : Fragment() {
         }
     }
 
-    private fun getNonSnapAmount(): Long {
+    private fun getPaymentRef(textField: TextInputEditText): String {
         return try {
-            binding.nonSnapAmountEditText.text.toString().toLong()
+            textField.text.toString()
+        } catch (e: NumberFormatException) {
+            "Unknown value"
+        }
+    }
+
+    private fun getEbtCashAmount(): Long {
+        return try {
+            binding.ebtCashAmountEditText.text.toString().toLong()
         } catch (e: NumberFormatException) {
             0
         }

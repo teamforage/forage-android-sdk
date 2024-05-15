@@ -112,16 +112,8 @@
             app:argType="string" />
 
         <argument
-            android:name="snapAmount"
-            app:argType="long" />
-
-        <argument
             android:name="snapPaymentRef"
             app:argType="string" />
-
-        <argument
-            android:name="cashAmount"
-            app:argType="long" />
 
         <argument
             android:name="cashPaymentRef"

@@ -36,11 +36,31 @@ class FlowCreatePaymentViewModel @Inject constructor(
 
     val snapPaymentResult: LiveData<PaymentResponse?> = _snapPaymentResult
 
-    private val _nonSnapPaymentResult = MutableLiveData<PaymentResponse?>().apply {
+    private val _snapPaymentRefResult = MutableLiveData<String?>().apply {
         value = null
     }
 
-    val nonSnapPaymentResult: LiveData<PaymentResponse?> = _nonSnapPaymentResult
+    val snapPaymentRefResult: LiveData<String?> = _snapPaymentRefResult
+
+    private val _ebtCashPaymentResult = MutableLiveData<PaymentResponse?>().apply {
+        value = null
+    }
+
+    val ebtCashPaymentResult: LiveData<PaymentResponse?> = _ebtCashPaymentResult
+
+    private val _ebtCashPaymentRefResult = MutableLiveData<String?>().apply {
+        value = null
+    }
+
+    val ebtCashPaymentRefResult: LiveData<String?> = _ebtCashPaymentRefResult
+
+    fun setSnapRef(paymentRef: String) = viewModelScope.launch {
+        _snapPaymentRefResult.value = paymentRef
+    }
+
+    fun setEbtCashRef(paymentRef: String) = viewModelScope.launch {
+        _ebtCashPaymentRefResult.value = paymentRef
+    }
 
     fun submitSnapAmount(amount: Long) = viewModelScope.launch {
         _isLoading.value = true
@@ -62,7 +82,7 @@ class FlowCreatePaymentViewModel @Inject constructor(
         }
     }
 
-    fun submitNonSnapAmount(amount: Long) = viewModelScope.launch {
+    fun submitEbtCashAmount(amount: Long) = viewModelScope.launch {
         _isLoading.value = true
 
         repository.createPayment(
@@ -75,7 +95,7 @@ class FlowCreatePaymentViewModel @Inject constructor(
             deliveryAddress = FAKE_ADDRESS,
             isDelivery = false
         ).onSuccess {
-            _nonSnapPaymentResult.value = data
+            _ebtCashPaymentResult.value = data
             _isLoading.value = false
         }.onFailure {
             _isLoading.value = false
