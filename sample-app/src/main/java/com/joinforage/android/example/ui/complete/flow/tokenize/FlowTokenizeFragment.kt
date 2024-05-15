@@ -63,7 +63,7 @@ class FlowTokenizeFragment : Fragment() {
 
         foragePanEditText.requestFocus()
 
-        val paymentRef: TextView = binding.paymentRef
+        val paymentMethodRef: TextView = binding.paymentMethodRef
         val cardLast4: TextView = binding.cardLast4
         val reusable: TextView = binding.reusable
         val customerId: TextView = binding.customerId
@@ -95,14 +95,14 @@ class FlowTokenizeFragment : Fragment() {
         viewModel.paymentMethod.observe(viewLifecycleOwner) {
             when (it == null) {
                 true -> {
-                    paymentRef.text = "ref:"
+                    paymentMethodRef.text = "ref:"
                     cardLast4.text = "last_4:"
                     reusable.text = "reusable:"
                     customerId.text = "customer_id:"
                     binding.nextButton.visibility = View.GONE
                 }
                 else -> {
-                    paymentRef.text = "ref: ${it.ref}"
+                    paymentMethodRef.text = "ref: ${it.ref}"
                     cardLast4.text = "last_4: ${it.card?.last4}"
                     reusable.text = "reusable: ${it.reusable}"
                     customerId.text = "customer_id: ${it?.customerId}"
