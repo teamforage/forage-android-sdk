@@ -3,7 +3,7 @@ package com.joinforage.forage.android.core.ui.element
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 
 /**
@@ -34,11 +34,6 @@ abstract class AbstractForageElement<T : ElementState>(
         // update the forage config
         this._forageConfig = forageConfig
 
-        // TODO: 9/20/23: This is a temporary workaround and is
-        //  not meant to stick around. See this doc for more details
-        //  https://www.notion.so/joinforage/226d8ee6f8294d2694b1bb451791960b
-        StopgapGlobalState.forageConfig = forageConfig
-
         // there are a number of side effect operations that we
         // need to run as soon as a ForageElement has access to
         // ForageConfig data. However, we don't want to run these
@@ -60,4 +55,5 @@ abstract class AbstractForageElement<T : ElementState>(
     internal fun getForageConfig(): ForageConfig? {
         return _forageConfig
     }
+    internal fun getEnvConfig(): EnvConfig = EnvConfig.fromForageConfig(_forageConfig)
 }

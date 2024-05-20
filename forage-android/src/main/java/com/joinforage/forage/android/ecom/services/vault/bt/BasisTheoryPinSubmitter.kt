@@ -3,6 +3,7 @@ package com.joinforage.forage.android.ecom.services.vault.bt
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.basistheory.android.view.TextElement
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
@@ -10,7 +11,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
-import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
@@ -19,8 +19,8 @@ internal typealias BasisTheoryResponse = Result<Any?>
 
 internal class BasisTheoryPinSubmitter(
     foragePinEditText: ForagePinElement,
-    logger: Log,
-    private val buildVaultProvider: () -> BasisTheoryElements = { buildBt() }
+    private val envConfig: EnvConfig,
+    logger: Log
 ) : AbstractVaultSubmitter(
     foragePinEditText = foragePinEditText,
     logger = logger
@@ -40,11 +40,13 @@ internal class BasisTheoryPinSubmitter(
             encryptionKey = encryptionKey,
             vaultToken = vaultToken
         )
-        .setHeader(ForageConstants.Headers.BT_PROXY_KEY, PROXY_ID)
+        .setHeader(ForageConstants.Headers.BT_PROXY_KEY, envConfig.btProxyID)
         .setHeader(ForageConstants.Headers.CONTENT_TYPE, "application/json")
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
-        val bt = buildVaultProvider()
+        val bt = BasisTheoryElements.builder()
+            .apiKey(envConfig.btAPIKey)
+            .build()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = vaultProxyRequest.headers
@@ -63,18 +65,4 @@ internal class BasisTheoryPinSubmitter(
     }
 
     override fun getVaultToken(paymentMethod: PaymentMethod): String? = pickVaultTokenByIndex(paymentMethod, 1)
-
-    companion object {
-        // this code assumes that .setForageConfig() has been called
-        // on a Forage***EditText before PROXY_ID or API_KEY get
-        // referenced
-        private val PROXY_ID = StopgapGlobalState.envConfig.btProxyID
-        private val API_KEY = StopgapGlobalState.envConfig.btAPIKey
-
-        private fun buildBt(): BasisTheoryElements {
-            return BasisTheoryElements.builder()
-                .apiKey(API_KEY)
-                .build()
-        }
-    }
 }
