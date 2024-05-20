@@ -180,12 +180,14 @@ abstract class ForagePanElement @JvmOverloads constructor(
             }
     }
 
-    override fun showKeyboard() {
-        val imm = context.getSystemService<InputMethodManager>()
-        imm!!.showSoftInput(textInputEditText, 0)
+    private val forageConfigManager = ForageConfigManager {
+            forageConfig ->  initWithForageConfig(forageConfig)
+    }
+    override fun setForageConfig(forageConfig: ForageConfig) {
+        forageConfigManager.forageConfig = forageConfig
     }
 
-    override fun initWithForageConfig(forageConfig: ForageConfig) {
+    private fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
