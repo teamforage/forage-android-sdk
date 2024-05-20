@@ -17,6 +17,7 @@ import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.ecom.ui.vault.vgs.VGSVaultWrapper
 import com.launchdarkly.sdk.android.LDConfig
 
