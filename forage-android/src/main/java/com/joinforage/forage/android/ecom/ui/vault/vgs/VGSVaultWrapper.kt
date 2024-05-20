@@ -136,6 +136,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
         logger: Log
     ): AbstractVaultSubmitter = VgsPinSubmitter(
         foragePinElement,
+        foragePinElement.getEnvConfig(),
         logger
     )
 

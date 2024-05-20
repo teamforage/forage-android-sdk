@@ -116,6 +116,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
         logger: Log
     ): AbstractVaultSubmitter = BasisTheoryPinSubmitter(
         foragePinElement,
+        foragePinElement.getEnvConfig(),
         logger
     )
 
