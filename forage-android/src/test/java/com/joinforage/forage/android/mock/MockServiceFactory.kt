@@ -14,9 +14,9 @@ import com.joinforage.forage.android.core.services.vault.CapturePaymentRepositor
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.element.state.USState
 import com.joinforage.forage.android.ecom.services.ForageSDK
+import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer
 
 internal class MockServiceFactory(
@@ -73,7 +73,7 @@ internal class MockServiceFactory(
         logger = logger
     )
 
-    override fun createCheckBalanceRepository(foragePinEditText: ForagePinElement): CheckBalanceRepository {
+    override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
         return CheckBalanceRepository(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
@@ -83,7 +83,7 @@ internal class MockServiceFactory(
         )
     }
 
-    override fun createCapturePaymentRepository(foragePinEditText: ForagePinElement): CapturePaymentRepository {
+    override fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
         return CapturePaymentRepository(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
@@ -94,7 +94,7 @@ internal class MockServiceFactory(
         )
     }
 
-    override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePinElement): DeferPaymentCaptureRepository {
+    override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
         return DeferPaymentCaptureRepository(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,

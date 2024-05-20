@@ -13,7 +13,7 @@ import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.ForageConfigNotSetException
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.element.state.PanElementState

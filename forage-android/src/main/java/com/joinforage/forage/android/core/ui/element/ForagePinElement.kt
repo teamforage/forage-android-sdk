@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.VaultWrapper

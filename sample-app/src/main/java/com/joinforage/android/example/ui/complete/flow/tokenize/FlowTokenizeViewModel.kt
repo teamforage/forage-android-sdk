@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joinforage.forage.android.core.TokenizeEBTCardParams
+import com.joinforage.forage.android.ecom.services.TokenizeEBTCardParams
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Card
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
