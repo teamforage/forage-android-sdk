@@ -10,6 +10,7 @@ import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.VaultWrapper
+import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
@@ -56,7 +57,7 @@ class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForagePinElement(context, attrs, defStyleAttr) {
+) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
     private val btVaultWrapper: BTVaultWrapper
     private val vgsVaultWrapper: VGSVaultWrapper
 
@@ -152,6 +153,8 @@ class ForagePINEditText @JvmOverloads constructor(
         }
     }
 
+    internal fun getForageConfig() = forageConfigManager.forageConfig
+
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface
         set(value) {
@@ -160,4 +163,6 @@ class ForagePINEditText @JvmOverloads constructor(
             btVaultWrapper.typeface = value
             vgsVaultWrapper.typeface = value
         }
+
+    override fun showKeyboard() = vault.showKeyboard()
 }

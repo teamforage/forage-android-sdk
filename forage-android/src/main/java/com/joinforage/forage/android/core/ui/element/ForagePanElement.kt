@@ -8,6 +8,7 @@ import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -60,7 +61,7 @@ abstract class ForagePanElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : AbstractForageElement<PanElementState>(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PanElementState>, EditTextElement, DynamicEnvElement {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
 
@@ -187,6 +188,8 @@ abstract class ForagePanElement @JvmOverloads constructor(
         forageConfigManager.forageConfig = forageConfig
     }
 
+    internal fun getForageConfig() = forageConfigManager.forageConfig
+
     private fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
@@ -219,6 +222,11 @@ abstract class ForagePanElement @JvmOverloads constructor(
 
         addView(getLogoImageViewLayout(context))
         logger.i("[View] ForagePANEditText successfully rendered")
+    }
+
+    override fun showKeyboard() {
+        val imm = context.getSystemService<InputMethodManager>()
+        imm!!.showSoftInput(textInputEditText, 0)
     }
 
     override fun clearText() {

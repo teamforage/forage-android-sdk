@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.core.ui.element
 
 import android.graphics.Typeface
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 
 /**
@@ -24,22 +25,11 @@ import com.joinforage.forage.android.core.ui.element.state.ElementState
 data class ForageConfig(
     val merchantId: String,
     val sessionToken: String
-)
+) {
+    internal val envConfig = EnvConfig.fromForageConfig(this)
+}
 
-/**
- * The interface that defines methods for configuring and interacting with a [ForageElement].
- * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
- * transaction.
- * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
- *
- * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
- * that is used to render text within the ForageElement.
- * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
- * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
- * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
- */
-interface ForageElement<T : ElementState> {
-    var typeface: Typeface?
+interface DynamicEnvElement {
 
     /**
      * ⚠️ **The [setForageConfig] method is only valid for online-only transactions.** Use [setPosForageConfig]
@@ -65,6 +55,9 @@ interface ForageElement<T : ElementState> {
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
     fun setForageConfig(forageConfig: ForageConfig)
+}
+
+interface EditTextElement {
 
     /**
      * Explicitly request that the current input method's soft
@@ -73,6 +66,36 @@ interface ForageElement<T : ElementState> {
      * done using `.requestFocus()`
      */
     fun showKeyboard()
+
+    /**
+     * Sets an event listener to be fired when the ForageElement is in focus.
+     *
+     * @param l The [SimpleElementListener] to be fired on focus events.
+     */
+    fun setOnFocusEventListener(l: SimpleElementListener)
+
+    /**
+     * Sets an event listener to be fired when the ForageElement is blurred.
+     *
+     * @param l The [SimpleElementListener] to be fired on blur events.
+     */
+    fun setOnBlurEventListener(l: SimpleElementListener)
+}
+
+/**
+ * The interface that defines methods for configuring and interacting with a [ForageElement].
+ * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
+ * transaction.
+ * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
+ *
+ * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
+ * that is used to render text within the ForageElement.
+ * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
+ * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
+ * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
+ */
+interface ForageElement<T : ElementState> {
+    var typeface: Typeface?
 
     /**
      * Clears the text input field of the ForageElement.
@@ -134,20 +157,6 @@ interface ForageElement<T : ElementState> {
      * @return The [ElementState].
      */
     fun getElementState(): T
-
-    /**
-     * Sets an event listener to be fired when the ForageElement is in focus.
-     *
-     * @param l The [SimpleElementListener] to be fired on focus events.
-     */
-    fun setOnFocusEventListener(l: SimpleElementListener)
-
-    /**
-     * Sets an event listener to be fired when the ForageElement is blurred.
-     *
-     * @param l The [SimpleElementListener] to be fired on blur events.
-     */
-    fun setOnBlurEventListener(l: SimpleElementListener)
 
     /**
      * Sets an event listener to be fired when the text inside the ForageElement input field changes.
