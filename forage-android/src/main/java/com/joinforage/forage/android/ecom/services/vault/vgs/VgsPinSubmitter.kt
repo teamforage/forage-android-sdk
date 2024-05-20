@@ -24,12 +24,10 @@ import org.json.JSONException
 import kotlin.coroutines.suspendCoroutine
 
 internal class VgsPinSubmitter(
-    context: Context,
     foragePinEditText: ForagePinElement,
     logger: Log,
-    private val buildVaultProvider: (context: Context) -> VGSCollect = { buildVGSCollect(context) }
+    private val buildVaultProvider: (context: Context) -> VGSCollect = { buildVGSCollect(foragePinEditText.context) }
 ) : AbstractVaultSubmitter(
-    context = context,
     foragePinEditText = foragePinEditText,
     logger = logger
 ) {
@@ -37,7 +35,7 @@ internal class VgsPinSubmitter(
     override suspend fun submitProxyRequest(
         vaultProxyRequest: VaultProxyRequest
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
-        val vgsCollect = buildVaultProvider(context)
+        val vgsCollect = buildVaultProvider(foragePinEditText.context)
         vgsCollect.bindView(foragePinEditText.getTextElement() as VGSEditText)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
