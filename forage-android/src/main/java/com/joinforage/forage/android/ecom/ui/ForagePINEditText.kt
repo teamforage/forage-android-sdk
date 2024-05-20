@@ -9,6 +9,7 @@ import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.ForageConfig
@@ -154,6 +155,16 @@ class ForagePINEditText @JvmOverloads constructor(
     }
 
     internal fun getForageConfig() = forageConfigManager.forageConfig
+
+    internal fun getVaultSubmitter(logger: Log): AbstractVaultSubmitter =
+        vault.getVaultSubmitter(
+            this,
+            // ForageSDK is responsible for checking whether
+            // the user has called .setForageConfig so here
+            // we assume that forageConfig is non-null
+            this.forageConfigManager.forageConfig!!.envConfig,
+            logger
+        )
 
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface

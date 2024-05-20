@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
@@ -133,10 +134,11 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
 
     override fun getVaultSubmitter(
         foragePinElement: ForagePinElement,
+        envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter = VgsPinSubmitter(
         foragePinElement,
-        foragePinElement.getEnvConfig(),
+        envConfig,
         logger
     )
 

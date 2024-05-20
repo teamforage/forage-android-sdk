@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.widget.FrameLayout
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
@@ -42,6 +43,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
 
     abstract fun getVaultSubmitter(
         foragePinElement: ForagePinElement,
+        envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter
 

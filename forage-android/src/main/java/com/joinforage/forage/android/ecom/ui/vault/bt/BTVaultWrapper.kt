@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.basistheory.android.view.TextElement
 import com.basistheory.android.view.mask.ElementMask
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
@@ -113,10 +114,11 @@ internal class BTVaultWrapper @JvmOverloads constructor(
 
     override fun getVaultSubmitter(
         foragePinElement: ForagePinElement,
+        envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter = BasisTheoryPinSubmitter(
         foragePinElement,
-        foragePinElement.getEnvConfig(),
+        envConfig,
         logger
     )
 
