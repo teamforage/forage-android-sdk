@@ -160,7 +160,6 @@ class ForagePINEditText @JvmOverloads constructor(
 
     internal fun getVaultSubmitter(logger: Log): AbstractVaultSubmitter =
         vault.getVaultSubmitter(
-            this,
             // ForageSDK is responsible for checking whether
             // the user has called .setForageConfig so here
             // we assume that forageConfig is non-null

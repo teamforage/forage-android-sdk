@@ -11,7 +11,6 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Payme
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.telemetry.VaultProxyResponseMonitor
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 internal val IncompletePinError = ForageApiResponse.Failure.fromError(
     ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
@@ -27,12 +26,17 @@ internal open class VaultSubmitterParams(
     open val userAction: UserAction
 )
 
+internal interface SecurePinCollector {
+    fun clearText()
+    fun isComplete(): Boolean
+}
+
 internal interface VaultSubmitter {
     suspend fun submit(params: VaultSubmitterParams): ForageApiResponse<String>
 }
 
 internal abstract class AbstractVaultSubmitter(
-    protected val foragePinEditText: ForagePinElement,
+    protected val collector: SecurePinCollector,
     protected val logger: Log
 ) : VaultSubmitter {
 
@@ -45,7 +49,7 @@ internal abstract class AbstractVaultSubmitter(
         logger.i("[$vaultType] Sending ${params.userAction} request to $vaultType")
 
         // If the PIN isn't valid (less than 4 numbers) then return a response here.
-        if (!foragePinEditText.getElementState().isComplete) {
+        if (!collector.isComplete()) {
             logger.w("[$vaultType] User attempted to submit an incomplete PIN")
             return IncompletePinError
         }
@@ -82,7 +86,7 @@ internal abstract class AbstractVaultSubmitter(
         proxyResponseMonitor.end()
 
         // FNS requirement to clear the PIN after each submission
-        foragePinEditText.clearText()
+        collector.clearText()
 
         if (forageResponse is ForageApiResponse.Failure && forageResponse.errors.isNotEmpty()) {
             val forageError = forageResponse.errors.first()
