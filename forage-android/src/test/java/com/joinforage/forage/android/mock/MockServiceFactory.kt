@@ -9,7 +9,6 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Payme
 import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
 import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.vault.BaseVaultRequestParams
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
@@ -45,10 +44,6 @@ internal class MockServiceFactory(
         val balance: Balance = EbtBalance(
             snap = "100.00",
             cash = "100.00"
-        )
-        val vaultRequestParams: BaseVaultRequestParams = BaseVaultRequestParams(
-            cardNumberToken = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7",
-            encryptionKey = "tok_sandbox_eZeWfkq1AkqYdiAJC8iweE"
         )
     }
 
