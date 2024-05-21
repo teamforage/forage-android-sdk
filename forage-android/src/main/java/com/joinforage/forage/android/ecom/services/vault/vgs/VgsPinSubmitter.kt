@@ -10,8 +10,8 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownErro
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.verygoodsecurity.vgscollect.VGSCollectLogger
 import com.verygoodsecurity.vgscollect.core.HTTPMethod
 import com.verygoodsecurity.vgscollect.core.VGSCollect
@@ -23,23 +23,21 @@ import org.json.JSONException
 import kotlin.coroutines.suspendCoroutine
 
 internal class VgsPinSubmitter(
-    foragePinEditText: ForagePinElement,
+    private val vgsEditText: VGSEditText,
+    collector: SecurePinCollector,
     private val envConfig: EnvConfig,
     logger: Log
-) : AbstractVaultSubmitter(
-    foragePinEditText = foragePinEditText,
-    logger = logger
-) {
+) : AbstractVaultSubmitter(collector, logger) {
     override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
     override suspend fun submitProxyRequest(
         vaultProxyRequest: VaultProxyRequest
     ): ForageApiResponse<String> = suspendCoroutine { continuation ->
         VGSCollectLogger.isEnabled = false
         val vgsCollect = VGSCollect
-            .Builder(foragePinEditText.context, envConfig.vgsVaultId)
+            .Builder(vgsEditText.context, envConfig.vgsVaultId)
             .setEnvironment(envConfig.vgsVaultType)
             .create()
-        vgsCollect.bindView(foragePinEditText.getTextElement() as VGSEditText)
+        vgsCollect.bindView(vgsEditText)
 
         vgsCollect.addOnResponseListeners(object : VgsCollectResponseListener {
             override fun onResponse(response: VGSResponse?) {
