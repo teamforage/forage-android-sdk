@@ -48,7 +48,7 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
         _editText,
         object : SecurePinCollector {
             override fun clearText() {
-                clearText()
+                this@ForageVaultWrapper.clearText()
             }
             override fun isComplete(): Boolean = manager.isComplete
         },
