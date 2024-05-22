@@ -4,10 +4,9 @@ import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.pos.ui.ForageVaultWrapper
 
 /**
@@ -38,12 +37,11 @@ class ForagePINEditText @JvmOverloads constructor(
                     recycle()
                 }
             }
-    }
 
-    override fun determineBackingVault(
-        forageConfig: ForageConfig,
-        logger: Log
-    ): VaultWrapper = vault
+        _linearLayout.addView(vault.getTextElement())
+        _linearLayout.addView(getLogoImageViewLayout(context))
+        addView(_linearLayout)
+    }
 
     override var typeface: Typeface?
         get() = vault.typeface
