@@ -17,17 +17,17 @@ import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.network.PosApiService
-import com.joinforage.forage.android.CapturePaymentParams
-import com.joinforage.forage.android.CheckBalanceParams
-import com.joinforage.forage.android.DeferPaymentCaptureParams
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.pos.ForagePANEditText
-import com.joinforage.forage.android.pos.ForagePINEditText
-import com.joinforage.forage.android.pos.ForageTerminalSDK
-import com.joinforage.forage.android.pos.PosDeferPaymentRefundParams
-import com.joinforage.forage.android.pos.PosForageConfig
-import com.joinforage.forage.android.pos.PosRefundPaymentParams
-import com.joinforage.forage.android.pos.PosTokenizeCardParams
+import com.joinforage.forage.android.pos.services.CapturePaymentParams
+import com.joinforage.forage.android.pos.services.CheckBalanceParams
+import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
+import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
+import com.joinforage.forage.android.pos.services.ForageTerminalSDK
+import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosDeferPaymentRefundParams
+import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosRefundPaymentParams
+import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosTokenizeCardParams
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.delay
@@ -44,7 +44,7 @@ class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
     val uiState: StateFlow<POSUIState> = _uiState.asStateFlow()
     private val api
-        get() = PosApiService.from(uiState.value.posForageConfig)
+        get() = PosApiService.from(uiState.value.forageConfig)
 
     fun setSessionToken(sessionToken: String) {
         _uiState.update { it.copy(sessionToken = sessionToken) }
@@ -171,7 +171,7 @@ class POSViewModel : ViewModel() {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.tokenizeCard(
                 PosTokenizeCardParams(
-                    uiState.value.posForageConfig,
+                    uiState.value.forageConfig,
                     track2Data
                 )
             )
@@ -431,8 +431,8 @@ class POSViewModel : ViewModel() {
                 val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
                 if (payment.receipt != null) {
                     response.receipt!!.isVoided = true
-                    response.receipt.balance?.snap = ((response.receipt.balance?.snap?.toDouble() ?: 0.0) - refund.receipt!!.snapAmount!!.toDouble()).toString()
-                    response.receipt.balance?.nonSnap = ((response.receipt.balance?.nonSnap?.toDouble() ?: 0.0) - refund.receipt!!.ebtCashAmount!!.toDouble()).toString()
+                    response.receipt.balance?.snap = ((response.receipt.balance?.snap?.toDouble() ?: 0.0) - refund.receipt!!.snapAmount.toDouble()).toString()
+                    response.receipt.balance?.nonSnap = ((response.receipt.balance?.nonSnap?.toDouble() ?: 0.0) - refund.receipt.ebtCashAmount.toDouble()).toString()
                 }
                 _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
                 onSuccess(response)
@@ -451,7 +451,7 @@ class POSViewModel : ViewModel() {
         return ForageTerminalSDK.init(
             context = context,
             posTerminalId = terminalId,
-            posForageConfig = PosForageConfig(
+            forageConfig = ForageConfig(
                 merchantId = _uiState.value.merchantId,
                 sessionToken = _uiState.value.sessionToken
             )

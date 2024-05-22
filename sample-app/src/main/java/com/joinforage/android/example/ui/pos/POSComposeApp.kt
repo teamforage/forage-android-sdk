@@ -217,7 +217,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     onSubmitButtonClicked = {
                         if (panElement != null) {
                             panElement!!.clearFocus()
@@ -259,7 +259,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {
                 PINEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
@@ -400,7 +400,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     onSubmitButtonClicked = {
                         Log.i("POSComposeApp", "Calling onSubmitButtonClicked in ManualPANEntryScreen in PAYChoosePANMethodScreen")
                         if (panElement != null) {
@@ -454,7 +454,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYPINEntryScreen.name) {
                 PINEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     paymentMethodRef = uiState.createPaymentResponse?.paymentMethod,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
@@ -586,7 +586,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.REFUNDPINEntryScreen.name) {
                 PINEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.localRefundState != null) {
