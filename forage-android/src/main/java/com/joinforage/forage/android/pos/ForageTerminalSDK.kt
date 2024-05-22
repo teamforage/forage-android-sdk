@@ -22,7 +22,6 @@ import com.joinforage.forage.android.core.services.vault.CapturePaymentRepositor
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
 import com.joinforage.forage.android.core.ui.element.ForageConfig
-import com.joinforage.forage.android.core.ui.element.ForagePanElement
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.pos.services.vault.rosetta.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
