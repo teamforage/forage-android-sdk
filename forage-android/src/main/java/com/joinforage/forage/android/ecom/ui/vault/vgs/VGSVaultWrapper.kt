@@ -139,7 +139,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
         _internalEditText,
         object : SecurePinCollector {
             override fun clearText() {
-                clearText()
+                this@VGSVaultWrapper.clearText()
             }
             override fun isComplete(): Boolean = manager.isComplete
         },
