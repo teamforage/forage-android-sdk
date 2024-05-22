@@ -141,7 +141,7 @@ class ForagePINEditText @JvmOverloads constructor(
         forageConfigManager.forageConfig = forageConfig
     }
 
-    override fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper {
+    private fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper {
         // initialize Launch Darkly singleton
         val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
         val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()

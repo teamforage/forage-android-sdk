@@ -75,8 +75,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
             }
     }
 
-    internal abstract fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper
-
     override fun clearText() {
         vault.clearText()
     }
