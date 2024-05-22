@@ -119,7 +119,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
         _internalTextElement,
         object : SecurePinCollector {
             override fun clearText() {
-                clearText()
+                this@BTVaultWrapper.clearText()
             }
             override fun isComplete(): Boolean = manager.isComplete
         },
