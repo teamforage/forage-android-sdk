@@ -946,25 +946,6 @@ class ForageTerminalSDK internal constructor(
         }
         return null
     }
-
-    /**
-     * Use one of the [tokenizeCard] options instead.
-     *
-     * @throws NotImplementedError
-     */
-    @Deprecated(
-        message =
-        "This method is not applicable to the Forage Terminal SDK. Use the other tokenizeEBTCard methods.",
-        level = DeprecationLevel.ERROR
-    )
-    suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
-        throw NotImplementedError(
-            """
-            This method is not applicable to the Forage Terminal SDK.
-            Use the other tokenizeEBTCard methods.
-            """.trimIndent()
-        )
-    }
 }
 
 
@@ -1011,27 +992,6 @@ internal fun processApiResponseForMetrics(
     }
     measurement.setEventOutcome(outcome).logResult()
 }
-
-
-/**
- * A model that represents the parameters that Forage requires to tokenize an EBT Card.
- * [TokenizeEBTCardParams] are passed to the
- * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] method.
- *
- * @property foragePanEditText A reference to a [ForagePANEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
- * be called on the instance before it can be passed.
- * @property customerId A unique ID for the customer making the payment.
- * If using your internal customer ID, then we recommend that you hash the value
- * before sending it on the payload.
- * @property reusable An optional boolean value that indicates whether the same card can be used
- * to create multiple payments, set to true by default.
- */
-data class TokenizeEBTCardParams(
-    val foragePanEditText: ForagePanElement,
-    val customerId: String? = null,
-    val reusable: Boolean = true
-)
 
 /**
  * A model that represents the parameters that Forage requires to check a card's balance.
