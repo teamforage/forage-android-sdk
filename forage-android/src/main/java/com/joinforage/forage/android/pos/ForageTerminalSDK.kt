@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
+import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
@@ -449,7 +450,7 @@ class ForageTerminalSDK internal constructor(
         // ------------------------------------------------------
         val measurement =
             CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = foragePinEditText.getVaultType(),
+                vault = VaultType.FORAGE_VAULT_TYPE,
                 vaultAction = UserAction.BALANCE,
                 logger
             )
@@ -574,7 +575,7 @@ class ForageTerminalSDK internal constructor(
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getVaultType(),
+            vault = VaultType.FORAGE_VAULT_TYPE,
             vaultAction = UserAction.CAPTURE,
             logger
         )
@@ -782,7 +783,7 @@ class ForageTerminalSDK internal constructor(
         // ------------------------------------------------------
         val measurement =
             CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = foragePinEditText.getVaultType(),
+                vault = VaultType.FORAGE_VAULT_TYPE,
                 vaultAction = UserAction.REFUND,
                 logger
             )
@@ -889,7 +890,7 @@ class ForageTerminalSDK internal constructor(
         // ------------------------------------------------------
         val measurement =
             CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = foragePinEditText.getVaultType(),
+                vault = VaultType.FORAGE_VAULT_TYPE,
                 vaultAction = UserAction.DEFER_REFUND,
                 logger
             )
