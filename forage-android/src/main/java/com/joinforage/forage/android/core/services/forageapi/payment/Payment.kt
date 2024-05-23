@@ -95,7 +95,7 @@ data class Receipt(
 data class Payment(
     val amount: String,
     val created: String,
-    val deliveryAddress: Address,
+    val deliveryAddress: Address?,
     val description: String,
     val fundingType: String,
     val isDelivery: Boolean,
@@ -113,7 +113,11 @@ data class Payment(
     internal constructor(jsonObject: JSONObject) : this(
         amount = jsonObject.getString("amount"),
         created = jsonObject.getString("created"),
-        deliveryAddress = Address(jsonObject.getJSONObject("delivery_address")),
+        deliveryAddress = if (jsonObject.hasNonNull("delivery_address")) {
+            Address(jsonObject.getJSONObject("delivery_address"))
+        } else {
+            null
+        },
         description = jsonObject.getString("description"),
         fundingType = jsonObject.getString("funding_type"),
         isDelivery = jsonObject.getBoolean("is_delivery"),
