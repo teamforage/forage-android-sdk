@@ -32,7 +32,7 @@ import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundServ
 import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
 import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentRepository
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
-import com.joinforage.forage.android.pos.services.vault.rosetta.ForagePinSubmitter
+import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepository
 import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
 import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
@@ -141,7 +141,7 @@ class ForageTerminalSDK internal constructor(
 
                 val ksnFileManager = KsnFileManager.byFile(context)
                 // STOPGAP to feed `context` to ForagePinSubmitter
-                ForagePinSubmitter.ksnFileManager = ksnFileManager
+                RosettaPinSubmitter.ksnFileManager = ksnFileManager
 
                 val initializer = PosTerminalInitializer(
                     logger = logger,

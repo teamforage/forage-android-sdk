@@ -38,7 +38,7 @@ internal data class PinTranslationParams(
     val txnCounter: String
 )
 
-internal class ForagePinSubmitter(
+internal class RosettaPinSubmitter(
     private val editText: EditText,
     collector: SecurePinCollector,
     private val envConfig: EnvConfig,
