@@ -17,18 +17,19 @@ import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.network.PosApiService
-import com.joinforage.forage.android.pos.services.CapturePaymentParams
-import com.joinforage.forage.android.pos.services.CheckBalanceParams
-import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
 import com.joinforage.forage.android.pos.services.ForageTerminalSDK
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosDeferPaymentRefundParams
 import com.joinforage.forage.android.core.ui.element.ForageConfig
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosRefundPaymentParams
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosTokenizeCardParams
 import com.squareup.moshi.JsonAdapter
+import com.joinforage.forage.android.pos.services.CapturePaymentParams
+import com.joinforage.forage.android.pos.services.CheckBalanceParams
+import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
+import com.joinforage.forage.android.pos.services.DeferPaymentRefundParams
+import com.joinforage.forage.android.pos.services.RefundPaymentParams
+import com.joinforage.forage.android.pos.services.TokenizeMagSwipeParams
+import com.joinforage.forage.android.pos.services.TokenizeManualEntryParams
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,8 +147,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.tokenizeCard(
-                foragePanEditText = foragePanEditText,
-                reusable = true
+                TokenizeManualEntryParams(foragePanEditText, true)
             )
 
             when (response) {
@@ -170,7 +170,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.tokenizeCard(
-                PosTokenizeCardParams(
+                TokenizeMagSwipeParams(
                     uiState.value.forageConfig,
                     track2Data
                 )
@@ -275,7 +275,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.deferPaymentRefund(
-                PosDeferPaymentRefundParams(
+                DeferPaymentRefundParams(
                     foragePinEditText = foragePinEditText,
                     paymentRef = paymentRef
                 )
@@ -346,7 +346,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.refundPayment(
-                PosRefundPaymentParams(
+                RefundPaymentParams(
                     foragePinEditText = foragePinEditText,
                     amount = amount,
                     paymentRef = paymentRef,

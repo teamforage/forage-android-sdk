@@ -23,11 +23,7 @@ import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.pos.services.vault.rosetta.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosDeferPaymentRefundParams
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosForageConfig
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosRefundPaymentParams
 import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundPaymentRepository
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosTokenizeCardParams
 import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
 import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
 import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentRepository
@@ -213,9 +209,9 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun tokenizeCard(
-        foragePanEditText: ForagePANEditText,
-        reusable: Boolean = true
+        params: TokenizeManualEntryParams,
     ): ForageApiResponse<String> {
+        val (foragePanEditText, reusable) = params
         val (merchantId, sessionToken) = getForageConfigOrThrow(foragePanEditText.getForageConfig())
         val config = EnvConfig.fromSessionToken(sessionToken)
         val logger = Log.getInstance()
@@ -288,7 +284,7 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
      * object.
      */
-    suspend fun tokenizeCard(params: PosTokenizeCardParams): ForageApiResponse<String> {
+    suspend fun tokenizeCard(params: TokenizeMagSwipeParams): ForageApiResponse<String> {
         val (posForageConfig, track2Data, reusable) = params
         val (merchantId, sessionToken) = posForageConfig
         val config = EnvConfig.fromSessionToken(sessionToken)
@@ -365,9 +361,8 @@ class ForageTerminalSDK internal constructor(
      * to trigger balance inquiry exceptions during testing.
      * @return A [ForageApiResponse] object.
      */
-    suspend fun checkBalance(
-        params: CheckBalanceParams
-    ): ForageApiResponse<String> {
+    suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
+        val (forageVaultElement, paymentMethodRef) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -646,7 +641,7 @@ class ForageTerminalSDK internal constructor(
      * on error handling.
      * @return A [ForageApiResponse] object.
      */
-    suspend fun refundPayment(params: PosRefundPaymentParams): ForageApiResponse<String> {
+    suspend fun refundPayment(params: RefundPaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef, amount, reason) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
@@ -738,7 +733,7 @@ class ForageTerminalSDK internal constructor(
      * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
      * hasn't had its ForageConfig set via .setForageConfig().
      */
-    suspend fun deferPaymentRefund(params: PosDeferPaymentRefundParams): ForageApiResponse<String> {
+    suspend fun deferPaymentRefund(params: DeferPaymentRefundParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
@@ -799,6 +794,32 @@ internal fun getForageConfigOrThrow(forageConfig: ForageConfig?): ForageConfig {
             """.trimIndent()
     )
 }
+
+data class TokenizeManualEntryParams(
+    val foragePanEditText: ForagePANEditText,
+    val reusable: Boolean = true
+)
+
+/**
+ * A model that represents the parameters that [ForageTerminalSDK] requires to tokenize a card via
+ * a magnetic swipe from a physical POS Terminal.
+ * This data class is not supported for online-only transactions.
+ * [PosTokenizeCardParams] are passed to the
+ * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] method.
+ *
+ * @property posForageConfig **Required**. The [PosForageConfig] configuration details required to
+ * authenticate with the Forage API.
+ * @property track2Data **Required**. The information encoded on Track 2 of the card’s magnetic
+ * stripe, excluding the start and stop sentinels and any LRC characters. _Example value_:
+ * `"123456789123456789=123456789123"`
+ * @property reusable Optional. A boolean that indicates whether the same card can be used to create
+ * multiple payments. Defaults to true.
+ */
+data class TokenizeMagSwipeParams(
+    val forageConfig: ForageConfig,
+    val track2Data: String,
+    val reusable: Boolean = true
+)
 
 /**
  * A model that represents the parameters that Forage requires to check a card's balance.
@@ -865,6 +886,33 @@ data class DeferPaymentCaptureParams(
 )
 
 /**
+ * A model that represents the parameters that [ForageTerminalSDK] requires to refund a Payment.
+ * [PosRefundPaymentParams] are passed to the
+ * [refundPayment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] method.
+ *
+ * @property foragePinEditText **Required**. A reference to the [ForagePINEditText] instance that collected
+ * the card PIN for the refund.
+ *  [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must be
+ *  called on the instance before it can be passed.
+ * @property paymentRef **Required**. A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's database, returned by the
+ *  [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ * @property amount **Required**. A positive decimal number that represents how much of the original
+ * payment to refund in USD. Precision to the penny is supported.
+ * The minimum amount that can be refunded is `0.01`.
+ * @property reason **Required**. A string that describes why the payment is to be refunded.
+ * @property metadata Optional. A map of merchant-defined key-value pairs. For example, some
+ * merchants attach their credit card processor’s ID for the customer making the refund.
+ */
+data class RefundPaymentParams(
+    val forageVaultElement: ForagePosVaultElement,
+    val paymentRef: String,
+    val amount: Float,
+    val reason: String,
+    val metadata: Map<String, String>? = null
+)
+
+/**
  * A model that represents the parameters that Forage requires to collect a card PIN and defer
  * the refund of the payment to the server.
  * [PosDeferPaymentRefundParams] are passed to the
@@ -878,7 +926,7 @@ data class DeferPaymentCaptureParams(
  * database, returned by the
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
-data class PosDeferPaymentRefundParams(
-    val foragePinEditText: ForagePinElement,
+data class DeferPaymentRefundParams(
+    val forageVaultElement: ForagePosVaultElement,
     val paymentRef: String
 )

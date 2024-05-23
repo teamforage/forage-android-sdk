@@ -1,8 +1,7 @@
 package com.joinforage.forage.android.pos.services.vault.rosetta
 
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
-import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosRefundPaymentParams
-
+import com.joinforage.forage.android.pos.services.RefundPaymentParams
 
 internal data class PosBalanceVaultSubmitterParams(
     val baseVaultSubmitterParams: VaultSubmitterParams,
@@ -20,7 +19,7 @@ internal data class PosBalanceVaultSubmitterParams(
 internal data class PosRefundVaultSubmitterParams(
     val baseVaultSubmitterParams: VaultSubmitterParams,
     val posTerminalId: String,
-    val refundParams: PosRefundPaymentParams
+    val refundParams: RefundPaymentParams
 ) : VaultSubmitterParams(
     encryptionKeys = baseVaultSubmitterParams.encryptionKeys,
     idempotencyKey = baseVaultSubmitterParams.idempotencyKey,
