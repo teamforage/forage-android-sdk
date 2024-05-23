@@ -446,16 +446,11 @@ class ForageTerminalSDK internal constructor(
             return initializationException
         }
 
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement =
-            CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = VaultType.FORAGE_VAULT_TYPE,
-                vaultAction = UserAction.BALANCE,
-                logger
-            )
-        measurement.start()
-        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.BALANCE,
+            logger
+        )
         val config = forageConfig.envConfig
         val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
@@ -478,7 +473,7 @@ class ForageTerminalSDK internal constructor(
                 posTerminalId = posTerminalId,
                 sessionToken = forageConfig.sessionToken
             )
-        processApiResponseForMetrics(balanceResponse, measurement)
+        measurement.setEventOutcome(balanceResponse).logResult()
 
         if (balanceResponse is ForageApiResponse.Failure) {
             logger.e(
@@ -572,15 +567,11 @@ class ForageTerminalSDK internal constructor(
             .addAttribute("merchant_ref", forageConfig.merchantId)
             .addAttribute("payment_ref", paymentRef)
 
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = VaultType.FORAGE_VAULT_TYPE,
-            vaultAction = UserAction.CAPTURE,
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.CAPTURE,
             logger
         )
-        measurement.start()
-        // ------------------------------------------------------
         val config = forageConfig.envConfig
         val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
@@ -603,7 +594,7 @@ class ForageTerminalSDK internal constructor(
             sessionToken = forageConfig.sessionToken
         )
 
-        processApiResponseForMetrics(captureResponse, measurement)
+        measurement.setEventOutcome(captureResponse).logResult()
 
         if (captureResponse is ForageApiResponse.Failure) {
             logger.e(
@@ -778,17 +769,11 @@ class ForageTerminalSDK internal constructor(
         if (initializationException != null) {
             return initializationException
         }
-
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement =
-            CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = VaultType.FORAGE_VAULT_TYPE,
-                vaultAction = UserAction.REFUND,
-                logger
-            )
-        measurement.start()
-        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.REFUND,
+            logger
+        )
         val config = forageConfig.envConfig
         val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
@@ -814,7 +799,7 @@ class ForageTerminalSDK internal constructor(
                 refundParams = params,
                 sessionToken = forageConfig.sessionToken
             )
-        processApiResponseForMetrics(refund, measurement)
+        measurement.setEventOutcome(refund).logResult()
 
         if (refund is ForageApiResponse.Failure) {
             logger.e(
@@ -885,17 +870,11 @@ class ForageTerminalSDK internal constructor(
         if (initializationException != null) {
             return initializationException
         }
-
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement =
-            CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = VaultType.FORAGE_VAULT_TYPE,
-                vaultAction = UserAction.DEFER_REFUND,
-                logger
-            )
-        measurement.start()
-        // ------------------------------------------------------
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.DEFER_REFUND,
+            logger
+        )
         val config = forageConfig.envConfig
         val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
@@ -913,7 +892,7 @@ class ForageTerminalSDK internal constructor(
                 paymentRef = paymentRef,
                 sessionToken = forageConfig.sessionToken
             )
-        processApiResponseForMetrics(refund, measurement)
+        measurement.setEventOutcome(refund).logResult()
 
         if (refund is ForageApiResponse.Failure) {
             logger.e(
@@ -966,30 +945,6 @@ internal fun getForageConfigOrThrow(forageConfig: ForageConfig?): ForageConfig {
     immediately on your ForageElement 
             """.trimIndent()
     )
-}
-
-/**
- * Determines the outcome of a Forage API response,
- * to report the measurement to the Telemetry service.
- *
- * This involves stopping the measurement timer,
- * marking the Metrics event as a success or failure,
- * and if the event is a failure, setting the Forage error code.
- */
-internal fun processApiResponseForMetrics(
-    apiResponse: ForageApiResponse<String>,
-    measurement: CustomerPerceivedResponseMonitor
-) {
-    measurement.end()
-    val outcome = if (apiResponse is ForageApiResponse.Failure) {
-        if (apiResponse.errors.isNotEmpty()) {
-            measurement.setForageErrorCode(apiResponse.errors[0].code)
-        }
-        EventOutcome.FAILURE
-    } else {
-        EventOutcome.SUCCESS
-    }
-    measurement.setEventOutcome(outcome).logResult()
 }
 
 /**

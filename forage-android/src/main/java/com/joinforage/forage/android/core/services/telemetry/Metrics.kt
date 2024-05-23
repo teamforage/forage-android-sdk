@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.core.services.telemetry
 
 import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 
 internal object MetricsConstants {
     const val PATH = "path"
@@ -72,22 +73,8 @@ internal enum class EventName(val value: String) {
     }
 }
 
-internal interface PerformanceMeasurer {
-    fun start()
-    fun end()
-    fun logResult()
-}
-
-internal interface NetworkMonitor : PerformanceMeasurer {
-    fun setPath(path: String): NetworkMonitor
-    fun setMethod(method: String): NetworkMonitor
-    fun setHttpStatusCode(code: Int): NetworkMonitor
-    fun setForageErrorCode(errorCode: String): NetworkMonitor
-}
-
-internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance()) : NetworkMonitor {
-    private var startTime: Long? = null
-    private var endTime: Long? = null
+internal abstract class ResponseMonitor<T>(metricsLogger: Log? = Log.getInstance()) {
+    private var startTime: Long
 
     private var logger: Log? = null
     private var responseAttributes: MutableMap<String, Any> = mutableMapOf()
@@ -95,48 +82,32 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
     init {
         logger = metricsLogger
         responseAttributes[MetricsConstants.LOG_TYPE] = LogType.METRIC
-    }
-
-    override fun start() {
         startTime = System.nanoTime()
     }
 
-    override fun end() {
-        endTime = System.nanoTime()
-    }
-
-    override fun setPath(path: String): NetworkMonitor {
+    fun setPath(path: String) :ResponseMonitor<T> {
         responseAttributes[MetricsConstants.PATH] = path
         return this
     }
 
-    override fun setMethod(method: String): NetworkMonitor {
+    fun setMethod(method: String): ResponseMonitor<T> {
         responseAttributes[MetricsConstants.METHOD] = method
         return this
     }
 
-    override fun setHttpStatusCode(code: Int): NetworkMonitor {
+    fun setHttpStatusCode(code: Int): ResponseMonitor<T> {
         responseAttributes[MetricsConstants.HTTP_STATUS] = code
         return this
     }
 
-    override fun setForageErrorCode(errorCode: String): NetworkMonitor {
+    fun setForageErrorCode(errorCode: String): ResponseMonitor<T> {
         responseAttributes[MetricsConstants.FORAGE_ERROR_CODE] = errorCode
         return this
     }
 
-    override fun logResult() {
-        val defaultVal = Long.MIN_VALUE
-        val start = startTime ?: defaultVal
-        val end = endTime ?: defaultVal
-
-        if (start == defaultVal || end == defaultVal) {
-            logger?.e("[Metrics] Missing startTime or endTime. Could not log metric.")
-            return
-        }
-
-        responseAttributes[MetricsConstants.RESPONSE_TIME_MS] = calculateDuration(start, end)
-
+    fun logResult() {
+        val end = System.nanoTime()
+        responseAttributes[MetricsConstants.RESPONSE_TIME_MS] = calculateDuration(startTime, end)
         logWithResponseAttributes(metricsLogger = logger, responseAttributes = responseAttributes)
     }
 
@@ -153,7 +124,7 @@ internal abstract class ResponseMonitor(metricsLogger: Log? = Log.getInstance())
     functions. The timer begins when a balance or capture request is submitted to VGS/BT
     and ends when a response is received by the SDK.
      */
-internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
+internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor<VaultProxyResponseMonitor>(metricsLogger) {
     private var vaultType: VaultType? = null
     private var userAction: UserAction? = null
     private var eventName: EventName = EventName.VAULT_RESPONSE
@@ -161,12 +132,6 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
     init {
         this.vaultType = vault
         this.userAction = userAction
-    }
-
-    internal companion object {
-        internal fun newMeasurement(vault: VaultType, userAction: UserAction, metricsLogger: Log?): VaultProxyResponseMonitor {
-            return VaultProxyResponseMonitor(vault, userAction, metricsLogger)
-        }
     }
 
     override fun logWithResponseAttributes(
@@ -216,7 +181,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
     Timer Begins -> [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT ->
     [GET] Poll for Response -> [GET] PaymentMethod -> Timer Ends -> Return Balance
      */
-internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
+internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor<CustomerPerceivedResponseMonitor>(metricsLogger) {
     private var vaultType: VaultType? = null
     private var userAction: UserAction? = null
     private var eventOutcome: EventOutcome? = null
@@ -227,14 +192,29 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
         this.userAction = userAction
     }
 
-    internal companion object {
-        internal fun newMeasurement(vault: VaultType, vaultAction: UserAction, metricsLogger: Log?): CustomerPerceivedResponseMonitor {
-            return CustomerPerceivedResponseMonitor(vault, vaultAction, metricsLogger)
-        }
-    }
-
     fun setEventOutcome(eventOutcome: EventOutcome): CustomerPerceivedResponseMonitor {
         this.eventOutcome = eventOutcome
+        return this
+    }
+
+    /**
+     * Determines the outcome of a Forage API response,
+     * to report the measurement to the Telemetry service.
+     *
+     * This involves stopping the measurement timer,
+     * marking the Metrics event as a success or failure,
+     * and if the event is a failure, setting the Forage error code.
+     */
+    fun setEventOutcome(apiResponse: ForageApiResponse<String>) : CustomerPerceivedResponseMonitor {
+        val outcome = if (apiResponse is ForageApiResponse.Failure) {
+            if (apiResponse.errors.isNotEmpty()) {
+                setForageErrorCode(apiResponse.errors[0].code)
+            }
+            EventOutcome.FAILURE
+        } else {
+            EventOutcome.SUCCESS
+        }
+        setEventOutcome(outcome)
         return this
     }
 

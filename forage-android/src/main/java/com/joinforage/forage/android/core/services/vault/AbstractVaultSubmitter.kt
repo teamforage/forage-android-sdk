@@ -69,11 +69,7 @@ internal abstract class AbstractVaultSubmitter(
             vault = vaultType,
             userAction = params.userAction,
             metricsLogger = logger
-        )
-        proxyResponseMonitor
-            .setPath(params.path)
-            .setMethod("POST")
-            .start()
+        ).setPath(params.path).setMethod("POST")
         // ==========================================================
 
         val vaultProxyRequest = buildProxyRequest(
@@ -83,7 +79,6 @@ internal abstract class AbstractVaultSubmitter(
         ).setPath(params.path).setParams(params)
 
         val forageResponse = submitProxyRequest(vaultProxyRequest)
-        proxyResponseMonitor.end()
 
         // FNS requirement to clear the PIN after each submission
         collector.clearText()
