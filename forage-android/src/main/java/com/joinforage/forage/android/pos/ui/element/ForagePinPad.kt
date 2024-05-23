@@ -13,11 +13,10 @@ import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
-import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.databinding.ForageKeypadBinding
-
+import com.joinforage.forage.android.pos.services.ForagePosVaultElement
 
 
 internal class PinTextManager(
@@ -48,7 +47,7 @@ internal class PinTextManager(
 class ForagePinPad @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : ForageVaultElement<PosPinElementState>(context, attrs) {
+) : ForagePosVaultElement(context, attrs) {
 
     private val binding = ForageKeypadBinding.inflate(LayoutInflater.from(context), this, true)
     private val manager = PosPinElementStateManager.forEmptyInput()

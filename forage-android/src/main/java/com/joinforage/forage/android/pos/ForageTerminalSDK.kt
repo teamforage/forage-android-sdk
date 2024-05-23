@@ -10,20 +10,18 @@ import com.joinforage.forage.android.core.services.forageapi.encryptkey.Encrypti
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
-import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
 import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.services.telemetry.EventOutcome
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.ui.element.ForageConfig
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.pos.services.vault.rosetta.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundPaymentRepository
+import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
 import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
 import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentRepository
@@ -32,6 +30,10 @@ import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmit
 import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepository
 import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
 import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
+import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
+import com.joinforage.forage.android.pos.ui.element.PosPinElementState
+
+typealias ForagePosVaultElement = ForageVaultElement<PosPinElementState>
 
 /**
  * The entry point for **in-store POS Terminal** transactions.
@@ -383,7 +385,7 @@ class ForageTerminalSDK internal constructor(
         )
         val balanceResponse =
             PosCheckBalanceRepository(
-                vaultSubmitter = foragePinEditText.vault.getVaultSubmitter(config, logger),
+                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
                 pollingService = PollingService(
@@ -465,7 +467,7 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
-        val (foragePinEditText, paymentRef) = params
+        val (forageVaultElement, paymentRef) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -483,7 +485,7 @@ class ForageTerminalSDK internal constructor(
             traceId = logger.getTraceIdValue()
         )
         val captureResponse = PosCapturePaymentRepository(
-            vaultSubmitter = foragePinEditText.vault.getVaultSubmitter(config, logger),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
@@ -564,7 +566,7 @@ class ForageTerminalSDK internal constructor(
     suspend fun deferPaymentCapture(
         params: DeferPaymentCaptureParams
     ): ForageApiResponse<String> {
-        val (foragePinEditText, paymentRef) = params
+        val (forageVaultElement, paymentRef) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -577,7 +579,7 @@ class ForageTerminalSDK internal constructor(
             traceId = logger.getTraceIdValue()
         )
         return PosDeferPaymentCaptureRepository(
-            vaultSubmitter = foragePinEditText.vault.getVaultSubmitter(config, logger),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
             paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
@@ -642,7 +644,7 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun refundPayment(params: RefundPaymentParams): ForageApiResponse<String> {
-        val (foragePinEditText, paymentRef, amount, reason) = params
+        val (forageVaultElement, paymentRef, amount, reason) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -669,7 +671,7 @@ class ForageTerminalSDK internal constructor(
 
         val refund =
             PosRefundPaymentRepository(
-                vaultSubmitter = foragePinEditText.vault.getVaultSubmitter(config, logger),
+                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
                 paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
@@ -734,7 +736,7 @@ class ForageTerminalSDK internal constructor(
      * hasn't had its ForageConfig set via .setForageConfig().
      */
     suspend fun deferPaymentRefund(params: DeferPaymentRefundParams): ForageApiResponse<String> {
-        val (foragePinEditText, paymentRef) = params
+        val (forageVaultElement, paymentRef) = params
         val config = forageConfig.envConfig
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -758,7 +760,7 @@ class ForageTerminalSDK internal constructor(
         )
         val refund =
             DeferPaymentRefundRepository(
-                vaultSubmitter = foragePinEditText.vault.getVaultSubmitter(config, logger),
+                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
@@ -838,7 +840,7 @@ data class TokenizeMagSwipeParams(
  * endpoint.
  */
 data class CheckBalanceParams(
-    val foragePinEditText: ForagePinElement,
+    val forageVaultElement: ForagePosVaultElement,
     val paymentMethodRef: String
 )
 
@@ -856,7 +858,7 @@ data class CheckBalanceParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class CapturePaymentParams(
-    val foragePinEditText: ForagePinElement,
+    val forageVaultElement: ForagePosVaultElement,
     val paymentRef: String
 )
 
@@ -881,7 +883,7 @@ data class CapturePaymentParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class DeferPaymentCaptureParams(
-    val foragePinEditText: ForagePinElement,
+    val forageVaultElement: ForagePosVaultElement,
     val paymentRef: String
 )
 

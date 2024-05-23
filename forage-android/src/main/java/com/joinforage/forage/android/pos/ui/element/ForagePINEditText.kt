@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
@@ -23,8 +26,8 @@ class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForagePinElement(context, attrs, defStyleAttr) {
-    override val vault: VaultWrapper
+) : ForagePinElement<PosPinElementState>(context, attrs, defStyleAttr) {
+    override val vault: VaultWrapper<PosPinElementState>
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -38,9 +41,8 @@ class ForagePINEditText @JvmOverloads constructor(
                 }
             }
 
-        _linearLayout.addView(vault.getTextElement())
-        _linearLayout.addView(getLogoImageViewLayout(context))
-        addView(_linearLayout)
+        addView(vault.getTextElement())
+        addView(getLogoImageViewLayout(context))
     }
 
     override var typeface: Typeface?
@@ -48,4 +50,9 @@ class ForagePINEditText @JvmOverloads constructor(
         set(value) { vault.typeface = value }
 
     override fun showKeyboard() = vault.showKeyboard()
+
+    override fun getVaultSubmitter(
+        envConfig: EnvConfig,
+        logger: Log
+    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
 }

@@ -1,8 +1,6 @@
 package com.joinforage.forage.android.pos.services.vault.rosetta
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.EditText
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
@@ -39,7 +37,7 @@ internal data class PinTranslationParams(
 )
 
 internal class RosettaPinSubmitter(
-    private val editText: EditText,
+    private val plainTextPin: String,
     collector: SecurePinCollector,
     private val envConfig: EnvConfig,
     logger: Log
@@ -157,8 +155,6 @@ internal class RosettaPinSubmitter(
         val ksn = ksnFileManager!!.readAll() ?: throw IllegalArgumentException("Failed to get KSN from file")
 
         try {
-            val plainTextPin = (editText).text.toString()
-
             val dukptService = DukptService(ksn = ksn, keyRegisters = AndroidKeyStoreKeyRegisters())
             val (workingKey, latestKsn) = dukptService.generateWorkingKey()
             ksnFileManager!!.updateKsn(latestKsn)

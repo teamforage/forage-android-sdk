@@ -26,6 +26,8 @@ import com.joinforage.forage.android.core.ui.getBoxCornerRadius
 import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
 import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
+import com.joinforage.forage.android.pos.ui.element.PosPinElementStateManager
+import com.joinforage.forage.android.pos.ui.element.PosPinElementState
 
 internal class RosettaVaultWrapper @JvmOverloads constructor(
     context: Context,
@@ -45,7 +47,7 @@ internal class RosettaVaultWrapper @JvmOverloads constructor(
         envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter = RosettaPinSubmitter(
-        _editText,
+        _editText.text.toString(),
         object : SecurePinCollector {
             override fun clearText() {
                 this@RosettaVaultWrapper.clearText()
