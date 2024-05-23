@@ -7,7 +7,7 @@ import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
-import com.joinforage.forage.android.pos.ui.ForageVaultWrapper
+import com.joinforage.forage.android.pos.ui.RosettaVaultWrapper
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -32,7 +32,7 @@ class ForagePINEditText @JvmOverloads constructor(
                 try {
 
                     // initialize here since these params are available
-                    vault = ForageVaultWrapper(context, attrs, defStyleAttr)
+                    vault = RosettaVaultWrapper(context, attrs, defStyleAttr)
                 } finally {
                     recycle()
                 }
