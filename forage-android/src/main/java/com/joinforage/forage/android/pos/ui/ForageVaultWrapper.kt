@@ -133,7 +133,7 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
                     _editText.setOnFocusChangeListener { _, hasFocus ->
                         manager.changeFocus(hasFocus)
                     }
-                    val pinTextWatcher = PinTextWatcher(_editText)
+                    val pinTextWatcher = PinTextWatcher()
                     pinTextWatcher.onInputChangeEvent { isComplete, isEmpty ->
                         manager.handleChangeEvent(isComplete, isEmpty)
                     }

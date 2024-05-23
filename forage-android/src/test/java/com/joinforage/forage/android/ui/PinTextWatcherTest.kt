@@ -13,7 +13,7 @@ class PinTextWatcherTest {
     @Test
     fun `ensure afterTextChanged event is fired correctly`() {
         val editText = EditText(ApplicationProvider.getApplicationContext())
-        val watcher = PinTextWatcher(editText)
+        val watcher = PinTextWatcher()
         editText.addTextChangedListener(watcher)
 
         // mutable state to help us test the callback
