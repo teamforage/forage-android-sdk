@@ -56,4 +56,12 @@
         <!-- {@deprecated hintTextColor customization for ForagePINEditText elements is no longer supported} -->
         <attr name="hintTextColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="ForageKeypad">
+        <attr name="forage_deleteButtonIcon" format="reference" />
+        <attr name="forage_doneButtonIcon" format="reference" />
+        <attr name="forage_doneButtonText" format="reference" />
+        <attr name="forage_buttonLayoutHeight" format="reference" />
+        <attr name="forage_buttonLayoutMargin" format="reference" />
+    </declare-styleable>
 </resources>

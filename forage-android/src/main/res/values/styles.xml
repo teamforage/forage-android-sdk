@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These names are part of the API of ForageKeypad and cannot change -->
+    <style name="ForageKeypadDigitButtonStyle" />
+    <style name="ForageKeypadIconOnlyButtonStyle" />
+    <style name="ForageKeypadDoneButtonStyle" />
+</resources>
