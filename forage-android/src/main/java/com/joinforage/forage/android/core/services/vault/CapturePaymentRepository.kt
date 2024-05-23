@@ -12,13 +12,13 @@ import com.joinforage.forage.android.core.services.forageapi.polling.PollingServ
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 
-internal class CapturePaymentRepository(
+internal open class CapturePaymentRepository(
     private val vaultSubmitter: VaultSubmitter,
     private val encryptionKeyService: EncryptionKeyService,
     private val pollingService: PollingService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
-    private val logger: Log
+    protected val logger: Log
 ) {
     suspend fun capturePayment(
         merchantId: String,

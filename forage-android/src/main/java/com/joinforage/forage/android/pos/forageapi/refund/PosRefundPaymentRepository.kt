@@ -87,7 +87,12 @@ internal class PosRefundPaymentRepository(
                     logger.i("[HTTP] Received updated Refund $refundRef for Payment $paymentRef")
                     return refundResponse
                 }
-                else -> refundResponse
+                is ForageApiResponse.Failure -> {
+                    logger.e(
+                        "[POS] refundPayment failed for Payment $paymentRef on Terminal $posTerminalId: ${refundResponse.errors[0]}"
+                    )
+                    refundResponse
+                }
             }
         } catch (err: Exception) {
             logger.e("Failed to refund Payment ${refundParams.paymentRef}", err)

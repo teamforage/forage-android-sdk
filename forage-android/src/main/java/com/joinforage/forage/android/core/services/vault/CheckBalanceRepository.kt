@@ -16,7 +16,7 @@ internal class CheckBalanceRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val pollingService: PollingService,
-    private val logger: Log
+    protected val logger: Log
 ) {
     suspend fun checkBalance(
         merchantId: String,

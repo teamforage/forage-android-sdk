@@ -21,24 +21,6 @@ internal class TokenizeCardService(
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
-    suspend fun tokenizeCard(cardNumber: String, customerId: String? = null, reusable: Boolean = true): ForageApiResponse<String> = try {
-        logger.i(
-            "[HTTP] POST request for Payment Method",
-            attributes = mapOf(
-                "customer_id" to customerId
-            )
-        )
-        tokenizeCardCoroutine(
-            PaymentMethodRequestBody(
-                cardNumber = cardNumber,
-                customerId = customerId,
-                reusable = reusable
-            )
-        )
-    } catch (ex: IOException) {
-        logger.e("[HTTP] Failed while tokenizing PaymentMethod", ex, attributes = mapOf("customer_id" to customerId))
-        ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
-    }
 
     private suspend fun tokenizeCardCoroutine(requestBody: RequestBody): ForageApiResponse<String> {
         val url = getTokenizeCardUrl()
