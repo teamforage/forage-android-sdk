@@ -22,12 +22,12 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.core.ui.getBoxCornerRadius
 import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
-import com.joinforage.forage.android.pos.services.vault.rosetta.ForagePinSubmitter
+import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
+import com.joinforage.forage.android.pos.ui.element.PosPinElementStateManager
 
-internal class ForageVaultWrapper @JvmOverloads constructor(
+internal class RosettaVaultWrapper @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -39,16 +39,16 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
         imm!!.showSoftInput(_editText, 0)
     }
 
-    override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
+    override val manager: PosPinElementStateManager = PosPinElementStateManager.forEmptyInput()
 
     override fun getVaultSubmitter(
         envConfig: EnvConfig,
         logger: Log
-    ): AbstractVaultSubmitter = ForagePinSubmitter(
+    ): AbstractVaultSubmitter = RosettaPinSubmitter(
         _editText,
         object : SecurePinCollector {
             override fun clearText() {
-                this@ForageVaultWrapper.clearText()
+                this@RosettaVaultWrapper.clearText()
             }
             override fun isComplete(): Boolean = manager.isComplete
         },
@@ -135,7 +135,7 @@ internal class ForageVaultWrapper @JvmOverloads constructor(
                     }
                     val pinTextWatcher = PinTextWatcher()
                     pinTextWatcher.onInputChangeEvent { isComplete, isEmpty ->
-                        manager.handleChangeEvent(isComplete, isEmpty)
+                        manager.handleChangeEvent(isComplete, isEmpty, _editText.text.length)
                     }
                     _editText.addTextChangedListener(pinTextWatcher)
                 } finally {
