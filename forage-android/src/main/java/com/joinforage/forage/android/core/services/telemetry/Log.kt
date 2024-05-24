@@ -70,22 +70,22 @@ internal interface Log {
                 logger?.addAttribute(TRACE_ID, traceId)
             }
 
-            override fun d(msg: String, attributes: Map<String, Any?>) : Log {
+            override fun d(msg: String, attributes: Map<String, Any?>): Log {
                 logger!!.d(msg, attributes = attributes)
                 return this
             }
 
-            override fun i(msg: String, attributes: Map<String, Any?>) : Log {
+            override fun i(msg: String, attributes: Map<String, Any?>): Log {
                 logger!!.i(msg, attributes = attributes)
                 return this
             }
 
-            override fun w(msg: String, attributes: Map<String, Any?>) : Log {
+            override fun w(msg: String, attributes: Map<String, Any?>): Log {
                 logger!!.w(msg, attributes = attributes)
                 return this
             }
 
-            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) : Log {
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>): Log {
                 logger!!.e(msg, throwable, attributes)
                 return this
             }
@@ -106,13 +106,13 @@ internal interface Log {
         private val SILENT = object : Log {
             override fun initializeDD(context: Context, config: ForageConfig) {}
 
-            override fun d(msg: String, attributes: Map<String, Any?>) : Log = this
+            override fun d(msg: String, attributes: Map<String, Any?>): Log = this
 
-            override fun i(msg: String, attributes: Map<String, Any?>) : Log = this
+            override fun i(msg: String, attributes: Map<String, Any?>): Log = this
 
-            override fun w(msg: String, attributes: Map<String, Any?>) : Log = this
+            override fun w(msg: String, attributes: Map<String, Any?>): Log = this
 
-            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) : Log = this
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>): Log = this
 
             override fun getTraceIdValue(): String { return "" }
 

@@ -13,18 +13,19 @@ internal class PosDeferPaymentCaptureRepository(
     encryptionKeyService: EncryptionKeyService,
     paymentMethodService: PaymentMethodService,
     paymentService: PaymentService,
-    private val logger: Log,
+    private val logger: Log
 ) : DeferPaymentCaptureRepository(
     vaultSubmitter,
-            encryptionKeyService,
-            paymentMethodService,
-            paymentService,
+    encryptionKeyService,
+    paymentMethodService,
+    paymentService
 ) {
 
-    suspend fun deferPosPaymentCapture(merchantId: String,
-                                       paymentRef: String,
-                                       sessionToken: String,
-                                       posTerminalId: String
+    suspend fun deferPosPaymentCapture(
+        merchantId: String,
+        paymentRef: String,
+        sessionToken: String,
+        posTerminalId: String
     ): ForageApiResponse<String> {
         val response = deferPaymentCapture(merchantId, paymentRef, sessionToken)
         return if (response is ForageApiResponse.Failure) {

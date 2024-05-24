@@ -11,7 +11,7 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import java.util.UUID
 
-internal class CheckBalanceRepository(
+internal open class CheckBalanceRepository(
     private val vaultSubmitter: VaultSubmitter,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
@@ -67,7 +67,7 @@ internal class CheckBalanceRepository(
         }
     }
 
-    private fun buildVaultRequestParams(
+    protected fun buildVaultRequestParams(
         merchantId: String,
         encryptionKeys: EncryptionKeys,
         paymentMethod: PaymentMethod,

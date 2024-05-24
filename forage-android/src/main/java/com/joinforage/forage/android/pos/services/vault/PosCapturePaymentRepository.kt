@@ -18,23 +18,25 @@ internal class PosCapturePaymentRepository(
     logger: Log
 ) : CapturePaymentRepository(
     vaultSubmitter,
-            encryptionKeyService,
-            pollingService,
-            paymentService,
-            paymentMethodService,
-            logger,
+    encryptionKeyService,
+    pollingService,
+    paymentService,
+    paymentMethodService,
+    logger
 ) {
     suspend fun capturePosPayment(
         merchantId: String,
         paymentRef: String,
         sessionToken: String,
-        posTerminalId: String,
+        posTerminalId: String
     ): ForageApiResponse<String> {
         val response = capturePayment(merchantId, paymentRef, sessionToken)
         if (response is ForageApiResponse.Failure) {
             logger.e(
                 "[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId: ${response.errors[0]}",
-                attributes = mapOf("payment_ref" to paymentRef, "pos_terminal_id" to posTerminalId
+                attributes = mapOf(
+                    "payment_ref" to paymentRef,
+                    "pos_terminal_id" to posTerminalId
                 )
             )
         }

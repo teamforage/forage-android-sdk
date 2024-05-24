@@ -16,5 +16,4 @@ internal class RosettaResponseParser(rosettaResponse: ForageApiResponse<String>)
 
     override val vaultErrorMsg: String = rosettaResponse.toString()
     override val rawResponse: String = rosettaResponse.toString()
-
 }

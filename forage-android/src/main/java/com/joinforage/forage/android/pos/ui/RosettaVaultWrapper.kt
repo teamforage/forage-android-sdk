@@ -26,8 +26,8 @@ import com.joinforage.forage.android.core.ui.getBoxCornerRadius
 import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
 import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
-import com.joinforage.forage.android.pos.ui.element.PosPinElementStateManager
 import com.joinforage.forage.android.pos.ui.element.PosPinElementState
+import com.joinforage.forage.android.pos.ui.element.PosPinElementStateManager
 
 internal class RosettaVaultWrapper @JvmOverloads constructor(
     context: Context,
@@ -130,7 +130,6 @@ internal class RosettaVaultWrapper @JvmOverloads constructor(
                     } finally {
                         typedArray.recycle()
                     }
-
 
                     _editText.setOnFocusChangeListener { _, hasFocus ->
                         manager.changeFocus(hasFocus)

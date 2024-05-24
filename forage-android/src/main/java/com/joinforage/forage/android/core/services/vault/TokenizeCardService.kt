@@ -3,9 +3,7 @@ package com.joinforage.forage.android.core.services.vault
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.addTrailingSlash
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.NetworkService
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodRequestBody
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.RequestBody
 import com.joinforage.forage.android.core.services.telemetry.Log
 import okhttp3.HttpUrl
@@ -14,7 +12,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 
 internal class TokenizeCardService(
     private val httpUrl: String,

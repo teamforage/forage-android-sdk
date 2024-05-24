@@ -17,10 +17,10 @@ internal class PosCheckBalanceRepository(
     logger: Log
 ) : CheckBalanceRepository(
     vaultSubmitter,
-encryptionKeyService,
-paymentMethodService,
-pollingService,
-logger,
+    encryptionKeyService,
+    paymentMethodService,
+    pollingService,
+    logger
 ) {
 
     suspend fun posCheckBalance(
@@ -58,5 +58,4 @@ logger,
         }
         return response
     }
-
 }

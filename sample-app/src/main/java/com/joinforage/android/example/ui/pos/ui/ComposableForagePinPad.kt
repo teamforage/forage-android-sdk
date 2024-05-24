@@ -15,10 +15,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.joinforage.forage.android.pos.ui.element.ForagePinPad
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.joinforage.android.example.databinding.ForagePinPadExampleBinding
-
+import com.joinforage.forage.android.pos.ui.element.ForagePinPad
 
 @Composable
 fun ComposableForagePinPad(

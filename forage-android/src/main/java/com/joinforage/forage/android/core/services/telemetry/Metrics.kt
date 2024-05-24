@@ -85,7 +85,7 @@ internal abstract class ResponseMonitor<T>(metricsLogger: Log? = Log.getInstance
         startTime = System.nanoTime()
     }
 
-    fun setPath(path: String) :ResponseMonitor<T> {
+    fun setPath(path: String): ResponseMonitor<T> {
         responseAttributes[MetricsConstants.PATH] = path
         return this
     }
@@ -205,7 +205,7 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
      * marking the Metrics event as a success or failure,
      * and if the event is a failure, setting the Forage error code.
      */
-    fun setEventOutcome(apiResponse: ForageApiResponse<String>) : CustomerPerceivedResponseMonitor {
+    fun setEventOutcome(apiResponse: ForageApiResponse<String>): CustomerPerceivedResponseMonitor {
         val outcome = if (apiResponse is ForageApiResponse.Failure) {
             if (apiResponse.errors.isNotEmpty()) {
                 setForageErrorCode(apiResponse.errors[0].code)

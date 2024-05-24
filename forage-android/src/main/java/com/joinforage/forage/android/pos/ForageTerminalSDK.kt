@@ -19,17 +19,17 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
-import com.joinforage.forage.android.pos.services.vault.rosetta.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
 import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
 import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentRepository
-import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
-import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepository
 import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
+import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
+import com.joinforage.forage.android.pos.services.vault.rosetta.PosTerminalInitializer
+import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
+import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
 import com.joinforage.forage.android.pos.ui.element.PosPinElementState
 
@@ -75,7 +75,7 @@ typealias ForagePosVaultElement = ForageVaultElement<PosPinElementState>
  */
 class ForageTerminalSDK internal constructor(
     private val posTerminalId: String,
-    private val forageConfig: ForageConfig,
+    private val forageConfig: ForageConfig
 ) {
 
     companion object {
@@ -136,7 +136,6 @@ class ForageTerminalSDK internal constructor(
                 .i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
 
             try {
-
                 val ksnFileManager = KsnFileManager.byFile(context)
                 // STOPGAP to feed `context` to ForagePinSubmitter
                 RosettaPinSubmitter.ksnFileManager = ksnFileManager
@@ -211,7 +210,7 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun tokenizeCard(
-        params: TokenizeManualEntryParams,
+        params: TokenizeManualEntryParams
     ): ForageApiResponse<String> {
         val (foragePanEditText, reusable) = params
         val (merchantId, sessionToken) = getForageConfigOrThrow(foragePanEditText.getForageConfig())
@@ -378,7 +377,7 @@ class ForageTerminalSDK internal constructor(
             UserAction.BALANCE,
             logger
         )
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
             merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
@@ -479,7 +478,7 @@ class ForageTerminalSDK internal constructor(
             UserAction.CAPTURE,
             logger
         )
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
             merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
@@ -502,7 +501,6 @@ class ForageTerminalSDK internal constructor(
         )
 
         measurement.setEventOutcome(captureResponse).logResult()
-
 
         return captureResponse
     }
@@ -583,7 +581,7 @@ class ForageTerminalSDK internal constructor(
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
             paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-            logger = logger,
+            logger = logger
         ).deferPosPaymentCapture(
             merchantId = forageConfig.merchantId,
             paymentRef = paymentRef,
@@ -663,7 +661,7 @@ class ForageTerminalSDK internal constructor(
             UserAction.REFUND,
             logger
         )
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
             merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
@@ -753,7 +751,7 @@ class ForageTerminalSDK internal constructor(
             UserAction.DEFER_REFUND,
             logger
         )
-        val okHttpClient =  OkHttpClientBuilder.provideOkHttpClient(
+        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = forageConfig.sessionToken,
             merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
@@ -775,7 +773,6 @@ class ForageTerminalSDK internal constructor(
 
         return refund
     }
-
 }
 
 /**
@@ -793,7 +790,7 @@ internal fun getForageConfigOrThrow(forageConfig: ForageConfig?): ForageConfig {
     a request via Forage SDK, your ForageElement MUST have a ForageConfig.
     Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
     immediately on your ForageElement 
-            """.trimIndent()
+        """.trimIndent()
     )
 }
 

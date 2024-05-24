@@ -43,7 +43,7 @@ internal class RosettaPinSubmitter(
     logger: Log
 ) : AbstractVaultSubmitter(
     collector,
-    logger,
+    logger
 ) {
     override val vaultType = VaultType.FORAGE_VAULT_TYPE
 
@@ -109,7 +109,6 @@ internal class RosettaPinSubmitter(
                 .post(requestBody)
                 .build()
 
-
             val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
                 sessionToken = headerValues.sessionToken,
                 merchantId = headerValues.merchantId,
@@ -141,7 +140,6 @@ internal class RosettaPinSubmitter(
 
     override fun getVaultToken(paymentMethod: PaymentMethod): String? =
         pickVaultTokenByIndex(paymentMethod, 2)
-
 
     /**
      * The `init` method of the SDK ensures the client is using Android M (23+) or later.

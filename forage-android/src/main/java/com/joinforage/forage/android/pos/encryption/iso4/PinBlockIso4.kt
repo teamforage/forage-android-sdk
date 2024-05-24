@@ -1,7 +1,9 @@
-package com.joinforage.forage.android.pos.encryption.iso4
+package com.joinforage.forage.android.pos.services.encryption.iso4
 
-import com.joinforage.forage.android.pos.encryption.AesBlock
-import com.joinforage.forage.android.pos.encryption.dukpt.WorkingKey
+import com.joinforage.forage.android.pos.services.encryption.dukpt.WorkingKey
+import com.joinforage.forage.android.pos.services.encryption.AesBlock
+
+
 
 /**
  * Implementation taken from:

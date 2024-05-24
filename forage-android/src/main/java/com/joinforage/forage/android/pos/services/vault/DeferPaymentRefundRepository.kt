@@ -19,7 +19,7 @@ internal class DeferPaymentRefundRepository(
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
     private val paymentService: PaymentService,
-    private val logger: Log,
+    private val logger: Log
 ) {
     /**
      * @return if successful, the response.data field is an empty string
@@ -28,7 +28,7 @@ internal class DeferPaymentRefundRepository(
         merchantId: String,
         paymentRef: String,
         sessionToken: String,
-        posTerminalId: String,
+        posTerminalId: String
     ): ForageApiResponse<String> {
         val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
             is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)

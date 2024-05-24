@@ -46,5 +46,4 @@ internal class PosTokenizeCardService(
         logger.e("[POS] Failed while tokenizing PaymentMethod", ex)
         ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", ex.message.orEmpty())))
     }
-
 }

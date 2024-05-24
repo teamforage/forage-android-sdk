@@ -14,14 +14,13 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
-import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.databinding.ForageKeypadBinding
 import com.joinforage.forage.android.pos.services.ForagePosVaultElement
-
+import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 
 internal class PinTextManager(
     val rawText: String,
-    val callback: (isComplete: Boolean, isEmpty: Boolean, pinLength: Int, ) -> Unit
+    val callback: (isComplete: Boolean, isEmpty: Boolean, pinLength: Int) -> Unit
 ) {
     val isComplete = rawText.length == 4
     val isEmpty = rawText.isEmpty()
@@ -35,13 +34,13 @@ internal class PinTextManager(
         // pin input state change
         callback(this.isComplete, this.isEmpty, this.pinLength)
     }
-    fun clearText() : PinTextManager = PinTextManager("", callback)
+    fun clearText(): PinTextManager = PinTextManager("", callback)
     fun addDigit(char: Char): PinTextManager {
         if (isComplete) return this
         val appendChar = "$rawText$char"
         return PinTextManager(appendChar, callback)
     }
-    fun dropLastOne() : PinTextManager = PinTextManager(rawText.dropLast(1), callback)
+    fun dropLastOne(): PinTextManager = PinTextManager(rawText.dropLast(1), callback)
 }
 
 class ForagePinPad @JvmOverloads constructor(
@@ -59,20 +58,23 @@ class ForagePinPad @JvmOverloads constructor(
     init {
         val styles = Styles(context, attrs)
         KeypadStyler(binding, styles).applyStyling()
-        KeypadConfigurator(binding, object : KeypadConfigurator.EventsManager {
-            override fun addDigit(char: Char) {
-                pinText = pinText.addDigit(char)
+        KeypadConfigurator(
+            binding,
+            object : KeypadConfigurator.EventsManager {
+                override fun addDigit(char: Char) {
+                    pinText = pinText.addDigit(char)
+                }
+                override fun dropLastOne() {
+                    pinText = pinText.dropLastOne()
+                }
+                override fun clearText() {
+                    pinText = pinText.clearText()
+                }
+                override fun onDone() {
+                    onDoneListener?.invoke(manager.getState())
+                }
             }
-            override fun dropLastOne() {
-                pinText = pinText.dropLastOne()
-            }
-            override fun clearText() {
-                pinText = pinText.clearText()
-            }
-            override fun onDone() {
-                onDoneListener?.invoke(manager.getState())
-            }
-        }).configureKeypad()
+        ).configureKeypad()
     }
 
     override fun getVaultSubmitter(envConfig: EnvConfig, logger: Log): AbstractVaultSubmitter {
@@ -200,8 +202,10 @@ private class KeypadStyler(
         // apply padding top to all non-top rows (i.e. not row 1)
         (rowTwoButtons + rowThreeButtons + rowFourButtons).forEach {
             it.layoutParams.height = styles.buttonLayoutHeight
-            (it.layoutParams as
-                    ViewGroup.MarginLayoutParams).topMargin = styles.buttonLayoutMargin
+            (
+                it.layoutParams as
+                    ViewGroup.MarginLayoutParams
+                ).topMargin = styles.buttonLayoutMargin
         }
 
         // apply padding start to all non-start cols (i.e. not col 1)

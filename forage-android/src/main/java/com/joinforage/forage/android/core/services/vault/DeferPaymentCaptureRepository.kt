@@ -14,7 +14,7 @@ internal open class DeferPaymentCaptureRepository(
     private val vaultSubmitter: VaultSubmitter,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
-    private val paymentService: PaymentService,
+    private val paymentService: PaymentService
 ) {
     /**
      * @return if successful, the response.data field is an empty string
