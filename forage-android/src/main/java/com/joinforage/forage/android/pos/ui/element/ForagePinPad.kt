@@ -4,10 +4,10 @@ import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
 import androidx.annotation.StringRes
-import androidx.core.content.res.getResourceIdOrThrow
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
@@ -57,8 +57,8 @@ class ForagePinPad @JvmOverloads constructor(
     }
 
     init {
-//        val styles = ForagePinPadStyles(context, attrs)
-//        KeypadStyler(binding, styles).applyStyling()
+        val styles = Styles(context, attrs)
+        KeypadStyler(binding, styles).applyStyling()
         KeypadConfigurator(binding, object : KeypadConfigurator.EventsManager {
             override fun addDigit(char: Char) {
                 pinText = pinText.addDigit(char)
@@ -118,104 +118,104 @@ class ForagePinPad @JvmOverloads constructor(
     }
 }
 
-//// NOTE: it's named ForagePinPadStyles because it's hard-coded to work
-//// with R.styleable.ForagePinPad. So even though the class could be
-//// re-used, it's coupled to <declare-styleable name="ForagePinPad">
-//private class ForagePinPadStyles(context: Context, attrs: AttributeSet?) {
-////    @DrawableRes
-////    val deleteButtonIcon: Int
-////
-////    @DrawableRes
-////    val doneButtonIcon: Int
-//
-//    @StringRes
-//    val doneButtonText: Int
-//
-//    @Px
-//    val buttonLayoutHeight: Int
-//
-//    @Px
-//    val buttonLayoutMargin: Int
-//
-//    init {
-//        val attributes = context.obtainStyledAttributes(attrs, R.styleable.ForageKeypad, 0, 0)
-//        doneButtonText = "Done"
-//        buttonLayoutHeight = attributes.getLayoutDimension(R.styleable.ForageKeypad_forage_buttonLayoutHeight, 12)
-//        buttonLayoutMargin = attributes.getLayoutDimension(R.styleable.ForageKeypad_forage_buttonLayoutMargin, 12)
-////        deleteButtonIcon = attributes.getResourceIdOrThrow(R.styleable.ForageKeypad_forage_deleteButtonIcon)
-////        doneButtonIcon = attributes.getResourceIdOrThrow(R.styleable.ForageKeypad_forage_doneButtonIcon)
-//        attributes.recycle()
-//    }
-//}
+// NOTE: it's named ForagePinPadStyles because it's hard-coded to work
+// with R.styleable.ForagePinPad. So even though the class could be
+// re-used, it's coupled to <declare-styleable name="ForagePinPad">
+private class Styles(context: Context, attrs: AttributeSet?) {
+    @DrawableRes
+    val deleteButtonIcon: Int
 
-///**
-// * A class that allows a few succint styles to get intelligently
-// * applied to the 16 button grid. The alternative wuld be really
-// * verbose
-// */
-//private class KeypadStyler(
-//    private val binding: ForageKeypadBinding,
-//    private val styles: ForagePinPadStyles
-//) {
-//    fun applyStyling() {
-//        val rowOneButtons =
-//            with(binding) {
-//                setOf(forageButton1, forageButton2, forageButton3, forageButtonDelete)
-//            }
-//
-//        val rowTwoButtons =
-//            with(binding) {
-//                setOf(forageButton4, forageButton5, forageButton6)
-//            }
-//
-//        val rowThreeButtons =
-//            with(binding) {
-//                setOf(forageButton7, forageButton8, forageButton9)
-//            }
-//
-//        val rowFourButtons =
-//            with(binding) {
-//                setOf(forageButton0, forageButtonClear, forageButtonDone)
-//            }
-//
-//        val columnTwoButtons =
-//            with(binding) {
-//                setOf(forageButton2, forageButton5, forageButton8, forageButton0)
-//            }
-//
-//        val columnThreeButtons =
-//            with(binding) {
-//                setOf(forageButton3, forageButton6, forageButton9, forageButtonClear)
-//            }
-//
-//        val columnFourButtons =
-//            with(binding) {
-//                setOf(forageButtonDelete, forageButtonDone)
-//            }
-//
-//        rowOneButtons.forEach {
-//            it.layoutParams.height = styles.buttonLayoutHeight
-//        }
-//
-//        (rowTwoButtons + rowThreeButtons + rowFourButtons).forEach {
-//            it.layoutParams.height = styles.buttonLayoutHeight
-//            (it.layoutParams as
-//                    ViewGroup.MarginLayoutParams).topMargin = styles.buttonLayoutMargin
-//        }
-//
-//        // we could exclude row four from the definitions of three columns referenced below since we
-//        // don't use those sets anywhere but here, but this more accurately describes our intentions
-//        ((columnTwoButtons + columnThreeButtons + columnFourButtons) - rowFourButtons).forEach {
-//            (it.layoutParams as ViewGroup.MarginLayoutParams).marginStart = styles.buttonLayoutMargin
-//        }
-//
-//        with(binding) {
-////            forageButtonDelete.setIconResource(styles.deleteButtonIcon)
-////            forageButtonDone.setIconResource(styles.doneButtonIcon)
-//            forageButtonDone.setText(styles.doneButtonText)
-//        }
-//    }
-//}
+    @DrawableRes
+    val doneButtonIcon: Int
+
+    @StringRes
+    val doneButtonText: Int
+
+    @Px
+    val buttonLayoutHeight: Int
+
+    @Px
+    val buttonLayoutMargin: Int
+
+    init {
+        val attributes = context.obtainStyledAttributes(attrs, R.styleable.ForageKeypad, 0, 0)
+        deleteButtonIcon = attributes.getResourceId(R.styleable.ForageKeypad_forage_deleteButtonIcon, 0)
+        doneButtonIcon = attributes.getResourceId(R.styleable.ForageKeypad_forage_doneButtonIcon, 0)
+        doneButtonText = attributes.getResourceId(R.styleable.ForageKeypad_forage_doneButtonText, 0)
+        buttonLayoutHeight = attributes.getLayoutDimension(R.styleable.ForageKeypad_forage_buttonLayoutHeight, 86)
+        buttonLayoutMargin = attributes.getLayoutDimension(R.styleable.ForageKeypad_forage_buttonLayoutMargin, 8)
+        attributes.recycle()
+    }
+}
+
+/**
+ * A class that allows a few succint styles to get intelligently
+ * applied to the 16 button grid. The alternative wuld be really
+ * verbose
+ */
+private class KeypadStyler(
+    private val binding: ForageKeypadBinding,
+    private val styles: Styles
+) {
+    fun applyStyling() {
+        val rowOneButtons =
+            with(binding) {
+                setOf(forageButton1, forageButton2, forageButton3, forageButtonDelete)
+            }
+
+        val rowTwoButtons =
+            with(binding) {
+                setOf(forageButton4, forageButton5, forageButton6)
+            }
+
+        val rowThreeButtons =
+            with(binding) {
+                setOf(forageButton7, forageButton8, forageButton9)
+            }
+
+        val rowFourButtons =
+            with(binding) {
+                setOf(forageButton0, forageButtonClear, forageButtonDone)
+            }
+
+        val columnTwoButtons =
+            with(binding) {
+                setOf(forageButton2, forageButton5, forageButton8, forageButton0)
+            }
+
+        val columnThreeButtons =
+            with(binding) {
+                setOf(forageButton3, forageButton6, forageButton9, forageButtonClear)
+            }
+
+        val columnFourButtons =
+            with(binding) {
+                setOf(forageButtonDelete, forageButtonDone)
+            }
+
+        rowOneButtons.forEach {
+            it.layoutParams.height = styles.buttonLayoutHeight
+        }
+
+        // apply padding top to all non-top rows (i.e. not row 1)
+        (rowTwoButtons + rowThreeButtons + rowFourButtons).forEach {
+            it.layoutParams.height = styles.buttonLayoutHeight
+            (it.layoutParams as
+                    ViewGroup.MarginLayoutParams).topMargin = styles.buttonLayoutMargin
+        }
+
+        // apply padding start to all non-start cols (i.e. not col 1)
+        (columnTwoButtons + columnThreeButtons + columnFourButtons).forEach {
+            (it.layoutParams as ViewGroup.MarginLayoutParams).marginStart = styles.buttonLayoutMargin
+        }
+
+        with(binding) {
+            forageButtonDelete.setIconResource(styles.deleteButtonIcon)
+            forageButtonDone.setIconResource(styles.doneButtonIcon)
+            forageButtonDone.setText(styles.doneButtonText)
+        }
+    }
+}
 
 private class KeypadConfigurator(
     private val binding: ForageKeypadBinding,

@@ -5,7 +5,7 @@ import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
-import com.joinforage.forage.android.pos.PosForageConfig
+import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
@@ -59,11 +59,11 @@ interface PosApiService {
     ): PosPaymentMethod
 
     companion object {
-        internal fun from(posForageConfig: PosForageConfig): PosApiService {
+        internal fun from(forageConfig: ForageConfig): PosApiService {
             val commonHeadersInterceptor = Interceptor { chain ->
                 val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer ${posForageConfig.sessionToken}")
-                    .addHeader("Merchant-Account", posForageConfig.merchantId)
+                    .addHeader("Authorization", "Bearer ${forageConfig.sessionToken}")
+                    .addHeader("Merchant-Account", forageConfig.merchantId)
                     .build()
                 chain.proceed(newRequest)
             }
@@ -72,7 +72,7 @@ interface PosApiService {
                 .addInterceptor(commonHeadersInterceptor)
                 .build()
 
-            val env = EnvConfig.fromSessionToken(posForageConfig.sessionToken)
+            val env = EnvConfig.fromSessionToken(forageConfig.sessionToken)
 
             val retrofit = Retrofit.Builder()
                 .baseUrl(env.baseUrl)

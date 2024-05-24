@@ -13,7 +13,17 @@ fun ComposableForagePINEditText(
         factory = { context ->
             ForagePINEditText(context).apply {
                 this.requestFocus()
-                withPinElementReference(this)
+                setOnChangeEventListener {
+                    // since the sample app supports both a keypad and
+                    // this PinEditText, we tell the sample app to
+                    // assume the user wants to use the EditText if
+                    // they change the EditText value. It's possible
+                    // that the keypad is considered the current PIN
+                    // element so a user need only change the value of
+                    // EditText to tell the app to consider (again)
+                    // the EditText and not the keypad
+                    withPinElementReference(this)
+                }
             }
         }
     )

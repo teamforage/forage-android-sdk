@@ -50,7 +50,7 @@ fun PINEntryScreen(
                 ComposableForagePINEditText(
                     withPinElementReference = withPinElementReference
                 )
-                ComposableForagePinPad(withPinElementReference = withPinElementReference)
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -72,6 +72,12 @@ fun PINEntryScreen(
                         }
                     }
                 }
+                // Putting the PinPad before the complete button
+                // pushes the complete button out of sight below
+                // the screen. Rather than getting a scrollable
+                // view involved, a quick workaround was to put
+                // the keypad below the complete button
+                ComposableForagePinPad(withPinElementReference = withPinElementReference)
             } else {
                 Text("There was an issue adding your card")
             }

@@ -60,8 +60,8 @@
     <declare-styleable name="ForageKeypad">
         <attr name="forage_deleteButtonIcon" format="reference" />
         <attr name="forage_doneButtonIcon" format="reference" />
-        <attr name="forage_doneButtonText" format="reference" />
-        <attr name="forage_buttonLayoutHeight" format="reference" />
-        <attr name="forage_buttonLayoutMargin" format="reference" />
+        <attr name="forage_doneButtonText" format="string" />
+        <attr name="forage_buttonLayoutHeight" format="dimension" />
+        <attr name="forage_buttonLayoutMargin" format="dimension" />
     </declare-styleable>
 </resources>
