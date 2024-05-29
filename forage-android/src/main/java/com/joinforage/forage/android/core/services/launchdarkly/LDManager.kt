@@ -61,9 +61,9 @@ internal object LDManager {
             ALWAYS_ROSETTA_PERCENT
         ) ?: ALWAYS_ROSETTA_PERCENT
         logger.i("[LaunchDarkly] Rosetta percent of $rosettaPercent returned from LD")
-        val usingRosetta = shouldUseRosetta(rosettaPercent)
 
-        if (usingRosetta) return VaultType.FORAGE_VAULT_TYPE
+        // return early if we're using rosetta since we don't need to check the vault traffic percentage
+        if (shouldUseRosetta(rosettaPercent)) return VaultType.FORAGE_VAULT_TYPE
 
         val vaultPercent = client?.doubleVariation(
             LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG,
