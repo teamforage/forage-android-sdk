@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_BT_PERCENT
+import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_ROSETTA_PERCENT
+import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_THIRD_PARTY_PERCENT
 import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_VGS_PERCENT
 import com.joinforage.forage.android.core.services.launchdarkly.LDFlags
 import com.joinforage.forage.android.core.services.launchdarkly.LDManager
@@ -45,15 +47,40 @@ class LaunchDarklyTest() {
     }
 
     @Test
-    fun `It should default to using VGS and honor flag updates`() = runTest {
-        // set up LDManager, importantly, we're not giving it any value for
-        // primaryTrafficPercent since we want to test it defaults to VGS
+    fun `It should default to using Rosetta and honor flag updates`() = runTest {
+        // set up LDManager, importantly, we're not giving it any value for rosettaTrafficPercentage or
+        // primaryTrafficPercent since we want to test it defaults to Rosetta
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
         LDManager.initialize(app, ldConfig)
 
-        // it should default to using VGS as the vault provider
+        // it should default to using Rosetta as the vault provider when no flags are set
         val original = LDManager.getVaultProvider()
-        assertThat(original).isEqualTo(VaultType.VGS_VAULT_TYPE)
+        assertThat(original).isEqualTo(VaultType.FORAGE_VAULT_TYPE)
+
+        // Set the test data to send all traffic to rosetta
+        td.update(
+            td.flag(LDFlags.ROSETTA_TRAFFIC_PERCENTAGE).variations(
+                LDValue.of(
+                    ALWAYS_ROSETTA_PERCENT
+                )
+            )
+        )
+
+        val postRosettaUpdate = LDManager.getVaultProvider()
+        assertThat(postRosettaUpdate).isEqualTo(VaultType.FORAGE_VAULT_TYPE)
+
+        // Set the test data to send all traffic to third-party
+        td.update(
+            td.flag(LDFlags.ROSETTA_TRAFFIC_PERCENTAGE).variations(
+                LDValue.of(
+                    ALWAYS_THIRD_PARTY_PERCENT
+                )
+            )
+        )
+
+        // it should default to BT
+        val post3PUpdate = LDManager.getVaultProvider()
+        assertThat(post3PUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
 
         // Set the test data to send all traffic to BT
         td.update(
@@ -64,9 +91,22 @@ class LaunchDarklyTest() {
             )
         )
 
-        // it should consume the flag and choose BT
-        val postUpdate = LDManager.getVaultProvider()
-        assertThat(postUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
+        // it should consume the flag and return BT
+        val postBTUpdate = LDManager.getVaultProvider()
+        assertThat(postBTUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
+
+        // Set the test data to send all traffic to VGS
+        td.update(
+            td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(
+                LDValue.of(
+                    ALWAYS_VGS_PERCENT
+                )
+            )
+        )
+
+        // it should consume the flag and choose VGS
+        val postVgsUpdate = LDManager.getVaultProvider()
+        assertThat(postVgsUpdate).isEqualTo(VaultType.VGS_VAULT_TYPE)
     }
 
     @Test
