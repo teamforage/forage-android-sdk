@@ -12,6 +12,7 @@ import com.launchdarkly.sdk.android.LDConfig
 internal object LDFlags {
     const val VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG = "vault-primary-traffic-percentage"
     const val ISO_POLLING_WAIT_INTERVALS = "iso-polling-wait-intervals"
+    const val ROSETTA_TRAFFIC_PERCENTAGE = "rosetta-traffic-percentage"
 }
 
 internal object LDContexts {
@@ -22,12 +23,22 @@ internal object LDContextKind {
     const val SERVICE = "service"
 }
 
+// vault-primary-traffic-percentage
 internal val ALWAYS_BT_PERCENT = 100.0
 internal val ALWAYS_VGS_PERCENT = 0.0
+
+// rosetta-traffic-percentage
+internal val ALWAYS_ROSETTA_PERCENT = 100.0
+internal val ALWAYS_THIRD_PARTY_PERCENT = 0.0
 
 internal fun computeVaultType(trafficPrimaryPercentFlag: Double): VaultType {
     val randomNum = Math.random() * 100
     return if (randomNum < trafficPrimaryPercentFlag) VaultType.BT_VAULT_TYPE else VaultType.VGS_VAULT_TYPE
+}
+
+internal fun shouldUseRosetta(rosettaPercentFlag: Double): Boolean {
+    val randomNum = Math.random() * 100
+    return randomNum < rosettaPercentFlag
 }
 
 internal object LDManager {
@@ -45,10 +56,19 @@ internal object LDManager {
     }
 
     internal fun getVaultProvider(logger: Log = Log.getSilentInstance()): VaultType {
+        val rosettaPercent = client?.doubleVariation(
+            LDFlags.ROSETTA_TRAFFIC_PERCENTAGE,
+            ALWAYS_ROSETTA_PERCENT
+        ) ?: ALWAYS_ROSETTA_PERCENT
+        logger.i("[LaunchDarkly] Rosetta percent of $rosettaPercent returned from LD")
+        val usingRosetta = shouldUseRosetta(rosettaPercent)
+
+        if (usingRosetta) return VaultType.FORAGE_VAULT_TYPE
+
         val vaultPercent = client?.doubleVariation(
             LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG,
-            ALWAYS_VGS_PERCENT
-        ) ?: ALWAYS_VGS_PERCENT
+            ALWAYS_BT_PERCENT
+        ) ?: ALWAYS_BT_PERCENT
         logger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
 
         // convert the flag percent into an answer to which vault provider to use
