@@ -37,13 +37,13 @@ class LaunchDarklyTest() {
     }
 
     @Test
-    fun `Test computeVaultType returns BT percent is 100f`() {
-        assertThat(computeVaultType(ALWAYS_BT_PERCENT)).isEqualTo(VaultType.BT_VAULT_TYPE)
+    fun `Test computeVaultType returns Forage Vault if percent is 100f`() {
+        assertThat(computeVaultType(ALWAYS_ROSETTA_PERCENT)).isEqualTo(VaultType.FORAGE_VAULT_TYPE)
     }
 
     @Test
-    fun `Test computeVaultType returns VGS percent is 0f`() {
-        assertThat(computeVaultType(ALWAYS_VGS_PERCENT)).isEqualTo(VaultType.VGS_VAULT_TYPE)
+    fun `Test computeVaultType returns BT percent is 0f`() {
+        assertThat(computeVaultType(ALWAYS_THIRD_PARTY_PERCENT)).isEqualTo(VaultType.BT_VAULT_TYPE)
     }
 
     @Test
@@ -78,35 +78,9 @@ class LaunchDarklyTest() {
             )
         )
 
-        // it should default to BT
+        // it should use BT
         val post3PUpdate = LDManager.getVaultProvider()
         assertThat(post3PUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
-
-        // Set the test data to send all traffic to BT
-        td.update(
-            td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(
-                LDValue.of(
-                    ALWAYS_BT_PERCENT
-                )
-            )
-        )
-
-        // it should consume the flag and return BT
-        val postBTUpdate = LDManager.getVaultProvider()
-        assertThat(postBTUpdate).isEqualTo(VaultType.BT_VAULT_TYPE)
-
-        // Set the test data to send all traffic to VGS
-        td.update(
-            td.flag(LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG).variations(
-                LDValue.of(
-                    ALWAYS_VGS_PERCENT
-                )
-            )
-        )
-
-        // it should consume the flag and choose VGS
-        val postVgsUpdate = LDManager.getVaultProvider()
-        assertThat(postVgsUpdate).isEqualTo(VaultType.VGS_VAULT_TYPE)
     }
 
     @Test
