@@ -152,6 +152,8 @@ class ForagePINEditText @JvmOverloads constructor(
         return if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
         } else {
+            // TODO: Update this to the ForageVaultWrapper once it's back in this codebase
+            // https://linear.app/joinforage/issue/FX-1368/re-introduce-the-foragevaultwrapper-into-the-coreui-module-in-the
             vgsVaultWrapper
         }
     }
