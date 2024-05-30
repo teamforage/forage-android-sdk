@@ -22,10 +22,6 @@ internal object LDContextKind {
     const val SERVICE = "service"
 }
 
-// vault-primary-traffic-percentage
-internal val ALWAYS_BT_PERCENT = 100.0
-internal val ALWAYS_VGS_PERCENT = 0.0
-
 // rosetta-traffic-percentage
 internal val ALWAYS_ROSETTA_PERCENT = 100.0
 internal val ALWAYS_THIRD_PARTY_PERCENT = 0.0

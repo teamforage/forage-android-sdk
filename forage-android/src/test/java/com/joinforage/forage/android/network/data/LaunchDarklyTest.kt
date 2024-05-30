@@ -3,10 +3,8 @@ package com.joinforage.forage.android.network.data
 import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_BT_PERCENT
 import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_ROSETTA_PERCENT
 import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_THIRD_PARTY_PERCENT
-import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_VGS_PERCENT
 import com.joinforage.forage.android.core.services.launchdarkly.LDFlags
 import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.launchdarkly.computeVaultType
