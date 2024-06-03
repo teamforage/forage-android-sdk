@@ -149,10 +149,10 @@ class ForagePINEditText @JvmOverloads constructor(
 
         // decide on a vault provider and the corresponding vault wrapper
         val vaultType = LDManager.getVaultProvider(logger)
-        return if (vaultType == VaultType.FORAGE_VAULT_TYPE) {
-            forageVaultWrapper
-        } else {
+        return if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
+        } else {
+            forageVaultWrapper
         }
     }
 
