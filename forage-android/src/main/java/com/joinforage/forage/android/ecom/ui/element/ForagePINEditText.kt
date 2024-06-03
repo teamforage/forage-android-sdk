@@ -18,7 +18,7 @@ import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
-import com.joinforage.forage.android.ecom.ui.vault.vgs.VGSVaultWrapper
+import com.joinforage.forage.android.ecom.ui.vault.forage.ForageVaultWrapper
 import com.launchdarkly.sdk.android.LDConfig
 
 /**
@@ -61,7 +61,7 @@ class ForagePINEditText @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
     private val btVaultWrapper: BTVaultWrapper
-    private val vgsVaultWrapper: VGSVaultWrapper
+    private val forageVaultWrapper: ForageVaultWrapper
 
     /**
      * The `vault` property acts as an abstraction for the actual code
@@ -103,10 +103,10 @@ class ForagePINEditText @JvmOverloads constructor(
                     // and are thus able to initial LaunchDarkly and find out
                     // whether to use BT or VGS. So, below we are hedging.
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
-                    vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
+                    forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
                     // ensure all wrappers init with the
                     // same typeface (or the attributes)
-                    btVaultWrapper.typeface = vgsVaultWrapper.typeface
+                    forageVaultWrapper.typeface = btVaultWrapper.typeface
                 } finally {
                     recycle()
                 }
@@ -149,12 +149,10 @@ class ForagePINEditText @JvmOverloads constructor(
 
         // decide on a vault provider and the corresponding vault wrapper
         val vaultType = LDManager.getVaultProvider(logger)
-        return if (vaultType == VaultType.BT_VAULT_TYPE) {
-            btVaultWrapper
+        return if (vaultType == VaultType.FORAGE_VAULT_TYPE) {
+            forageVaultWrapper
         } else {
-            // TODO: Update this to the ForageVaultWrapper once it's back in this codebase
-            // https://linear.app/joinforage/issue/FX-1368/re-introduce-the-foragevaultwrapper-into-the-coreui-module-in-the
-            vgsVaultWrapper
+            btVaultWrapper
         }
     }
 
@@ -166,12 +164,12 @@ class ForagePINEditText @JvmOverloads constructor(
     ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
 
     override var typeface: Typeface?
-        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface
+        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else forageVaultWrapper.typeface
         set(value) {
             // keep all vault providers in sync regardless of
             // whether they were added to the UI
             btVaultWrapper.typeface = value
-            vgsVaultWrapper.typeface = value
+            forageVaultWrapper.typeface = value
         }
 
     override fun showKeyboard() = vault.showKeyboard()
