@@ -106,7 +106,7 @@ class ForagePINEditText @JvmOverloads constructor(
                     forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
                     // ensure all wrappers init with the
                     // same typeface (or the attributes)
-                    forageVaultWrapper.typeface = btVaultWrapper.typeface
+                    btVaultWrapper.typeface = forageVaultWrapper.typeface
                 } finally {
                     recycle()
                 }
