@@ -60,7 +60,7 @@ class FlowCapturePaymentViewModel @Inject constructor(
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Capture Snap Payment Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Capture Snap Payment Response: ${response.errors[0].message} Payment: $snapPaymentRef")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
