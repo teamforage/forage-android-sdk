@@ -81,7 +81,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
         vault.clearText()
     }
 
-
     // While the events that ForageElements expose mirrors the
     // blur, focus, change etc events of an Android view,
     // they represent different abstractions. Our users need to

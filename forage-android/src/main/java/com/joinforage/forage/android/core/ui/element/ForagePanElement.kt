@@ -13,8 +13,8 @@ import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.element.state.PanElementState
 import com.joinforage.forage.android.core.ui.element.state.PanElementStateManager
@@ -182,7 +182,8 @@ abstract class ForagePanElement @JvmOverloads constructor(
     }
 
     private val forageConfigManager = ForageConfigManager {
-            forageConfig ->  initWithForageConfig(forageConfig)
+            forageConfig ->
+        initWithForageConfig(forageConfig)
     }
     override fun setForageConfig(forageConfig: ForageConfig) {
         forageConfigManager.forageConfig = forageConfig

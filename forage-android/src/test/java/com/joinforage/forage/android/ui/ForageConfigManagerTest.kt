@@ -2,7 +2,7 @@ package com.joinforage.forage.android.ui
 
 import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForageConfigManager
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 val conf1 = ForageConfig("first", "config")
