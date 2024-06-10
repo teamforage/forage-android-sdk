@@ -118,7 +118,7 @@ class ForageSDK {
      * information on error handling.
      * @return A [ForageApiResponse] object. Use [toPaymentMethod()][ForageApiResponse.Success.toPaymentMethod] to convert the `data` string to a [PaymentMethod][com.joinforage.forage.android.model.PaymentMethod].
      */
-     suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
+    suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText.getForageConfig())
 
@@ -197,7 +197,7 @@ class ForageSDK {
      * @return A [ForageApiResponse] object. Use [toBalance()][ForageApiResponse.Success.toBalance]
      * to convert the `data` string to a [Balance][com.joinforage.forage.android.model.Balance].
      */
-     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
+    suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
 
@@ -293,7 +293,7 @@ class ForageSDK {
      * to trigger payment capture exceptions during testing.
      * @return A [ForageApiResponse] object. Use [toPayment()][ForageApiResponse.Success.toPayment] to convert the `data` string to a [Payment][com.joinforage.forage.android.model.Payment].
      */
-     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
+    suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
 
@@ -382,7 +382,7 @@ class ForageSDK {
      * on error handling.
      * @return A [ForageApiResponse] object.
      */
-     suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
+    suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
 
@@ -502,7 +502,6 @@ class ForageSDK {
         )
     }
 }
-
 
 /**
  * The Forage SDK public API.

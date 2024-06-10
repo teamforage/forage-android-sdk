@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.telemetry.Log
@@ -17,7 +18,6 @@ import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
-import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.ecom.ui.vault.vgs.VGSVaultWrapper
 import com.launchdarkly.sdk.android.LDConfig
 
@@ -134,7 +134,8 @@ class ForagePINEditText @JvmOverloads constructor(
     }
 
     private val forageConfigManager = ForageConfigManager {
-            forageConfig ->  initWithForageConfig(forageConfig)
+            forageConfig ->
+        initWithForageConfig(forageConfig)
     }
     override fun setForageConfig(forageConfig: ForageConfig) {
         forageConfigManager.forageConfig = forageConfig
