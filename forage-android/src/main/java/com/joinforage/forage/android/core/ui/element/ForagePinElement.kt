@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.ui.VaultWrapper
@@ -50,7 +49,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForageVaultElement<PinEditTextState>(context, attrs, defStyleAttr), EditTextElement {
-    protected val _linearLayout: LinearLayout
     internal abstract val vault: VaultWrapper
 
     init {
@@ -64,10 +62,9 @@ abstract class ForagePinElement @JvmOverloads constructor(
                     val elementWidth: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementWidth, ViewGroup.LayoutParams.MATCH_PARENT)
                     val elementHeight: Int = getDimensionPixelSize(R.styleable.ForagePINEditText_elementHeight, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-                    _linearLayout = LinearLayout(context)
-                    _linearLayout.layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)
-                    _linearLayout.orientation = VERTICAL
-                    _linearLayout.gravity = Gravity.CENTER
+                    layoutParams = ViewGroup.LayoutParams(elementWidth, elementHeight)
+                    orientation = VERTICAL
+                    gravity = Gravity.CENTER
                 } finally {
                     recycle()
                 }

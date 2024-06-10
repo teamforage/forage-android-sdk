@@ -126,9 +126,8 @@ class ForagePINEditText @JvmOverloads constructor(
         // it to the parent view
         _SET_ONLY_vault = determineBackingVault(forageConfig, logger)
 
-        _linearLayout.addView(vault.getTextElement())
-        _linearLayout.addView(getLogoImageViewLayout(context))
-        addView(_linearLayout)
+        addView(vault.getTextElement())
+        addView(getLogoImageViewLayout(context))
 
         logger.i("[View] ForagePINEditText successfully rendered")
     }
