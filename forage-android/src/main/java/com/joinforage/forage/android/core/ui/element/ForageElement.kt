@@ -80,41 +80,6 @@ interface EditTextElement {
      * @param l The [SimpleElementListener] to be fired on blur events.
      */
     fun setOnBlurEventListener(l: SimpleElementListener)
-}
-
-/**
- * The interface that defines methods for configuring and interacting with a [ForageElement].
- * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
- * transaction.
- * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
- *
- * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
- * that is used to render text within the ForageElement.
- * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
- * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
- * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
- */
-interface ForageElement<T : ElementState> {
-    var typeface: Typeface?
-
-    /**
-     * Clears the text input field of the ForageElement.
-     */
-    fun clearText()
-
-    /**
-     * Sets the text color for the ForageElement.
-     *
-     * @param textColor The color value in the form `0xAARRGGBB`.
-     */
-    fun setTextColor(textColor: Int)
-
-    /**
-     * Sets the text size for the ForageElement.
-     *
-     * @param textSize The scaled pixel size.
-     */
-    fun setTextSize(textSize: Float)
 
     /**
      * Sets the text to be displayed when the ForageElement input field is empty.
@@ -150,6 +115,41 @@ interface ForageElement<T : ElementState> {
      * @param boxStrokeWidth The scaled pixel size.
      */
     fun setBoxStrokeWidthFocused(boxStrokeWidth: Int)
+}
+
+/**
+ * The interface that defines methods for configuring and interacting with a [ForageElement].
+ * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
+ * transaction.
+ * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
+ *
+ * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
+ * that is used to render text within the ForageElement.
+ * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
+ * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
+ * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
+ */
+interface ForageElement<T : ElementState> {
+    var typeface: Typeface?
+
+    /**
+     * Clears the text input field of the ForageElement.
+     */
+    fun clearText()
+
+    /**
+     * Sets the text color for the ForageElement.
+     *
+     * @param textColor The color value in the form `0xAARRGGBB`.
+     */
+    fun setTextColor(textColor: Int)
+
+    /**
+     * Sets the text size for the ForageElement.
+     *
+     * @param textSize The scaled pixel size.
+     */
+    fun setTextSize(textSize: Float)
 
     /**
      * Gets the current [ElementState] state of the ForageElement.
