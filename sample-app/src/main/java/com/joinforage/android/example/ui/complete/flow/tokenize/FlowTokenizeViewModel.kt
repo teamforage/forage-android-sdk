@@ -12,7 +12,7 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCa
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.ecom.services.ForageSDK
 import com.joinforage.forage.android.ecom.services.TokenizeEBTCardParams
-import com.joinforage.forage.android.ecom.ui.ForagePANEditText
+import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

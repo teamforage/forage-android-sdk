@@ -5,7 +5,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef

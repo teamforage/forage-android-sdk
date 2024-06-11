@@ -11,7 +11,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.ecom.services.CapturePaymentParams
 import com.joinforage.forage.android.ecom.services.DeferPaymentCaptureParams
 import com.joinforage.forage.android.ecom.services.ForageSDK
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
