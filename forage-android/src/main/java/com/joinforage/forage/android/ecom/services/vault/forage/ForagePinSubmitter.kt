@@ -29,7 +29,8 @@ import org.json.JSONObject
 internal class ForagePinSubmitter(
     context: Context,
     foragePinEditText: ForagePinElement,
-    logger: Log
+    logger: Log,
+    private val vaultUrlBuilder: ((String) -> HttpUrl) = { path -> buildVaultUrl(path) }
 ) : AbstractVaultSubmitter(
     context = context,
     foragePinEditText = foragePinEditText,
@@ -44,7 +45,7 @@ internal class ForagePinSubmitter(
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
         return try {
-            val apiUrl = buildVaultUrl(vaultProxyRequest.path)
+            val apiUrl = vaultUrlBuilder(vaultProxyRequest.path)
             val baseRequestBody = buildBaseRequestBody(vaultProxyRequest)
             val requestBody = buildForageVaultRequestBody(foragePinEditText, baseRequestBody)
 
@@ -63,7 +64,6 @@ internal class ForagePinSubmitter(
             )
 
             val vaultService: NetworkService = object : NetworkService(okHttpClient, logger) {}
-
             val rawForageVaultResponse = vaultService.convertCallbackToCoroutine(request)
 
             vaultToForageResponse(ForageResponseParser(rawForageVaultResponse))
@@ -91,10 +91,8 @@ internal class ForagePinSubmitter(
     companion object {
         // this code assumes that .setForageConfig() has been called
         // on a Forage***EditText before VAULT_BASE_URL gets referenced
-        private val VAULT_BASE_URL = StopgapGlobalState.envConfig.vaultBaseUrl
-
         private fun buildVaultUrl(path: String): HttpUrl =
-            VAULT_BASE_URL.toHttpUrlOrNull()!!
+            StopgapGlobalState.envConfig.vaultBaseUrl.toHttpUrlOrNull()!!
                 .newBuilder()
                 .addPathSegment("proxy")
                 .addPathSegmentsSafe(path)
