@@ -167,4 +167,10 @@ class RosettaPinElementTests {
         val background = editText.background as GradientDrawable
         assertFalse(background.color!!.isOpaque)
     }
+
+    @Test
+    fun `has 14 text size by default`() {
+        val editText = rosettaPinElement.getTextElement()
+        assertEquals(14.0f, editText.textSize)
+    }
 }
