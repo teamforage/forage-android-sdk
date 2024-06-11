@@ -16,7 +16,6 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
@@ -29,7 +28,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalTextElement: TextElement
-    override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
     override val vaultType: VaultType = VaultType.BT_VAULT_TYPE
 
     init {
@@ -89,14 +87,27 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                     // a single listener to Basis Theory during initialization
                     // and we will use a mutating reference that only points
                     // the most recent event listener
-                    _internalTextElement.addFocusEventListener { manager.focus() }
-                    _internalTextElement.addBlurEventListener { manager.blur() }
+                    _internalTextElement.addFocusEventListener {
+                        focusState = focusState.focus()
+                        focusState.fireEvent(
+                            onFocusEventListener = onFocusEventListener,
+                            onBlurEventListener = onBlurEventListener
+                        )
+                    }
+                    _internalTextElement.addBlurEventListener {
+                        focusState = focusState.blur()
+                        focusState.fireEvent(
+                            onFocusEventListener = onFocusEventListener,
+                            onBlurEventListener = onBlurEventListener
+                        )
+                    }
                     _internalTextElement.addChangeEventListener { state ->
                         // map Basis Theory's event representation to Forage's
-                        manager.handleChangeEvent(
+                        inputState = inputState.handleChangeEvent(
                             isComplete = state.isComplete,
                             isEmpty = state.isEmpty
                         )
+                        onChangeEventListener?.invoke(pinEditTextState)
                     }
                 } finally {
                     recycle()
@@ -121,7 +132,7 @@ internal class BTVaultWrapper @JvmOverloads constructor(
             override fun clearText() {
                 this@BTVaultWrapper.clearText()
             }
-            override fun isComplete(): Boolean = manager.isComplete
+            override fun isComplete(): Boolean = inputState.isComplete
         },
         envConfig,
         logger

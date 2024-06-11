@@ -12,8 +12,9 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.element.SimpleElementListener
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
-import com.joinforage.forage.android.core.ui.element.state.PinElementState
-import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
+import com.joinforage.forage.android.core.ui.element.state.FocusState
+import com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState
+import com.joinforage.forage.android.core.ui.element.state.pin.PinInputState
 
 internal abstract class VaultWrapper @JvmOverloads constructor(
     context: Context,
@@ -21,6 +22,10 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     abstract var typeface: Typeface?
+    abstract val vaultType: VaultType
+
+    protected var focusState = FocusState.forEmptyInput()
+    protected var inputState = PinInputState.forEmptyInput()
 
     // mutable references to event listeners. We use mutable
     // references because the implementations of our vaults
@@ -28,8 +33,9 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     // monolithic event within init call. This is mutability
     // allows us simulate setting and overwriting a listener
     // with every set call
-    internal abstract val manager: PinElementStateManager
-    abstract val vaultType: VaultType
+    var onFocusEventListener: SimpleElementListener? = null
+    var onBlurEventListener: SimpleElementListener? = null
+    var onChangeEventListener: StatefulElementListener<PinEditTextState>? = null
 
     abstract fun clearText()
 
@@ -51,15 +57,6 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
         return outValue.data
     }
 
-    fun setOnFocusEventListener(l: SimpleElementListener) {
-        manager.setOnFocusEventListener(l)
-    }
-
-    fun setOnBlurEventListener(l: SimpleElementListener) {
-        manager.setOnBlurEventListener(l)
-    }
-
-    fun setOnChangeEventListener(l: StatefulElementListener<PinElementState>) {
-        manager.setOnChangeEventListener(l)
-    }
+    val pinEditTextState: PinEditTextState
+        get() = PinEditTextState.from(focusState, inputState)
 }

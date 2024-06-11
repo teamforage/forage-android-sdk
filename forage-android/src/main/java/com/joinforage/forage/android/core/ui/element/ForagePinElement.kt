@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.state.PinElementState
+import com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -49,7 +49,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PinElementState>, EditTextElement {
+) : ForageVaultElement<PinEditTextState>(context, attrs, defStyleAttr), EditTextElement {
     protected val _linearLayout: LinearLayout
     internal abstract val vault: VaultWrapper
 
@@ -86,18 +86,16 @@ abstract class ForagePinElement @JvmOverloads constructor(
     // Therefore we expose novel set listener methods instead of
     // overriding the convention setOn*Listener
     override fun setOnFocusEventListener(l: SimpleElementListener) {
-        vault.setOnFocusEventListener(l)
+        vault.onFocusEventListener = l
     }
     override fun setOnBlurEventListener(l: SimpleElementListener) {
-        vault.setOnBlurEventListener(l)
+        vault.onBlurEventListener = l
     }
-    override fun setOnChangeEventListener(l: StatefulElementListener<PinElementState>) {
-        vault.setOnChangeEventListener(l)
+    override fun setOnChangeEventListener(l: StatefulElementListener<PinEditTextState>) {
+        vault.onChangeEventListener = l
     }
 
-    override fun getElementState(): PinElementState {
-        return vault.manager.getState()
-    }
+    override fun getElementState(): PinEditTextState = vault.pinEditTextState
 
     internal fun getVaultType(): VaultType {
         return vault.vaultType
