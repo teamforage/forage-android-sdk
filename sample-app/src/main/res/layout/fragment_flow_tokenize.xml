@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.tokenize.TokenizeFragment">
 
-    <com.joinforage.forage.android.ecom.ui.ForagePANEditText
+    <com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
         android:id="@+id/tokenizeForagePanEditText"
         style="?tokenizeForagePANEditTextStyle"
         android:layout_width="0dp"

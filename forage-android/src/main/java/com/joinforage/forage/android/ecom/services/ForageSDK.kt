@@ -19,7 +19,7 @@ import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepo
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
 import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForagePanElement
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 
 /**
  * The entry point to the Forage SDK.

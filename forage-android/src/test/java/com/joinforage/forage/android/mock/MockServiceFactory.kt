@@ -15,7 +15,7 @@ import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepo
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
 import com.joinforage.forage.android.core.ui.element.state.pan.USState
 import com.joinforage.forage.android.ecom.services.ForageSDK
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
+import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer
 
 internal class MockServiceFactory(
