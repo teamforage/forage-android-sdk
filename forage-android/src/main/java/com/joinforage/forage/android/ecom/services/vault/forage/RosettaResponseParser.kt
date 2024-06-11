@@ -3,7 +3,7 @@ package com.joinforage.forage.android.ecom.services.vault.forage
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 
-class ForageResponseParser(rosettaResponse: ForageApiResponse<String>) : VaultResponseParser {
+class RosettaResponseParser(rosettaResponse: ForageApiResponse<String>) : VaultResponseParser {
     override val isNullResponse: Boolean = false
 
     // Unlike VGS and Basis Theory, Vault-specific errors are handled in

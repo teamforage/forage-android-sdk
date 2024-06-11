@@ -18,7 +18,7 @@ import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
-import com.joinforage.forage.android.ecom.ui.vault.forage.ForageVaultWrapper
+import com.joinforage.forage.android.ecom.ui.vault.forage.RosettaPinElement
 import com.launchdarkly.sdk.android.LDConfig
 
 /**
@@ -61,7 +61,7 @@ class ForagePINEditText @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
     private val btVaultWrapper: BTVaultWrapper
-    private val forageVaultWrapper: ForageVaultWrapper
+    private val rosettaPinElement: RosettaPinElement
 
     /**
      * The `vault` property acts as an abstraction for the actual code
@@ -97,16 +97,16 @@ class ForagePINEditText @JvmOverloads constructor(
 
                     // at this point in time, we do not know the environment and
                     // we are operating and thus do not know whether to add
-                    // BTVaultWrapper or ForageVaultWrapper to the UI.
+                    // BTVaultWrapper or ForageVaultElement to the UI.
                     // But that's OK. We can hedge and instantiate all of them.
                     // Then, within setForageConfig, once we know the environment
                     // and are thus able to initial LaunchDarkly and find out
                     // whether to use BT or Forage. So, below we are hedging.
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
-                    forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
+                    rosettaPinElement = RosettaPinElement(context, attrs, defStyleAttr)
                     // ensure all wrappers init with the
                     // same typeface (or the attributes)
-                    btVaultWrapper.typeface = forageVaultWrapper.typeface
+                    btVaultWrapper.typeface = rosettaPinElement.typeface
                 } finally {
                     recycle()
                 }
@@ -152,7 +152,7 @@ class ForagePINEditText @JvmOverloads constructor(
         return if (vaultType == VaultType.BT_VAULT_TYPE) {
             btVaultWrapper
         } else {
-            forageVaultWrapper
+            rosettaPinElement
         }
     }
 
@@ -164,12 +164,12 @@ class ForagePINEditText @JvmOverloads constructor(
     ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
 
     override var typeface: Typeface?
-        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else forageVaultWrapper.typeface
+        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else rosettaPinElement.typeface
         set(value) {
             // keep all vault providers in sync regardless of
             // whether they were added to the UI
             btVaultWrapper.typeface = value
-            forageVaultWrapper.typeface = value
+            rosettaPinElement.typeface = value
         }
 
     override fun showKeyboard() = vault.showKeyboard()

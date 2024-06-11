@@ -26,7 +26,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
-internal class ForagePinSubmitter(
+internal class RosettaPinSubmitter(
     context: Context,
     foragePinEditText: ForagePinElement,
     logger: Log,
@@ -66,7 +66,7 @@ internal class ForagePinSubmitter(
             val vaultService: NetworkService = object : NetworkService(okHttpClient, logger) {}
             val rawForageVaultResponse = vaultService.convertCallbackToCoroutine(request)
 
-            vaultToForageResponse(ForageResponseParser(rawForageVaultResponse))
+            vaultToForageResponse(RosettaResponseParser(rawForageVaultResponse))
         } catch (e: Exception) {
             logger.e("Failed to send request to Forage Vault.", e)
             UnknownErrorApiResponse

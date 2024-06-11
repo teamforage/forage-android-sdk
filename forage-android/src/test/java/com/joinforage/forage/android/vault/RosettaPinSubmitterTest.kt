@@ -14,7 +14,7 @@ import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
 import com.joinforage.forage.android.core.ui.element.ForageConfig
-import com.joinforage.forage.android.ecom.services.vault.forage.ForagePinSubmitter
+import com.joinforage.forage.android.ecom.services.vault.forage.RosettaPinSubmitter
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import com.joinforage.forage.android.fixtures.givenRosettaPaymentCaptureRequest
 import com.joinforage.forage.android.fixtures.returnsMalformedError
@@ -41,10 +41,10 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 
-class ForagePinSubmitterTests() : MockServerSuite() {
+class RosettaPinSubmitterTest() : MockServerSuite() {
     private lateinit var mockLogger: MockLogger
     private lateinit var mockForagePinEditText: ForagePINEditText
-    private lateinit var submitter: ForagePinSubmitter
+    private lateinit var submitter: RosettaPinSubmitter
 
     @Before
     fun setUp() {
@@ -64,7 +64,7 @@ class ForagePinSubmitterTests() : MockServerSuite() {
         `when`(mockEditable.toString()).thenReturn("1234")
         `when`(mockEditText.text).thenReturn(mockEditable)
 
-        submitter = ForagePinSubmitter(
+        submitter = RosettaPinSubmitter(
             context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
