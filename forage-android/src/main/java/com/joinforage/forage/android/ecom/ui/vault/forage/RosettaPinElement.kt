@@ -22,7 +22,10 @@ import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
-import com.joinforage.forage.android.core.ui.getBoxCornerRadius
+import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
+import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
+import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
+import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopStart
 import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
 import com.joinforage.forage.android.ecom.services.vault.forage.RosettaPinSubmitter
 
@@ -110,22 +113,13 @@ internal class RosettaPinElement @JvmOverloads constructor(
                 R.styleable.ForagePINEditText_boxBackgroundColor,
                 Color.TRANSPARENT
             )
-            val boxCornerRadiusTopStart = typedArray.getBoxCornerRadius(
-                R.styleable.ForagePINEditText_boxCornerRadiusTopStart,
-                boxCornerRadius
-            )
-            val boxCornerRadiusTopEnd = typedArray.getBoxCornerRadius(
-                R.styleable.ForagePINEditText_boxCornerRadiusTopEnd,
-                boxCornerRadius
-            )
-            val boxCornerRadiusBottomStart = typedArray.getBoxCornerRadius(
-                R.styleable.ForagePINEditText_boxCornerRadiusBottomStart,
-                boxCornerRadius
-            )
-            val boxCornerRadiusBottomEnd = typedArray.getBoxCornerRadius(
-                R.styleable.ForagePINEditText_boxCornerRadiusBottomEnd,
-                boxCornerRadius
-            )
+            // getBoxCornerRadius*** methods use the ForagePANEditText
+            // (instead of the ForagePINEditText) styling options
+            // This will be fixed in the future major version of the Android SDK
+            val boxCornerRadiusTopStart = typedArray.getBoxCornerRadiusTopStart(boxCornerRadius)
+            val boxCornerRadiusTopEnd = typedArray.getBoxCornerRadiusTopEnd(boxCornerRadius)
+            val boxCornerRadiusBottomStart = typedArray.getBoxCornerRadiusBottomStart(boxCornerRadius)
+            val boxCornerRadiusBottomEnd = typedArray.getBoxCornerRadiusBottomEnd(boxCornerRadius)
             val _hint = typedArray.getString(R.styleable.ForagePINEditText_hint)
             val hintTextColor =
                 typedArray.getColorStateList(R.styleable.ForagePINEditText_hintTextColor)
