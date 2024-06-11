@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core.ui.element.state
+package com.joinforage.forage.android.core.ui.element.state.pan
 
 internal const val STATE_INN_LENGTH = 6
 

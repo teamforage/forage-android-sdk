@@ -16,8 +16,9 @@ import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.ui.element.state.PanElementState
-import com.joinforage.forage.android.core.ui.element.state.PanElementStateManager
+import com.joinforage.forage.android.core.ui.element.state.FocusState
+import com.joinforage.forage.android.core.ui.element.state.pan.PanEditTextState
+import com.joinforage.forage.android.core.ui.element.state.pan.PanInputState
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
@@ -61,26 +62,32 @@ abstract class ForagePanElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PanElementState>, EditTextElement, DynamicEnvElement {
+) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PanEditTextState>, EditTextElement, DynamicEnvElement {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
 
+    private var onFocusEventListener: SimpleElementListener? = null
+    private var onBlurEventListener: SimpleElementListener? = null
+    private var onChangeEventListener: StatefulElementListener<PanEditTextState>? = null
+    private var focusState = FocusState.forEmptyInput()
+
     /**
-     * The `manager` property acts as an abstraction for the actual code
+     * The `inputState` property acts as an abstraction for the actual code
      * in ForagePANEditText, allowing it to work with a non-nullable
      * result determined by the choice between `prod` or `sandbox`.
      * This choice requires knowledge of the environment,which is determined
      * by `forageConfig` set on this instance.
      *
-     * The underlying value for `manager` is stored in `_SET_ONLY_manager`.
-     * This backing property is set only after `ForageConfig` has been
-     * initialized for this instance. If `manager` is accessed before
-     * `_SET_ONLY_manager` is set, a runtime exception is thrown.
+     * The underlying value for `inputState` is stored in
+     * `_SET_ONLY_inputState`. This backing property is set only after
+     * `ForageConfig` has been initialized for this instance. If `manager`
+     * is accessed before `_SET_ONLY_inputState` is set, a runtime exception
+     * is thrown.
      */
-    private var _SET_ONLY_manager: PanElementStateManager? = null
-    private val manager: PanElementStateManager
+    private var _SET_ONLY_inputState: PanInputState? = null
+    private val inputState: PanInputState
         get() {
-            if (_SET_ONLY_manager == null) {
+            if (_SET_ONLY_inputState == null) {
                 throw ForageConfigNotSetException(
                     """You are attempting invoke a method a ForageElement before setting
                     it's ForageConfig. Make sure to call
@@ -89,7 +96,7 @@ abstract class ForagePanElement @JvmOverloads constructor(
                     """.trimIndent()
                 )
             }
-            return _SET_ONLY_manager!!
+            return _SET_ONLY_inputState!!
         }
 
     override var typeface: Typeface? = null
@@ -198,12 +205,12 @@ abstract class ForagePanElement @JvmOverloads constructor(
         val logger = Log.getInstance()
         logger.initializeDD(context, forageConfig)
 
-        _SET_ONLY_manager = if (EnvConfig.inProd(forageConfig)) {
+        _SET_ONLY_inputState = if (EnvConfig.inProd(forageConfig)) {
             // strictly support only valid Ebt PAN numbers
-            PanElementStateManager.forEmptyInput()
+            PanInputState.forEmptyInput()
         } else {
             // allows whitelist of special Ebt PAN numbers
-            PanElementStateManager.NON_PROD_forEmptyInput()
+            PanInputState.NON_PROD_forEmptyInput()
         }
 
         // register FormatPanTextWatcher to keep the format up to date
@@ -214,7 +221,8 @@ abstract class ForagePanElement @JvmOverloads constructor(
         // decide when its appropriate to invoke the user-registered callback
         val formatPanTextWatcher = FormatPanTextWatcher(textInputEditText)
         formatPanTextWatcher.onFormattedChangeEvent { formattedCardNumber ->
-            manager.handleChangeEvent(formattedCardNumber)
+            _SET_ONLY_inputState = inputState.handleChangeEvent(formattedCardNumber)
+            onChangeEventListener?.invoke(getElementState())
         }
         textInputEditText.addTextChangedListener(formatPanTextWatcher)
 
@@ -246,7 +254,11 @@ abstract class ForagePanElement @JvmOverloads constructor(
         // over will continue to correctly call the developer's
         // focus/blur events
         textInputEditText.setOnFocusChangeListener { _, hasFocus ->
-            manager.changeFocus(hasFocus)
+            focusState = focusState.changeFocus(hasFocus)
+            focusState.fireEvent(
+                onFocusEventListener = onFocusEventListener,
+                onBlurEventListener = onBlurEventListener
+            )
         }
     }
 
@@ -258,20 +270,21 @@ abstract class ForagePanElement @JvmOverloads constructor(
     // Therefore we expose novel set listener methods instead of
     // overriding the convention setOn*Listener
     override fun setOnFocusEventListener(l: SimpleElementListener) {
-        manager.setOnFocusEventListener(l)
+        onFocusEventListener = l
         restartFocusChangeListener()
     }
     override fun setOnBlurEventListener(l: SimpleElementListener) {
-        manager.setOnBlurEventListener(l)
+        onBlurEventListener = l
         restartFocusChangeListener()
     }
-    override fun setOnChangeEventListener(l: StatefulElementListener<PanElementState>) {
-        manager.setOnChangeEventListener(l)
+    override fun setOnChangeEventListener(l: StatefulElementListener<PanEditTextState>) {
+        onChangeEventListener = l
     }
 
-    override fun getElementState(): PanElementState {
-        return manager.getState()
-    }
+    override fun getElementState(): PanEditTextState = PanEditTextState.from(
+        focusState,
+        inputState
+    )
 
     override fun setTextColor(textColor: Int) {
         // no-ops for now

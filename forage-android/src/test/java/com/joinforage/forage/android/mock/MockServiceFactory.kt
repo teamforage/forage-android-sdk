@@ -13,7 +13,7 @@ import com.joinforage.forage.android.core.services.vault.CapturePaymentRepositor
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
-import com.joinforage.forage.android.core.ui.element.state.USState
+import com.joinforage.forage.android.core.ui.element.state.pan.USState
 import com.joinforage.forage.android.ecom.services.ForageSDK
 import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import okhttp3.mockwebserver.MockWebServer

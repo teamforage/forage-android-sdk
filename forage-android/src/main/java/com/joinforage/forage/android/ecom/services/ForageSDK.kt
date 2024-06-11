@@ -210,7 +210,7 @@ class ForageSDK {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getVaultType(),
+            vault = foragePinEditText.vault.vaultType,
             vaultAction = UserAction.BALANCE,
             logger
         )
@@ -464,7 +464,7 @@ class ForageSDK {
 
         open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
             return CheckBalanceRepository(
-                vaultSubmitter = foragePinEditText.getVaultSubmitter(logger),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
                 pollingService = pollingService,
@@ -474,7 +474,7 @@ class ForageSDK {
 
         open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
             return CapturePaymentRepository(
-                vaultSubmitter = foragePinEditText.getVaultSubmitter(logger),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
@@ -485,7 +485,7 @@ class ForageSDK {
 
         open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
             return DeferPaymentCaptureRepository(
-                vaultSubmitter = foragePinEditText.getVaultSubmitter(logger),
+                vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService

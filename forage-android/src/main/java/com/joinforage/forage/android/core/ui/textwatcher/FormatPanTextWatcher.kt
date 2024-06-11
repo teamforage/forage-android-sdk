@@ -3,7 +3,7 @@ package com.joinforage.forage.android.core.ui.textwatcher
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import com.joinforage.forage.android.core.ui.element.state.queryForStateIIN
+import com.joinforage.forage.android.core.ui.element.state.pan.queryForStateIIN
 
 internal fun expandDigitsToFormat(pattern: String): (String) -> String {
     val targetCharGroupSizes = pattern.split(" ").map { it.length }

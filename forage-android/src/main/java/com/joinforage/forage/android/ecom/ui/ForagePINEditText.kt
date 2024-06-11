@@ -158,14 +158,10 @@ class ForagePINEditText @JvmOverloads constructor(
 
     internal fun getForageConfig() = forageConfigManager.forageConfig
 
-    internal fun getVaultSubmitter(logger: Log): AbstractVaultSubmitter =
-        vault.getVaultSubmitter(
-            // ForageSDK is responsible for checking whether
-            // the user has called .setForageConfig so here
-            // we assume that forageConfig is non-null
-            this.forageConfigManager.forageConfig!!.envConfig,
-            logger
-        )
+    override fun getVaultSubmitter(
+        envConfig: EnvConfig,
+        logger: Log
+    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
 
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface
