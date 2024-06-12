@@ -202,7 +202,7 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
     }
 
     @Test
-    fun `Basis Theory responds with a malformed error`() = runTest {
+    fun `Rosetta responds with a malformed error`() = runTest {
         val paymentRef = "xyzMalformedError456"
         server.givenRosettaPaymentCaptureRequest(paymentRef).returnsMalformedError()
 
@@ -242,6 +242,12 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
             val path = buildMockPaymentCapturePath(paymentRef)
 
             return VaultProxyRequest.emptyRequest()
+                /**
+                 * we emulate the behavior of the x-key header being set by the
+                 * [com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter]
+                 * But the x-key header is not applicable to Rosetta client
+                 * and is omitted via [RosettaPinSubmitter.parseEncryptionKey]
+                 */
                 .setHeader(ForageConstants.Headers.X_KEY, "22320ce0-1a3c-4c64-970c-51ed7db34548")
                 .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, mockData.merchantId)
                 .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, MOCK_IDEMPOTENCY_KEY)
