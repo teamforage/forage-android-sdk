@@ -1,5 +1,7 @@
 package com.joinforage.forage.android.core.ui.element
 
+import com.joinforage.forage.android.core.services.ForageConfig
+
 internal class ForageConfigManager(
     // designated method that subclass can run all the
     // side-effect things exactly once the first time
