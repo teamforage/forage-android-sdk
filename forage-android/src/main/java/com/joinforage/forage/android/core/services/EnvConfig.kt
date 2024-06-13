@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.core.services
 
 import com.joinforage.forage.android.BuildConfig
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 
 internal enum class EnvOption(val value: String) {
     LOCAL("local"),

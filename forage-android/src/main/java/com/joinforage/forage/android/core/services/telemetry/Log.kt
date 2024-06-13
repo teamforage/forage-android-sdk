@@ -8,7 +8,7 @@ import com.joinforage.datadog.android.log.Logs
 import com.joinforage.datadog.android.log.LogsConfiguration
 import com.joinforage.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import kotlin.random.Random
 
 internal interface Log {

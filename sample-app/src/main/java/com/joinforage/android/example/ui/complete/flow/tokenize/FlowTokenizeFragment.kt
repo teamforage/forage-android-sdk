@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.joinforage.android.example.databinding.FragmentFlowTokenizeBinding
 import com.joinforage.android.example.ext.hideKeyboard
-import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import dagger.hilt.android.AndroidEntryPoint
 
