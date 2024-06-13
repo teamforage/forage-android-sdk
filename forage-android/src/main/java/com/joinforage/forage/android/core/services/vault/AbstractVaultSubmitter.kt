@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.core.services.vault
 
-import android.content.Context
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
@@ -33,7 +32,6 @@ internal interface VaultSubmitter {
 }
 
 internal abstract class AbstractVaultSubmitter(
-    protected val context: Context,
     protected val foragePinEditText: ForagePinElement,
     protected val logger: Log
 ) : VaultSubmitter {

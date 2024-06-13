@@ -55,7 +55,6 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
         mockBasisTheoryResponse(Result.success("success"))
 
         submitter = BasisTheoryPinSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger,
             buildVaultProvider = { mockBasisTheory }

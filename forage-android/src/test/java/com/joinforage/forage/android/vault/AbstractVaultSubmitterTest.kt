@@ -70,7 +70,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         `when`(mockForagePinEditText.getElementState()).thenReturn(state)
 
         abstractVaultSubmitter = ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         )
@@ -91,7 +90,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `submit with successful vault proxy response returns Success`() = runTest {
         val concreteSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -110,7 +108,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `submit with failed proxy response returns Failure`() = runTest {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -129,7 +126,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `submit with missing vault token returns UnknownErrorApiResponse`() = runTest {
         val concreteSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -157,7 +153,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `grabs the correct vault token`() = runTest {
         val basisTheorySubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -167,7 +162,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         }
 
         val vgsSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -186,7 +180,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `success metrics event is reported`() = runTest {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -215,7 +208,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `failure metrics event is reported`() = runTest {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
             foragePinEditText = mockForagePinEditText,
             logger = mockLogger
         ) {
@@ -256,11 +248,9 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
 }
 
 internal open class ConcreteVaultSubmitter(
-    context: Context,
     foragePinEditText: ForagePINEditText,
     logger: Log
 ) : AbstractVaultSubmitter(
-    context = context,
     foragePinEditText = foragePinEditText,
     logger = logger
 ) {

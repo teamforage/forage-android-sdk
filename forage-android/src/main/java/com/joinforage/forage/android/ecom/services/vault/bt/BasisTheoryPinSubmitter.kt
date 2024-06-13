@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.ecom.services.vault.bt
 
-import android.content.Context
 import com.basistheory.android.service.BasisTheoryElements
 import com.basistheory.android.service.ProxyRequest
 import com.basistheory.android.view.TextElement
@@ -19,12 +18,10 @@ import com.joinforage.forage.android.core.ui.element.ForagePinElement
 internal typealias BasisTheoryResponse = Result<Any?>
 
 internal class BasisTheoryPinSubmitter(
-    context: Context,
     foragePinEditText: ForagePinElement,
     logger: Log,
     private val buildVaultProvider: () -> BasisTheoryElements = { buildBt() }
 ) : AbstractVaultSubmitter(
-    context = context,
     foragePinEditText = foragePinEditText,
     logger = logger
 ) {
