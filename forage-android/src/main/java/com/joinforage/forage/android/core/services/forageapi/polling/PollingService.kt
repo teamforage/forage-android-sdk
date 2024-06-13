@@ -81,15 +81,12 @@ internal class PollingService(
 
     private fun logAndReturnError(sqsMessage: Message, operationDescription: String): ForageApiResponse.Failure {
         val sqsError = sqsMessage.errors[0]
-        var isWarningLevelError = intArrayOf(400, 429)
+        val isWarningLevelError = intArrayOf(400, 429)
+        val message = "[Polling] Received response ${sqsError.statusCode} for $operationDescription with message: ${sqsError.message}"
         if (isWarningLevelError.contains(sqsError.statusCode)) {
-            logger.w(
-                "[Polling] Received response ${sqsError.statusCode} for $operationDescription with message: ${sqsError.message}"
-            )
+            logger.w(message)
         } else {
-            logger.e(
-                "[Polling] Received response ${sqsError.statusCode} for $operationDescription with message: ${sqsError.message}"
-            )
+            logger.e(message)
         }
         return sqsError.toForageError()
     }
