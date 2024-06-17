@@ -29,7 +29,7 @@ data class ForageConfig(
     internal val envConfig = EnvConfig.fromForageConfig(this)
 }
 
-interface DynamicEnvElement {
+internal interface DynamicEnvElement {
 
     /**
      * ⚠️ **The [setForageConfig] method is only valid for online-only transactions.** Use [setPosForageConfig]
@@ -57,7 +57,7 @@ interface DynamicEnvElement {
     fun setForageConfig(forageConfig: ForageConfig)
 }
 
-interface EditTextElement {
+internal interface EditTextElement {
 
     /**
      * Explicitly request that the current input method's soft
@@ -94,7 +94,7 @@ interface EditTextElement {
  * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
  * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
  */
-interface ForageElement<T : ElementState> {
+internal interface ForageElement<T : ElementState> {
     var typeface: Typeface?
 
     /**
