@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.ecom.services.vault.forage
 
-import android.content.Context
 import android.widget.EditText
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.addPathSegmentsSafe
@@ -14,10 +14,9 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownErro
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
-import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -26,13 +25,14 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
-internal class ForagePinSubmitter(
-    context: Context,
-    foragePinEditText: ForagePinElement,
-    logger: Log
+internal class RosettaPinSubmitter(
+    private val editText: EditText,
+    collector: SecurePinCollector,
+    private val envConfig: EnvConfig,
+    logger: Log,
+    private val vaultUrlBuilder: ((String) -> HttpUrl) = { path -> buildVaultUrl(envConfig, path) }
 ) : AbstractVaultSubmitter(
-    context = context,
-    foragePinEditText = foragePinEditText,
+    collector = collector,
     logger = logger
 ) {
     override val vaultType: VaultType = VaultType.FORAGE_VAULT_TYPE
@@ -44,9 +44,9 @@ internal class ForagePinSubmitter(
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
         return try {
-            val apiUrl = buildVaultUrl(vaultProxyRequest.path)
+            val apiUrl = vaultUrlBuilder(vaultProxyRequest.path)
             val baseRequestBody = buildBaseRequestBody(vaultProxyRequest)
-            val requestBody = buildForageVaultRequestBody(foragePinEditText, baseRequestBody)
+            val requestBody = buildForageVaultRequestBody(editText, baseRequestBody)
 
             val request = Request.Builder()
                 .url(apiUrl)
@@ -63,10 +63,9 @@ internal class ForagePinSubmitter(
             )
 
             val vaultService: NetworkService = object : NetworkService(okHttpClient, logger) {}
-
             val rawForageVaultResponse = vaultService.convertCallbackToCoroutine(request)
 
-            vaultToForageResponse(ForageResponseParser(rawForageVaultResponse))
+            vaultToForageResponse(RosettaResponseParser(rawForageVaultResponse))
         } catch (e: Exception) {
             logger.e("Failed to send request to Forage Vault.", e)
             UnknownErrorApiResponse
@@ -91,19 +90,17 @@ internal class ForagePinSubmitter(
     companion object {
         // this code assumes that .setForageConfig() has been called
         // on a Forage***EditText before VAULT_BASE_URL gets referenced
-        private val VAULT_BASE_URL = StopgapGlobalState.envConfig.vaultBaseUrl
-
-        private fun buildVaultUrl(path: String): HttpUrl =
-            VAULT_BASE_URL.toHttpUrlOrNull()!!
+        private fun buildVaultUrl(envConfig: EnvConfig, path: String): HttpUrl =
+            envConfig.vaultBaseUrl.toHttpUrlOrNull()!!
                 .newBuilder()
                 .addPathSegment("proxy")
                 .addPathSegmentsSafe(path)
                 .addTrailingSlash()
                 .build()
 
-        private fun buildForageVaultRequestBody(foragePinEditText: ForagePinElement, baseRequestBody: Map<String, Any>): RequestBody {
+        private fun buildForageVaultRequestBody(editText: EditText, baseRequestBody: Map<String, Any>): RequestBody {
             val jsonBody = JSONObject(baseRequestBody)
-            jsonBody.put("pin", (foragePinEditText.getTextElement() as EditText).text)
+            jsonBody.put("pin", editText.text)
 
             val mediaType = "application/json".toMediaTypeOrNull()
             return jsonBody.toString().toRequestBody(mediaType)
