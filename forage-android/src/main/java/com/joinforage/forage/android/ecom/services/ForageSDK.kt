@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.ecom.services
 
 import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
@@ -17,7 +18,6 @@ import com.joinforage.forage.android.core.services.vault.CapturePaymentRepositor
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForagePanElement
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 

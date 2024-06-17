@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.core.env
 
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

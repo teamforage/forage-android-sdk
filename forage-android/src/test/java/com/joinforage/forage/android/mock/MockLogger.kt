@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.mock
 
 import android.content.Context
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 
 internal class LogEntry(message: String, attributes: Map<String, Any?>) {
     private var message = ""
