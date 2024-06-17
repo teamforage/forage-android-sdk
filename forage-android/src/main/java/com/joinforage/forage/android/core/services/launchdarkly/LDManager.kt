@@ -10,8 +10,8 @@ import com.launchdarkly.sdk.android.LDClient
 import com.launchdarkly.sdk.android.LDConfig
 
 internal object LDFlags {
-    const val VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG = "vault-primary-traffic-percentage"
     const val ISO_POLLING_WAIT_INTERVALS = "iso-polling-wait-intervals"
+    const val ROSETTA_TRAFFIC_PERCENTAGE = "rosetta-traffic-percentage"
 }
 
 internal object LDContexts {
@@ -22,12 +22,13 @@ internal object LDContextKind {
     const val SERVICE = "service"
 }
 
-internal val ALWAYS_BT_PERCENT = 100.0
-internal val ALWAYS_VGS_PERCENT = 0.0
+// rosetta-traffic-percentage
+internal val ALWAYS_ROSETTA_PERCENT = 100.0
+internal val ALWAYS_THIRD_PARTY_PERCENT = 0.0
 
-internal fun computeVaultType(trafficPrimaryPercentFlag: Double): VaultType {
+internal fun computeVaultType(rosettaPercentage: Double): VaultType {
     val randomNum = Math.random() * 100
-    return if (randomNum < trafficPrimaryPercentFlag) VaultType.BT_VAULT_TYPE else VaultType.VGS_VAULT_TYPE
+    return if (randomNum <= rosettaPercentage) VaultType.FORAGE_VAULT_TYPE else VaultType.BT_VAULT_TYPE
 }
 
 internal object LDManager {
@@ -45,14 +46,14 @@ internal object LDManager {
     }
 
     internal fun getVaultProvider(logger: Log = Log.getSilentInstance()): VaultType {
-        val vaultPercent = client?.doubleVariation(
-            LDFlags.VAULT_PRIMARY_TRAFFIC_PERCENTAGE_FLAG,
-            ALWAYS_VGS_PERCENT
-        ) ?: ALWAYS_VGS_PERCENT
-        logger.i("[LaunchDarkly] Vault percent of $vaultPercent return from LD")
+        val rosettaPercent = client?.doubleVariation(
+            LDFlags.ROSETTA_TRAFFIC_PERCENTAGE,
+            ALWAYS_ROSETTA_PERCENT
+        ) ?: ALWAYS_ROSETTA_PERCENT
+        logger.i("[LaunchDarkly] Rosetta percent of $rosettaPercent returned from LD")
 
-        // convert the flag percent into an answer to which vault provider to use
-        val vaultType = computeVaultType(vaultPercent)
+        // convert the rosetta flag percent into an answer to which vault provider to use
+        val vaultType = computeVaultType(rosettaPercent)
         logger.i("[LaunchDarkly] Vault type set to $vaultType")
 
         // return vault provider
