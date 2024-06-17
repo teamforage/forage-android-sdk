@@ -4,7 +4,7 @@
     <!-- Theme attribute for the default style for the ForagePanEditText component. -->
     <attr name="foragePanEditTextStyle" format="reference" />
 
-    <!-- Style attributes for the ForagePanEditText component. -->
+    <!-- Style attributes for the ForagePANEditText component. -->
     <declare-styleable name="ForagePANEditText">
         <!-- Style attribute for the TextInputLayout  -->
         <attr name="textInputLayoutStyle" format="reference" />
@@ -24,15 +24,15 @@
         <attr format="dimension" name="panBoxStrokeWidthFocused" />
     </declare-styleable>
 
-    <!-- Style attributes for the ForagePanEditText component. -->
+    <!-- Style attributes for the ForagePINEditText component. -->
     <declare-styleable name="ForagePINEditText">
         <!-- Style attribute for the TextInputLayout  -->
         <attr name="pinInputLayoutStyle" format="reference" />
 
-        <attr name="hint" />
-        <attr name="text" />
-        <attr name="textSize" />
-        <attr name="textColor" />
+        <attr name="hint" format="string" />
+        <attr name="text" format="string" />
+        <attr name="textSize" format="dimension" />
+        <attr name="textColor" format="color" />
         <attr format="color" name="pinBoxStrokeColor" />
         <attr name="boxBackgroundColor" format="color" />
         <attr name="hintTextColor" format="color" />
