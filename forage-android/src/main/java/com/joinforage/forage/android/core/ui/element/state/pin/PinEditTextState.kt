@@ -4,7 +4,11 @@ import com.joinforage.forage.android.core.ui.element.ElementValidationError
 import com.joinforage.forage.android.core.ui.element.state.EditTextState
 import com.joinforage.forage.android.core.ui.element.state.FocusState
 
-// TODO: docstrings
+/**
+ * An interface that represents the state of a
+ * [ForagePINEditText][com.joinforage.forage.android.core.ui.ForagePINEditText] Element.
+ * @see [EditTextState][com.joinforage.forage.android.core.ui.element.state.EditTextState]
+ */
 interface PinEditTextState : EditTextState {
     companion object {
         internal fun from(focusState: FocusState, inputState: PinInputState) = object :
