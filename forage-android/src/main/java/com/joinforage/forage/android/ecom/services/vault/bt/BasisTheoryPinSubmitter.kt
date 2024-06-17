@@ -28,7 +28,7 @@ internal class BasisTheoryPinSubmitter(
     logger = logger
 ) {
     override val vaultType: VaultType = VaultType.BT_VAULT_TYPE
-    override fun parseEncryptionKey(keys: EncryptionKeys): String = keys.btAlias
+    override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String = encryptionKeys.btAlias
 
     // Basis Theory requires a few extra headers beyond the
     // common headers to make proxy requests
