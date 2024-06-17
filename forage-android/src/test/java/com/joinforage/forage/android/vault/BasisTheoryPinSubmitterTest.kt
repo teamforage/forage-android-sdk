@@ -6,6 +6,7 @@ import com.basistheory.android.service.ProxyRequest
 import com.basistheory.android.view.TextElement
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConstants
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
@@ -72,6 +73,13 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
                 `when`(mockApiProxy.post(anyOrNull(), anyOrNull())).thenThrow(response.exceptionOrNull()!!)
             }
         }
+    }
+
+    @Test
+    fun `grabs the right encryption key`() = runTest {
+        val encryptionKeys = EncryptionKeys("vgs_123", "bt_456")
+        val res = submitter.parseEncryptionKey(encryptionKeys)
+        assertEquals("bt_456", res)
     }
 
     @Test
