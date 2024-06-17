@@ -111,12 +111,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
         vault.setTextSize(textSize)
     }
 
-    override fun setHint(hint: String) {
-        vault.setHint(hint)
-    }
-    override fun setHintTextColor(hintTextColor: Int) {
-        vault.setHintTextColor(hintTextColor)
-    }
     override fun setBoxStrokeColor(boxStrokeColor: Int) {
         // no-ops for now
     }
@@ -125,5 +119,23 @@ abstract class ForagePinElement @JvmOverloads constructor(
     }
     override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
         // no-ops for now
+    }
+
+    @Deprecated(
+        message = "setHint (for *PIN* elements) is deprecated.",
+        level = DeprecationLevel.WARNING,
+        replaceWith = ReplaceWith("")
+    )
+    override fun setHint(hint: String) {
+        // no-op, deprecated!
+    }
+
+    @Deprecated(
+        message = "setHintTextColor (for *PIN* elements) is deprecated.",
+        level = DeprecationLevel.WARNING,
+        replaceWith = ReplaceWith("")
+    )
+    override fun setHintTextColor(hintTextColor: Int) {
+        // no-op, deprecated!
     }
 }

@@ -29,13 +29,13 @@
         <!-- Style attribute for the TextInputLayout  -->
         <attr name="pinInputLayoutStyle" format="reference" />
 
-        <attr name="hint" format="string" />
         <attr name="text" format="string" />
         <attr name="textSize" format="dimension" />
         <attr name="textColor" format="color" />
         <attr format="color" name="pinBoxStrokeColor" />
         <attr name="boxBackgroundColor" format="color" />
-        <attr name="hintTextColor" format="color" />
+
+
         <attr format="dimension" name="boxCornerRadiusTopEnd" />
 
         <attr format="dimension" name="boxCornerRadiusTopStart" />
@@ -50,5 +50,10 @@
 
         <attr format="dimension" name="elementHeight" />
         <attr format="dimension" name="elementWidth" />
+
+        <!-- {@deprecated hint customization for ForagePINEditText elements is no longer supported} -->
+        <attr name="hint" format="string" />
+        <!-- {@deprecated hintTextColor customization for ForagePINEditText elements is no longer supported} -->
+        <attr name="hintTextColor" format="color" />
     </declare-styleable>
 </resources>

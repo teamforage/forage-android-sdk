@@ -156,11 +156,19 @@ internal class BTVaultWrapper @JvmOverloads constructor(
         _internalTextElement.textSize = textSize
     }
 
+    @Deprecated(
+        message = "setHint (for *PIN* elements) is deprecated and will be removed in a future major release.",
+        level = DeprecationLevel.WARNING
+    )
     override fun setHint(hint: String) {
-        _internalTextElement.hint = hint
+        // no-op, deprecated!
     }
 
+    @Deprecated(
+        message = "setHintTextColor (for *PIN* elements) is deprecated and will be removed in a future major release.",
+        level = DeprecationLevel.WARNING
+    )
     override fun setHintTextColor(hintTextColor: Int) {
-        _internalTextElement.hintTextColor = hintTextColor
+        // no-op, deprecated!
     }
 }
