@@ -7,13 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.state.PinElementState
-import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -53,35 +50,9 @@ abstract class ForagePinElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : AbstractForageElement<PinElementState>(context, attrs, defStyleAttr) {
-    private val _linearLayout: LinearLayout
-
-    /**
-     * The `vault` property acts as an abstraction for the actual code
-     * in ForagePINEditText, allowing it to work with a non-nullable
-     * result determined by the choice between BT or VGS. This choice
-     * depends on Launch Darkly and requires knowledge of the environment,
-     * which is determined by `forageConfig` set on this instance.
-     *
-     * The underlying value for `vault` is stored in `_SET_ONLY_vault`.
-     * This backing property is set only after `ForageConfig` has been
-     * initialized for this instance. If `vault` is accessed before
-     * `_SET_ONLY_vault` is set, a runtime exception is thrown.
-     */
-    private var _SET_ONLY_vault: VaultWrapper? = null
-    internal val vault: VaultWrapper
-        get() {
-            if (_SET_ONLY_vault == null) {
-                throw ForageConfigNotSetException(
-                    """You are attempting invoke a method a ForageElement before setting
-                    it's ForageConfig. Make sure to call
-                    myForageElement.setForageConfig(forageConfig: ForageConfig) 
-                    immediately on your ForageElement before you call any other methods.
-                    """.trimIndent()
-                )
-            }
-            return _SET_ONLY_vault!!
-        }
+) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PinElementState>, EditTextElement {
+    protected val _linearLayout: LinearLayout
+    internal abstract val vault: VaultWrapper
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -106,32 +77,9 @@ abstract class ForagePinElement @JvmOverloads constructor(
 
     internal abstract fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper
 
-    override fun initWithForageConfig(forageConfig: ForageConfig) {
-        // Must initialize DD at the beginning of each render function. DD requires the context,
-        // so we need to wait until a context is present to run initialization code. However,
-        // we have logging all over the SDK that relies on the render happening first.
-        val logger = Log.getInstance()
-        logger.initializeDD(context, forageConfig)
-
-        // defer to the concrete subclass for the details of obtaining
-        // and instantiating the backing vault instance. We just need
-        // to guarantee that the vault is instantiated prior to adding
-        // it to the parent view
-        _SET_ONLY_vault = determineBackingVault(forageConfig, logger)
-
-        _linearLayout.addView(vault.getTextElement())
-        _linearLayout.addView(getLogoImageViewLayout(context))
-        addView(_linearLayout)
-
-        logger.i("[View] ForagePINEditText successfully rendered")
-    }
-
     override fun clearText() {
         vault.clearText()
     }
-
-    internal fun getVaultSubmitter(logger: Log): AbstractVaultSubmitter =
-        vault.getVaultSubmitter(this, logger)
 
     // While the events that ForageElements expose mirrors the
     // blur, focus, change etc events of an Android view,

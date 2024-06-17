@@ -6,12 +6,17 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
+import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
 import com.joinforage.forage.android.ecom.ui.vault.vgs.VGSVaultWrapper
 import com.launchdarkly.sdk.android.LDConfig
@@ -54,11 +59,36 @@ class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForagePinElement(context, attrs, defStyleAttr) {
+) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
     private val btVaultWrapper: BTVaultWrapper
     private val vgsVaultWrapper: VGSVaultWrapper
 
-    override fun showKeyboard() = vault.showKeyboard()
+    /**
+     * The `vault` property acts as an abstraction for the actual code
+     * in ForagePINEditText, allowing it to work with a non-nullable
+     * result determined by the choice between BT or VGS. This choice
+     * depends on Launch Darkly and requires knowledge of the environment,
+     * which is determined by `forageConfig` set on this instance.
+     *
+     * The underlying value for `vault` is stored in `_SET_ONLY_vault`.
+     * This backing property is set only after `ForageConfig` has been
+     * initialized for this instance. If `vault` is accessed before
+     * `_SET_ONLY_vault` is set, a runtime exception is thrown.
+     */
+    private var _SET_ONLY_vault: VaultWrapper? = null
+    override val vault: VaultWrapper
+        get() {
+            if (_SET_ONLY_vault == null) {
+                throw ForageConfigNotSetException(
+                    """You are attempting invoke a method a ForageElement before setting
+                    it's ForageConfig. Make sure to call
+                    myForageElement.setForageConfig(forageConfig: ForageConfig) 
+                    immediately on your ForageElement before you call any other methods.
+                    """.trimIndent()
+                )
+            }
+            return _SET_ONLY_vault!!
+        }
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -83,6 +113,34 @@ class ForagePINEditText @JvmOverloads constructor(
             }
     }
 
+    private fun initWithForageConfig(forageConfig: ForageConfig) {
+        // Must initialize DD at the beginning of each render function. DD requires the context,
+        // so we need to wait until a context is present to run initialization code. However,
+        // we have logging all over the SDK that relies on the render happening first.
+        val logger = Log.getInstance()
+        logger.initializeDD(context, forageConfig)
+
+        // defer to the concrete subclass for the details of obtaining
+        // and instantiating the backing vault instance. We just need
+        // to guarantee that the vault is instantiated prior to adding
+        // it to the parent view
+        _SET_ONLY_vault = determineBackingVault(forageConfig, logger)
+
+        _linearLayout.addView(vault.getTextElement())
+        _linearLayout.addView(getLogoImageViewLayout(context))
+        addView(_linearLayout)
+
+        logger.i("[View] ForagePINEditText successfully rendered")
+    }
+
+    private val forageConfigManager = ForageConfigManager {
+            forageConfig ->
+        initWithForageConfig(forageConfig)
+    }
+    override fun setForageConfig(forageConfig: ForageConfig) {
+        forageConfigManager.forageConfig = forageConfig
+    }
+
     override fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper {
         // initialize Launch Darkly singleton
         val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
@@ -98,6 +156,18 @@ class ForagePINEditText @JvmOverloads constructor(
         }
     }
 
+    internal fun getForageConfig() = forageConfigManager.forageConfig
+
+    internal fun getVaultSubmitter(logger: Log): AbstractVaultSubmitter =
+        vault.getVaultSubmitter(
+            this,
+            // ForageSDK is responsible for checking whether
+            // the user has called .setForageConfig so here
+            // we assume that forageConfig is non-null
+            this.forageConfigManager.forageConfig!!.envConfig,
+            logger
+        )
+
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else vgsVaultWrapper.typeface
         set(value) {
@@ -106,4 +176,6 @@ class ForagePINEditText @JvmOverloads constructor(
             btVaultWrapper.typeface = value
             vgsVaultWrapper.typeface = value
         }
+
+    override fun showKeyboard() = vault.showKeyboard()
 }

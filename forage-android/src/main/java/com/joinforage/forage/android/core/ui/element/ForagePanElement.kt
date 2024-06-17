@@ -8,12 +8,13 @@ import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.element.state.PanElementState
 import com.joinforage.forage.android.core.ui.element.state.PanElementStateManager
@@ -60,7 +61,7 @@ abstract class ForagePanElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : AbstractForageElement<PanElementState>(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PanElementState>, EditTextElement, DynamicEnvElement {
     private val textInputEditText: TextInputEditText
     private val textInputLayout: TextInputLayout
 
@@ -180,12 +181,17 @@ abstract class ForagePanElement @JvmOverloads constructor(
             }
     }
 
-    override fun showKeyboard() {
-        val imm = context.getSystemService<InputMethodManager>()
-        imm!!.showSoftInput(textInputEditText, 0)
+    private val forageConfigManager = ForageConfigManager {
+            forageConfig ->
+        initWithForageConfig(forageConfig)
+    }
+    override fun setForageConfig(forageConfig: ForageConfig) {
+        forageConfigManager.forageConfig = forageConfig
     }
 
-    override fun initWithForageConfig(forageConfig: ForageConfig) {
+    internal fun getForageConfig() = forageConfigManager.forageConfig
+
+    private fun initWithForageConfig(forageConfig: ForageConfig) {
         // Must initialize DD at the beginning of each render function. DD requires the context,
         // so we need to wait until a context is present to run initialization code. However,
         // we have logging all over the SDK that relies on the render happening first.
@@ -217,6 +223,11 @@ abstract class ForagePanElement @JvmOverloads constructor(
 
         addView(getLogoImageViewLayout(context))
         logger.i("[View] ForagePANEditText successfully rendered")
+    }
+
+    override fun showKeyboard() {
+        val imm = context.getSystemService<InputMethodManager>()
+        imm!!.showSoftInput(textInputEditText, 0)
     }
 
     override fun clearText() {
