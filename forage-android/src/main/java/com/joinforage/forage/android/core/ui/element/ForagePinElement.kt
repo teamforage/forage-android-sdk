@@ -12,13 +12,13 @@ import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState
 
 /**
- * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
+ * A [ForageElement] that securely collects a card PIN. You need a [ForagePinElement] to call
  * the ForageSDK online-only or ForageTerminalSDK POS methods that:
- * * [Check a card's balance][com.joinforage.forage.android.ForageSDK.checkBalance]
- * * [Collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.ForageSDK.deferPaymentCapture]
- * * [Capture a payment immediately][com.joinforage.forage.android.ForageSDK.capturePayment]
- * * [Refund a Payment immediately][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] (**POS-only**)
- * * [Collect a card PIN to defer payment refund to the server][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund]
+ * * Check a card's balance
+ * * Collect a card PIN to defer payment capture to the server
+ * * Capture a payment immediately
+ * * Refund a Payment immediately (**POS-only**)
+ * * Collect a card PIN to defer payment refund to the server
  * (**POS-only**)
  * ```xml
  * <!-- Example forage_pin_component.xml -->
@@ -126,6 +126,9 @@ abstract class ForagePinElement @JvmOverloads constructor(
         level = DeprecationLevel.WARNING,
         replaceWith = ReplaceWith("")
     )
+    /**
+     * @deprecated setHint (for **PIN** elements) is deprecated.
+     */
     override fun setHint(hint: String) {
         // no-op, deprecated!
     }
@@ -135,6 +138,9 @@ abstract class ForagePinElement @JvmOverloads constructor(
         level = DeprecationLevel.WARNING,
         replaceWith = ReplaceWith("")
     )
+    /**
+     * @deprecated setHintTextColor (for **PIN** elements) is deprecated.
+     */
     override fun setHintTextColor(hintTextColor: Int) {
         // no-op, deprecated!
     }

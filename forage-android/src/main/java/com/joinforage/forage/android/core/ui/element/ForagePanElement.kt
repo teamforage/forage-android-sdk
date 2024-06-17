@@ -193,6 +193,25 @@ abstract class ForagePanElement @JvmOverloads constructor(
             forageConfig ->
         initWithForageConfig(forageConfig)
     }
+
+    /**
+     * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
+     * **[setForageConfig] must be called before any other methods can be executed on the Element.**
+     * ```kotlin
+     * // Example: Call setForageConfig on a ForagePANEditText Element
+     * val foragePanEditText = root?.findViewById<ForagePANEditText>(
+     *     R.id.tokenizeForagePanEditText
+     * )
+     * foragePanEditText.setForageConfig(
+     *     ForageConfig(
+     *         merchantId = "mid/<merchant_id>",
+     *         sessionToken = "<session_token>"
+     *     )
+     * )
+     * ```
+     *
+     * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
+     */
     override fun setForageConfig(forageConfig: ForageConfig) {
         forageConfigManager.forageConfig = forageConfig
     }

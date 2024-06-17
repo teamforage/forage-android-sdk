@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.ecom.services.vault.bt
 
-open class BaseResponseRegExp(res: Result<Any?>) {
+internal open class BaseResponseRegExp(res: Result<Any?>) {
     private val bodyRegex = ("HTTP response body: (.+?)\\n".toRegex())
     private val statusCodeRegex = "HTTP response code: (\\d+)".toRegex()
 

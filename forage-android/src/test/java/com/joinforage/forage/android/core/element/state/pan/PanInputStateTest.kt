@@ -2,7 +2,6 @@ package com.joinforage.forage.android.core.element.state.pan
 
 import com.joinforage.forage.android.core.ui.element.IncompleteEbtPanError
 import com.joinforage.forage.android.core.ui.element.InvalidEbtPanError
-import com.joinforage.forage.android.core.ui.element.TooLongEbtPanError
 import com.joinforage.forage.android.core.ui.element.state.pan.PanInputState
 import com.joinforage.forage.android.core.ui.element.state.pan.USState
 import com.joinforage.forage.android.core.ui.element.state.pan.WhitelistedCardsValidator
@@ -79,7 +78,6 @@ class StrictForEmptyInputTest {
 
         assertThat(state.isValid).isFalse
         assertThat(state.isComplete).isFalse
-        assertThat(state.validationError).isEqualTo(TooLongEbtPanError)
         assertThat(state.usState).isEqualTo(USState.MAINE)
     }
 

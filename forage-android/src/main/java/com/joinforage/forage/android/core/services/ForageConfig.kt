@@ -1,10 +1,10 @@
 package com.joinforage.forage.android.core.services
 
 /**
- * The configuration details that Forage needs to create a functional [ForageElement].
+ * The configuration details that Forage needs to create a functional [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement].
  *
  * Pass a [ForageConfig] instance in a call to
- * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] to
+ * [setForageConfig][com.joinforage.forage.android.core.ui.element.ForagePanElement.setForageConfig] to
  * configure an Element.
  *
  * @property merchantId A unique Merchant ID that Forage provides during onboarding

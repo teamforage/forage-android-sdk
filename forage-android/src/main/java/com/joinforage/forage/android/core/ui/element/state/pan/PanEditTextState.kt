@@ -13,7 +13,7 @@ interface DerivedCardInfo {
 
 /**
  * An interface that represents the state of a
- * [ForagePANEditText][com.joinforage.forage.android.ui.ForagePANEditText] Element.
+ * **ForagePANEditText** Element.
  * @property derivedCardInfo The [DerivedCardInfo] for the card number submitted to the Element.
  */
 interface PanEditTextState : EditTextState {

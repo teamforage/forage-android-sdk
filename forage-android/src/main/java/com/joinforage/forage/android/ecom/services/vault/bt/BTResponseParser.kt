@@ -6,7 +6,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 
-class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
+internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
     override val isNullResponse: Boolean = false
     override val vaultErrorMsg: String = btRes.exceptionOrNull().toString()
     override val rawResponse: String = btRes.toString()

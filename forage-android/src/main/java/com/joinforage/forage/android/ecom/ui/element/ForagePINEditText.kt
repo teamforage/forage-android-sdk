@@ -22,14 +22,11 @@ import com.joinforage.forage.android.ecom.ui.vault.forage.RosettaPinElement
 import com.launchdarkly.sdk.android.LDConfig
 
 /**
- * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
- * the ForageSDK online-only or ForageTerminalSDK POS methods that:
- * * [Check a card's balance][com.joinforage.forage.android.ForageSDK.checkBalance]
- * * [Collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.ForageSDK.deferPaymentCapture]
- * * [Capture a payment immediately][com.joinforage.forage.android.ForageSDK.capturePayment]
- * * [Refund a Payment immediately][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] (**POS-only**)
- * * [Collect a card PIN to defer payment refund to the server][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund]
- * (**POS-only**)
+ * A [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
+ * the [ForageSDK][com.joinforage.forage.android.ecom.services.ForageSDK] methods that:
+ * * [Check a card's balance][com.joinforage.forage.android.ecom.services.ForageSDK.checkBalance]
+ * * [Collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.ecom.services.ForageSDK.deferPaymentCapture]
+ * * [Capture a payment immediately][com.joinforage.forage.android.ecom.services.ForageSDK.capturePayment]
  * ```xml
  * <!-- Example forage_pin_component.xml -->
  * <?xml version="1.0" encoding="utf-8"?>
@@ -137,6 +134,25 @@ class ForagePINEditText @JvmOverloads constructor(
             forageConfig ->
         initWithForageConfig(forageConfig)
     }
+
+    /**
+     * Sets the necessary [ForageConfig] configuration properties for a [ForagePINEditText].
+     * **[setForageConfig] must be called before any other methods can be executed on the Element.**
+     * ```kotlin
+     * // Example: Call setForageConfig on a ForagePINEditText Element
+     * val foragePinEditText = root?.findViewById<ForagePINEditText>(
+     *     R.id.balanceForagePinEditText
+     * )
+     * foragePinEditText.setForageConfig(
+     *     ForageConfig(
+     *         merchantId = "mid/<merchant_id>",
+     *         sessionToken = "<session_token>"
+     *     )
+     * )
+     * ```
+     *
+     * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
+     */
     override fun setForageConfig(forageConfig: ForageConfig) {
         forageConfigManager.forageConfig = forageConfig
     }
