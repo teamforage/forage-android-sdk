@@ -154,7 +154,7 @@ internal abstract class AbstractVaultSubmitter(
         }
 
         val successfulResponse = parser.successfulResponse
-                if (successfulResponse != null) {
+        if (successfulResponse != null) {
             logger.i("[$vaultType] Received successful response from $vaultType")
             return successfulResponse
         }
