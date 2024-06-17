@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.state.PinElementState
 
@@ -74,8 +73,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
                 }
             }
     }
-
-    internal abstract fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper
 
     override fun clearText() {
         vault.clearText()
