@@ -1,0 +1,5 @@
+{
+  "code": 401,
+  "description": "authorization header malformed",
+  "name": "auth_header_malformed"
+}
