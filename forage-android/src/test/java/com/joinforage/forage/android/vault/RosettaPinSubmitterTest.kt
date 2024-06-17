@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.vault
 
-import android.content.Context
 import android.text.Editable
 import android.widget.EditText
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.addPathSegmentsSafe
 import com.joinforage.forage.android.core.services.addTrailingSlash
@@ -10,12 +10,10 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.vault.StopgapGlobalState
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.ecom.services.vault.forage.RosettaPinSubmitter
-import com.joinforage.forage.android.ecom.ui.ForagePINEditText
 import com.joinforage.forage.android.fixtures.givenRosettaPaymentCaptureRequest
 import com.joinforage.forage.android.fixtures.returnsMalformedError
 import com.joinforage.forage.android.fixtures.returnsPayment
@@ -38,12 +36,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 
 class RosettaPinSubmitterTest() : MockServerSuite() {
     private lateinit var mockLogger: MockLogger
-    private lateinit var mockForagePinEditText: ForagePINEditText
     private lateinit var submitter: RosettaPinSubmitter
 
     @Before
@@ -54,20 +51,20 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
 
         // Use Mockito judiciously (mainly for mocking views)!
         // Opt for dependency injection and inheritance over Mockito, when possible
-        mockForagePinEditText = Mockito.mock(ForagePINEditText::class.java)
-        val mockContext = Mockito.mock(Context::class.java)
 
         // Mock the PIN value!
-        val mockEditText = Mockito.mock(EditText::class.java)
-        `when`(mockForagePinEditText.getTextElement()).thenReturn(mockEditText)
-        val mockEditable = Mockito.mock(Editable::class.java)
+        val mockEditText = mock(EditText::class.java)
+        val mockEditable = mock(Editable::class.java)
         `when`(mockEditable.toString()).thenReturn("1234")
         `when`(mockEditText.text).thenReturn(mockEditable)
 
+        val mockCollector = mock(SecurePinCollector::class.java)
+
         submitter = RosettaPinSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            editText = mockEditText,
+            collector = mockCollector,
             logger = mockLogger,
+            envConfig = EnvConfig.Local,
             // Ensure we don't make any LIVE requests!!!
             // Emulates the real vaultUrlBuilder, but using the empty test URL
             vaultUrlBuilder = { path ->
@@ -78,8 +75,6 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
                     .build()
             }
         )
-
-        StopgapGlobalState.forageConfig = ForageConfig(mockData.merchantId, mockData.sessionToken)
     }
 
     @Test

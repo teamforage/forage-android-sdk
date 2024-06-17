@@ -16,12 +16,12 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.core.content.getSystemService
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
-import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
@@ -37,8 +37,6 @@ internal class RosettaPinElement @JvmOverloads constructor(
     override val vaultType: VaultType = VaultType.FORAGE_VAULT_TYPE
     private val _editText: EditText
 
-    override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
-
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0).apply {
             try {
@@ -51,11 +49,17 @@ internal class RosettaPinElement @JvmOverloads constructor(
     }
 
     override fun getVaultSubmitter(
-        foragePinElement: ForagePinElement,
+        envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter = RosettaPinSubmitter(
-        foragePinElement.context,
-        foragePinElement,
+        editText = _editText,
+        object : SecurePinCollector {
+            override fun clearText() {
+                this@RosettaPinElement.clearText()
+            }
+            override fun isComplete(): Boolean = inputState.isComplete
+        },
+        envConfig,
         logger
     )
 
@@ -194,14 +198,22 @@ internal class RosettaPinElement @JvmOverloads constructor(
 
     private fun registerFocusChangeListener() {
         _editText.setOnFocusChangeListener { _, hasFocus ->
-            manager.changeFocus(hasFocus)
+            focusState = focusState.changeFocus(hasFocus)
+            focusState.fireEvent(
+                onFocusEventListener = onFocusEventListener,
+                onBlurEventListener = onBlurEventListener
+            )
         }
     }
 
     private fun registerTextWatcher() {
         val pinTextWatcher = PinTextWatcher(_editText)
         pinTextWatcher.onInputChangeEvent { isComplete, isEmpty ->
-            manager.handleChangeEvent(isComplete, isEmpty)
+            inputState = inputState.handleChangeEvent(
+                isComplete = isComplete,
+                isEmpty = isEmpty
+            )
+            onChangeEventListener?.invoke(pinEditTextState)
         }
         _editText.addTextChangedListener(pinTextWatcher)
     }

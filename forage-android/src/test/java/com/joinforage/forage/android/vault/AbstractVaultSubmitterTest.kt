@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.vault
 
-import android.content.Context
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
@@ -9,11 +8,9 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Payme
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
-import com.joinforage.forage.android.core.ui.element.state.INITIAL_PIN_ELEMENT_STATE
-import com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState
-import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.mock.MockServiceFactory
 import kotlinx.coroutines.test.runTest
@@ -23,16 +20,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 
 class AbstractVaultSubmitterTest : MockServerSuite() {
     private lateinit var mockLogger: MockLogger
-    private lateinit var mockForagePinEditText: ForagePINEditText
-    private lateinit var mockContext: Context
     private lateinit var abstractVaultSubmitter: AbstractVaultSubmitter
+    private val mockCollector = object : SecurePinCollector {
+        override fun clearText() {}
+        override fun isComplete(): Boolean = true
+    }
 
     companion object {
         private val mockEncryptionKeys = EncryptionKeys("vgs-alias", "bt-alias")
@@ -53,25 +48,24 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         super.setup()
 
         mockLogger = MockLogger()
-        mockForagePinEditText = mock(ForagePINEditText::class.java)
-        mockContext = mock(Context::class.java)
-
-        val state = PinEditTextState.forEmptyInput(FocusState)
-        state.isComplete = true
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
-
         abstractVaultSubmitter = ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         )
     }
 
     @Test
     fun `submit with invalid PIN returns IncompletePinError`() = runTest {
-        val state = INITIAL_PIN_ELEMENT_STATE.copy(isComplete = false)
+        val incompleteCollector = object : SecurePinCollector {
+            override fun clearText() {}
+            override fun isComplete(): Boolean = false
+        }
 
-        `when`(mockForagePinEditText.getElementState()).thenReturn(state)
+        val abstractVaultSubmitter = ConcreteVaultSubmitter(
+            collector = incompleteCollector,
+            logger = mockLogger
+        )
+
         val response = abstractVaultSubmitter.submit(mockVaultParams)
 
         val forageError = (response as ForageApiResponse.Failure).errors.first()
@@ -82,8 +76,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `submit with successful vault proxy response returns Success`() = runTest {
         val concreteSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
@@ -101,8 +94,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `submit with failed proxy response returns Failure`() = runTest {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
@@ -120,8 +112,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `submit with missing vault token returns UnknownErrorApiResponse`() = runTest {
         val concreteSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             // Mock missing token
@@ -139,17 +130,57 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     }
 
     @Test
-    fun `calls clearText after submitting`() = runTest {
-        abstractVaultSubmitter.submit(mockVaultParams)
+    fun `calls clearText after submitting on success`() = runTest {
+        var numTimesClearTextCalled = 0
+        val clearTextSpyCollector = object : SecurePinCollector {
+            override fun clearText() {
+                numTimesClearTextCalled += 1
+            }
+            override fun isComplete(): Boolean = true
+        }
 
-        verify(mockForagePinEditText, times(1)).clearText()
+        val successVaultSubmitter = object : ConcreteVaultSubmitter(
+            collector = clearTextSpyCollector,
+            logger = mockLogger
+        ) {
+            override suspend fun submitProxyRequest(
+                vaultProxyRequest: VaultProxyRequest
+            ): ForageApiResponse<String> {
+                return ForageApiResponse.Success("success")
+            }
+        }
+        successVaultSubmitter.submit(mockVaultParams)
+        assertEquals(1, numTimesClearTextCalled)
+    }
+
+    @Test
+    fun `calls clearText after submitting on failure`() = runTest {
+        var numTimesClearTextCalled = 0
+        val clearTextSpyCollector = object : SecurePinCollector {
+            override fun clearText() {
+                numTimesClearTextCalled += 1
+            }
+            override fun isComplete(): Boolean = true
+        }
+
+        val failedVaultSubmitter = object : ConcreteVaultSubmitter(
+            collector = clearTextSpyCollector,
+            logger = mockLogger
+        ) {
+            override suspend fun submitProxyRequest(
+                vaultProxyRequest: VaultProxyRequest
+            ): ForageApiResponse<String> {
+                return UnknownErrorApiResponse
+            }
+        }
+        failedVaultSubmitter.submit(mockVaultParams)
+        assertEquals(1, numTimesClearTextCalled)
     }
 
     @Test
     fun `grabs the correct vault token`() = runTest {
         val basisTheorySubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
@@ -158,8 +189,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         }
 
         val vgsSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
@@ -177,8 +207,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `success metrics event is reported`() = runTest {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
@@ -206,8 +235,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     @Test
     fun `failure metrics event is reported`() = runTest {
         val concreteVaultSubmitter = object : ConcreteVaultSubmitter(
-            context = mockContext,
-            foragePinEditText = mockForagePinEditText,
+            collector = mockCollector,
             logger = mockLogger
         ) {
             override suspend fun submitProxyRequest(
@@ -247,12 +275,10 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
 }
 
 internal open class ConcreteVaultSubmitter(
-    context: Context,
-    foragePinEditText: ForagePINEditText,
+    collector: SecurePinCollector,
     logger: Log
 ) : AbstractVaultSubmitter(
-    context = context,
-    foragePinEditText = foragePinEditText,
+    collector = collector,
     logger = logger
 ) {
     override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE

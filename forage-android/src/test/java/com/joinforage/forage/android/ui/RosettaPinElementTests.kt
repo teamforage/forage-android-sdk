@@ -91,10 +91,13 @@ class RosettaPinElementTests {
         val focusChangeListener = editText.onFocusChangeListener
 
         focusChangeListener.onFocusChange(editText, true)
-        assertTrue(rosettaPinElement.manager.isFocused)
+
+        assertTrue(rosettaPinElement.pinEditTextState.isFocused)
+        assertFalse(rosettaPinElement.pinEditTextState.isBlurred)
 
         focusChangeListener.onFocusChange(editText, false)
-        assertFalse(rosettaPinElement.manager.isFocused)
+        assertFalse(rosettaPinElement.pinEditTextState.isFocused)
+        assertTrue(rosettaPinElement.pinEditTextState.isBlurred)
     }
 
     /**
