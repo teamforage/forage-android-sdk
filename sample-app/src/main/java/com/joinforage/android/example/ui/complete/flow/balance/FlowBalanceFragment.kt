@@ -80,6 +80,7 @@ class FlowBalanceFragment : Fragment() {
             isValid.text = "isValid: ${state.isValid}"
         }
 
+        foragePinEditText.setHint("I AM A HINT!")
         foragePinEditText.setOnFocusEventListener { setState() }
         foragePinEditText.setOnBlurEventListener { setState() }
         foragePinEditText.setOnChangeEventListener { setState() }
