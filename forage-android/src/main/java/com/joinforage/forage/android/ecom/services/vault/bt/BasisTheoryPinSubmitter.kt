@@ -11,18 +11,19 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 internal typealias BasisTheoryResponse = Result<Any?>
 
 internal class BasisTheoryPinSubmitter(
-    foragePinEditText: ForagePinElement,
+    private val btTextElement: TextElement,
+    collector: SecurePinCollector,
     private val envConfig: EnvConfig,
     logger: Log
 ) : AbstractVaultSubmitter(
-    foragePinEditText = foragePinEditText,
+    collector = collector,
     logger = logger
 ) {
     override val vaultType: VaultType = VaultType.BT_VAULT_TYPE
@@ -51,7 +52,7 @@ internal class BasisTheoryPinSubmitter(
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = vaultProxyRequest.headers
             body = ProxyRequestObject(
-                pin = foragePinEditText.getTextElement() as TextElement,
+                pin = btTextElement,
                 card_number_token = vaultProxyRequest.vaultToken
             )
             path = vaultProxyRequest.path

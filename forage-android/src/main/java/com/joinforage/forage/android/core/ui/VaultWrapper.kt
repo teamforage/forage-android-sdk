@@ -10,7 +10,6 @@ import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.element.SimpleElementListener
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
 import com.joinforage.forage.android.core.ui.element.state.PinElementState
@@ -42,7 +41,6 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun showKeyboard()
 
     abstract fun getVaultSubmitter(
-        foragePinElement: ForagePinElement,
         envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter

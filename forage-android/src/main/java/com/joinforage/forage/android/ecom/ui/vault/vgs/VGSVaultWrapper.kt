@@ -14,8 +14,8 @@ import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
@@ -133,11 +133,16 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     override fun getTextElement(): VGSEditText = _internalEditText
 
     override fun getVaultSubmitter(
-        foragePinElement: ForagePinElement,
         envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter = VgsPinSubmitter(
-        foragePinElement,
+        _internalEditText,
+        object : SecurePinCollector {
+            override fun clearText() {
+                this@VGSVaultWrapper.clearText()
+            }
+            override fun isComplete(): Boolean = manager.isComplete
+        },
         envConfig,
         logger
     )
