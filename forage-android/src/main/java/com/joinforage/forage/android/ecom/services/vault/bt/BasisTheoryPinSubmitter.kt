@@ -21,7 +21,8 @@ internal class BasisTheoryPinSubmitter(
     private val btTextElement: TextElement,
     collector: SecurePinCollector,
     private val envConfig: EnvConfig,
-    logger: Log
+    logger: Log,
+    private val buildVaultProvider: () -> BasisTheoryElements = { buildBasisTheory(envConfig) }
 ) : AbstractVaultSubmitter(
     collector = collector,
     logger = logger
@@ -45,9 +46,7 @@ internal class BasisTheoryPinSubmitter(
         .setHeader(ForageConstants.Headers.CONTENT_TYPE, "application/json")
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
-        val bt = BasisTheoryElements.builder()
-            .apiKey(envConfig.btAPIKey)
-            .build()
+        val bt = buildVaultProvider()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
             headers = vaultProxyRequest.headers
@@ -66,4 +65,12 @@ internal class BasisTheoryPinSubmitter(
     }
 
     override fun getVaultToken(paymentMethod: PaymentMethod): String? = pickVaultTokenByIndex(paymentMethod, 1)
+
+    companion object {
+        private fun buildBasisTheory(envConfig: EnvConfig): BasisTheoryElements {
+            return BasisTheoryElements.builder()
+                .apiKey(envConfig.btAPIKey)
+                .build()
+        }
+    }
 }
