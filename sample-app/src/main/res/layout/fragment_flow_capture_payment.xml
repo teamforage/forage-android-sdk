@@ -17,7 +17,7 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             tools:context=".ui.complete.flow.tokens.FlowTokensFragment">
 
-            <com.joinforage.forage.android.ecom.ui.ForagePINEditText
+            <com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
                 android:id="@+id/snapPinEditText"
                 style="@style/ForagePINEditTextStyle"
                 isVisible="@{viewModel.uiState.captureSnapVisible}"
@@ -74,7 +74,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/cashPinEditText" />
 
-            <com.joinforage.forage.android.ecom.ui.ForagePINEditText
+            <com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
                 android:id="@+id/cashPinEditText"
                 style="@style/ForagePINEditTextStyle"
                 isVisible="@{viewModel.uiState.captureCashVisible}"

@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.ecom.ui
+package com.joinforage.forage.android.ecom.ui.element
 
 import android.app.Application
 import android.content.Context
