@@ -16,7 +16,6 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.VaultWrapper
-import com.joinforage.forage.android.core.ui.element.state.PinElementStateManager
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
@@ -33,7 +32,6 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : VaultWrapper(context, attrs, defStyleAttr) {
     private var _internalEditText: VGSEditText
-    override val manager: PinElementStateManager = PinElementStateManager.forEmptyInput()
     override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
 
     init {
@@ -109,15 +107,20 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                     // mutable references to listeners so that setting the focus
                     // would not remove the blur listener and vice versa
                     _internalEditText.setOnFocusChangeListener { _, hasFocus ->
-                        manager.changeFocus(hasFocus)
+                        focusState = focusState.changeFocus(hasFocus)
+                        focusState.fireEvent(
+                            onFocusEventListener = onFocusEventListener,
+                            onBlurEventListener = onBlurEventListener
+                        )
                     }
                     _internalEditText.setOnFieldStateChangeListener(object : OnFieldStateChangeListener {
                         override fun onStateChange(state: FieldState) {
                             // map VGS's event representation to Forage's
-                            manager.handleChangeEvent(
+                            inputState = inputState.handleChangeEvent(
                                 isComplete = state.isValid,
                                 isEmpty = state.isEmpty
                             )
+                            onChangeEventListener?.invoke(pinEditTextState)
                         }
                     })
                 } finally {
@@ -141,7 +144,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
             override fun clearText() {
                 this@VGSVaultWrapper.clearText()
             }
-            override fun isComplete(): Boolean = manager.isComplete
+            override fun isComplete(): Boolean = inputState.isComplete
         },
         envConfig,
         logger
