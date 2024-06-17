@@ -81,6 +81,7 @@ class FlowBalanceFragment : Fragment() {
         }
 
         foragePinEditText.setOnFocusEventListener { setState() }
+        foragePinEditText.setOnBlurEventListener { setState() }
         foragePinEditText.setOnChangeEventListener { setState() }
 
         val state = foragePinEditText.getElementState()

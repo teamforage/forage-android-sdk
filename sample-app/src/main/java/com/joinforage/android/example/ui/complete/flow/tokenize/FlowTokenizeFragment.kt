@@ -83,6 +83,7 @@ class FlowTokenizeFragment : Fragment() {
         }
 
         foragePanEditText.setOnFocusEventListener { setState() }
+        foragePanEditText.setOnBlurEventListener { setState() }
         foragePanEditText.setOnChangeEventListener { setState() }
 
         val state = foragePanEditText.getElementState()
