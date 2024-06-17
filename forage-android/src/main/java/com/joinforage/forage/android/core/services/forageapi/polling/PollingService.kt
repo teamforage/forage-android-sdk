@@ -36,21 +36,13 @@ internal class PollingService(
 
                     if (sqsMessage.status == "completed") {
                         if (sqsMessage.failed) {
-                            val sqsError = sqsMessage.errors[0]
-                            logger.e(
-                                "[Polling] Received response ${sqsError.statusCode} for $operationDescription with message: ${sqsError.message}"
-                            )
-                            return sqsError.toForageError()
+                            return logAndReturnError(sqsMessage, operationDescription)
                         }
                         break
                     }
 
                     if (sqsMessage.failed) {
-                        val sqsError = sqsMessage.errors[0]
-                        logger.e(
-                            "[Polling] Received response ${sqsError.statusCode} for $operationDescription with message: ${sqsError.message}"
-                        )
-                        return sqsError.toForageError()
+                        return logAndReturnError(sqsMessage, operationDescription)
                     }
                 }
                 else -> {
@@ -85,6 +77,18 @@ internal class PollingService(
 
         logger.i("[Polling] Finished polling Message $contentId for $operationDescription")
         return ForageApiResponse.Success("")
+    }
+
+    private fun logAndReturnError(sqsMessage: Message, operationDescription: String): ForageApiResponse.Failure {
+        val sqsError = sqsMessage.errors[0]
+        val isWarningLevelError = intArrayOf(400, 429)
+        val message = "[Polling] Received response ${sqsError.statusCode} for $operationDescription with message: ${sqsError.message}"
+        if (isWarningLevelError.contains(sqsError.statusCode)) {
+            logger.w(message)
+        } else {
+            logger.e(message)
+        }
+        return sqsError.toForageError()
     }
 
     companion object {

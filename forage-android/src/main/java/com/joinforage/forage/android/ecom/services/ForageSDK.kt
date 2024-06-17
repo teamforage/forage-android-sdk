@@ -428,10 +428,11 @@ class ForageSDK {
         measurement.end()
         val outcome = if (apiResponse is ForageApiResponse.Failure) {
             if (apiResponse.errors.isNotEmpty()) {
-                measurement.setForageErrorCode(apiResponse.errors[0].code)
+                measurement.setForageErrorCode(apiResponse.errors[0].code).setHttpStatusCode(apiResponse.errors[0].httpStatusCode)
             }
             EventOutcome.FAILURE
         } else {
+            measurement.setHttpStatusCode(200)
             EventOutcome.SUCCESS
         }
         measurement.setEventOutcome(outcome).logResult()

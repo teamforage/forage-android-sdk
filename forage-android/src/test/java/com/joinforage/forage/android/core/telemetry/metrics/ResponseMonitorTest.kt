@@ -161,7 +161,7 @@ class ResponseMonitorTest {
         val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(vault = vaultType, userAction = userAction, mockLogger)
         roundTripResponseMonitor.start()
         roundTripResponseMonitor.end()
-        roundTripResponseMonitor.setEventOutcome(EventOutcome.SUCCESS).logResult()
+        roundTripResponseMonitor.setEventOutcome(EventOutcome.SUCCESS).setHttpStatusCode(200).logResult()
 
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(1)
@@ -177,6 +177,7 @@ class ResponseMonitorTest {
         val loggedOutcomeType = attributes[MetricsConstants.EVENT_OUTCOME]
         val loggedForageErrorCode = attributes[MetricsConstants.FORAGE_ERROR_CODE]
         val loggedLogType = attributes[MetricsConstants.LOG_TYPE]
+        val loggedHttpStatus = attributes[MetricsConstants.HTTP_STATUS]
 
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(userAction)
@@ -184,5 +185,6 @@ class ResponseMonitorTest {
         Assertions.assertThat(loggedOutcomeType).isEqualTo(EventOutcome.SUCCESS)
         Assertions.assertThat(loggedForageErrorCode).isEqualTo(UnknownForageErrorCode.UNKNOWN)
         Assertions.assertThat(loggedLogType).isEqualTo(LogType.METRIC)
+        Assertions.assertThat(loggedHttpStatus).isEqualTo(200)
     }
 }
