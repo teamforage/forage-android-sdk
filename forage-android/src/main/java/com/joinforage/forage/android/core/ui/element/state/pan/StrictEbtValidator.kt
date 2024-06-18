@@ -3,7 +3,6 @@ package com.joinforage.forage.android.core.ui.element.state.pan
 import com.joinforage.forage.android.core.ui.element.ElementValidationError
 import com.joinforage.forage.android.core.ui.element.IncompleteEbtPanError
 import com.joinforage.forage.android.core.ui.element.InvalidEbtPanError
-import com.joinforage.forage.android.core.ui.element.TooLongEbtPanError
 
 internal class StrictEbtValidator : PanValidator {
     override fun checkIfValid(cardNumber: String): Boolean {
@@ -27,8 +26,6 @@ internal class StrictEbtValidator : PanValidator {
             InvalidEbtPanError
         } else if (tooShortForStateIIN(cardNumber)) {
             IncompleteEbtPanError
-        } else if (tooLongForStateIIN(cardNumber)) {
-            TooLongEbtPanError
         } else {
             null
         }

@@ -3,7 +3,7 @@ package com.joinforage.forage.android.core.ui.element.state
 import com.joinforage.forage.android.core.ui.element.ElementValidationError
 
 /**
- * An interface that represents the state of the [ForageElement][com.joinforage.forage.android.core.ui.ForageElement]
+ * An interface that represents the state of the [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement]
  * as the customer interacts with it.
  * @property isEmpty Whether the input value of the Element is empty.
  * @property isValid Whether the input text fails any validation checks, with the exception of the

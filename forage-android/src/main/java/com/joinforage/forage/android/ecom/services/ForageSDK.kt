@@ -18,7 +18,7 @@ import com.joinforage.forage.android.core.services.vault.CapturePaymentRepositor
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
-import com.joinforage.forage.android.core.ui.element.ForagePanElement
+import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 
 /**
@@ -38,7 +38,7 @@ import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
  * val forage = ForageSDK()
  * ```
  * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
- * * [ForageTerminalSDK][com.joinforage.forage.android.pos.ForageTerminalSDK] to process POS
+ * * [ForageTerminalSDK](https://docs.joinforage.app/docs/forage-terminal-android) to process POS
  * Terminal transactions
  */
 class ForageSDK {
@@ -46,8 +46,8 @@ class ForageSDK {
      * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
      * ForageConfig is not set.
      *
-     * @param element A ForageElement instance
-     * @return The ForageConfig associated with the ForageElement
+     * @param forageConfig A [ForageConfig] instance
+     * @return The [ForageConfig] associated with the ForageElement
      * @throws ForageConfigNotSetException If the ForageConfig is not set for the ForageElement
      */
     private fun _getForageConfigOrThrow(forageConfig: ForageConfig?): ForageConfig {
@@ -62,8 +62,8 @@ class ForageSDK {
     }
 
     /**
-     * Tokenizes an EBT Card via a [ForagePANEdit
-     * Text][com.joinforage.forage.android.ui.ForagePANEditText] Element.
+     * Tokenizes an EBT Card via a
+     * [ForagePANEditText][com.joinforage.forage.android.ecom.ui.element.ForagePANEditText] Element.
      *
      * * On success, the object includes a `ref` token that represents an instance of a Forage
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods#paymentmethod-object).
@@ -73,7 +73,7 @@ class ForageSDK {
      * * On failure, for example in the case of
      * [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
      * the response includes a list of
-     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError] objects that you can
      * unpack to programmatically handle the error and display the appropriate
      * customer-facing message based on the `ForageError.code`.
      * ```kotlin
@@ -110,13 +110,14 @@ class ForageSDK {
      * }
      * ```
      * @param params A [TokenizeEBTCardParams] model that passes a [`foragePanEditText`]
-     * [com.joinforage.forage.android.ui.ForagePANEditText] instance, a `customerId`, and a `reusable`
+     * [com.joinforage.forage.android.ecom.ui.element.ForagePANEditText] instance, a `customerId`, and a `reusable`
      * boolean that Forage uses to tokenize an EBT Card.
      * @throws [ForageConfigNotSetException] If the [ForageConfig] is not set for the provided
      * `foragePanEditText`.
      * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more
      * information on error handling.
-     * @return A [ForageApiResponse] object. Use [toPaymentMethod()][ForageApiResponse.Success.toPaymentMethod] to convert the `data` string to a [PaymentMethod][com.joinforage.forage.android.model.PaymentMethod].
+     * @return A [ForageApiResponse] object. Use [toPaymentMethod()][ForageApiResponse.Success.toPaymentMethod] to
+     * convert the `data` string to a [PaymentMethod][com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod].
      */
     suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
@@ -141,7 +142,7 @@ class ForageSDK {
     /**
      * Checks the balance of a previously created
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods)
-     * via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * via a [ForagePINEditText][com.joinforage.forage.android.ecom.ui.element.ForagePINEditText] Element.
      *
      * ⚠️ _FNS prohibits balance inquiries on sites and apps that offer guest checkout. Skip this
      * method if your customers can opt for guest checkout. If guest checkout is not an option, then
@@ -151,7 +152,7 @@ class ForageSDK {
      * * On failure, for example in the case of
      * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
      * the response includes a list of
-     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError] objects that you can
      * unpack to programmatically handle the error and display the appropriate
      * customer-facing message based on the `ForageError.code`.
      * ```kotlin
@@ -195,7 +196,7 @@ class ForageSDK {
      * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions)
      * to trigger balance inquiry exceptions during testing.
      * @return A [ForageApiResponse] object. Use [toBalance()][ForageApiResponse.Success.toBalance]
-     * to convert the `data` string to a [Balance][com.joinforage.forage.android.model.Balance].
+     * to convert the `data` string to a [Balance][com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance].
      */
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
@@ -239,7 +240,7 @@ class ForageSDK {
      * [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or
      * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
      * response includes a list of
-     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError] objects that you can
      * unpack to programmatically handle the error and display the appropriate
      * customer-facing message based on the `ForageError.code`.
      * ```kotlin
@@ -279,7 +280,7 @@ class ForageSDK {
      * }
      *```
      * @param params A [CapturePaymentParams] model that passes a
-     * [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText]
+     * [`foragePinEditText`][com.joinforage.forage.android.core.ui.element.ForagePinElement]
      * instance and a `paymentRef`, returned by the
      * [Create a Payment](https://docs.joinforage.app/reference/create-a-payment) endpoint, that
      * Forage uses to capture a payment.
@@ -291,7 +292,8 @@ class ForageSDK {
      * on error handling.
      * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
      * to trigger payment capture exceptions during testing.
-     * @return A [ForageApiResponse] object. Use [toPayment()][ForageApiResponse.Success.toPayment] to convert the `data` string to a [Payment][com.joinforage.forage.android.model.Payment].
+     * @return A [ForageApiResponse] object. Use [toPayment()][ForageApiResponse.Success.toPayment] to convert the `data` string to a
+     * [Payment][com.joinforage.forage.android.core.services.forageapi.payment.Payment].
      */
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
@@ -333,7 +335,7 @@ class ForageSDK {
      * * On success, the `data` property of the [ForageApiResponse.Success] object resolves with an empty string.
      * * On failure, for example in the case of [`expired_session_token`](https://docs.joinforage.app/reference/errors#expired_session_token) errors, the
      * response includes a list of
-     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError] objects that you can
      * unpack to programmatically handle the error and display the appropriate
      * customer-facing message based on the `ForageError.code`.
      * ```kotlin
@@ -367,7 +369,7 @@ class ForageSDK {
      * ```
      *
      * @param params A [DeferPaymentCaptureParams] model that passes a
-     * [`foragePinEditText`][com.joinforage.forage.android.ui.ForagePINEditText] instance and a
+     * [`foragePinEditText`][com.joinforage.forage.android.ecom.ui.element.ForagePINEditText] instance and a
      * `paymentRef`, returned by the
      * [Create a Payment](https://docs.joinforage.app/reference/create-a-payment) endpoint, as the
      * DeferPaymentCaptureParams.
@@ -515,10 +517,10 @@ class ForageSDK {
 /**
  * A model that represents the parameters that Forage requires to tokenize an EBT Card.
  * [TokenizeEBTCardParams] are passed to the
- * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] method.
+ * [tokenizeEBTCard][com.joinforage.forage.android.ecom.services.ForageSDK.tokenizeEBTCard] method.
  *
  * @property foragePanEditText A reference to a [ForagePANEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ecom.ui.element.ForagePANEditText.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property customerId A unique ID for the customer making the payment.
  * If using your internal customer ID, then we recommend that you hash the value
@@ -527,7 +529,7 @@ class ForageSDK {
  * to create multiple payments, set to true by default.
  */
 data class TokenizeEBTCardParams(
-    val foragePanEditText: ForagePanElement,
+    val foragePanEditText: ForagePANEditText,
     val customerId: String? = null,
     val reusable: Boolean = true
 )
@@ -535,10 +537,10 @@ data class TokenizeEBTCardParams(
 /**
  * A model that represents the parameters that Forage requires to check a card's balance.
  * [CheckBalanceParams] are passed to the
- * [checkBalance][com.joinforage.forage.android.ForageSDK.checkBalance] method.
+ * [checkBalance][com.joinforage.forage.android.ecom.services.ForageSDK.checkBalance] method.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ecom.ui.element.ForagePINEditText.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property paymentMethodRef A unique string identifier for a previously created
  * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) in Forage's database,
@@ -556,10 +558,10 @@ data class CheckBalanceParams(
 /**
  * A model that represents the parameters that Forage requires to capture a payment.
  * [CapturePaymentParams] are passed to the
- * [capturePayment][com.joinforage.forage.android.ForageSDK.capturePayment] method.
+ * [capturePayment][com.joinforage.forage.android.ecom.services.ForageSDK.capturePayment] method.
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.ecom.ui.element.ForagePINEditText.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property paymentRef A unique string identifier for a previously created
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
@@ -575,16 +577,16 @@ data class CapturePaymentParams(
  * A model that represents the parameters that Forage requires to collect a card PIN and defer
  * the capture of the payment to the server.
  * [DeferPaymentCaptureParams] are passed to the
- * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture] method.
+ * [deferPaymentCapture][com.joinforage.forage.android.ecom.services.ForageSDK.deferPaymentCapture] method.
  *
  * @see * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
  * for the related step-by-step guide.
  * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment)
  * for the API endpoint to call after
- * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture].
+ * [deferPaymentCapture][com.joinforage.forage.android.ecom.services.ForageSDK.deferPaymentCapture].
  *
  * @property foragePinEditText A reference to a [ForagePINEditText] instance.
- * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * [setForageConfig][com.joinforage.forage.android.core.ui.element.ForagePanElement.setForageConfig] must
  * be called on the instance before it can be passed.
  * @property paymentRef A unique string identifier for a previously created
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's

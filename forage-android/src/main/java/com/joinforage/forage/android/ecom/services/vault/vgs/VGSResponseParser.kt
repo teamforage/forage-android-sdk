@@ -8,7 +8,7 @@ import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
 import org.json.JSONException
 
-class VGSResponseParser(vgsRes: VGSResponse?) : VaultResponseParser {
+internal class VGSResponseParser(vgsRes: VGSResponse?) : VaultResponseParser {
     override val isNullResponse: Boolean
     override val vaultError: ForageApiResponse.Failure?
     override val forageError: ForageApiResponse.Failure?

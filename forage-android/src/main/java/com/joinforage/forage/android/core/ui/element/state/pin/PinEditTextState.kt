@@ -6,7 +6,7 @@ import com.joinforage.forage.android.core.ui.element.state.FocusState
 
 /**
  * An interface that represents the state of a
- * [ForagePINEditText][com.joinforage.forage.android.core.ui.ForagePINEditText] Element.
+ * **ForagePINEditText** Element.
  * @see [EditTextState][com.joinforage.forage.android.core.ui.element.state.EditTextState]
  */
 interface PinEditTextState : EditTextState {

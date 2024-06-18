@@ -9,6 +9,10 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 
+/**
+ * ⚠️ **Forage developers use this class to manage common attributes across [ForageElement] types.
+ * You don't need to use or worry about it!**
+ */
 abstract class ForageVaultElement<T : ElementState> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

@@ -25,19 +25,6 @@ val InvalidEbtPanError = ElementValidationError(
     detail = "Your EBT card number is invalid."
 )
 
-/**
- * **Deprecated** - This error will be removed in a future release.
- * A type of [ElementValidationError] that occurs when a customer submits an EBT Card number that
- * is too long. In theory, this error should never occur.
- */
-val TooLongEbtPanError = ElementValidationError(
-    // in theory the view layer should prevent this
-    // validation state from occurring by dynamically restricting
-    // the input length based on the IIN.
-    // We include this for completeness
-    detail = "Your EBT card number is too long."
-)
-
 // PIN Input Errors
 /**
  * A type of [ElementValidationError] that occurs when a customer submits an incomplete

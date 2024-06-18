@@ -7,25 +7,20 @@ import com.joinforage.forage.android.core.ui.element.state.ElementState
 internal interface DynamicEnvElement {
 
     /**
-     * ⚠️ **The [setForageConfig] method is only valid for online-only transactions.** Use [setPosForageConfig]
-     * for in-store POS Terminal transactions.
-     *
      * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
      * **[setForageConfig] must be called before any other methods can be executed on the Element.**
      * ```kotlin
      * // Example: Call setForageConfig on a ForagePANEditText Element
-     * val onlineOnlyForagePanEditText = root?.findViewById<ForagePANEditText>(
+     * val foragePanEditText = root?.findViewById<ForagePANEditText>(
      *     R.id.tokenizeForagePanEditText
      * )
-     * onlineOnlyForagePanEditText.setForageConfig(
+     * foragePanEditText.setForageConfig(
      *     ForageConfig(
      *         merchantId = "mid/<merchant_id>",
      *         sessionToken = "<session_token>"
      *     )
      * )
      * ```
-     * @see * [Online-only Android Quickstart](https://docs.joinforage.app/docs/forage-android-quickstart)
-     * * [setPosForageConfig] for the equivalent Terminal SDK method.
      *
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
@@ -96,7 +91,8 @@ internal interface EditTextElement {
  * The interface that defines methods for configuring and interacting with a [ForageElement].
  * A ForageElement is a secure, client-side entity that accepts and submits customer input for a
  * transaction.
- * Both [ForagePANEditText] and [ForagePINEditText] adhere to the [ForageElement] interface.
+ * Both [ForagePanElement][com.joinforage.forage.android.core.ui.element.ForagePanElement] and
+ * [ForagePinElement][com.joinforage.forage.android.core.ui.element.ForagePinElement] adhere to the [ForageElement] interface.
  *
  * @property typeface The [Typeface](https://developer.android.com/reference/android/graphics/Typeface)
  * that is used to render text within the ForageElement.
@@ -104,7 +100,7 @@ internal interface EditTextElement {
  * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
  * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
  */
-internal interface ForageElement<T : ElementState> {
+interface ForageElement<T : ElementState> {
     var typeface: Typeface?
 
     /**
