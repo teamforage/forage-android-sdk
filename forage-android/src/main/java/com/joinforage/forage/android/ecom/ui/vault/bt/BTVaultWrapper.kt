@@ -68,7 +68,6 @@ internal class BTVaultWrapper @JvmOverloads constructor(
                         textSize = getDimension(com.joinforage.forage.android.R.styleable.ForagePINEditText_textSize, -1f)
                         textColor = getColor(com.joinforage.forage.android.R.styleable.ForagePINEditText_textColor, Color.BLACK)
                         var customBackground = GradientDrawable().apply {
-                            setPaddingRelative(20, 20, 20, 20)
                             shape = GradientDrawable.RECTANGLE
                             cornerRadii = floatArrayOf(boxCornerRadiusTopStart, boxCornerRadiusTopStart, boxCornerRadiusTopEnd, boxCornerRadiusTopEnd, boxCornerRadiusBottomStart, boxCornerRadiusBottomStart, boxCornerRadiusBottomEnd, boxCornerRadiusBottomEnd)
                             setStroke(5, boxStrokeColor)

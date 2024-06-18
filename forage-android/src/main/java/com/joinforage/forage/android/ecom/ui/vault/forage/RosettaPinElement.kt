@@ -169,7 +169,6 @@ internal class RosettaPinElement @JvmOverloads constructor(
                 setHintTextColor(hintTextColor)
 
                 val customBackground = GradientDrawable().apply {
-                    setPaddingRelative(20, 20, 20, 20)
                     shape = GradientDrawable.RECTANGLE
                     cornerRadii = floatArrayOf(
                         boxCornerRadiusTopStart,
