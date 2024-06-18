@@ -156,12 +156,12 @@ class RosettaPinElementTests {
     }
 
     @Test
-    fun `has padding of 20 by default`() {
+    fun `has padding of 0 by default`() {
         val editText = rosettaPinElement.getTextElement()
-        assertEquals(20, editText.paddingLeft)
-        assertEquals(20, editText.paddingTop)
-        assertEquals(20, editText.paddingRight)
-        assertEquals(20, editText.paddingBottom)
+        assertEquals(0, editText.paddingLeft)
+        assertEquals(0, editText.paddingTop)
+        assertEquals(0, editText.paddingRight)
+        assertEquals(0, editText.paddingBottom)
     }
 
     @Test
