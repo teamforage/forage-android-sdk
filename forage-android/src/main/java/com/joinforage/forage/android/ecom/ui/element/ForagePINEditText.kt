@@ -19,6 +19,7 @@ import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
 import com.joinforage.forage.android.ecom.ui.vault.forage.RosettaPinElement
+import com.joinforage.forage.android.ecom.ui.vault.vgs.VGSVaultWrapper
 import com.launchdarkly.sdk.android.LDConfig
 
 /**
@@ -62,6 +63,7 @@ class ForagePINEditText @JvmOverloads constructor(
 ) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
     private val btVaultWrapper: BTVaultWrapper
     private val rosettaPinElement: RosettaPinElement
+    private val vgsVaultWrapper: VGSVaultWrapper
 
     /**
      * The `vault` property acts as an abstraction for the actual code
@@ -102,11 +104,16 @@ class ForagePINEditText @JvmOverloads constructor(
                     // Then, within setForageConfig, once we know the environment
                     // and are thus able to initial LaunchDarkly and find out
                     // whether to use BT or Forage. So, below we are hedging.
+                    vgsVaultWrapper = VGSVaultWrapper(context, attrs, defStyleAttr)
                     btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
                     rosettaPinElement = RosettaPinElement(context, attrs, defStyleAttr)
                     // ensure all wrappers init with the
                     // same typeface (or the attributes)
                     btVaultWrapper.typeface = rosettaPinElement.typeface
+
+                    _linearLayout.addView(rosettaPinElement.getTextElement())
+                    _linearLayout.addView(btVaultWrapper.getTextElement())
+                    _linearLayout.addView(vgsVaultWrapper.getTextElement())
                 } finally {
                     recycle()
                 }
@@ -126,7 +133,7 @@ class ForagePINEditText @JvmOverloads constructor(
         // it to the parent view
         _SET_ONLY_vault = determineBackingVault(forageConfig, logger)
 
-        _linearLayout.addView(vault.getTextElement())
+//        _linearLayout.addView(vault.getTextElement())
         _linearLayout.addView(getLogoImageViewLayout(context))
         addView(_linearLayout)
 
