@@ -74,6 +74,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                         }
 
                         val customBackground = GradientDrawable().apply {
+                            setPaddingRelative(20, 20, 20, 20)
                             shape = GradientDrawable.RECTANGLE
                             cornerRadii = floatArrayOf(boxCornerRadiusTopStart, boxCornerRadiusTopStart, boxCornerRadiusTopEnd, boxCornerRadiusTopEnd, boxCornerRadiusBottomStart, boxCornerRadiusBottomStart, boxCornerRadiusBottomEnd, boxCornerRadiusBottomEnd)
                             setStroke(5, boxStrokeColor)
@@ -89,6 +90,7 @@ internal class VGSVaultWrapper @JvmOverloads constructor(
                         setFieldName(ForageConstants.VGS.PIN_FIELD_NAME)
                         setMaxLength(4)
                         setInputType(android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD)
+                        setPadding(20, 20, 20, 20)
                     }
                     // enforce that PINs must be 4 digits to be vali
                     _internalEditText.appendRule(

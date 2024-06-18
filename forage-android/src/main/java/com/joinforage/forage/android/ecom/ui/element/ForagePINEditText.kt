@@ -170,25 +170,6 @@ class ForagePINEditText @JvmOverloads constructor(
         logger: Log
     ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-        // we use post to make sure that this zero-ing out
-        // happens after all of BT's code executes. We need
-        // the zero-ing out to "win"
-        post {
-            // zero out the padding for Basis Theory element
-            // we expressly need to wait for after the BT
-            // Element has inflated before we can do this
-            // else an exception is thrown.
-            // also worth noting that the VGS padding is
-            // zero-d out in the dimens.xml file
-            val btFrame = btVaultWrapper.getTextElement()
-            val btTextElement = btFrame.getChildAt(0)
-            btTextElement.setPadding(0, 0, 0, 0)
-        }
-    }
-
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else rosettaPinElement.typeface
         set(value) {
