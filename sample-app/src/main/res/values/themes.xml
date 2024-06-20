@@ -1,6 +1,10 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Theme.ForageAndroid" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="catalogPinStyleRef" type="style">
+            @style/CatalogPinStyle
+        </item>
+
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>

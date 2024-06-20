@@ -21,7 +21,7 @@
 
     <com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
             android:id="@+id/foragePinEditText"
-            style="@style/ForagePINEditTextStyle"
+            style="@style/CatalogPinStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"

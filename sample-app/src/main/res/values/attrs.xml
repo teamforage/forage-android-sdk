@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="catalogPinStyleRef" format="reference" />
+
     <!-- TokenizeFragment -->
     <!-- Theme attribute for the ForagePANEditText on the tokenize fragment. -->
     <attr name="tokenizeForagePANEditTextStyle" format="reference" />
