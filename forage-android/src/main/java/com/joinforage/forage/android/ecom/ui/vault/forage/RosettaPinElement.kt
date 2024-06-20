@@ -87,7 +87,7 @@ internal class RosettaPinElement @JvmOverloads constructor(
     }
 
     override fun setTextSize(textSize: Float) {
-        _editText.textSize = textSize
+        _editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
 
     override fun setHint(hint: String) {
