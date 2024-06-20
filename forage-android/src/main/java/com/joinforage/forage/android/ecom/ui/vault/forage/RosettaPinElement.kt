@@ -38,14 +38,8 @@ internal class RosettaPinElement @JvmOverloads constructor(
     private val _editText: EditText
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0).apply {
-            try {
-                _editText = buildEditText(attrs)
-                registerEventListeners()
-            } finally {
-                recycle()
-            }
-        }
+        _editText = buildEditText(attrs, defStyleAttr)
+        registerEventListeners()
     }
 
     override fun getVaultSubmitter(
@@ -98,9 +92,9 @@ internal class RosettaPinElement @JvmOverloads constructor(
         _editText.setHintTextColor(hintTextColor)
     }
 
-    private fun buildEditText(attrs: AttributeSet? = null): EditText {
+    private fun buildEditText(attrs: AttributeSet? = null, defStyleAttr: Int): EditText {
         val defaultRadius = resources.getDimension(R.dimen.default_horizontal_field)
-        val typedArray: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText)
+        val typedArray: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
         val boxCornerRadius = typedArray.getDimension(R.styleable.ForagePINEditText_boxCornerRadius, defaultRadius)
 
         try {
