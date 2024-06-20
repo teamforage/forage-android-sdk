@@ -1,4 +1,4 @@
-# Forage Android SDK (`v3.9.0`)
+# Forage Android SDK (`v4.0.0`)
 
 You can use the Forage Android SDK to process online-only and/or Terminal POS EBT payments. The SDK provides UI components known as Forage Elements and associated methods that perform payment operations.
 
