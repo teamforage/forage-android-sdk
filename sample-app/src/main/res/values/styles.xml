@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="CatalogPinStyle">
+        <!--        <item name="elementHeight">120dp</item>-->
+        <!--        <item name="elementWidth">120dp</item>-->
+        <!--        <item name="inputHeight">80dp</item>-->
+        <!--        <item name="inputWidth">100dp</item>-->
+        <item name="boxBackgroundColor">#85DE6B</item>
+        <item name="textColor">#ffffff</item>
+        <item name="boxStrokeWidth">8dp</item>
+        <item name="textSize">16sp</item>
+        <item name="pinBoxStrokeColor">#800080</item>
+        <item name="boxCornerRadius">8dp</item>
+    </style>
+
     <style name="DefaultForagePANEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="panBoxStrokeColor">@color/purple_700</item>
         <item name="cornerRadius">@dimen/corner_radius</item>

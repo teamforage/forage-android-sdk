@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.joinforage.android.example.R
 import com.joinforage.android.example.databinding.FragmentCatalogBinding
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
@@ -42,7 +43,7 @@ class CatalogFragment : Fragment() {
         // the other ForagePINEditText in the catalog which was
         // created via XML and has some XML styles associated
         // with it.
-        val dynamicPinEditText = ForagePINEditText(requireContext(), null)
+        val dynamicPinEditText = ForagePINEditText(requireContext(), null, R.attr.catalogPinStyleRef)
         binding.root.addView(dynamicPinEditText)
 
         dynamicPinEditText.setForageConfig(forageConfig)
