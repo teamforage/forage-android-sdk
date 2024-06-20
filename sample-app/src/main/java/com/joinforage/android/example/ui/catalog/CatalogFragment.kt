@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.joinforage.android.example.databinding.FragmentCatalogBinding
 import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 
 class CatalogFragment : Fragment() {
 
@@ -32,25 +33,28 @@ class CatalogFragment : Fragment() {
             merchantId = "0123456"
         )
 
+        // ForagePANEditText can be created via XML layouts or
+        // dynamically. These different modes of creation are
+        // a natural point of styling differences to emerge.
+        // We add a ForagePANEditText to the catalog in the
+        // hopes that we'll spot these discrepancies
+        // NOTE: this view is currently unstyled compared to
+        // the other ForagePINEditText in the catalog which was
+        // created via XML and has some XML styles associated
+        // with it.
+        val dynamicPinEditText = ForagePINEditText(requireContext(), null)
+        binding.root.addView(dynamicPinEditText)
+
+        dynamicPinEditText.setForageConfig(forageConfig)
         binding.firstForageEditText.setForageConfig(forageConfig)
-        binding.secondEditText.setForageConfig(forageConfig)
-        binding.thirdEditText.setForageConfig(forageConfig)
-        binding.fourthEditText.setForageConfig(forageConfig)
         binding.foragePinEditText.setForageConfig(forageConfig)
-        binding.secondForagePINEditText.setForageConfig(forageConfig)
-        binding.thirdForagePINEditText.setForageConfig(forageConfig)
 
         // NOTE: we call setForageConfig a second time here so that
         //  the CI tests always confirm that running setForageConfig
         //  more than once is OK and does not cause a crash. So,
         //  these duplicate calls are intentional here
         binding.firstForageEditText.setForageConfig(forageConfig)
-        binding.secondEditText.setForageConfig(forageConfig)
-        binding.thirdEditText.setForageConfig(forageConfig)
-        binding.fourthEditText.setForageConfig(forageConfig)
         binding.foragePinEditText.setForageConfig(forageConfig)
-        binding.secondForagePINEditText.setForageConfig(forageConfig)
-        binding.thirdForagePINEditText.setForageConfig(forageConfig)
 
         return root
     }
