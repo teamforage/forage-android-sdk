@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatEditText
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
@@ -108,6 +109,32 @@ class ForagePINEditText @JvmOverloads constructor(
                     recycle()
                 }
             }
+
+        // The following pieces of code are to fix height
+        // differences in the appearance of Rosetta-backed
+        // vs BT-backed ForagePINEditText in the case where
+        // no app:inputHeight or app:inputWidth are set.
+
+        // zero out the padding for Basis Theory element
+        val btFrame = btVaultWrapper.getTextElement()
+        val btTextElement = btFrame.getChildAt(0) as AppCompatEditText
+        btTextElement.setPadding(0, 0, 0, 0)
+
+        // ensure Rosetta's textSize is the same as BTs textSize
+        // There are three cases:
+        //  1) using XML layouts and somebody passes app:textSize ->
+        //      both RosettaPinElement and BTVaultWrapper read
+        //      that value and independently set the correct textSize
+        //  2) using XML layouts and app:textSize is not set ->
+        //      This line of code fixes that issue
+        //  3) create dynamic instance of ForagePINEditText and
+        //      call setTextSize ->
+        //      setTextSize calls vault.setTextSize so the only
+        //      visible text field will have the correct textSize
+        //  3) create dynamic instance of ForagePINEditText and
+        //      never call setTextSize ->
+        //      This line of code fixes that issue
+        rosettaPinElement.setTextSize(btTextElement.textSize)
     }
 
     private fun initWithForageConfig(forageConfig: ForageConfig) {
@@ -178,25 +205,6 @@ class ForagePINEditText @JvmOverloads constructor(
         envConfig: EnvConfig,
         logger: Log
     ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-        // we use post to make sure that this zero-ing out
-        // happens after all of BT's code executes. We need
-        // the zero-ing out to "win"
-        post {
-            // zero out the padding for Basis Theory element
-            // we expressly need to wait for after the BT
-            // Element has inflated before we can do this
-            // else an exception is thrown.
-            // also worth noting that the VGS padding is
-            // zero-d out in the dimens.xml file
-            val btFrame = btVaultWrapper.getTextElement()
-            val btTextElement = btFrame.getChildAt(0)
-            btTextElement.setPadding(0, 0, 0, 0)
-        }
-    }
 
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else rosettaPinElement.typeface
