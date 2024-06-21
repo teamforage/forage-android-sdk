@@ -4,7 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="pin_field_margin">16dp</dimen>
-    <dimen name="vgs_field_vertical_padding">2dp</dimen>
     <dimen name="pin_text_size">16sp</dimen>
     <dimen name="corner_radius">4dp</dimen>
     <dimen name="box_corner_radius_top_start">4dp</dimen>

@@ -34,7 +34,7 @@ class PaymentsRepository(sessionToken: String) {
                 metadata = metadata,
                 deliveryAddress = deliveryAddress,
                 isDelivery = isDelivery,
-                customerId = "android-test-customer-id"
+                customerId = "android-test-customer-id-2"
             )
         )
     }

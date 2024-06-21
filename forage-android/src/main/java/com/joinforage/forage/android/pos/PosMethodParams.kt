@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos
 
-import com.joinforage.forage.android.core.ForagePinElement
 import com.joinforage.forage.android.ui.ForageElement
+import com.joinforage.forage.android.ui.ForagePINEditText
 
 /**
  * **[PosForageConfig] is only valid for in-store POS Terminal transactions via [ForageTerminalSDK].**
@@ -90,7 +90,7 @@ data class PosDeferPaymentRefundParams(
  * merchants attach their credit card processor’s ID for the customer making the refund.
  */
 data class PosRefundPaymentParams(
-    val foragePinEditText: ForagePinElement,
+    val foragePinEditText: ForagePINEditText,
     val paymentRef: String,
     val amount: Float,
     val reason: String,

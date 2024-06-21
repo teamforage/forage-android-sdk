@@ -3,7 +3,17 @@
   "funding_type": "ebt_snap",
   "amount": "5.00",
   "description": "Testing EBT Payments from Postman",
+  "merchant": "9876420",
   "metadata": {},
+  "is_delivery": false,
+  "delivery_address": {
+    "city": "Los Angeles",
+    "country": "US",
+    "line1": "4121 Santa Monica Blvd",
+    "line2": "Unit 513",
+    "state": "CA",
+    "zipcode": "90029"
+  },
   "payment_method": "1f148fe399",
   "created": "2023-04-17T12:14:26.741690-07:00",
   "updated": "2023-04-17T12:14:26.741706-07:00",

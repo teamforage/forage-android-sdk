@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="CatalogPinStyle">
+        <!--        <item name="elementHeight">120dp</item>-->
+        <!--        <item name="elementWidth">120dp</item>-->
+        <!--        <item name="inputHeight">80dp</item>-->
+        <!--        <item name="inputWidth">100dp</item>-->
+        <item name="boxBackgroundColor">#85DE6B</item>
+        <item name="textColor">#ffffff</item>
+        <item name="boxStrokeWidth">8dp</item>
+        <item name="textSize">16sp</item>
+        <item name="pinBoxStrokeColor">#800080</item>
+        <item name="boxCornerRadius">8dp</item>
+    </style>
+
     <style name="DefaultForagePANEditTextStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="panBoxStrokeColor">@color/purple_700</item>
         <item name="cornerRadius">@dimen/corner_radius</item>
@@ -88,19 +101,15 @@
         <item name="android:layout_marginEnd">@dimen/pin_field_margin</item>
         <item name="android:layout_marginTop">@dimen/pin_field_margin</item>
         <item name="android:layout_marginBottom">@dimen/pin_field_margin</item>
-        <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
         <item name="pinBoxStrokeColor">@color/purple_700</item>
-        <item name="hintTextColor">@color/purple_700</item>
         <item name="boxCornerRadius">@dimen/corner_radius</item>
     </style>
 
     <style name="SecondForagePINEditTextStyle" parent="">
         <item name="android:layout_margin">@dimen/pin_field_margin</item>
-        <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
         <item name="pinBoxStrokeColor">@color/purple_200</item>
-        <item name="hintTextColor">@color/purple_200</item>
         <item name="boxCornerRadiusTopStart">@dimen/box_corner_radius_top_start</item>
         <item name="boxCornerRadiusTopEnd">@dimen/box_corner_radius_top_end</item>
         <item name="boxCornerRadiusBottomStart">@dimen/box_corner_radius_bottom_start</item>
@@ -114,10 +123,8 @@
 
     <style name="ThirdForagePINEditTextStyle" parent="">
         <item name="android:layout_margin">@dimen/pin_field_margin</item>
-        <item name="hint">@string/pin</item>
         <item name="textSize">@dimen/pin_text_size</item>
         <item name="pinBoxStrokeColor">@color/colorAccent</item>
-        <item name="hintTextColor">@color/colorAccent</item>
         <item name="boxCornerRadius">@dimen/corner_radius</item>
     </style>
 

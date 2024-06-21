@@ -1,12 +1,14 @@
 package com.joinforage.forage.android.network
 
-import com.joinforage.forage.android.core.telemetry.Log
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
+import com.joinforage.forage.android.core.services.forageapi.polling.Message
+import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.fixtures.givenContentId
 import com.joinforage.forage.android.fixtures.returnsMessageCompletedSuccessfully
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.Method

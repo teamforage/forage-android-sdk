@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.utils
 
-import com.joinforage.forage.android.getJitterAmount
+import com.joinforage.forage.android.core.services.getJitterAmount
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
