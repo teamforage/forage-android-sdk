@@ -1,15 +1,10 @@
 package com.joinforage.forage.android.pos.services.vault.forage
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.widget.EditText
 import com.joinforage.forage.android.addPathSegmentsSafe
 import com.joinforage.forage.android.addTrailingSlash
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
-import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
-import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
-import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.addPathSegmentsSafe
@@ -25,6 +20,10 @@ import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
+import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
+import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
+import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull

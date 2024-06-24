@@ -41,21 +41,21 @@ internal class MockLogger : Log {
         return
     }
 
-    override fun d(msg: String, attributes: Map<String, Any?>) : MockLogger {
+    override fun d(msg: String, attributes: Map<String, Any?>): MockLogger {
         return this
     }
 
-    override fun i(msg: String, attributes: Map<String, Any?>) : MockLogger {
+    override fun i(msg: String, attributes: Map<String, Any?>): MockLogger {
         infoLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
         return this
     }
 
-    override fun w(msg: String, attributes: Map<String, Any?>) : MockLogger {
+    override fun w(msg: String, attributes: Map<String, Any?>): MockLogger {
         warnLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
         return this
     }
 
-    override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) : MockLogger {
+    override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>): MockLogger {
         errorLogs.add(
             LogEntry(
                 msg,
