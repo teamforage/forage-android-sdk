@@ -209,13 +209,14 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
         val outcome = if (apiResponse is ForageApiResponse.Failure) {
             if (apiResponse.errors.isNotEmpty()) {
                 setForageErrorCode(apiResponse.errors[0].code)
+                setHttpStatusCode(apiResponse.errors[0].httpStatusCode)
             }
             EventOutcome.FAILURE
         } else {
+            setHttpStatusCode(200)
             EventOutcome.SUCCESS
         }
-        setEventOutcome(outcome)
-        return this
+        return setEventOutcome(outcome)
     }
 
     override fun logWithResponseAttributes(

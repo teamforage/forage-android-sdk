@@ -69,7 +69,10 @@ internal abstract class AbstractVaultSubmitter(
             vault = vaultType,
             userAction = params.userAction,
             metricsLogger = logger
-        ).setPath(params.path).setMethod("POST")
+        )
+        proxyResponseMonitor
+            .setPath(params.path)
+            .setMethod("POST")
         // ==========================================================
 
         val vaultProxyRequest = buildProxyRequest(
