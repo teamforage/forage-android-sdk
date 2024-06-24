@@ -19,7 +19,7 @@ import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
-import com.joinforage.forage.android.ecom.ui.vault.forage.RosettaPinElement
+import com.joinforage.forage.android.ecom.ui.vault.rosetta.RosettaPinElement
 import com.launchdarkly.sdk.android.LDConfig
 
 /**

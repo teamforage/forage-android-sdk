@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
-import com.joinforage.forage.android.ecom.ui.vault.forage.RosettaPinElement
+import com.joinforage.forage.android.ecom.ui.vault.rosetta.RosettaPinElement
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
