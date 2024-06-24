@@ -1,11 +1,16 @@
 package com.joinforage.forage.android.core.services.forageapi.polling
 
-import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.getJitterAmount
 import com.joinforage.forage.android.core.services.telemetry.Log
 import kotlinx.coroutines.delay
+
+// we'll be nuking the whole concept of polling soon
+// this variable was introduced to break the dependence
+// on Launch Darkly so LD can be moved to Ecom
+// from core since Pos does not use LD
+val TEMPOARAY_polling_intervals = longArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
 
 internal class PollingService(
     private val messageStatusService: MessageStatusService,
@@ -23,7 +28,7 @@ internal class PollingService(
         logger.addAttribute("content_id", contentId)
 
         var attempt = 1
-        val pollingIntervals = ForageConstants.PollingIntervals.intervals
+        val pollingIntervals = TEMPOARAY_polling_intervals
 
         while (true) {
             logger.i(
