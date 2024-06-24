@@ -210,12 +210,11 @@ class ForageSDK {
 
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+        val measurement = CustomerPerceivedResponseMonitor(
             vault = foragePinEditText.vault.vaultType,
-            vaultAction = UserAction.BALANCE,
+            userAction = UserAction.BALANCE,
             logger
         )
-        measurement.start()
         // ------------------------------------------------------
 
         val balanceCheckService = ServiceFactory(sessionToken, merchantId, logger)
@@ -225,7 +224,7 @@ class ForageSDK {
             paymentMethodRef = paymentMethodRef,
             sessionToken = sessionToken
         )
-        processApiResponseForMetrics(response, measurement)
+        measurement.setEventOutcome(response)
 
         return response
     }
@@ -307,12 +306,11 @@ class ForageSDK {
 
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
+        val measurement = CustomerPerceivedResponseMonitor(
             vault = foragePinEditText.getVaultType(),
-            vaultAction = UserAction.CAPTURE,
+            userAction = UserAction.CAPTURE,
             logger
         )
-        measurement.start()
         // ------------------------------------------------------
 
         val capturePaymentService = ServiceFactory(sessionToken, merchantId, logger)
@@ -322,7 +320,7 @@ class ForageSDK {
             paymentRef = paymentRef,
             sessionToken = sessionToken
         )
-        processApiResponseForMetrics(response, measurement)
+        measurement.setEventOutcome(response)
 
         return response
     }
@@ -413,31 +411,6 @@ class ForageSDK {
                 response
             }
         }
-    }
-
-    /**
-     * Determines the outcome of a Forage API response,
-     * to report the measurement to the Telemetry service.
-     *
-     * This involves stopping the measurement timer,
-     * marking the Metrics event as a success or failure,
-     * and if the event is a failure, setting the Forage error code.
-     */
-    internal fun processApiResponseForMetrics(
-        apiResponse: ForageApiResponse<String>,
-        measurement: CustomerPerceivedResponseMonitor
-    ) {
-        measurement.end()
-        val outcome = if (apiResponse is ForageApiResponse.Failure) {
-            if (apiResponse.errors.isNotEmpty()) {
-                measurement.setForageErrorCode(apiResponse.errors[0].code).setHttpStatusCode(apiResponse.errors[0].httpStatusCode)
-            }
-            EventOutcome.FAILURE
-        } else {
-            measurement.setHttpStatusCode(200)
-            EventOutcome.SUCCESS
-        }
-        measurement.setEventOutcome(outcome).logResult()
     }
 
     internal open class ServiceFactory(
