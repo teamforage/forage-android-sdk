@@ -19,8 +19,9 @@ internal class PinTextWatcher : TextWatcher {
     }
 
     override fun afterTextChanged(editable: Editable) {
-        val isValidAndComplete = editable.length == 4
-        val isEmpty = editable.isEmpty()
+        val len = editable.toString().length
+        val isValidAndComplete = len == 4
+        val isEmpty = len == 0
         onInputChangeEvent?.invoke(isValidAndComplete, isEmpty)
     }
 }
