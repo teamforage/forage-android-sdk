@@ -3,7 +3,7 @@ package com.joinforage.forage.android.pos
 import android.content.Context
 import android.util.AttributeSet
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.ForagePanElement
+import com.joinforage.forage.android.core.ui.element.ForagePanElement
 
 /**
  * A [ForageElement] that securely collects a customer's card number. You need a [ForagePANEditText]

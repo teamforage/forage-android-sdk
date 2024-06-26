@@ -13,13 +13,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-internal class TokenizeCardService(
+internal open class TokenizeCardService(
     private val httpUrl: String,
     okHttpClient: OkHttpClient,
     private val logger: Log
 ) : NetworkService(okHttpClient, logger) {
 
-    private suspend fun tokenizeCardCoroutine(requestBody: RequestBody): ForageApiResponse<String> {
+    protected suspend fun tokenizeCardCoroutine(requestBody: RequestBody): ForageApiResponse<String> {
         val url = getTokenizeCardUrl()
         val okHttpRequestBody = requestBody
             .toJSONObject()

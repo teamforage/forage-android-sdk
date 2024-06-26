@@ -1,9 +1,9 @@
 package com.joinforage.forage.android.pos.encryption
 
-import com.joinforage.forage.android.pos.encryption.iso4.PanFieldIso4
-import com.joinforage.forage.android.pos.encryption.iso4.PinBlockIso4
-import com.joinforage.forage.android.pos.encryption.iso4.PinFieldIso4
-import com.joinforage.forage.android.pos.encryption.storage.InMemoryWorkingKey
+import com.joinforage.forage.android.pos.services.encryption.iso4.PanFieldIso4
+import com.joinforage.forage.android.pos.services.encryption.iso4.PinBlockIso4
+import com.joinforage.forage.android.pos.services.encryption.iso4.PinFieldIso4
+import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryWorkingKey
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

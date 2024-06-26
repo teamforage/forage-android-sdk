@@ -1,7 +1,8 @@
 package com.joinforage.forage.android.pos.encryption
 
-import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
-import com.joinforage.forage.android.pos.encryption.storage.InMemoryWorkingKey
+import com.joinforage.forage.android.pos.services.encryption.AesBlock
+import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryWorkingKey
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos.encryption
 
+import com.joinforage.forage.android.pos.services.encryption.AesBlock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

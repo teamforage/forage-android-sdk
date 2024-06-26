@@ -3,18 +3,19 @@ package com.joinforage.forage.android.pos
 import android.os.Build
 import android.util.Base64
 import androidx.annotation.RequiresApi
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.pos.encryption.AesBlock
+import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.pos.encryption.CertificateSigningRequest
 import com.joinforage.forage.android.pos.encryption.CertificateSigningResponse
 import com.joinforage.forage.android.pos.encryption.InitializePosRequest
 import com.joinforage.forage.android.pos.encryption.InitializePosResponse
 import com.joinforage.forage.android.pos.encryption.RosettaProxyApi
 import com.joinforage.forage.android.pos.encryption.certificate.RsaKeyManager
-import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
-import com.joinforage.forage.android.pos.encryption.storage.AndroidKeyStoreKeyRegisters
-import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
-import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
+import com.joinforage.forage.android.pos.services.encryption.AesBlock
+import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.services.encryption.storage.AndroidKeyStoreKeyRegisters
+import com.joinforage.forage.android.pos.services.encryption.storage.KeySerialNumber
+import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 
 internal class PosInitializationException(
     val reason: String,
@@ -54,7 +55,7 @@ internal class PosTerminalInitializer(
 
             val rosettaApi = RosettaProxyApi.from(
                 posTerminalId = posTerminalId,
-                PosForageConfig(
+                ForageConfig(
                     sessionToken = sessionToken,
                     merchantId = merchantId
                 )

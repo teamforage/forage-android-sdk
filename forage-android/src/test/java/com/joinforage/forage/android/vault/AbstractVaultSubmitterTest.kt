@@ -11,8 +11,8 @@ import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.services.vault.VaultProxyRequest
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
+import com.joinforage.forage.android.fixtures.ExpectedData
 import com.joinforage.forage.android.mock.MockLogger
-import com.joinforage.forage.android.mock.MockServiceFactory
 import kotlinx.coroutines.test.runTest
 import me.jorgecastillo.hiroaki.internal.MockServerSuite
 import org.assertj.core.api.Assertions.assertThat
@@ -31,7 +31,7 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
 
     companion object {
         private val mockEncryptionKeys = EncryptionKeys("vgs-alias", "bt-alias")
-        private val mockPaymentMethod = MockServiceFactory.ExpectedData.mockPaymentMethod
+        private val mockPaymentMethod = ExpectedData.mockPaymentMethod
         private val mockVaultParams = VaultSubmitterParams(
             encryptionKeys = mockEncryptionKeys,
             idempotencyKey = "mock-idempotency-key",

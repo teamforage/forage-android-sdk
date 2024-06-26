@@ -17,8 +17,8 @@ import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.network.PosApiService
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.pos.services.CapturePaymentParams
 import com.joinforage.forage.android.pos.services.CheckBalanceParams
 import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams

@@ -5,7 +5,7 @@ import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
-import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor

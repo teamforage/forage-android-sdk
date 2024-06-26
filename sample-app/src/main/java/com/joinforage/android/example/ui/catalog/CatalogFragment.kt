@@ -46,7 +46,6 @@ class CatalogFragment : Fragment() {
         val dynamicPinEditText = ForagePINEditText(requireContext(), null, R.attr.catalogPinStyleRef)
         binding.root.addView(dynamicPinEditText)
 
-        dynamicPinEditText.setForageConfig(forageConfig)
         binding.firstForageEditText.setForageConfig(forageConfig)
 
         // NOTE: we call setForageConfig a second time here so that

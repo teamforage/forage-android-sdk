@@ -69,10 +69,7 @@ internal abstract class AbstractVaultSubmitter(
             vault = vaultType,
             userAction = params.userAction,
             metricsLogger = logger
-        )
-        proxyResponseMonitor
-            .setPath(params.path)
-            .setMethod("POST")
+        ).setPath(params.path).setMethod("POST")
         // ==========================================================
 
         val vaultProxyRequest = buildProxyRequest(
@@ -179,5 +176,9 @@ internal abstract class AbstractVaultSubmitter(
 
         internal fun deferPaymentCapturePath(paymentRef: String) =
             "/api/payments/$paymentRef/collect_pin/"
+
+        internal fun refundPaymentPath(paymentRef: String) = "/api/payments/$paymentRef/refunds/"
+
+        internal fun deferPaymentRefundPath(paymentRef: String) = "/api/payments/$paymentRef/refunds/collect_pin/"
     }
 }

@@ -1,5 +1,7 @@
 package com.joinforage.forage.android.pos.encryption.storage
 
+import com.joinforage.forage.android.pos.services.encryption.storage.KeySerialNumber
+import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Test

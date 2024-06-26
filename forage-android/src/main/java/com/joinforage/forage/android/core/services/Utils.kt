@@ -44,6 +44,8 @@ internal object ForageConstants {
         const val AMOUNT = "amount"
         const val POS_TERMINAL = "pos_terminal"
         const val PROVIDER_TERMINAL_ID = "provider_terminal_id"
+        const val KSN = "ksn"
+        const val TXN_COUNTER = "txn_counter"
     }
 
     object PathSegment {

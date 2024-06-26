@@ -12,7 +12,7 @@ import com.joinforage.android.example.ui.extensions.withTestId
 import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
-import com.joinforage.forage.android.core.ui.element.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 
 @Composable

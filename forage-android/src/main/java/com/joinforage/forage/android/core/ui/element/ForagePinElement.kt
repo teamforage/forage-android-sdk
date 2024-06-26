@@ -50,7 +50,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForageVaultElement<PinEditTextState>(context, attrs, defStyleAttr), EditTextElement {
-    protected val _linearLayout: LinearLayout
+    private val _linearLayout: LinearLayout
     internal abstract val vault: VaultWrapper
 
     init {

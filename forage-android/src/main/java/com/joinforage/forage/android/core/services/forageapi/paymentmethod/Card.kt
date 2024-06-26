@@ -21,12 +21,14 @@ data class EbtCard(
     override val last4: String,
     val fingerprint: String,
     internal val token: String,
+    internal val number: String?, // POS only; used internally
     val usState: USState? = null
 ) : Card {
     internal constructor(jsonObject: JSONObject) : this(
         last4 = jsonObject.getString("last_4"),
         token = jsonObject.getString("token"),
         fingerprint = jsonObject.getString("fingerprint"),
+        number = jsonObject.getStringOrNull("number"),
         usState = USState.fromAbbreviation(jsonObject.getStringOrNull("state"))
     )
 }

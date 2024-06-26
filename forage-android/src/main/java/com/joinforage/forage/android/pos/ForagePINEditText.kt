@@ -3,11 +3,12 @@ package com.joinforage.forage.android.pos
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
-import android.widget.EditText
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.ForagePinElement
-import com.joinforage.forage.android.ui.ForageVaultWrapper
-import com.joinforage.forage.android.ui.VaultWrapper
+import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.pos.ui.vault.RosettaPinElement
 
 /**
  * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -24,7 +25,7 @@ class ForagePINEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForagePinElement(context, attrs, defStyleAttr) {
-    private val forageVaultWrapper: ForageVaultWrapper
+    override val vault: RosettaPinElement
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
@@ -32,16 +33,21 @@ class ForagePINEditText @JvmOverloads constructor(
                 try {
 
                     // initialize here since these params are available
-                    forageVaultWrapper = ForageVaultWrapper(context, attrs, defStyleAttr)
+                    vault = RosettaPinElement(context, attrs, defStyleAttr)
                 } finally {
                     recycle()
                 }
             }
     }
 
-    override fun determineBackingVault(): VaultWrapper<EditText> = forageVaultWrapper
-
     override var typeface: Typeface?
-        get() = forageVaultWrapper.typeface
-        set(value) { forageVaultWrapper.typeface = value }
+        get() = vault.typeface
+        set(value) { vault.typeface = value }
+
+    override fun getVaultSubmitter(
+        envConfig: EnvConfig,
+        logger: Log
+    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
+
+    override fun showKeyboard() = vault.showKeyboard()
 }
