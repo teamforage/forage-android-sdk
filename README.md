@@ -14,7 +14,7 @@ In your local copy of THIS repository, you will need to set up the public SDK as
 
 ### Rebasing on the public SDK
 
-If you want to pull changes from the public SDK into your branch, use the following steps in your local repo,
+If you want to pull changes from the public SDK into your branch, then use the following steps in your local repo,
 
 1. `git fetch upstream`
 1. `git rebase upstream/main`
