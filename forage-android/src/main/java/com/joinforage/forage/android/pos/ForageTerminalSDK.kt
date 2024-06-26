@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
@@ -17,8 +18,9 @@ import com.joinforage.forage.android.core.services.forageapi.polling.PollingServ
 import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.ui.element.ForageConfig
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
+import com.joinforage.forage.android.core.ui.element.state.ElementState
+import com.joinforage.forage.android.pos.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
 import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
@@ -27,13 +29,9 @@ import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepositor
 import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
 import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
 import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
-import com.joinforage.forage.android.pos.services.vault.rosetta.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
-import com.joinforage.forage.android.pos.ui.element.PosPinElementState
-
-typealias ForagePosVaultElement = ForageVaultElement<PosPinElementState>
 
 /**
  * The entry point for **in-store POS Terminal** transactions.
@@ -837,7 +835,7 @@ data class TokenizeMagSwipeParams(
  * endpoint.
  */
 data class CheckBalanceParams(
-    val forageVaultElement: ForagePosVaultElement,
+    val forageVaultElement: ForageVaultElement<ElementState>,
     val paymentMethodRef: String
 )
 
@@ -855,7 +853,7 @@ data class CheckBalanceParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class CapturePaymentParams(
-    val forageVaultElement: ForagePosVaultElement,
+    val forageVaultElement: ForageVaultElement<ElementState>,
     val paymentRef: String
 )
 
@@ -880,7 +878,7 @@ data class CapturePaymentParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class DeferPaymentCaptureParams(
-    val forageVaultElement: ForagePosVaultElement,
+    val forageVaultElement: ForageVaultElement<ElementState>,
     val paymentRef: String
 )
 
@@ -904,7 +902,7 @@ data class DeferPaymentCaptureParams(
  * merchants attach their credit card processor’s ID for the customer making the refund.
  */
 data class RefundPaymentParams(
-    val forageVaultElement: ForagePosVaultElement,
+    val forageVaultElement: ForageVaultElement<ElementState>,
     val paymentRef: String,
     val amount: Float,
     val reason: String,
@@ -926,6 +924,6 @@ data class RefundPaymentParams(
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
  */
 data class DeferPaymentRefundParams(
-    val forageVaultElement: ForagePosVaultElement,
+    val forageVaultElement: ForageVaultElement<ElementState>,
     val paymentRef: String
 )

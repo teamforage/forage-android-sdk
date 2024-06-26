@@ -13,47 +13,78 @@ import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.services.vault.SecurePinCollector
+import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
+import com.joinforage.forage.android.core.ui.element.state.pin.PinInputState
 import com.joinforage.forage.android.databinding.ForageKeypadBinding
-import com.joinforage.forage.android.pos.services.ForagePosVaultElement
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
+import com.joinforage.forage.android.pos.ui.element.state.pin.PinPadState
 
-internal class PinTextManager(
-    val rawText: String,
-    val callback: (isComplete: Boolean, isEmpty: Boolean, pinLength: Int) -> Unit
+internal data class PinText(
+    val rawText: String
 ) {
     val isComplete = rawText.length == 4
     val isEmpty = rawText.isEmpty()
-    val pinLength = rawText.length
-
-    init {
-        // every operation returns a new instance of PinTextManager
-        // with the exception of addDigit if there are already 4
-        // digits. By calling callback in the constructor, we are
-        // de-facto invoking the callback upon every meaningful
-        // pin input state change
-        callback(this.isComplete, this.isEmpty, this.pinLength)
-    }
-    fun clearText(): PinTextManager = PinTextManager("", callback)
-    fun addDigit(char: Char): PinTextManager {
-        if (isComplete) return this
+    fun clearText(): PinText = PinText("")
+    fun addDigit(char: Char): PinText {
         val appendChar = "$rawText$char"
-        return PinTextManager(appendChar, callback)
+        val keepFirst4 = appendChar.take(4)
+        return PinText(keepFirst4)
     }
-    fun dropLastOne(): PinTextManager = PinTextManager(rawText.dropLast(1), callback)
+    fun dropLastOne(): PinText = PinText(rawText.dropLast(1))
+
+    companion object {
+        fun forEmptyInput() = PinText("")
+    }
+}
+
+internal class PinPadStateManager(
+    private val pinText: PinText,
+    private val onChangeCallback: StatefulElementListener<PinPadState>?,
+    private val onDoneCallback: StatefulElementListener<PinPadState>?
+) {
+
+    val rawPinText: String = pinText.rawText
+    val isComplete: Boolean = pinText.isComplete
+    private val pinInputState = PinInputState.from(
+        isComplete = pinText.isComplete,
+        isEmpty = pinText.isEmpty
+    )
+    val state = PinPadState.from(pinText, pinInputState)
+
+    private fun onPinTextChange(nextPinText: PinText): PinPadStateManager {
+        println("onPinTextChange: $nextPinText")
+        val nextManager = PinPadStateManager(nextPinText, onChangeCallback, onDoneCallback)
+        onChangeCallback?.invoke(nextManager.state)
+        return nextManager
+    }
+
+    fun addDigit(char: Char) = onPinTextChange(pinText.addDigit(char))
+    fun clearText() = onPinTextChange(pinText.clearText())
+    fun dropLastOne() = onPinTextChange(pinText.dropLastOne())
+    fun onDone() { onDoneCallback?.invoke(state) }
+
+    fun withOnChangeCallback(l: StatefulElementListener<PinPadState>) =
+        PinPadStateManager(pinText, l, onDoneCallback)
+    fun withOnDoneCallback(l: StatefulElementListener<PinPadState>) =
+        PinPadStateManager(pinText, onChangeCallback, l)
+
+    companion object {
+        fun forEmptyInput() = PinPadStateManager(
+            PinText.forEmptyInput(),
+            null,
+            null
+        )
+    }
 }
 
 class ForagePinPad @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : ForagePosVaultElement(context, attrs) {
+) : ForageVaultElement<PinPadState>(context, attrs) {
 
     private val binding = ForageKeypadBinding.inflate(LayoutInflater.from(context), this, true)
-    private val manager = PosPinElementStateManager.forEmptyInput()
-    private var onDoneListener: StatefulElementListener<PosPinElementState>? = null
-    private var pinText = PinTextManager("") { isComplete, isEmpty, pinLength ->
-        manager.handleChangeEvent(isComplete, isEmpty, pinLength)
-    }
+    private var manager = PinPadStateManager.forEmptyInput()
 
     init {
         val styles = Styles(context, attrs)
@@ -61,25 +92,17 @@ class ForagePinPad @JvmOverloads constructor(
         KeypadConfigurator(
             binding,
             object : KeypadConfigurator.EventsManager {
-                override fun addDigit(char: Char) {
-                    pinText = pinText.addDigit(char)
-                }
-                override fun dropLastOne() {
-                    pinText = pinText.dropLastOne()
-                }
-                override fun clearText() {
-                    pinText = pinText.clearText()
-                }
-                override fun onDone() {
-                    onDoneListener?.invoke(manager.getState())
-                }
+                override fun addDigit(char: Char) { manager = manager.addDigit(char) }
+                override fun clearText() { manager = manager.clearText() }
+                override fun dropLastOne() { manager = manager.dropLastOne() }
+                override fun onDone() { manager.onDone() }
             }
         ).configureKeypad()
     }
 
     override fun getVaultSubmitter(envConfig: EnvConfig, logger: Log): AbstractVaultSubmitter {
         return RosettaPinSubmitter(
-            pinText.rawText,
+            manager.rawPinText,
             object : SecurePinCollector {
                 override fun clearText() {
                     this@ForagePinPad.clearText()
@@ -95,12 +118,17 @@ class ForagePinPad @JvmOverloads constructor(
         get() = TODO("Not yet implemented")
         set(value) {}
 
-    fun setOnDoneListener(l: StatefulElementListener<PosPinElementState>) {
-        onDoneListener = l
+    fun setOnDoneListener(l: StatefulElementListener<PinPadState>) {
+        manager = manager.withOnDoneCallback(l)
+    }
+
+    override fun setOnChangeEventListener(l: StatefulElementListener<PinPadState>) {
+        println("setOnChangeEventListener")
+        manager = manager.withOnChangeCallback(l)
     }
 
     override fun clearText() {
-        pinText.clearText()
+        manager = manager.clearText()
     }
 
     override fun setTextColor(textColor: Int) {
@@ -111,12 +139,8 @@ class ForagePinPad @JvmOverloads constructor(
         TODO("Not yet implemented")
     }
 
-    override fun getElementState(): PosPinElementState {
-        return manager.getState()
-    }
-
-    override fun setOnChangeEventListener(l: StatefulElementListener<PosPinElementState>) {
-        manager.setOnChangeEventListener(l)
+    override fun getElementState(): PinPadState {
+        return manager.state
     }
 }
 

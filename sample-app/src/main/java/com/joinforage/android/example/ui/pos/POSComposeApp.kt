@@ -62,6 +62,7 @@ import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundResultScree
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
+import com.joinforage.forage.android.core.ui.element.state.ElementState
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -114,7 +115,7 @@ fun POSComposeApp(
         mutableStateOf(null)
     }
 
-    var pinElement: ForagePosVaultElement? by rememberSaveable {
+    var pinElement: ForageVaultElement<ElementState>? by rememberSaveable {
         mutableStateOf(null)
     }
 
@@ -265,7 +266,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.checkEBTCardBalance(
                                 context,
-                                pinElement as ForagePosVaultElement,
+                                pinElement!!,
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
                                 k9SDK.terminalId,
                                 onSuccess = {
@@ -459,7 +460,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.capturePayment(
                                 context,
-                                forageVaultElement = pinElement as ForagePosVaultElement,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
@@ -478,7 +479,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.deferPaymentCapture(
                                 context = context,
-                                forageVaultElement = pinElement as ForagePosVaultElement,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
@@ -590,7 +591,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.refundPayment(
                                 context,
-                                forageVaultElement = pinElement as ForagePosVaultElement,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.localRefundState!!.paymentRef,
                                 amount = uiState.localRefundState!!.amount,
@@ -609,7 +610,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.deferPaymentRefund(
                                 context = context,
-                                forageVaultElement = pinElement as ForagePosVaultElement,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.localRefundState!!.paymentRef,
                                 onSuccess = {

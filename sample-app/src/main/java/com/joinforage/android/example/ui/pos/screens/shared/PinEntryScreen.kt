@@ -23,14 +23,14 @@ import com.joinforage.android.example.ui.pos.ui.ComposableForagePinPad
 import com.joinforage.android.example.ui.pos.ui.ErrorText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
-
+import com.joinforage.forage.android.core.ui.element.state.ElementState
 
 @Composable
 fun PINEntryScreen(
     paymentMethodRef: String?,
     onSubmitButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    withPinElementReference: (element: ForagePosVaultElement) -> Unit,
+    withPinElementReference: (element: ForageVaultElement<ElementState>) -> Unit,
     onDeferButtonClicked: (() -> Unit)? = null,
     errorText: String? = null
 ) {

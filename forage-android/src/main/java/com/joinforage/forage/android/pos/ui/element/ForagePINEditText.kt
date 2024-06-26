@@ -26,8 +26,8 @@ class ForagePINEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForagePinElement<PosPinElementState>(context, attrs, defStyleAttr) {
-    override val vault: VaultWrapper<PosPinElementState>
+) : ForagePinElement(context, attrs, defStyleAttr) {
+    override val vault: VaultWrapper
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
