@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core.services.launchdarkly
+package com.joinforage.forage.android.ecom.services.launchdarkly
 
 import android.app.Application
 import com.joinforage.forage.android.core.services.VaultType
