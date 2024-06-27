@@ -66,10 +66,10 @@ android {
 
 dependencies {
 //    this line tests against the local forage-android
-    implementation(project(":forage-android"))
+//    implementation(project(":forage-android"))
 
 //    uncomment this line 👇 to test against remote Sonatype repository forage-android
-//    implementation("com.joinforage:forage-android:<some_version_you_want_to_test>")
+    implementation("com.joinforage:forage-android:4.0.1")
 
     // we include this dependency to ensure that our workaround for
     // including Datadog v2 in forage-android continues to work.
