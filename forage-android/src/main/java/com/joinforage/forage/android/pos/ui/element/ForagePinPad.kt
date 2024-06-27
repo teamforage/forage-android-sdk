@@ -193,10 +193,10 @@ class ForagePinPad @JvmOverloads constructor(
     }
 
     /**
-     * Gets the current [PinEditTextState][com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState]
+     * Gets the current [PinPadState].
      * of the ForageElement.
      *
-     * @return The [PosPinElementState][com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState].
+     * @return The [PinPadState].
      */
     override fun getElementState(): PinPadState {
         return manager.state

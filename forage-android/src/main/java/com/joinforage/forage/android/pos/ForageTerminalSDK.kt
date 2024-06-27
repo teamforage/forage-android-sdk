@@ -525,7 +525,7 @@ class ForageTerminalSDK internal constructor(
      *         viewModelScope.launch {
      *             val response = forageTerminalSdk.deferPaymentCapture(
      *                 DeferPaymentCaptureParams(
-     *                     forageVaultElement = foragePinEditText,
+     *                     forageVaultElement = forageVaultElement,
      *                     paymentRef = snapPaymentRef
      *                 )
      *             )
@@ -708,7 +708,7 @@ class ForageTerminalSDK internal constructor(
      *   fun deferPaymentRefund(forageVaultElement: ForagePINEditText) = viewModelScope.launch {
      *     val forageTerminalSdk = ForageTerminalSDK.init(...) // may throw!
      *     val deferPaymentRefundParams = DeferPaymentRefundParams(
-     *       foragePinEditText,
+     *       forageVaultElement = forageVaultElement,
      *       paymentRef
      *     )
      *     val response = forage.deferPaymentRefund(deferPaymentRefundParams)
