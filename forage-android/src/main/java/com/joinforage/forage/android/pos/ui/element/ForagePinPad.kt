@@ -53,7 +53,6 @@ internal class PinPadStateManager(
     val state = PinPadState.from(pinText, pinInputState)
 
     private fun onPinTextChange(nextPinText: PinText): PinPadStateManager {
-        println("onPinTextChange: $nextPinText")
         val nextManager = PinPadStateManager(nextPinText, onChangeCallback, onDoneCallback)
         onChangeCallback?.invoke(nextManager.state)
         return nextManager
@@ -123,7 +122,6 @@ class ForagePinPad @JvmOverloads constructor(
     }
 
     override fun setOnChangeEventListener(l: StatefulElementListener<PinPadState>) {
-        println("setOnChangeEventListener")
         manager = manager.withOnChangeCallback(l)
     }
 
