@@ -7,7 +7,7 @@
     android:layout_marginBottom="100dp"
     tools:context=".ui.catalog.CatalogFragment">
 
-    <com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
+    <com.joinforage.forage.android.ui.ForagePANEditText
             android:id="@+id/firstForageEditText"
             style="?attr/catalogFirstForagePanEditTextStyle"
             android:layout_width="0dp"
@@ -19,7 +19,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-    <com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
+    <com.joinforage.forage.android.ui.ForagePINEditText
             android:id="@+id/foragePinEditText"
             style="@style/CatalogPinStyle"
             android:layout_width="0dp"
