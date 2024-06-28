@@ -51,7 +51,9 @@ class CatalogFragment : Fragment() {
             println("Using Basis Theory")
 
             // once somebody understands the view hierarchy of Basis Theory...
-            val appCompatEditText = ((foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as AppCompatEditText
+            val btEditText = (foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0)
+            println("class name: ${btEditText::class.simpleName}")
+            val appCompatEditText = (btEditText as ViewGroup).getChildAt(0) as AppCompatEditText
 
             // ...they will have free rein to observe whatever a user
             // in the PIN field
