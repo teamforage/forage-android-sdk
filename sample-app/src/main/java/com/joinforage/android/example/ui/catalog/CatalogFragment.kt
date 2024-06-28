@@ -1,16 +1,16 @@
 package com.joinforage.android.example.ui.catalog
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.EditText
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
 import com.joinforage.android.example.databinding.FragmentCatalogBinding
-import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.ui.ForageConfig
+import java.util.Timer
+import kotlin.concurrent.timerTask
 
 class CatalogFragment : Fragment() {
 
@@ -43,44 +43,23 @@ class CatalogFragment : Fragment() {
         // anybody can get a binding to a ForagePINEditTExt
         val foragesSuperSafeEditTextElement = binding.foragePinEditText
 
-        // anybody can repeatedly explore the view hierarchy by running
-        // their app in debug mode and repeatedly doing `.getChildAt(...)`
-        // to observe child views
-        val isRosetta = (foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) is EditText
-        if (isRosetta) {
-            println("Using Rosetta")
-            // once somebody understands the view hierarchy of Rosetta...
-            val editText = (foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) as EditText
+        foragesSuperSafeEditTextElement.viewTreeObserver.addOnWindowAttachListener (object :
+            ViewTreeObserver.OnWindowAttachListener {
+            override fun onWindowAttached() {
+                // anybody can repeatedly explore the view hierarchy by running
+                // their app in debug mode and repeatedly doing `.getChildAt(...)`
+                // to observe child views
+                val vgsEditText = ((foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as EditText
 
-            // ...they will have free rein to observe whatever a user
-            // in the PIN field
-            // NOTE: .addTextChangedListener is just one way to observe
-            // the text there other ways to do observe the PIN once you
-            // have a reference to the view
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, st: Int, co: Int, af: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable?) { println("Rosetta Pin Content: $s") }
+                // start observing a PIN's input
+                val timer = Timer()
+                timer.scheduleAtFixedRate(timerTask {
+                    println("VGS Pin Content: ${vgsEditText.text}")
+                }, 0, 1000) //
+            }
 
-            })
-        } else {
-            println("Using Basis Theory")
-
-            // once somebody understands the view hierarchy of Basis Theory...
-            val appCompatEditText = ((foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as AppCompatEditText
-
-            // ...they will have free rein to observe whatever a user
-            // in the PIN field
-            // NOTE: .addTextChangedListener is just one way to observe
-            // the text there other ways to do observe the PIN once you
-            // have a reference to the view
-            appCompatEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, st: Int, co: Int, af: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable?) { println("BT Pin Content: $s") }
-
-            })
-        }
+            override fun onWindowDetached() {}
+        })
     }
 
     override fun onDestroyView() {
