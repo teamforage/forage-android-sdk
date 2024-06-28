@@ -66,8 +66,12 @@ class CatalogFragment : Fragment() {
             })
         } else {
             println("NOT using Basis Theory")
-            println("Basis Theory shows based on a 50/50 feature " +
-                    "flag so try rebuilding the app a few more times.")
+            println("""
+                This demo depends on a feature flag. If the demo is not
+                working, then let Devin know and he'll adjust the feature
+                flag. After that, you'll need to uninstall and re-install
+                this demo app.
+            """.trimIndent())
         }
     }
 
