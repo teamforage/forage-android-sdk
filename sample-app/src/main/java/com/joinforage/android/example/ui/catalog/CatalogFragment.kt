@@ -46,24 +46,8 @@ class CatalogFragment : Fragment() {
         // anybody can repeatedly explore the view hierarchy by running
         // their app in debug mode and repeatedly doing `.getChildAt(...)`
         // to observe child views
-        val isRosetta = (foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) is EditText
-        if (isRosetta) {
-            println("Using Rosetta")
-            // once somebody understands the view hierarchy of Rosetta...
-            val editText = (foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) as EditText
-
-            // ...they will have free rein to observe whatever a user
-            // in the PIN field
-            // NOTE: .addTextChangedListener is just one way to observe
-            // the text there other ways to do observe the PIN once you
-            // have a reference to the view
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, st: Int, co: Int, af: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable?) { println("Rosetta Pin Content: $s") }
-
-            })
-        } else {
+        val isBasisTheory = (foragesSuperSafeEditTextElement.getChildAt(0) as ViewGroup).getChildAt(0) !is EditText
+        if (isBasisTheory) {
             println("Using Basis Theory")
 
             // once somebody understands the view hierarchy of Basis Theory...
@@ -80,6 +64,10 @@ class CatalogFragment : Fragment() {
                 override fun afterTextChanged(s: Editable?) { println("BT Pin Content: $s") }
 
             })
+        } else {
+            println("NOT using Basis Theory")
+            println("Basis Theory shows based on a 50/50 feature " +
+                    "flag so try rebuilding the app a few more times.")
         }
     }
 
