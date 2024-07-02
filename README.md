@@ -1,4 +1,4 @@
-# Forage Android SDK (`v3.10.0`)
+# Forage Android SDK (`v4.0.0`)
 
 # Forked for POS Terminal Key Management
 
