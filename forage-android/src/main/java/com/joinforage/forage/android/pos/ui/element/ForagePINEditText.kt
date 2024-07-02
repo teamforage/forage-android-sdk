@@ -41,8 +41,9 @@ class ForagePINEditText @JvmOverloads constructor(
                 }
             }
 
-        addView(vault.getTextElement())
-        addView(getLogoImageViewLayout(context))
+        _linearLayout.addView(vault.getTextElement())
+        _linearLayout.addView(getLogoImageViewLayout(context))
+        addView(_linearLayout)
     }
 
     override var typeface: Typeface?
