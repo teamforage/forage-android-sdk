@@ -1,7 +1,7 @@
 package com.joinforage.android.example.ui.pos.data
 
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
-import com.joinforage.forage.android.pos.PosForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
 
 data class POSUIState(
     val merchantId: String = "1234567", // <your_merchant_id>
@@ -37,8 +37,8 @@ data class POSUIState(
     val voidRefundResponse: Refund? = null,
     val voidRefundError: String? = null
 ) {
-    val posForageConfig: PosForageConfig
-        get() = PosForageConfig(merchantId, sessionToken)
+    val forageConfig: ForageConfig
+        get() = ForageConfig(merchantId, sessionToken)
 
     val merchant
         get() = Merchant(

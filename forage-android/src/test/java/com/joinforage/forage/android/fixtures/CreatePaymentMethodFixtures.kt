@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.fixtures
 
-import com.joinforage.forage.android.pos.PosPaymentMethodRequestBody
 import me.jorgecastillo.hiroaki.Method
 import me.jorgecastillo.hiroaki.models.PotentialRequestChain
 import me.jorgecastillo.hiroaki.models.error
@@ -31,18 +30,6 @@ internal fun MockWebServer.givenPaymentMethod(cardNumber: String, reusable: Bool
         "reusable" / reusable
         "card" / json {
             "number" / cardNumber
-        }
-    }
-)
-
-internal fun MockWebServer.givenPaymentMethod(posPaymentMethodRequestBody: PosPaymentMethodRequestBody) = whenever(
-    method = Method.POST,
-    sentToPath = "api/payment_methods/",
-    jsonBody = json {
-        "type" / "ebt"
-        "reusable" / posPaymentMethodRequestBody.reusable
-        "card" / json {
-            "track_2_data" / posPaymentMethodRequestBody.track2Data
         }
     }
 )

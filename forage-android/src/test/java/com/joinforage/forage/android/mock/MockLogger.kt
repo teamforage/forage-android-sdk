@@ -1,16 +1,18 @@
 package com.joinforage.forage.android.mock
 
 import android.content.Context
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.ui.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.core.services.telemetry.Log
 
-internal class LogEntry(message: String, attributes: Map<String, Any?>) {
+internal class LogEntry(message: String, attributes: Map<String, Any?>, error: Throwable? = null) {
     private var message = ""
     private var attributes = mapOf<String, Any?>()
+    private var error: Throwable? = null
 
     init {
         this.message = message
         this.attributes = attributes
+        this.error = error
     }
 
     fun getMessage(): String {
@@ -19,6 +21,10 @@ internal class LogEntry(message: String, attributes: Map<String, Any?>) {
 
     fun getAttributes(): Map<String, Any?> {
         return attributes
+    }
+
+    fun getError(): Throwable? {
+        return error
     }
 }
 
@@ -35,20 +41,29 @@ internal class MockLogger : Log {
         return
     }
 
-    override fun d(msg: String, attributes: Map<String, Any?>) {
-        return
+    override fun d(msg: String, attributes: Map<String, Any?>): MockLogger {
+        return this
     }
 
-    override fun i(msg: String, attributes: Map<String, Any?>) {
+    override fun i(msg: String, attributes: Map<String, Any?>): MockLogger {
         infoLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
+        return this
     }
 
-    override fun w(msg: String, attributes: Map<String, Any?>) {
+    override fun w(msg: String, attributes: Map<String, Any?>): MockLogger {
         warnLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
+        return this
     }
 
-    override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
-        errorLogs.add(LogEntry(msg, cumulativeAttributes.plus(attributes)))
+    override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>): MockLogger {
+        errorLogs.add(
+            LogEntry(
+                msg,
+                cumulativeAttributes.plus(attributes),
+                error = throwable
+            )
+        )
+        return this
     }
 
     override fun addAttribute(key: String, value: Any?): Log {
@@ -57,6 +72,6 @@ internal class MockLogger : Log {
     }
 
     override fun getTraceIdValue(): String {
-        return ""
+        return "11223344"
     }
 }

@@ -61,8 +61,9 @@ import com.joinforage.android.example.ui.pos.screens.voids.VoidPaymentScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundResultScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidRefundScreen
 import com.joinforage.android.example.ui.pos.screens.voids.VoidTypeSelectionScreen
-import com.joinforage.forage.android.pos.ForagePANEditText
-import com.joinforage.forage.android.pos.ForagePINEditText
+import com.joinforage.forage.android.core.ui.element.ForageVaultElement
+import com.joinforage.forage.android.core.ui.element.state.ElementState
+import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -114,7 +115,7 @@ fun POSComposeApp(
         mutableStateOf(null)
     }
 
-    var pinElement: ForagePINEditText? by rememberSaveable {
+    var pinElement: ForageVaultElement<ElementState>? by rememberSaveable {
         mutableStateOf(null)
     }
 
@@ -217,7 +218,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     onSubmitButtonClicked = {
                         if (panElement != null) {
                             panElement!!.clearFocus()
@@ -259,14 +260,13 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.BIPINEntryScreen.name) {
                 PINEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.tokenizedPaymentMethod?.ref != null) {
                             pinElement!!.clearFocus()
                             viewModel.checkEBTCardBalance(
                                 context,
-                                pinElement as ForagePINEditText,
+                                pinElement!!,
                                 paymentMethodRef = uiState.tokenizedPaymentMethod!!.ref,
                                 k9SDK.terminalId,
                                 onSuccess = {
@@ -400,7 +400,7 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
+                    forageConfig = uiState.forageConfig,
                     onSubmitButtonClicked = {
                         Log.i("POSComposeApp", "Calling onSubmitButtonClicked in ManualPANEntryScreen in PAYChoosePANMethodScreen")
                         if (panElement != null) {
@@ -454,14 +454,13 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.PAYPINEntryScreen.name) {
                 PINEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
                     paymentMethodRef = uiState.createPaymentResponse?.paymentMethod,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.createPaymentResponse?.ref != null) {
                             pinElement!!.clearFocus()
                             viewModel.capturePayment(
                                 context,
-                                foragePinEditText = pinElement as ForagePINEditText,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
@@ -480,7 +479,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.deferPaymentCapture(
                                 context = context,
-                                foragePinEditText = pinElement as ForagePINEditText,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.createPaymentResponse!!.ref!!,
                                 onSuccess = {
@@ -586,14 +585,13 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.REFUNDPINEntryScreen.name) {
                 PINEntryScreen(
-                    posForageConfig = uiState.posForageConfig,
                     paymentMethodRef = uiState.tokenizedPaymentMethod?.ref,
                     onSubmitButtonClicked = {
                         if (pinElement != null && uiState.localRefundState != null) {
                             pinElement!!.clearFocus()
                             viewModel.refundPayment(
                                 context,
-                                foragePinEditText = pinElement as ForagePINEditText,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.localRefundState!!.paymentRef,
                                 amount = uiState.localRefundState!!.amount,
@@ -612,7 +610,7 @@ fun POSComposeApp(
                             pinElement!!.clearFocus()
                             viewModel.deferPaymentRefund(
                                 context = context,
-                                foragePinEditText = pinElement as ForagePINEditText,
+                                forageVaultElement = pinElement!!,
                                 terminalId = k9SDK.terminalId,
                                 paymentRef = uiState.localRefundState!!.paymentRef,
                                 onSuccess = {

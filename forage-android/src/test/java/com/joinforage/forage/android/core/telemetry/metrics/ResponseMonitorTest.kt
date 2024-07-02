@@ -1,23 +1,23 @@
 package com.joinforage.forage.android.core.telemetry.metrics
 
-import com.joinforage.forage.android.VaultType
-import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.telemetry.EventName
-import com.joinforage.forage.android.core.telemetry.EventOutcome
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.LogType
-import com.joinforage.forage.android.core.telemetry.MetricsConstants
-import com.joinforage.forage.android.core.telemetry.ResponseMonitor
-import com.joinforage.forage.android.core.telemetry.UnknownForageErrorCode
-import com.joinforage.forage.android.core.telemetry.UserAction
-import com.joinforage.forage.android.core.telemetry.VaultProxyResponseMonitor
+import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
+import com.joinforage.forage.android.core.services.telemetry.EventName
+import com.joinforage.forage.android.core.services.telemetry.EventOutcome
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.LogType
+import com.joinforage.forage.android.core.services.telemetry.MetricsConstants
+import com.joinforage.forage.android.core.services.telemetry.ResponseMonitor
+import com.joinforage.forage.android.core.services.telemetry.UnknownForageErrorCode
+import com.joinforage.forage.android.core.services.telemetry.UserAction
+import com.joinforage.forage.android.core.services.telemetry.VaultProxyResponseMonitor
 import com.joinforage.forage.android.mock.MockLogger
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-internal class TestResponseMonitor(metricsLogger: Log?) : ResponseMonitor(metricsLogger) {
+internal class TestResponseMonitor(metricsLogger: Log?) : ResponseMonitor<TestResponseMonitor>(metricsLogger) {
     override fun logWithResponseAttributes(
         metricsLogger: Log?,
         responseAttributes: Map<String, Any>
@@ -28,36 +28,13 @@ internal class TestResponseMonitor(metricsLogger: Log?) : ResponseMonitor(metric
 
 @RunWith(RobolectricTestRunner::class)
 class ResponseMonitorTest {
-    @Test
-    fun `Test response monitor should log error if start isn't called`() {
-        val mockLogger = MockLogger()
-        val testResponseMonitor = TestResponseMonitor(mockLogger)
-        testResponseMonitor.end()
-        testResponseMonitor.logResult()
-        Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
-        Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
-        Assertions.assertThat(mockLogger.errorLogs[0].getMessage()).isEqualTo("[Metrics] Missing startTime or endTime. Could not log metric.")
-    }
-
-    @Test
-    fun `Test response monitor should log error if end isn't called`() {
-        val mockLogger = MockLogger()
-        val testResponseMonitor = TestResponseMonitor(mockLogger)
-        testResponseMonitor.end()
-        testResponseMonitor.logResult()
-        Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
-        Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
-        Assertions.assertThat(mockLogger.errorLogs[0].getMessage()).isEqualTo("[Metrics] Missing startTime or endTime. Could not log metric.")
-    }
 
     @Test
     fun `Test response monitor should calculate duration`() {
         val mockLogger = MockLogger()
         val testResponseMonitor = TestResponseMonitor(mockLogger)
-        testResponseMonitor.start()
         // Simulate some network delay
         Thread.sleep(100)
-        testResponseMonitor.end()
         testResponseMonitor.logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(1)
@@ -71,8 +48,6 @@ class ResponseMonitorTest {
     fun `Vault proxy monitor should log error if path is not set`() {
         val mockLogger = MockLogger()
         val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
-        vaultProxyResponseMonitor.start()
-        vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setMethod("POST").setHttpStatusCode(200).logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -83,8 +58,6 @@ class ResponseMonitorTest {
     fun `Vault proxy monitor should log error if method is not set`() {
         val mockLogger = MockLogger()
         val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
-        vaultProxyResponseMonitor.start()
-        vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setPath("this/is/test/path/").setHttpStatusCode(200).logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -95,8 +68,6 @@ class ResponseMonitorTest {
     fun `Vault proxy monitor should log error if status code is not set`() {
         val mockLogger = MockLogger()
         val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
-        vaultProxyResponseMonitor.start()
-        vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setPath("this/is/test/path/").setMethod("POST").logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -112,8 +83,6 @@ class ResponseMonitorTest {
         val path = "this/is/test/path/"
         val method = "POST"
         val statusCode = 200
-        vaultProxyResponseMonitor.start()
-        vaultProxyResponseMonitor.end()
         vaultProxyResponseMonitor.setPath(path).setMethod(method).setHttpStatusCode(statusCode).logResult()
 
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
@@ -145,8 +114,6 @@ class ResponseMonitorTest {
     fun `Customer perceived monitor should log error if outcome type is not set`() {
         val mockLogger = MockLogger()
         val customerPerceivedResponseMonitor = CustomerPerceivedResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
-        customerPerceivedResponseMonitor.start()
-        customerPerceivedResponseMonitor.end()
         customerPerceivedResponseMonitor.logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -159,9 +126,7 @@ class ResponseMonitorTest {
         val vaultType = VaultType.VGS_VAULT_TYPE
         val userAction = UserAction.CAPTURE
         val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(vault = vaultType, userAction = userAction, mockLogger)
-        roundTripResponseMonitor.start()
-        roundTripResponseMonitor.end()
-        roundTripResponseMonitor.setEventOutcome(EventOutcome.SUCCESS).logResult()
+        roundTripResponseMonitor.setEventOutcome(EventOutcome.SUCCESS).setHttpStatusCode(200).logResult()
 
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(1)
@@ -177,6 +142,7 @@ class ResponseMonitorTest {
         val loggedOutcomeType = attributes[MetricsConstants.EVENT_OUTCOME]
         val loggedForageErrorCode = attributes[MetricsConstants.FORAGE_ERROR_CODE]
         val loggedLogType = attributes[MetricsConstants.LOG_TYPE]
+        val loggedHttpStatus = attributes[MetricsConstants.HTTP_STATUS]
 
         Assertions.assertThat(loggedVaultType).isEqualTo(vaultType)
         Assertions.assertThat(loggedVaultAction).isEqualTo(userAction)
@@ -184,5 +150,6 @@ class ResponseMonitorTest {
         Assertions.assertThat(loggedOutcomeType).isEqualTo(EventOutcome.SUCCESS)
         Assertions.assertThat(loggedForageErrorCode).isEqualTo(UnknownForageErrorCode.UNKNOWN)
         Assertions.assertThat(loggedLogType).isEqualTo(LogType.METRIC)
+        Assertions.assertThat(loggedHttpStatus).isEqualTo(200)
     }
 }

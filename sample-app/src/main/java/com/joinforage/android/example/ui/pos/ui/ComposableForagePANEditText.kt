@@ -3,18 +3,18 @@ package com.joinforage.android.example.ui.pos.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import com.joinforage.forage.android.pos.ForagePANEditText
-import com.joinforage.forage.android.pos.PosForageConfig
+import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 
 @Composable
 fun ComposableForagePANEditText(
-    posForageConfig: PosForageConfig,
+    forageConfig: ForageConfig,
     withPanElementReference: (element: ForagePANEditText) -> Unit
 ) {
     AndroidView(
         factory = { context ->
             ForagePANEditText(context).apply {
-                this.setPosForageConfig(posForageConfig = posForageConfig)
+                this.setForageConfig(forageConfig)
                 this.requestFocus()
                 withPanElementReference(this)
             }
@@ -26,7 +26,7 @@ fun ComposableForagePANEditText(
 @Composable
 fun ComposableForagePANEditTextPreview() {
     ComposableForagePANEditText(
-        posForageConfig = PosForageConfig("", ""),
+        forageConfig = ForageConfig("", ""),
         withPanElementReference = {}
     )
 }

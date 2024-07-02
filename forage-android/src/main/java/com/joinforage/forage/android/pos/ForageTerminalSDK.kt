@@ -1,35 +1,37 @@
-package com.joinforage.forage.android.pos
+package com.joinforage.forage.android.pos.services
 
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.joinforage.forage.android.CapturePaymentParams
-import com.joinforage.forage.android.CheckBalanceParams
-import com.joinforage.forage.android.DeferPaymentCaptureParams
-import com.joinforage.forage.android.ForageSDKInterface
-import com.joinforage.forage.android.TokenizeEBTCardParams
-import com.joinforage.forage.android.core.EnvConfig
-import com.joinforage.forage.android.core.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.telemetry.Log
-import com.joinforage.forage.android.core.telemetry.UserAction
-import com.joinforage.forage.android.getForageConfigOrThrow
-import com.joinforage.forage.android.network.EncryptionKeyService
-import com.joinforage.forage.android.network.MessageStatusService
-import com.joinforage.forage.android.network.OkHttpClientBuilder
-import com.joinforage.forage.android.network.PaymentMethodService
-import com.joinforage.forage.android.network.PaymentService
-import com.joinforage.forage.android.network.PollingService
-import com.joinforage.forage.android.network.TokenizeCardService
-import com.joinforage.forage.android.network.data.CapturePaymentRepository
-import com.joinforage.forage.android.network.data.CheckBalanceRepository
-import com.joinforage.forage.android.network.data.DeferPaymentCaptureRepository
-import com.joinforage.forage.android.network.data.DeferPaymentRefundRepository
-import com.joinforage.forage.android.network.model.ForageApiResponse
-import com.joinforage.forage.android.network.model.ForageError
-import com.joinforage.forage.android.network.model.UnknownErrorApiResponse
-import com.joinforage.forage.android.pos.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.processApiResponseForMetrics
-import com.joinforage.forage.android.vault.ForagePinSubmitter
+import com.joinforage.forage.android.core.services.EnvConfig
+import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.core.services.ForageConfigNotSetException
+import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
+import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
+import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
+import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
+import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
+import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.telemetry.UserAction
+import com.joinforage.forage.android.core.ui.element.ForageVaultElement
+import com.joinforage.forage.android.core.ui.element.state.ElementState
+import com.joinforage.forage.android.pos.PosTerminalInitializer
+import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
+import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
+import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
+import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentRepository
+import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepository
+import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
+import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
+import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
+import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
+import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
+import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
 
 /**
  * The entry point for **in-store POS Terminal** transactions.
@@ -69,13 +71,12 @@ import com.joinforage.forage.android.vault.ForagePinSubmitter
  * @see * [Forage guide to Terminal POS integrations](https://docs.joinforage.app/docs/forage-terminal-android)
  * * [ForageSDK] to process online-only transactions
  */
-class ForageTerminalSDK internal constructor(private val posTerminalId: String) :
-    ForageSDKInterface {
+class ForageTerminalSDK internal constructor(
+    private val posTerminalId: String,
+    private val forageConfig: ForageConfig
+) {
 
     companion object {
-        private var calledInit = false
-        private var initSucceeded = false
-
         /**
          * A method that initializes the [ForageTerminalSDK].
          *
@@ -121,20 +122,21 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
         suspend fun init(
             context: Context,
             posTerminalId: String,
-            posForageConfig: PosForageConfig
+            forageConfig: ForageConfig
         ): ForageTerminalSDK {
-            calledInit = true
-            val logger = createLogger(posTerminalId)
-            val (merchantId, sessionToken) = posForageConfig
+            val (merchantId, sessionToken) = forageConfig
+            val logSuffix = "on Terminal $posTerminalId for Merchant $merchantId"
+            val logger = Log.getInstance()
+            logger.initializeDD(context, forageConfig)
+            logger
+                .addAttribute("pos_terminal_id", posTerminalId)
+                .addAttribute("merchant_ref", merchantId)
+                .i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
 
             try {
-                val logSuffix = getLogSuffix(posTerminalId, merchantId)
-                logger.addAttribute("merchant_ref", merchantId)
-                logger.i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
-
                 val ksnFileManager = KsnFileManager.byFile(context)
                 // STOPGAP to feed `context` to ForagePinSubmitter
-                ForagePinSubmitter.ksnFileManager = ksnFileManager
+                RosettaPinSubmitter.ksnFileManager = ksnFileManager
 
                 val initializer = PosTerminalInitializer(
                     logger = logger,
@@ -146,7 +148,6 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                     merchantId = merchantId,
                     sessionToken = sessionToken
                 )
-                initSucceeded = true
 
                 logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
             } catch (e: Exception) {
@@ -156,30 +157,7 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 throw Exception("Failed to initialize the ForageTerminalSDK")
             }
 
-            return ForageTerminalSDK(posTerminalId)
-        }
-
-        private var createLogger: (posTerminalId: String) -> Log = { posTerminalId ->
-            Log.getInstance().addAttribute("pos_terminal_id", posTerminalId)
-        }
-
-        private fun getLogSuffix(
-            posTerminalId: String,
-            merchantId: String
-        ): String = "on Terminal $posTerminalId for Merchant $merchantId"
-    }
-
-    // internal constructor facilitates testing
-    internal constructor(
-        posTerminalId: String,
-        createLogger: (String) -> Log,
-        initSucceeded: Boolean = false
-    ) : this(posTerminalId) {
-        ForageTerminalSDK.createLogger = createLogger
-        if (initSucceeded) {
-            // STOPGAP to allow testing without depending on the init method.
-            ForageTerminalSDK.initSucceeded = initSucceeded
-            calledInit = initSucceeded
+            return ForageTerminalSDK(posTerminalId, forageConfig)
         }
     }
 
@@ -219,37 +197,27 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * }
      * ```
      * @param foragePanEditText **Required**. A reference to a [ForagePANEditText] instance that
-     * collects the customer's card number. [setPosForageConfig]
-     * [com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] must have been called on
-     * the instance before it can be passed.
-     * @param reusable Optional. A boolean that indicates whether the same card can be used to
-     * create multiple payments. Defaults to true.
+     * collects the customer's card number.
+     * [setPosForageConfig][com.joinforage.forage.android.ui.ForageElement.setPosForageConfig] must
+     * have been called on the instance before it can be passed.
+     * @param reusable Optional. A boolean that indicates whether the same card can be used to create
+     * multiple payments. Defaults to true.
      * @throws ForageConfigNotSetException If the [PosForageConfig] is not set for the provided
      * [ForagePANEditText] instance.
      *
      * @return A [ForageApiResponse] object.
      */
     suspend fun tokenizeCard(
-        foragePanEditText: ForagePANEditText,
-        reusable: Boolean = true
+        params: TokenizeManualEntryParams
     ): ForageApiResponse<String> {
-        val logger = createLogger(posTerminalId)
-        logger.addAttribute("reusable", reusable)
-        logger.i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
-
-        val initializationException = isInitializationExceptionOrNull(logger, "tokenizeCard")
-        if (initializationException != null) {
-            return initializationException
-        }
-
-        // ====== Begin Duplicate Code ======
-
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePanEditText)
+        val (foragePanEditText, reusable) = params
+        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePanEditText.getForageConfig())
         val config = EnvConfig.fromSessionToken(sessionToken)
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        logger.addAttribute("merchant_ref", merchantId)
-        logger.i("[POS] Tokenizing Payment Method")
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
+            .addAttribute("reusable", reusable)
+            .addAttribute("merchant_ref", merchantId)
+            .i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
 
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
@@ -257,23 +225,14 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
             traceId = logger.getTraceIdValue()
         )
 
-        // ====== End Duplicate Code ======
-
-        val tokenizationResponse = TokenizeCardService(
+        return PosTokenizeCardService(
             config.apiBaseUrl,
             okHttpClient,
             logger
         ).tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
-            reusable = reusable ?: true
+            reusable = reusable
         )
-
-        if (tokenizationResponse is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] tokenizeCard failed on Terminal $posTerminalId: ${tokenizationResponse.errors[0]}"
-            )
-        }
-        return tokenizationResponse
     }
 
     /**
@@ -324,52 +283,33 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * @return A [ForageAPIResponse][com.joinforage.forage.android.network.model.ForageApiResponse]
      * object.
      */
-    suspend fun tokenizeCard(params: PosTokenizeCardParams): ForageApiResponse<String> {
+    suspend fun tokenizeCard(params: TokenizeMagSwipeParams): ForageApiResponse<String> {
         val (posForageConfig, track2Data, reusable) = params
-        val logger = createLogger(posTerminalId)
-        logger.addAttribute("reusable", reusable)
-            .addAttribute("merchant_ref", posForageConfig.merchantId)
-
-        logger.i(
-            "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId"
-        )
-
-        val initializationException = isInitializationExceptionOrNull(logger, "tokenizeCard")
-        if (initializationException != null) {
-            return initializationException
-        }
-
         val (merchantId, sessionToken) = posForageConfig
-
-        // ====== Begin Duplicate Code ======
-
         val config = EnvConfig.fromSessionToken(sessionToken)
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        logger.addAttribute("merchant_ref", merchantId)
-        logger.i("[POS] Tokenizing Payment Method")
-
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
+            .addAttribute("reusable", reusable)
+            .addAttribute("merchant_ref", merchantId)
+            .i(
+                "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId"
+            )
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
             sessionToken = sessionToken,
             merchantId = merchantId,
             traceId = logger.getTraceIdValue()
         )
-
-        // ====== End Duplicate Code ======
-
-        val tokenizedCard = TokenizeCardService(
+        return PosTokenizeCardService(
             config.apiBaseUrl,
             okHttpClient,
             logger
-        ).tokenizePosCard(track2Data = track2Data, reusable = reusable)
-
-        return tokenizedCard
+        ).tokenizeMagSwipeCard(track2Data = track2Data, reusable = reusable)
     }
 
     /**
      * Checks the balance of a previously created
-     * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) via a
-     * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods)
+     * via a [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
      * ⚠️ _FNS prohibits balance inquiries on sites and apps that offer guest checkout. Skip this
      * method if your customers can opt for guest checkout. If guest checkout is not an option, then
@@ -377,9 +317,10 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * * On success, the response object includes `snap` and `cash` fields that indicate
      * the EBT Card's current SNAP and EBT Cash balances. *(Example [BalanceCheck](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/BalanceCheck.kt) class)*
      * * On failure, for example in the case of
-     * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14), the response
-     * includes a list of [ForageError][com.joinforage.forage.android.network.model.ForageError]
-     * objects that you can unpack to programmatically handle the error and display the appropriate
+     * [`ebt_error_14`](https://docs.joinforage.app/reference/errors#ebt_error_14),
+     * the response includes a list of
+     * [ForageError][com.joinforage.forage.android.network.model.ForageError] objects that you can
+     * unpack to programmatically handle the error and display the appropriate
      * customer-facing message based on the `ForageError.code`.
      * ```kotlin
      * // Example checkBalance call in a BalanceCheckViewModel.kt
@@ -413,58 +354,35 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      *
      * @throws [ForageConfigNotSetException] If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see
-     * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
-     * on error handling.
-     * *
-     * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions)
+     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more
+     * information on error handling.
+     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#balance-inquiry-exceptions)
      * to trigger balance inquiry exceptions during testing.
      * @return A [ForageApiResponse] object.
      */
-    override suspend fun checkBalance(
-        params: CheckBalanceParams
-    ): ForageApiResponse<String> {
-        val logger = createLogger(posTerminalId)
-        val (foragePinEditText, paymentMethodRef) = params
-
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePinEditText)
-
-        logger.addAttribute("merchant_ref", merchantId)
+    suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
+        val (forageVaultElement, paymentMethodRef) = params
+        val config = forageConfig.envConfig
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
+            .addAttribute("merchant_ref", forageConfig.merchantId)
             .addAttribute("payment_method_ref", paymentMethodRef)
-
-        logger.i(
-            "[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId"
-        )
-
-        val initializationException = isInitializationExceptionOrNull(logger, "checkBalance")
-        if (initializationException != null) {
-            return initializationException
-        }
-
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement =
-            CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = foragePinEditText.getVaultType(),
-                vaultAction = UserAction.BALANCE,
-                logger
+            .i(
+                "[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId"
             )
-        measurement.start()
-        // ------------------------------------------------------
-
-        val config = EnvConfig.fromSessionToken(sessionToken)
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.BALANCE,
+            logger
+        )
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
+            sessionToken = forageConfig.sessionToken,
+            merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
         )
         val balanceResponse =
-            CheckBalanceRepository(
-                vaultSubmitter = ForagePinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                ),
+            PosCheckBalanceRepository(
+                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
                 pollingService = PollingService(
@@ -473,31 +391,18 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 ),
                 logger = logger
             ).posCheckBalance(
-                merchantId = merchantId,
+                merchantId = forageConfig.merchantId,
                 paymentMethodRef = paymentMethodRef,
                 posTerminalId = posTerminalId,
-                sessionToken = sessionToken
+                sessionToken = forageConfig.sessionToken
             )
-
-        processApiResponseForMetrics(balanceResponse, measurement)
-
-        if (balanceResponse is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] checkBalance failed for PaymentMethod $paymentMethodRef on Terminal $posTerminalId: ${balanceResponse.errors[0]}",
-                attributes =
-                mapOf(
-                    "payment_method_ref" to paymentMethodRef,
-                    "pos_terminal_id" to posTerminalId
-                )
-            )
-        }
-
+        measurement.setEventOutcome(balanceResponse).logResult()
         return balanceResponse
     }
 
     /**
-     * Immediately captures a payment via a [ForagePINEditText]
-     * [com.joinforage.forage.android.ui.ForagePINEditText] Element.
+     * Immediately captures a payment via a
+     * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element.
      *
      * * On success, the object confirms the transaction. The response includes a Forage
      * [`Payment`](https://docs.joinforage.app/reference/payments) object. *(Example [PosPaymentResponse](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosPaymentResponse.kt#L8) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
@@ -554,49 +459,30 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * @see
      * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
      * on error handling.
-     * *
-     * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
+     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
      * to trigger payment capture exceptions during testing.
      * @return A [ForageApiResponse] object.
      */
-    override suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
-        val (foragePinEditText, paymentRef) = params
-        val logger = createLogger(posTerminalId).addAttribute("payment_ref", paymentRef)
-        logger.i("[POS] Called capturePayment for Payment $paymentRef")
-
-        val initializationException = isInitializationExceptionOrNull(logger, "capturePayment")
-        if (initializationException != null) {
-            return initializationException
-        }
-
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePinEditText)
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        logger
-            .addAttribute("merchant_ref", merchantId)
+    suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
+        val (forageVaultElement, paymentRef) = params
+        val config = forageConfig.envConfig
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
             .addAttribute("payment_ref", paymentRef)
-
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor.newMeasurement(
-            vault = foragePinEditText.getVaultType(),
-            vaultAction = UserAction.CAPTURE,
+            .addAttribute("merchant_ref", forageConfig.merchantId)
+            .i("[POS] Called capturePayment for Payment $paymentRef")
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.CAPTURE,
             logger
         )
-        measurement.start()
-        // ------------------------------------------------------
-        val config = EnvConfig.fromSessionToken(sessionToken)
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
+            sessionToken = forageConfig.sessionToken,
+            merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
         )
-        val captureResponse = CapturePaymentRepository(
-            vaultSubmitter = ForagePinSubmitter(
-                context = foragePinEditText.context,
-                foragePinEditText = foragePinEditText,
-                logger = logger
-            ),
+        val captureResponse = PosCapturePaymentRepository(
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
@@ -605,26 +491,22 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 logger = logger
             ),
             logger = logger
-        ).capturePayment(
-            merchantId = merchantId,
+        ).capturePosPayment(
+            merchantId = forageConfig.merchantId,
             paymentRef = paymentRef,
-            sessionToken = sessionToken
+            sessionToken = forageConfig.sessionToken,
+            posTerminalId = posTerminalId
         )
 
-        processApiResponseForMetrics(captureResponse, measurement)
+        measurement.setEventOutcome(captureResponse).logResult()
 
-        if (captureResponse is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] capturePayment failed for payment $paymentRef on Terminal $posTerminalId: ${captureResponse.errors[0]}"
-            )
-        }
         return captureResponse
     }
 
     /**
-     * Submits a card PIN via a [ForagePINEditText]
-     * [com.joinforage.forage.android.ui.ForagePINEditText] Element and defers payment capture to
-     * the server.
+     * Submits a card PIN via a
+     * [ForagePINEditText][com.joinforage.forage.android.ui.ForagePINEditText] Element and defers
+     * payment capture to the server.
      *
      * * On success, the `data` property of the [ForageApiResponse.Success] object resolves with an empty string.
      * * On failure, for example in the case of [`expired_session_token`](https://docs.joinforage.app/reference/errors#expired_session_token) errors, the
@@ -669,66 +551,47 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      *
      * @throws [ForageConfigNotSetException] If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see
-     * *
-     * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+     * @see * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
-     * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment) for the
-     * API endpoint to call after [deferPaymentCapture].
+     * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment)
+     * for the API endpoint to call after [deferPaymentCapture].
      * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
      * on error handling.
      * @return A [ForageApiResponse] object.
      */
-    override suspend fun deferPaymentCapture(
+    suspend fun deferPaymentCapture(
         params: DeferPaymentCaptureParams
     ): ForageApiResponse<String> {
-        val (foragePinEditText, paymentRef) = params
-        val logger = createLogger(posTerminalId).addAttribute("payment_ref", paymentRef)
-        logger.i("[POS] Called deferPaymentCapture for Payment $paymentRef")
-
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePinEditText)
-        val config = EnvConfig.fromSessionToken(sessionToken)
+        val (forageVaultElement, paymentRef) = params
+        val config = forageConfig.envConfig
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
+            .addAttribute("payment_ref", paymentRef)
+            .addAttribute("merchant_ref", forageConfig.merchantId)
+            .i("[POS] Called deferPaymentCapture for Payment $paymentRef")
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
+            sessionToken = forageConfig.sessionToken,
+            merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
         )
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        logger
-            .addAttribute("merchant_ref", merchantId)
-            .addAttribute("payment_ref", paymentRef)
-
-        val response = DeferPaymentCaptureRepository(
-            vaultSubmitter = ForagePinSubmitter(
-                context = foragePinEditText.context,
-                foragePinEditText = foragePinEditText,
-                logger = logger
-            ),
+        return PosDeferPaymentCaptureRepository(
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-            paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
-        ).deferPaymentCapture(
-            merchantId = merchantId,
+            paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
+            logger = logger
+        ).deferPosPaymentCapture(
+            merchantId = forageConfig.merchantId,
             paymentRef = paymentRef,
-            sessionToken = sessionToken
+            sessionToken = forageConfig.sessionToken,
+            posTerminalId
         )
-
-        return if (response is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] deferPaymentCapture failed for Payment $paymentRef on Terminal $posTerminalId: ${response.errors[0]}"
-            )
-            response
-        } else {
-            logger.i("[POS] Successfully deferred payment capture for Payment $paymentRef")
-            ForageApiResponse.Success("")
-        }
     }
 
     /**
-     * Refunds a Payment via a [ForagePinEditText]
-     * [com.joinforage.forage.android.ui.ForagePINEditText] Element. This method is only available
-     * for POS Terminal transactions. You must use [ForageTerminalSDK].
+     * Refunds a Payment via a [ForagePinEditText][com.joinforage.forage.android.ui.ForagePINEditText]
+     * Element. This method is only available for POS Terminal transactions.
+     * You must use [ForageTerminalSDK].
      *
      * * On success, the response includes a Forage
      * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object. *(Example [Refund](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/0d845ea57d901bbca13775f4f2de4d4ed6f74791/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/Refund.kt#L7-L23) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
@@ -772,54 +635,39 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * endpoint, an `amount`, and a `reason` as the PosRefundPaymentParams.
      * @throws ForageConfigNotSetException If the [PosForageConfig] is not set for the provided
      * `foragePinEditText`.
-     * @see
-     * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
+     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
      * on error handling.
      * @return A [ForageApiResponse] object.
      */
-    suspend fun refundPayment(params: PosRefundPaymentParams): ForageApiResponse<String> {
-        val logger = createLogger(posTerminalId)
-        val (foragePinEditText, paymentRef, amount, reason) = params
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePinEditText)
-        logger.addAttribute("payment_ref", paymentRef).addAttribute("merchant_ref", merchantId)
-        logger.i(
-            """
-            [POS] Called refundPayment for Payment $paymentRef
-            with amount: $amount
-            for reason: $reason
-            on Terminal: $posTerminalId
-            """.trimIndent()
-        )
-
-        val initializationException = isInitializationExceptionOrNull(logger, "refundPayment")
-        if (initializationException != null) {
-            return initializationException
-        }
-
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement =
-            CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = foragePinEditText.getVaultType(),
-                vaultAction = UserAction.REFUND,
-                logger
+    suspend fun refundPayment(params: RefundPaymentParams): ForageApiResponse<String> {
+        val (forageVaultElement, paymentRef, amount, reason) = params
+        val config = forageConfig.envConfig
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
+            .addAttribute("payment_ref", paymentRef)
+            .addAttribute("merchant_ref", forageConfig.merchantId)
+            .i(
+                """
+                [POS] Called refundPayment for Payment $paymentRef
+                with amount: $amount
+                for reason: $reason
+                on Terminal: $posTerminalId
+                """.trimIndent()
             )
-        measurement.start()
-        // ------------------------------------------------------
-        val config = EnvConfig.fromSessionToken(sessionToken)
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.REFUND,
+            logger
+        )
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
+            sessionToken = forageConfig.sessionToken,
+            merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
         )
 
         val refund =
             PosRefundPaymentRepository(
-                vaultSubmitter = ForagePinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                ),
+                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
                 paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
@@ -830,19 +678,12 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
                 logger = logger,
                 refundService = PosRefundService(config.apiBaseUrl, logger, okHttpClient)
             ).refundPayment(
-                merchantId = merchantId,
+                merchantId = forageConfig.merchantId,
                 posTerminalId = posTerminalId,
                 refundParams = params,
-                sessionToken = sessionToken
+                sessionToken = forageConfig.sessionToken
             )
-        processApiResponseForMetrics(refund, measurement)
-
-        if (refund is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] refundPayment failed for Payment $paymentRef on Terminal $posTerminalId: ${refund.errors[0]}"
-            )
-        }
-
+        measurement.setEventOutcome(refund).logResult()
         return refund
     }
 
@@ -887,107 +728,202 @@ class ForageTerminalSDK internal constructor(private val posTerminalId: String) 
      * *
      * [Defer EBT payment capture and refund completion to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
      * for the related step-by-step guide.
-     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance hasn't had its
-     * ForageConfig set via .setForageConfig().
+     * @throws ForageConfigNotSetException If the passed ForagePINEditText instance
+     * hasn't had its ForageConfig set via .setForageConfig().
      */
-    suspend fun deferPaymentRefund(params: PosDeferPaymentRefundParams): ForageApiResponse<String> {
-        val logger = createLogger(posTerminalId)
-        val (foragePinEditText, paymentRef) = params
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePinEditText)
-
-        logger.addAttribute("payment_ref", paymentRef).addAttribute("merchant_ref", merchantId)
-        logger.i(
-            """
-            [POS] Called deferPaymentRefund for Payment $paymentRef
-            on Terminal: $posTerminalId
-            """.trimIndent()
-        )
-
-        val initializationException = isInitializationExceptionOrNull(logger, "deferPaymentRefund")
-        if (initializationException != null) {
-            return initializationException
-        }
-
-        // This block is used for tracking Metrics!
-        // ------------------------------------------------------
-        val measurement =
-            CustomerPerceivedResponseMonitor.newMeasurement(
-                vault = foragePinEditText.getVaultType(),
-                vaultAction = UserAction.DEFER_REFUND,
-                logger
+    suspend fun deferPaymentRefund(params: DeferPaymentRefundParams): ForageApiResponse<String> {
+        val (forageVaultElement, paymentRef) = params
+        val config = forageConfig.envConfig
+        val logger = Log.getInstance()
+            .addAttribute("pos_terminal_id", posTerminalId)
+            .addAttribute("payment_ref", paymentRef)
+            .addAttribute("merchant_ref", forageConfig.merchantId)
+            .i(
+                """
+                [POS] Called deferPaymentRefund for Payment $paymentRef
+                on Terminal: $posTerminalId
+                """.trimIndent()
             )
-        measurement.start()
-        // ------------------------------------------------------
-        val config = EnvConfig.fromSessionToken(sessionToken)
+        val measurement = CustomerPerceivedResponseMonitor(
+            VaultType.FORAGE_VAULT_TYPE,
+            UserAction.DEFER_REFUND,
+            logger
+        )
         val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
+            sessionToken = forageConfig.sessionToken,
+            merchantId = forageConfig.merchantId,
             traceId = logger.getTraceIdValue()
         )
         val refund =
             DeferPaymentRefundRepository(
-                vaultSubmitter = ForagePinSubmitter(
-                    context = foragePinEditText.context,
-                    foragePinEditText = foragePinEditText,
-                    logger = logger
-                ),
+                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
+                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
+                logger = logger
             ).deferPaymentRefund(
-                merchantId = merchantId,
+                merchantId = forageConfig.merchantId,
                 paymentRef = paymentRef,
-                sessionToken = sessionToken
+                sessionToken = forageConfig.sessionToken,
+                posTerminalId
             )
-        processApiResponseForMetrics(refund, measurement)
-
-        if (refund is ForageApiResponse.Failure) {
-            logger.e(
-                "[POS] deferPaymentRefund failed for Payment $paymentRef on Terminal $posTerminalId: ${refund.errors[0]}"
-            )
-        }
+        measurement.setEventOutcome(refund).logResult()
 
         return refund
     }
-
-    private fun isInitializationExceptionOrNull(
-        logger: Log,
-        methodName: String
-    ): ForageApiResponse<String>? {
-        if (!calledInit) {
-            val errorMessage = """
-                    This instance of `ForageTerminalSDK` has not been pre-initialized 
-                    and will run the initialization process now instead. Consider 
-                    calling `.init(config: PosForageConfig)` ahead of calling $methodName
-                    to ensure any long-running init operations are completed beforehand.
-            """.trimIndent()
-
-            throw IllegalStateException(errorMessage)
-        }
-
-        if (!initSucceeded) {
-            logger.e("[POS] $methodName failed because the ForageTerminalSDK init method failed.")
-            return UnknownErrorApiResponse
-        }
-        return null
-    }
-
-    /**
-     * Use one of the [tokenizeCard] options instead.
-     *
-     * @throws NotImplementedError
-     */
-    @Deprecated(
-        message =
-        "This method is not applicable to the Forage Terminal SDK. Use the other tokenizeEBTCard methods.",
-        level = DeprecationLevel.ERROR
-    )
-    override suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
-        throw NotImplementedError(
-            """
-            This method is not applicable to the Forage Terminal SDK.
-            Use the other tokenizeEBTCard methods.
-            """.trimIndent()
-        )
-    }
 }
+
+/**
+ * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
+ * ForageConfig is not set.
+ *
+ * @param element A ForageElement instance
+ * @return The ForageConfig associated with the ForageElement
+ * @throws ForageConfigNotSetException If the ForageConfig is not set for the ForageElement
+ */
+internal fun getForageConfigOrThrow(forageConfig: ForageConfig?): ForageConfig {
+    return forageConfig ?: throw ForageConfigNotSetException(
+        """
+    The ForageElement you passed did not have a ForageConfig. In order to submit
+    a request via Forage SDK, your ForageElement MUST have a ForageConfig.
+    Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
+    immediately on your ForageElement 
+        """.trimIndent()
+    )
+}
+
+data class TokenizeManualEntryParams(
+    val foragePanEditText: ForagePANEditText,
+    val reusable: Boolean = true
+)
+
+/**
+ * A model that represents the parameters that [ForageTerminalSDK] requires to tokenize a card via
+ * a magnetic swipe from a physical POS Terminal.
+ * This data class is not supported for online-only transactions.
+ * [PosTokenizeCardParams] are passed to the
+ * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] method.
+ *
+ * @property posForageConfig **Required**. The [PosForageConfig] configuration details required to
+ * authenticate with the Forage API.
+ * @property track2Data **Required**. The information encoded on Track 2 of the card’s magnetic
+ * stripe, excluding the start and stop sentinels and any LRC characters. _Example value_:
+ * `"123456789123456789=123456789123"`
+ * @property reusable Optional. A boolean that indicates whether the same card can be used to create
+ * multiple payments. Defaults to true.
+ */
+data class TokenizeMagSwipeParams(
+    val forageConfig: ForageConfig,
+    val track2Data: String,
+    val reusable: Boolean = true
+)
+
+/**
+ * A model that represents the parameters that Forage requires to check a card's balance.
+ * [CheckBalanceParams] are passed to the
+ * [checkBalance][com.joinforage.forage.android.ForageSDK.checkBalance] method.
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentMethodRef A unique string identifier for a previously created
+ * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) in Forage's database,
+ * found in the response from a call to
+ * [tokenizeEBTCard][com.joinforage.forage.android.ForageSDK.tokenizeEBTCard] (online-only),
+ * [tokenizeCard][com.joinforage.forage.android.pos.ForageTerminalSDK.tokenizeCard] (POS),
+ * or the [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method)
+ * endpoint.
+ */
+data class CheckBalanceParams(
+    val forageVaultElement: ForageVaultElement<ElementState>,
+    val paymentMethodRef: String
+)
+
+/**
+ * A model that represents the parameters that Forage requires to capture a payment.
+ * [CapturePaymentParams] are passed to the
+ * [capturePayment][com.joinforage.forage.android.ForageSDK.capturePayment] method.
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ */
+data class CapturePaymentParams(
+    val forageVaultElement: ForageVaultElement<ElementState>,
+    val paymentRef: String
+)
+
+/**
+ * A model that represents the parameters that Forage requires to collect a card PIN and defer
+ * the capture of the payment to the server.
+ * [DeferPaymentCaptureParams] are passed to the
+ * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture] method.
+ *
+ * @see * [Defer EBT payment capture to the server](https://docs.joinforage.app/docs/capture-ebt-payments-server-side)
+ * for the related step-by-step guide.
+ * * [Capture an EBT Payment](https://docs.joinforage.app/reference/capture-a-payment)
+ * for the API endpoint to call after
+ * [deferPaymentCapture][com.joinforage.forage.android.ForageSDK.deferPaymentCapture].
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ */
+data class DeferPaymentCaptureParams(
+    val forageVaultElement: ForageVaultElement<ElementState>,
+    val paymentRef: String
+)
+
+/**
+ * A model that represents the parameters that [ForageTerminalSDK] requires to refund a Payment.
+ * [PosRefundPaymentParams] are passed to the
+ * [refundPayment][com.joinforage.forage.android.pos.ForageTerminalSDK.refundPayment] method.
+ *
+ * @property foragePinEditText **Required**. A reference to the [ForagePINEditText] instance that collected
+ * the card PIN for the refund.
+ *  [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must be
+ *  called on the instance before it can be passed.
+ * @property paymentRef **Required**. A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's database, returned by the
+ *  [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ * @property amount **Required**. A positive decimal number that represents how much of the original
+ * payment to refund in USD. Precision to the penny is supported.
+ * The minimum amount that can be refunded is `0.01`.
+ * @property reason **Required**. A string that describes why the payment is to be refunded.
+ * @property metadata Optional. A map of merchant-defined key-value pairs. For example, some
+ * merchants attach their credit card processor’s ID for the customer making the refund.
+ */
+data class RefundPaymentParams(
+    val forageVaultElement: ForageVaultElement<ElementState>,
+    val paymentRef: String,
+    val amount: Float,
+    val reason: String,
+    val metadata: Map<String, String>? = null
+)
+
+/**
+ * A model that represents the parameters that Forage requires to collect a card PIN and defer
+ * the refund of the payment to the server.
+ * [PosDeferPaymentRefundParams] are passed to the
+ * [deferPaymentRefund][com.joinforage.forage.android.pos.ForageTerminalSDK.deferPaymentRefund] method.
+ *
+ * @property foragePinEditText A reference to a [ForagePINEditText] instance.
+ * [setForageConfig][com.joinforage.forage.android.ui.ForageElement.setForageConfig] must
+ * be called on the instance before it can be passed.
+ * @property paymentRef A unique string identifier for a previously created
+ * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
+ * database, returned by the
+ * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ */
+data class DeferPaymentRefundParams(
+    val forageVaultElement: ForageVaultElement<ElementState>,
+    val paymentRef: String
+)

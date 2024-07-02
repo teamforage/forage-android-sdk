@@ -1,9 +1,10 @@
 package com.joinforage.forage.android.pos.encryption
 
-import com.joinforage.forage.android.pos.encryption.dukpt.DukptService
-import com.joinforage.forage.android.pos.encryption.dukpt.KsnComponent
-import com.joinforage.forage.android.pos.encryption.storage.InMemoryKeyRegisters
-import com.joinforage.forage.android.pos.encryption.storage.KeySerialNumber
+import com.joinforage.forage.android.pos.services.encryption.AesBlock
+import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.services.encryption.dukpt.KsnComponent
+import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
+import com.joinforage.forage.android.pos.services.encryption.storage.KeySerialNumber
 
 internal object DukptFixtures {
     fun newDukpt(): Triple<DukptService, InMemoryKeyRegisters, KeySerialNumber> {
