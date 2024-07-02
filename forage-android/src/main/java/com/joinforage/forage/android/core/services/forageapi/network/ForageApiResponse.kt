@@ -94,8 +94,7 @@ sealed class ForageApiResponse<out T> {
      * A model that represents a failure response from the API.
      *
      * @property errors A list of [ForageError] instances that you can unpack to programmatically
-     * handle the error and display the appropriate
-     * [customer-facing message](https://docs.joinforage.app/docs/document-error-messages#template-error-table-for-fns-documentation).
+     * handle the error and display the appropriate customer-facing message.
      */
     data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
         internal companion object {

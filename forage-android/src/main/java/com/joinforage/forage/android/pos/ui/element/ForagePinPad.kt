@@ -77,6 +77,39 @@ internal class PinPadStateManager(
     }
 }
 
+/**
+ * A [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement] that securely
+ * collects a card PIN. Use the ForagePinPad if your terminal
+ * supports a guest facing display or if you expect to display the PIN pad on an external monitor.
+ * You can use a [ForagePinPad] to call
+ * the ForageTerminalSDK POS methods that:
+ * * [Check a card's balance][com.joinforage.forage.android.pos.services.ForageTerminalSDK.checkBalance]
+ * * [Collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.pos.services.ForageTerminalSDK.deferPaymentCapture]
+ * * [Capture a payment immediately][com.joinforage.forage.android.pos.services.ForageTerminalSDK.capturePayment]
+ * * [Refund a payment immediately][com.joinforage.forage.android.pos.services.ForageTerminalSDK.refundPayment]
+ * * [Collect a card PIN to defer payment refund to the server][com.joinforage.forage.android.pos.services.ForageTerminalSDK.deferPaymentRefund]
+ * ```xml
+ * <!-- Example forage_pin_pad_component.xml -->
+ * <androidx.constraintlayout.widget.ConstraintLayout
+ *     xmlns:android="http://schemas.android.com/apk/res/android"
+ *     xmlns:app="http://schemas.android.com/apk/res-auto"
+ *     android:layout_width="match_parent"
+ *     android:layout_height="match_parent">
+ *
+ *     <com.joinforage.forage.android.pos.ui.element.ForagePinPad
+ *         android:id="@+id/my_pin_pad"
+ *         android:layout_width="match_parent"
+ *         android:layout_height="wrap_content"
+ *         app:forage_buttonLayoutMargin="@dimen/keypad_btn_margin"
+ *         app:forage_buttonLayoutHeight="@dimen/keypad_btn_height"
+ *         app:forage_deleteButtonIcon="@android:drawable/ic_delete"
+ *      />
+ *
+ * </androidx.constraintlayout.widget.ConstraintLayout>
+ * ```
+ * @see * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
+ * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
+ */
 class ForagePinPad @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -117,26 +150,54 @@ class ForagePinPad @JvmOverloads constructor(
         get() = TODO("Not yet implemented")
         set(value) {}
 
+    @Deprecated(
+        message = "This function is deprecated and is not supported in future releases.",
+        level = DeprecationLevel.ERROR
+    )
     fun setOnDoneListener(l: StatefulElementListener<PinPadState>) {
         manager = manager.withOnDoneCallback(l)
     }
 
+    /**
+     * Sets an event listener to be fired when the ForageElement is in focus.
+     *
+     * @param l The [StatefulElementListener] to be fired on focus events.
+     */
     override fun setOnChangeEventListener(l: StatefulElementListener<PinPadState>) {
         manager = manager.withOnChangeCallback(l)
     }
 
+    /**
+     * Clears the text input field of the ForageElement.
+     */
     override fun clearText() {
         manager = manager.clearText()
     }
 
+    /**
+     * Sets the text color for the ForageElement.
+     *
+     * @param textColor The color value in the form `0xAARRGGBB`.
+     */
     override fun setTextColor(textColor: Int) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Sets the text size for the ForageElement.
+     *
+     * @param textSize The scaled pixel size.
+     */
     override fun setTextSize(textSize: Float) {
         TODO("Not yet implemented")
     }
 
+    /**
+     * Gets the current [PinPadState].
+     * of the ForageElement.
+     *
+     * @return The [PinPadState].
+     */
     override fun getElementState(): PinPadState {
         return manager.state
     }
@@ -173,7 +234,7 @@ private class Styles(context: Context, attrs: AttributeSet?) {
 }
 
 /**
- * A class that allows a few succint styles to get intelligently
+ * A class that allows a few succinct styles to get intelligently
  * applied to the 16 button grid. The alternative wuld be really
  * verbose
  */
