@@ -224,7 +224,7 @@ class ForageSDK {
             paymentMethodRef = paymentMethodRef,
             sessionToken = sessionToken
         )
-        measurement.setEventOutcome(response)
+        measurement.setEventOutcome(response).logResult()
 
         return response
     }
@@ -320,7 +320,7 @@ class ForageSDK {
             paymentRef = paymentRef,
             sessionToken = sessionToken
         )
-        measurement.setEventOutcome(response)
+        measurement.setEventOutcome(response).logResult()
 
         return response
     }
