@@ -39,7 +39,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.io.File
 import java.util.UUID
+
+private fun createKsnDirForSampleApp(context: Context): File {
+    val directory = File(context.filesDir, "forage-pos-ksn")
+    if (!directory.exists()) {
+        directory.mkdirs()
+    }
+    return directory
+}
 
 @SuppressLint("NewApi")
 class POSViewModel : ViewModel() {
@@ -439,6 +448,7 @@ class POSViewModel : ViewModel() {
         // without raising a "NotImplementedError".
         return ForageTerminalSDK.init(
             context = context,
+            ksnDir = createKsnDirForSampleApp(context),
             posTerminalId = terminalId,
             forageConfig = ForageConfig(
                 merchantId = _uiState.value.merchantId,

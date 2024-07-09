@@ -28,6 +28,7 @@ import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentReposito
 import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
+import java.io.File
 
 /**
  * The entry point for **in-store POS Terminal** transactions.
@@ -111,6 +112,7 @@ class ForageTerminalSDK internal constructor(
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
+            ksnDir: File,
             posTerminalId: String,
             forageConfig: ForageConfig
         ): ForageTerminalSDK {
@@ -124,7 +126,7 @@ class ForageTerminalSDK internal constructor(
                 .i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
 
             try {
-                val ksnFileManager = KsnFileManager.byFile(context)
+                val ksnFileManager = KsnFileManager.byDir(ksnDir)
                 // STOPGAP to feed `context` to ForagePinSubmitter
                 RosettaPinSubmitter.ksnFileManager = ksnFileManager
 
