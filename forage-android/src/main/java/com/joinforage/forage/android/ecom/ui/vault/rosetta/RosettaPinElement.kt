@@ -200,7 +200,7 @@ internal class RosettaPinElement @JvmOverloads constructor(
     }
 
     private fun registerTextWatcher() {
-        val pinTextWatcher = PinTextWatcher(_editText)
+        val pinTextWatcher = PinTextWatcher()
         pinTextWatcher.onInputChangeEvent { isComplete, isEmpty ->
             inputState = inputState.handleChangeEvent(
                 isComplete = isComplete,

@@ -2,11 +2,8 @@ package com.joinforage.forage.android.core.ui.textwatcher
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.EditText
 
-internal class PinTextWatcher(
-    private val editText: EditText
-) : TextWatcher {
+internal class PinTextWatcher : TextWatcher {
     private var onInputChangeEvent: ((Boolean, Boolean) -> Unit)? = null
 
     fun onInputChangeEvent(callback: (Boolean, Boolean) -> Unit) {
@@ -22,8 +19,9 @@ internal class PinTextWatcher(
     }
 
     override fun afterTextChanged(editable: Editable) {
-        val isValidAndComplete = editText.length() == 4
-        val isEmpty = editText.length() == 0
+        val len = editable.toString().length
+        val isValidAndComplete = len == 4
+        val isEmpty = len == 0
         onInputChangeEvent?.invoke(isValidAndComplete, isEmpty)
     }
 }
