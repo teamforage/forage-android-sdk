@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 // this variable was introduced to break the dependence
 // on Launch Darkly so LD can be moved to Ecom
 // from core since Pos does not use LD
-val TEMPOARAY_polling_intervals = longArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
+internal val TEMPOARAY_polling_intervals = longArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
 
 internal class PollingService(
     private val messageStatusService: MessageStatusService,
