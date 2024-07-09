@@ -13,10 +13,10 @@ import kotlin.random.Random
 
 internal interface Log {
     fun initializeDD(context: Context, config: ForageConfig)
-    fun d(msg: String, attributes: Map<String, Any?> = emptyMap())
-    fun i(msg: String, attributes: Map<String, Any?> = emptyMap())
-    fun w(msg: String, attributes: Map<String, Any?> = emptyMap())
-    fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap())
+    fun d(msg: String, attributes: Map<String, Any?> = emptyMap()): Log
+    fun i(msg: String, attributes: Map<String, Any?> = emptyMap()): Log
+    fun w(msg: String, attributes: Map<String, Any?> = emptyMap()): Log
+    fun e(msg: String, throwable: Throwable? = null, attributes: Map<String, Any?> = emptyMap()): Log
     fun getTraceIdValue(): String
     fun addAttribute(key: String, value: Any?): Log
 
@@ -70,20 +70,24 @@ internal interface Log {
                 logger?.addAttribute(TRACE_ID, traceId)
             }
 
-            override fun d(msg: String, attributes: Map<String, Any?>) {
-                logger?.d(msg, attributes = attributes)
+            override fun d(msg: String, attributes: Map<String, Any?>): Log {
+                logger!!.d(msg, attributes = attributes)
+                return this
             }
 
-            override fun i(msg: String, attributes: Map<String, Any?>) {
-                logger?.i(msg, attributes = attributes)
+            override fun i(msg: String, attributes: Map<String, Any?>): Log {
+                logger!!.i(msg, attributes = attributes)
+                return this
             }
 
-            override fun w(msg: String, attributes: Map<String, Any?>) {
-                logger?.w(msg, attributes = attributes)
+            override fun w(msg: String, attributes: Map<String, Any?>): Log {
+                logger!!.w(msg, attributes = attributes)
+                return this
             }
 
-            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {
-                logger?.e(msg, throwable, attributes)
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>): Log {
+                logger!!.e(msg, throwable, attributes)
+                return this
             }
 
             override fun getTraceIdValue(): String {
@@ -102,13 +106,13 @@ internal interface Log {
         private val SILENT = object : Log {
             override fun initializeDD(context: Context, config: ForageConfig) {}
 
-            override fun d(msg: String, attributes: Map<String, Any?>) {}
+            override fun d(msg: String, attributes: Map<String, Any?>): Log = this
 
-            override fun i(msg: String, attributes: Map<String, Any?>) {}
+            override fun i(msg: String, attributes: Map<String, Any?>): Log = this
 
-            override fun w(msg: String, attributes: Map<String, Any?>) {}
+            override fun w(msg: String, attributes: Map<String, Any?>): Log = this
 
-            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>) {}
+            override fun e(msg: String, throwable: Throwable?, attributes: Map<String, Any?>): Log = this
 
             override fun getTraceIdValue(): String { return "" }
 
