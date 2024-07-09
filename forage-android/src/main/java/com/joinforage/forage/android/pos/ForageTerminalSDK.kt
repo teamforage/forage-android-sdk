@@ -112,7 +112,6 @@ class ForageTerminalSDK internal constructor(
          * @param ForageConfig **Required**. A [ForageConfig][com.joinforage.forage.android.core.services.ForageConfig] instance that specifies a
          * `merchantId` and `sessionToken`.
          */
-        @RequiresApi(Build.VERSION_CODES.M)
         @Throws(Exception::class)
         suspend fun init(
             context: Context,

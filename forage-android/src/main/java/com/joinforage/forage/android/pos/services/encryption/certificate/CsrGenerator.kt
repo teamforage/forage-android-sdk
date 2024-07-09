@@ -11,7 +11,6 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder
 import java.security.KeyPair
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal fun generateRawCsr(keyPair: KeyPair): String {
     val subject = X500Name(RsaKeyManager.CERT_SUBJECT)
     val csrBuilder = PKCS10CertificationRequestBuilder(subject, SubjectPublicKeyInfo.getInstance(keyPair.public.encoded))

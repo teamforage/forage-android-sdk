@@ -8,7 +8,6 @@ import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptCounter
 import com.joinforage.forage.android.pos.services.encryption.dukpt.SecureKeyStorageRegisters
 import com.joinforage.forage.android.pos.services.encryption.dukpt.StoredKey
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal class AndroidKeyStoreKeyRegisters : SecureKeyStorageRegisters {
     private val androidKeyStore = AndroidKeyStoreService()
 

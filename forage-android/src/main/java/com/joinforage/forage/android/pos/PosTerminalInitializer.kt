@@ -34,7 +34,6 @@ internal interface PosInitializer {
 /**
  * Handles the initialization steps for the [com.joinforage.forage.android.pos.ForageTerminalSDK.init] method.
  */
-@RequiresApi(Build.VERSION_CODES.M)
 internal class PosTerminalInitializer(
     private val ksnManager: KsnFileManager,
     private val logger: Log

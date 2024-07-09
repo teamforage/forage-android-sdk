@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import java.security.KeyStore
 import javax.crypto.spec.SecretKeySpec
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal class AndroidKeyStoreService {
     private val androidKeyStore
         get() = KeyStore.getInstance("AndroidKeyStore")

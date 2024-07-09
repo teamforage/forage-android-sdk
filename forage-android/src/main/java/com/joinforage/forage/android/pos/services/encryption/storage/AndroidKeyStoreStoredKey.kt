@@ -13,7 +13,6 @@ import javax.crypto.Cipher
 
 internal val WORKING_KEY_ALIAS = "dukpt_working_key"
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal class AndroidKeyStoreStoredKey(private val alias: String) : StoredKey, WorkingKey {
     private val androidKeyStore = AndroidKeyStoreService()
 
