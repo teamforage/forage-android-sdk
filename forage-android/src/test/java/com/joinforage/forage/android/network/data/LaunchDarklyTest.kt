@@ -3,11 +3,11 @@ package com.joinforage.forage.android.network.data
 import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_ROSETTA_PERCENT
-import com.joinforage.forage.android.core.services.launchdarkly.ALWAYS_THIRD_PARTY_PERCENT
-import com.joinforage.forage.android.core.services.launchdarkly.LDFlags
-import com.joinforage.forage.android.core.services.launchdarkly.LDManager
-import com.joinforage.forage.android.core.services.launchdarkly.computeVaultType
+import com.joinforage.forage.android.ecom.services.launchdarkly.ALWAYS_ROSETTA_PERCENT
+import com.joinforage.forage.android.ecom.services.launchdarkly.ALWAYS_THIRD_PARTY_PERCENT
+import com.joinforage.forage.android.ecom.services.launchdarkly.LDFlags
+import com.joinforage.forage.android.ecom.services.launchdarkly.LDManager
+import com.joinforage.forage.android.ecom.services.launchdarkly.computeVaultType
 import com.launchdarkly.sdk.LDValue
 import com.launchdarkly.sdk.android.LDConfig
 import com.launchdarkly.sdk.android.integrations.TestData
