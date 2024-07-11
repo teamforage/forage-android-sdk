@@ -9,8 +9,6 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBa
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
@@ -78,8 +76,6 @@ internal class MockServiceFactory(
     private val encryptionKeyService by lazy { createEncryptionKeyService() }
     private val paymentMethodService by lazy { createPaymentMethodService() }
     private val paymentService by lazy { createPaymentService() }
-    private val messageStatusService by lazy { createMessageStatusService() }
-    private val pollingService by lazy { createPollingService() }
 
     private fun emptyUrl() = server.url("").toUrl().toString()
 
@@ -94,7 +90,6 @@ internal class MockServiceFactory(
             vaultSubmitter = mockVaultSubmitter,
             encryptionKeyService = encryptionKeyService,
             paymentMethodService = paymentMethodService,
-            pollingService = pollingService,
             logger = logger
         )
     }
@@ -105,7 +100,6 @@ internal class MockServiceFactory(
             encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService,
-            pollingService = pollingService,
             logger = logger
         )
     }
@@ -122,9 +116,4 @@ internal class MockServiceFactory(
     private fun createEncryptionKeyService() = EncryptionKeyService(emptyUrl(), okHttpClient, logger)
     private fun createPaymentMethodService() = PaymentMethodService(emptyUrl(), okHttpClient, logger)
     private fun createPaymentService() = PaymentService(emptyUrl(), okHttpClient, logger)
-    private fun createMessageStatusService() = MessageStatusService(emptyUrl(), okHttpClient, logger)
-    private fun createPollingService() = PollingService(
-        messageStatusService = messageStatusService,
-        logger = logger
-    )
 }

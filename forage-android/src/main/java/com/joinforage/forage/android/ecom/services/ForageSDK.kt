@@ -8,8 +8,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
@@ -428,8 +426,6 @@ class ForageSDK {
         private val encryptionKeyService by lazy { createEncryptionKeyService() }
         private val paymentMethodService by lazy { createPaymentMethodService() }
         private val paymentService by lazy { createPaymentService() }
-        private val messageStatusService by lazy { createMessageStatusService() }
-        private val pollingService by lazy { createPollingService() }
 
         open fun createTokenizeCardService() = TokenizeCardService(
             config.apiBaseUrl,
@@ -442,7 +438,6 @@ class ForageSDK {
                 vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
                 encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
-                pollingService = pollingService,
                 logger = logger
             )
         }
@@ -453,7 +448,6 @@ class ForageSDK {
                 encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
-                pollingService = pollingService,
                 logger = logger
             )
         }
@@ -470,11 +464,6 @@ class ForageSDK {
         private fun createEncryptionKeyService() = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPaymentMethodService() = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPaymentService() = PaymentService(config.apiBaseUrl, okHttpClient, logger)
-        private fun createMessageStatusService() = MessageStatusService(config.apiBaseUrl, okHttpClient, logger)
-        private fun createPollingService() = PollingService(
-            messageStatusService = messageStatusService,
-            logger = logger
-        )
     }
 }
 
