@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.joinforage.forage.android.R
+import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
+import com.joinforage.forage.android.core.services.telemetry.Log
+import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState
 
@@ -77,6 +80,13 @@ abstract class ForagePinElement @JvmOverloads constructor(
     override fun clearText() {
         vault.clearText()
     }
+
+    override fun showKeyboard() = vault.showKeyboard()
+
+    override fun getVaultSubmitter(
+        envConfig: EnvConfig,
+        logger: Log
+    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
 
     // While the events that ForageElements expose mirrors the
     // blur, focus, change etc events of an Android view,

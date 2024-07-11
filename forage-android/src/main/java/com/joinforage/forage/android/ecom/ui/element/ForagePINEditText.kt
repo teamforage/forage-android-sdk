@@ -10,14 +10,13 @@ import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.ecom.services.launchdarkly.LDManager
 import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
+import com.joinforage.forage.android.ecom.services.launchdarkly.LDManager
 import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
 import com.joinforage.forage.android.ecom.ui.vault.rosetta.RosettaPinElement
 import com.launchdarkly.sdk.android.LDConfig
@@ -201,11 +200,6 @@ class ForagePINEditText @JvmOverloads constructor(
 
     internal fun getForageConfig() = forageConfigManager.forageConfig
 
-    override fun getVaultSubmitter(
-        envConfig: EnvConfig,
-        logger: Log
-    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
-
     override var typeface: Typeface?
         get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else rosettaPinElement.typeface
         set(value) {
@@ -214,6 +208,4 @@ class ForagePINEditText @JvmOverloads constructor(
             btVaultWrapper.typeface = value
             rosettaPinElement.typeface = value
         }
-
-    override fun showKeyboard() = vault.showKeyboard()
 }
