@@ -1,7 +1,5 @@
 package com.joinforage.forage.android.core.services.forageapi.network
 
-import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import org.json.JSONObject
 
 /**
