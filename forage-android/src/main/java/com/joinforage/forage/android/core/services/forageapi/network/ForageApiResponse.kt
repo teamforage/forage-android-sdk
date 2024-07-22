@@ -1,16 +1,14 @@
 package com.joinforage.forage.android.core.services.forageapi.network
 
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageErrorDetails
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
-import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
-import org.json.JSONException
-import org.json.JSONObject
 
-internal val UnknownErrorApiResponse = ForageApiResponse.Failure.fromError(
-    ForageError(500, "unknown_server_error", "Unknown Server Error")
-)
+internal val UnknownErrorApiResponse =
+    ForageApiResponse.Failure(500, "unknown_server_error", "Unknown Server Error")
 
 /**
  * A model that represents the possible types of responses from the Forage API.
@@ -97,101 +95,17 @@ sealed class ForageApiResponse<out T> {
      * handle the error and display the appropriate
      * [customer-facing message](https://docs.joinforage.app/docs/document-error-messages#template-error-table-for-fns-documentation).
      */
-    data class Failure(val errors: List<ForageError>) : ForageApiResponse<Nothing>() {
-        internal companion object {
-            fun fromError(error: ForageError): Failure {
-                return Failure(listOf(error))
-            }
-        }
-    }
-}
+    data class Failure internal constructor(val error: ForageError) : ForageApiResponse<Nothing>() {
 
-/**
- * A model that represents an error response from the Forage API.
- *
- * @property httpStatusCode A number that corresponds to the HTTP status code that the Forage API
- * returns in response to the request.
- * @property code A short string that helps identify the cause of the error.
- * For example, [`ebt_error_55`](https://docs.joinforage.app/reference/errors#ebt_error_55)
- * indicates that a customer entered an invalid EBT Card PIN.
- * @property message A string that specifies developer-facing error handling instructions.
- * @property details An object that includes additional details about the error, when available, like for
- * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) (Insufficient Funds).
- * @see [SDK Errors](https://docs.joinforage.app/reference/errors#sdk-errors) for a comprehensive
- * list of error `code` and `message` pairs.
- *
- */
-data class ForageError(
-    val httpStatusCode: Int,
-    val code: String,
-    val message: String,
-    val details: ForageErrorDetails? = null
-) {
-    /**
-     * A method that converts the [ForageError] response to a string.
-     *
-     * @return A string representation of a [ForageError] instance, including code, message,
-     * HTTP status, and any other available details from the Forage API.
-     */
-    override fun toString(): String {
-        return "Code: $code\nMessage: $message\nStatus Code: $httpStatusCode\nError Details (below):\n$details"
-    }
-}
+        // support legacy list of single error
+        val errors: List<ForageError> = listOf(error)
 
-internal data class ForageErrorObj(
-    val code: String,
-    val message: String
-) {
-    object ForageErrorObjMapper {
-        fun from(string: String): ForageErrorObj {
-            val jsonObject = JSONObject(string)
+        internal constructor(httpStatusCode: Int, code: String, message: String, details: ForageErrorDetails? = null) :
+                this(ForageError(httpStatusCode, code, message, details))
 
-            val code = jsonObject.getString("code")
-            val message = jsonObject.getString("message")
+        internal constructor(httpStatusCode: Int, jsonString: String) :
+                this(ForageError(httpStatusCode, jsonString))
 
-            return ForageErrorObj(
-                code = code,
-                message = message
-            )
-        }
-    }
-
-    override fun toString(): String {
-        return "Code: $code\nMessage: $message"
-    }
-}
-
-internal data class ForageApiError(
-    val path: String,
-    val errors: List<ForageErrorObj>
-) {
-    object ForageApiErrorMapper {
-        /**
-         * @throws [JSONException] if the `string` is not a valid ForageApiError JSON string
-         */
-        fun from(string: String): ForageApiError {
-            val jsonObject = JSONObject(string)
-
-            val path = jsonObject.getString("path")
-            val errors = jsonObject.optJSONArray("errors")
-                ?.let { 0.until(it.length()).map { i -> it.optJSONObject(i) } } // returns an array of JSONObject
-                ?.map { ForageErrorObj.ForageErrorObjMapper.from(it.toString()) } // transforms each JSONObject of the array into ForageError
-                ?: return ForageApiError(
-                    path = path,
-                    errors = emptyList()
-                )
-
-            return ForageApiError(
-                path = path,
-                errors = errors
-            )
-        }
-    }
-
-    override fun toString(): String {
-        if (errors.isEmpty()) {
-            return "Path: $path"
-        }
-        return errors[0].toString()
+        override fun toString(): String = error.toString()
     }
 }

@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.core.services
 
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import okhttp3.HttpUrl
 import org.json.JSONObject
 import kotlin.random.Random
@@ -58,16 +58,6 @@ internal object ForageConstants {
 
     object VGS {
         const val PIN_FIELD_NAME = "pin"
-    }
-
-    object ErrorResponseObjects {
-        val INCOMPLETE_PIN_ERROR = listOf(
-            ForageError(
-                400,
-                "user_error",
-                "Invalid EBT Card PIN entered. Please enter your 4-digit PIN."
-            )
-        )
     }
 }
 

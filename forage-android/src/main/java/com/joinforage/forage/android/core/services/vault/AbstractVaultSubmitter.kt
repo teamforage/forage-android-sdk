@@ -4,7 +4,6 @@ import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
@@ -12,8 +11,10 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.telemetry.VaultProxyResponseMonitor
 
-internal val IncompletePinError = ForageApiResponse.Failure.fromError(
-    ForageError(400, "user_error", "Invalid EBT Card PIN entered. Please enter your 4-digit PIN.")
+internal val IncompletePinError = ForageApiResponse.Failure(
+    400,
+    "user_error",
+    "Invalid EBT Card PIN entered. Please enter your 4-digit PIN."
 )
 
 internal open class VaultSubmitterParams(
@@ -86,10 +87,9 @@ internal abstract class AbstractVaultSubmitter(
         // FNS requirement to clear the PIN after each submission
         collector.clearText()
 
-        if (forageResponse is ForageApiResponse.Failure && forageResponse.errors.isNotEmpty()) {
-            val forageError = forageResponse.errors.first()
-            proxyResponseMonitor.setForageErrorCode(forageError.code)
-            proxyResponseMonitor.setHttpStatusCode(forageError.httpStatusCode)
+        if (forageResponse is ForageApiResponse.Failure) {
+            proxyResponseMonitor.setForageErrorCode(forageResponse.error.code)
+            proxyResponseMonitor.setHttpStatusCode(forageResponse.error.httpStatusCode)
         } else {
             proxyResponseMonitor.setHttpStatusCode(200)
         }
@@ -113,7 +113,6 @@ internal abstract class AbstractVaultSubmitter(
         .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, params.merchantId)
         .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, params.idempotencyKey)
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())
-        .setHeader(ForageConstants.Headers.API_VERSION, "default")
         .setHeader(ForageConstants.Headers.SESSION_TOKEN, "${ForageConstants.Headers.BEARER} ${params.sessionToken}")
         .setToken(vaultToken)
 
@@ -146,8 +145,7 @@ internal abstract class AbstractVaultSubmitter(
 
         val forageError = parser.forageError
         if (forageError != null) {
-            val firstError = forageError.errors[0]
-            logger.e("[$vaultType] Received ForageError from $vaultType: $firstError")
+            logger.e("[$vaultType] Received ForageError from $vaultType: $forageError")
             return forageError
         }
 

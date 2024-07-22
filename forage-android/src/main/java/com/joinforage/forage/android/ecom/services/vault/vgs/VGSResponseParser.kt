@@ -1,8 +1,6 @@
 package com.joinforage.forage.android.ecom.services.vault.vgs
 
-import com.joinforage.forage.android.core.services.forageapi.network.ForageApiError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 import com.verygoodsecurity.vgscollect.core.model.network.VGSResponse
@@ -48,15 +46,7 @@ internal class VGSResponseParser(vgsRes: VGSResponse?) : VaultResponseParser {
         return try {
             // if the response is a ForageApiError, then this block
             // should not throw
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(errorRes.body ?: "")
-            val error = forageApiError.errors[0]
-            ForageApiResponse.Failure.fromError(
-                ForageError(
-                    errorRes.errorCode,
-                    error.code,
-                    error.message
-                )
-            )
+            ForageApiResponse.Failure(errorRes.errorCode, errorRes.body ?: "")
         } catch (_: JSONException) {
             // if we throw when trying to extract the ForageApiError,
             // that means the response is not a ForageApiError

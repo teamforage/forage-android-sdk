@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.core.services.forageapi.polling
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.getJitterAmount
 import com.joinforage.forage.android.core.services.telemetry.Log
 import kotlinx.coroutines.delay
@@ -59,13 +58,9 @@ internal class PollingService(
                 logger.e("[Polling] Max attempts ($MAX_ATTEMPTS) reached for Message $contentId for $operationDescription")
 
                 return ForageApiResponse.Failure(
-                    listOf(
-                        ForageError(
-                            500,
-                            "unknown_server_error",
-                            "Unknown Server Error"
-                        )
-                    )
+                    500,
+                    "unknown_server_error",
+                    "Unknown Server Error"
                 )
             }
 

@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.network
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.forageapi.polling.Message
 import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
 import com.joinforage.forage.android.core.services.telemetry.Log
@@ -85,7 +85,9 @@ class MessageStatusServiceTest : MockServerSuite() {
 
         val response = messageResponse as ForageApiResponse.Failure
 
-        assertThat(response.errors[0]).isEqualTo(ForageError(401, "missing_merchant_account", "No merchant account FNS number was provided."))
+        assertThat(response.errors[0]).isEqualTo(
+            ForageError(401, "missing_merchant_account", "No merchant account FNS number was provided.")
+        )
     }
 
     companion object {

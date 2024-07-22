@@ -64,7 +64,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        val failureResponse = ForageApiResponse.Failure(500, "unknown_server_error", "Some error message from VGS")
         setMockVaultResponse(failureResponse)
 
         val response = executeCheckBalance()
