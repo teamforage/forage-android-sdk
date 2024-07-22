@@ -3,9 +3,9 @@ package com.joinforage.forage.android.core.services.vault
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.Message
 import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
@@ -40,31 +40,17 @@ internal class CheckBalanceRepository(
             else -> return response
         }
 
-        val vaultResponse = when (
+        val balanceResponse = when (
             val response = vaultSubmitter.submit(
                 getVaultRequestParams(encryptionKeys, paymentMethod)
             )
         ) {
-            is ForageApiResponse.Success -> Message.ModelMapper.from(response.data)
+            is ForageApiResponse.Success -> EbtBalance.fromVaultResponse(response)
             else -> return response
         }
 
-        val pollingResponse = pollingService.execute(
-            contentId = vaultResponse.contentId,
-            operationDescription = "balance check of PaymentMethod $paymentMethodRef"
-        )
-        if (pollingResponse is ForageApiResponse.Failure) {
-            return pollingResponse
-        }
-
-        return when (val paymentMethodResponse = paymentMethodService.getPaymentMethod(paymentMethodRef)) {
-            is ForageApiResponse.Success -> {
-                logger.i("[HTTP] Received updated balance information for Payment Method $paymentMethodRef")
-                val paymentMethodWithBalance = PaymentMethod(paymentMethodResponse.data)
-                return ForageApiResponse.Success(paymentMethodWithBalance.balance.toString())
-            }
-            else -> paymentMethodResponse
-        }
+        logger.i("[HTTP] Received updated balance information for Payment Method $paymentMethodRef")
+        return balanceResponse.toForageApiResponse()
     }
 
     private fun buildVaultRequestParams(

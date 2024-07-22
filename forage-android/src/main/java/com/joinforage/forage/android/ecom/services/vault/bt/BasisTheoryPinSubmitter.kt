@@ -49,7 +49,7 @@ internal class BasisTheoryPinSubmitter(
         val bt = buildVaultProvider()
 
         val proxyRequest: ProxyRequest = ProxyRequest().apply {
-            headers = vaultProxyRequest.headers
+            headers = vaultProxyRequest.headers + (ForageConstants.Headers.API_VERSION to "2024-01-08")
             body = ProxyRequestObject(
                 pin = btTextElement,
                 card_number_token = vaultProxyRequest.vaultToken

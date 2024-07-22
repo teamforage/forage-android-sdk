@@ -3,6 +3,7 @@ package com.joinforage.forage.android.ecom.services.vault.bt
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
+import org.json.JSONObject
 
 internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
     override val isNullResponse: Boolean = false
@@ -54,9 +55,21 @@ internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
         return if (!isSuccessful) {
             null
         } else {
-            // note: Result.toString() wraps the actual response as
-            // "Success(<actual-value-here>)"
-            ForageApiResponse.Success(vaultResponse.getOrNull().toString())
+            // Basis Theory appears to leak their Gson dependency in
+            // the response as the value of Any? resolves to a
+            // com.google.gson.internal.LinkedTreeMap instance.
+            // Fortunately, this is of type Map<Any, Any?> so we can
+            // still parse it with JSONObject and avoid having to
+            // directory depend on Gson ourselves
+            val result = vaultResponse.getOrThrow()
+            val jsonResponse = when {
+                (result == null) -> JSONObject()
+                (result == "") -> JSONObject()
+                (result is Map<*, *>) -> JSONObject(result)
+                (result is String) -> JSONObject(result)
+                else -> throw UnknownBTResponseException(result)
+            }
+            ForageApiResponse.Success(jsonResponse.toString())
         }
     }
 }
