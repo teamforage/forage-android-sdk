@@ -101,10 +101,10 @@ sealed class ForageApiResponse<out T> {
         val errors: List<ForageError> = listOf(error)
 
         internal constructor(httpStatusCode: Int, code: String, message: String, details: ForageErrorDetails? = null) :
-                this(ForageError(httpStatusCode, code, message, details))
+            this(ForageError(httpStatusCode, code, message, details))
 
         internal constructor(httpStatusCode: Int, jsonString: String) :
-                this(ForageError(httpStatusCode, jsonString))
+            this(ForageError(httpStatusCode, jsonString))
 
         override fun toString(): String = error.toString()
     }

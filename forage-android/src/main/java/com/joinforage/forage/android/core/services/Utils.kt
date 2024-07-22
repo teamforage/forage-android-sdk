@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.core.services
 
-import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import okhttp3.HttpUrl
 import org.json.JSONObject
 import kotlin.random.Random
