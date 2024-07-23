@@ -45,7 +45,7 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.errors[0].message).contains("Authentication credentials were not provided.")
+        assertThat(clientError.error.message).contains("Authentication credentials were not provided.")
     }
 
     @Test

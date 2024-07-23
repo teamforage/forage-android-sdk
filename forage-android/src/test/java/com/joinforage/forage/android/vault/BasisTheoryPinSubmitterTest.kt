@@ -138,11 +138,11 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
         val result = submitter.submitProxyRequest(VaultProxyRequest.emptyRequest())
 
         assertTrue(result is ForageApiResponse.Failure)
-        val firstError = (result as ForageApiResponse.Failure).errors[0]
+        val error = (result as ForageApiResponse.Failure).error
         assertEquals("[basis_theory] Received error from basis_theory: $basisTheoryErrorMessage", mockLogger.errorLogs.last().getMessage())
-        assertEquals("Unknown Server Error", firstError.message)
-        assertEquals(500, firstError.httpStatusCode)
-        assertEquals("unknown_server_error", firstError.code)
+        assertEquals("Unknown Server Error", error.message)
+        assertEquals(500, error.httpStatusCode)
+        assertEquals("unknown_server_error", error.code)
     }
 
     @Test
@@ -159,7 +159,7 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
         val result = submitter.submitProxyRequest(VaultProxyRequest.emptyRequest())
 
         assertTrue(result is ForageApiResponse.Failure)
-        val firstError = (result as ForageApiResponse.Failure).errors[0]
+        val error = (result as ForageApiResponse.Failure).error
         assertEquals(
             """
         [basis_theory] Received ForageError from basis_theory: Code: too_many_requests
@@ -170,9 +170,9 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
             """.trimIndent(),
             mockLogger.errorLogs.last().getMessage()
         )
-        assertEquals("Request was throttled, please try again later.", firstError.message)
-        assertEquals(400, firstError.httpStatusCode)
-        assertEquals("too_many_requests", firstError.code)
+        assertEquals("Request was throttled, please try again later.", error.message)
+        assertEquals(400, error.httpStatusCode)
+        assertEquals("too_many_requests", error.code)
     }
 
     @Test
@@ -186,13 +186,13 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
         val result = submitter.submitProxyRequest(VaultProxyRequest.emptyRequest())
 
         assertTrue(result is ForageApiResponse.Failure)
-        val firstError = (result as ForageApiResponse.Failure).errors[0]
+        val error = (result as ForageApiResponse.Failure).error
         assertEquals(
             "[basis_theory] Received malformed response from basis_theory: Failure(java.lang.RuntimeException: Malformed error!)",
             mockLogger.errorLogs.last().getMessage()
         )
-        assertEquals("Unknown Server Error", firstError.message)
-        assertEquals(500, firstError.httpStatusCode)
-        assertEquals("unknown_server_error", firstError.code)
+        assertEquals("Unknown Server Error", error.message)
+        assertEquals(500, error.httpStatusCode)
+        assertEquals("unknown_server_error", error.code)
     }
 }

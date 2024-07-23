@@ -65,7 +65,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
         val clientError = response as ForageApiResponse.Failure
 
-        assertThat(clientError.errors[0].message).contains("Authentication credentials were not provided.")
+        assertThat(clientError.error.message).contains("Authentication credentials were not provided.")
     }
 
     @Test
@@ -93,9 +93,9 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         val expectedMessage = "Cannot find payment."
         val expectedForageCode = "not_found"
         val expectedStatusCode = 404
-        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
-        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
-        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+        assertThat(failureResponse.error.message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.error.code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.error.httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
     @Test
@@ -112,9 +112,9 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         val expectedForageCode = "not_found"
         val expectedStatusCode = 404
 
-        assertThat(failureResponse.errors[0].message).isEqualTo(expectedMessage)
-        assertThat(failureResponse.errors[0].code).isEqualTo(expectedForageCode)
-        assertThat(failureResponse.errors[0].httpStatusCode).isEqualTo(expectedStatusCode)
+        assertThat(failureResponse.error.message).isEqualTo(expectedMessage)
+        assertThat(failureResponse.error.code).isEqualTo(expectedForageCode)
+        assertThat(failureResponse.error.httpStatusCode).isEqualTo(expectedStatusCode)
     }
 
     companion object {

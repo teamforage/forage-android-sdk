@@ -164,7 +164,7 @@ class TokenizeCardServiceTest : MockServerSuite() {
         assertThat(paymentMethodResponse).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
 
         val response = paymentMethodResponse as ForageApiResponse.Failure
-        assertThat(response.errors[0]).isEqualTo(
+        assertThat(response.error).isEqualTo(
             ForageError(400, "cannot_parse_request_body", "EBT Cards must be 16-19 digits long!")
         )
     }

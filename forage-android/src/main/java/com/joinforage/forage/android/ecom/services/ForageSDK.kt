@@ -99,7 +99,7 @@ class ForageSDK {
      *                 }
      *             }
      *             is ForageApiResponse.Failure -> {
-     *                 val error = response.errors[0]
+     *                 val error = response.error
      *                 // handle error.code here
      *             }
      *         }
@@ -173,7 +173,7 @@ class ForageSDK {
      *                 }
      *             }
      *             is ForageApiResponse.Failure -> {
-     *                 val error = response.errors[0]
+     *                 val error = response.error
      *                 // handle error.code here
      *             }
      *         }
@@ -261,7 +261,7 @@ class ForageSDK {
      *                     // Unpack payment.ref, payment.receipt, etc.
      *                 }
      *                 is ForageApiResponse.Failure -> {
-     *                     val error = response.errors[0]
+     *                     val error = response.error
      *
      *                     // handle Insufficient Funds error
      *                     if (error.code == "ebt_error_51") {
