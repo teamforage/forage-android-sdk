@@ -5,7 +5,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownErro
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 import org.json.JSONObject
 
-class UnknownBTResponseException(response: Any?) : Exception(response.toString())
+class UnknownBTSuccessResponse(response: Any?) : Exception(response.toString())
 
 internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
     override val isNullResponse: Boolean = false
@@ -41,14 +41,18 @@ internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
         return if (failureResponseRegExp.containsProxyError) UnknownErrorApiResponse else null
     }
 
-    private fun parseForageError(resRegExp: BtFailureResponseRegExp): ForageApiResponse.Failure? {
-        if (resRegExp.bodyText == null || resRegExp.statusCode == null) return null
-        return try {
-            ForageApiResponse.Failure(resRegExp.statusCode, resRegExp.bodyText)
-        } catch (_: Exception) {
+    private fun parseForageError(resRegExp: BtFailureResponseRegExp): ForageApiResponse.Failure? =
+        if (resRegExp.bodyText == null ||
+            resRegExp.statusCode == null ||
+            // if there's a proxy_error, don't try to parse as a Forage error
+            resRegExp.containsProxyError
+        ) {
             null
+        } else {
+            // if there's a body, a status code, and no proxy_error, then
+            // we embrace that the following line will throw an exception
+            ForageApiResponse.Failure(resRegExp.statusCode, resRegExp.bodyText)
         }
-    }
 
     private fun parseSuccessfulResponse(vaultResponse: Result<Any?>): ForageApiResponse.Success<String>? {
         return if (!isSuccessful) {
@@ -66,7 +70,7 @@ internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
                 (result == "") -> JSONObject()
                 (result is Map<*, *>) -> JSONObject(result)
                 (result is String) -> JSONObject(result)
-                else -> throw UnknownBTResponseException(result)
+                else -> throw UnknownBTSuccessResponse(result)
             }
             ForageApiResponse.Success(jsonResponse.toString())
         }

@@ -131,7 +131,7 @@ class BTResponseParserTest {
     fun `throw UnknownBTResponseException when for unexpected response type`() {
         val response = Result.success<Any?>(42)
         assertThatThrownBy { BTResponseParser(response) }
-            .isInstanceOf(UnknownBTResponseException::class.java)
+            .isInstanceOf(UnknownBTSuccessResponse::class.java)
             .hasMessageContaining("42")
     }
 }

@@ -139,7 +139,7 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
 
         assertTrue(result is ForageApiResponse.Failure)
         val firstError = (result as ForageApiResponse.Failure).errors[0]
-        assertEquals("[basis_theory] Received error from basis_theory: java.lang.RuntimeException: $basisTheoryErrorMessage", mockLogger.errorLogs.last().getMessage())
+        assertEquals("[basis_theory] Received error from basis_theory: $basisTheoryErrorMessage", mockLogger.errorLogs.last().getMessage())
         assertEquals("Unknown Server Error", firstError.message)
         assertEquals(500, firstError.httpStatusCode)
         assertEquals("unknown_server_error", firstError.code)

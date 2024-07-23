@@ -8,6 +8,8 @@ import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.error.payload.UnknownForageFailureResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
@@ -61,7 +63,18 @@ internal class BasisTheoryPinSubmitter(
             bt.proxy.post(proxyRequest)
         }
 
-        return vaultToForageResponse(BTResponseParser(vaultResponse))
+        return try {
+            vaultToForageResponse(BTResponseParser(vaultResponse))
+        } catch (e: UnknownBTSuccessResponse) {
+            logger.e("Unknown success response from BasisTheory Vault.", e)
+            UnknownErrorApiResponse
+        } catch (e: UnknownForageFailureResponse) {
+            logger.e("Unknown error from Payments API.", e)
+            UnknownErrorApiResponse
+        } catch (e: Exception) {
+            logger.e("Request to Basis Theory failed.", e)
+            UnknownErrorApiResponse
+        }
     }
 
     override fun getVaultToken(paymentMethod: PaymentMethod): String? = pickVaultTokenByIndex(paymentMethod, 1)
