@@ -11,7 +11,6 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Payme
 import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
 import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.services.telemetry.EventOutcome
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
