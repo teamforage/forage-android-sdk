@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_complete_flow">
+    app:startDestination="@+id/navigation_catalog">
 
     <fragment
         android:id="@+id/navigation_pos"
@@ -15,13 +15,5 @@
         android:name="com.joinforage.android.example.ui.catalog.CatalogFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_catalog" />
-
-    <fragment
-        android:id="@+id/navigation_complete_flow"
-        android:name="com.joinforage.android.example.ui.complete.flow.tokens.FlowTokensFragment"
-        android:label="@string/title_setup"
-        tools:layout="@layout/fragment_flow_tokens">
-    </fragment>
-
 
 </navigation>

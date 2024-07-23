@@ -58,6 +58,7 @@
     </declare-styleable>
 
     <declare-styleable name="ForageKeypad">
+        <attr name="forage_useDarkTheme" format="boolean" />
         <attr name="forage_deleteButtonIcon" format="reference" />
         <attr name="forage_doneButtonIcon" format="reference" />
         <attr name="forage_doneButtonText" format="string" />

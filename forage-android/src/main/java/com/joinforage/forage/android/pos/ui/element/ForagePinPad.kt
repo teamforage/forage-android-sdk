@@ -16,6 +16,7 @@ import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
 import com.joinforage.forage.android.core.ui.element.state.pin.PinInputState
+import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.databinding.ForageKeypadBinding
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.ui.element.state.pin.PinPadState
@@ -130,6 +131,10 @@ class ForagePinPad @JvmOverloads constructor(
                 override fun onDone() { manager.onDone() }
             }
         ).configureKeypad()
+
+        // include Forage logo after keypad
+        addView(getLogoImageViewLayout(context, styles.useDarkTheme))
+        orientation = VERTICAL
     }
 
     override fun getVaultSubmitter(envConfig: EnvConfig, logger: Log): AbstractVaultSubmitter {
@@ -222,8 +227,11 @@ private class Styles(context: Context, attrs: AttributeSet?) {
     @Px
     val buttonLayoutMargin: Int
 
+    val useDarkTheme: Boolean
+
     init {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.ForageKeypad, 0, 0)
+        useDarkTheme = attributes.getBoolean(R.styleable.ForageKeypad_forage_useDarkTheme, false)
         deleteButtonIcon = attributes.getResourceId(R.styleable.ForageKeypad_forage_deleteButtonIcon, 0)
         doneButtonIcon = attributes.getResourceId(R.styleable.ForageKeypad_forage_doneButtonIcon, 0)
         doneButtonText = attributes.getResourceId(R.styleable.ForageKeypad_forage_doneButtonText, 0)

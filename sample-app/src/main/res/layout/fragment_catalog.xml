@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="100dp"
+    android:background="#7C7C7C"
     tools:context=".ui.catalog.CatalogFragment">
 
     <com.joinforage.forage.android.pos.ui.element.ForagePANEditText
@@ -29,5 +30,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
+
+    <com.joinforage.forage.android.pos.ui.element.ForagePinPad
+            android:id="@+id/my_pin_pad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/foragePinEditText"
+            app:forage_doneButtonText="@string/pinpad_done"
+            app:forage_buttonLayoutMargin="@dimen/keypad_btn_margin"
+            app:forage_buttonLayoutHeight="@dimen/keypad_btn_height"
+            app:forage_useDarkTheme="false"
+            app:forage_deleteButtonIcon="@android:drawable/ic_delete"
+            app:forage_doneButtonIcon="@android:drawable/ic_menu_revert" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
