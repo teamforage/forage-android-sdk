@@ -5,9 +5,11 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownErro
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 import org.json.JSONObject
 
+class UnknownBTResponseException(response: Any?) : Exception(response.toString())
+
 internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
     override val isNullResponse: Boolean = false
-    override val vaultErrorMsg: String = btRes.exceptionOrNull().toString()
+    override val vaultErrorMsg: String? = btRes.exceptionOrNull()?.message
     override val rawResponse: String = btRes.toString()
 
     override val vaultError: ForageApiResponse.Failure?
@@ -16,33 +18,30 @@ internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
 
     val isSuccessful: Boolean
 
+    private val failureResponseRegExp = BtFailureResponseRegExp(btRes)
+
     init {
         // BT returns a Result<Any?> so it's never null
         vaultError = parseVaultError(btRes)
-        forageError = parseForageError(BaseResponseRegExp(btRes))
+        forageError = parseForageError(failureResponseRegExp)
         isSuccessful = btRes.isSuccess && vaultError == null && forageError == null
         successfulResponse = parseSuccessfulResponse(btRes)
     }
 
     private fun parseVaultError(vaultResponse: BasisTheoryResponse): ForageApiResponse.Failure? {
         if (vaultResponse.isSuccess) return null
-        val resRegExp = BtResponseRegExp(vaultResponse)
-        return try {
-            // In AbstractVaultSubmitter we track the forageError
-            // and the forage status code of the UnknownErrorApiResponse
-            // via the VaultProxyResponseMonitor. This keeps us informed
-            // of *when* erroroneous BT response happen. Unfortunately,
-            // we do not currently track the specifics of the proxy_error
-            // that that BT returned to us.
-            // TODO: log the specific error that BT responds with when
-            //  resRegExp.containsProxyError == true
-            if (resRegExp.containsProxyError) UnknownErrorApiResponse else null
-        } catch (_: Exception) {
-            null
-        }
+        // In AbstractVaultSubmitter we track the forageError
+        // and the forage status code of the UnknownErrorApiResponse
+        // via the VaultProxyResponseMonitor. This keeps us informed
+        // of *when* erroroneous BT response happen. Unfortunately,
+        // we do not currently track the specifics of the proxy_error
+        // that that BT returned to us.
+        // TODO: log the specific error that BT responds with when
+        //  resRegExp.containsProxyError == true
+        return if (failureResponseRegExp.containsProxyError) UnknownErrorApiResponse else null
     }
 
-    private fun parseForageError(resRegExp: BaseResponseRegExp): ForageApiResponse.Failure? {
+    private fun parseForageError(resRegExp: BtFailureResponseRegExp): ForageApiResponse.Failure? {
         if (resRegExp.bodyText == null || resRegExp.statusCode == null) return null
         return try {
             ForageApiResponse.Failure(resRegExp.statusCode, resRegExp.bodyText)
