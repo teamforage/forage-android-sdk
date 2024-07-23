@@ -3,7 +3,6 @@ package com.joinforage.forage.android.ecom.services.vault.bt
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-
 class BtFailureResponseRegExpTest {
 
     @Test

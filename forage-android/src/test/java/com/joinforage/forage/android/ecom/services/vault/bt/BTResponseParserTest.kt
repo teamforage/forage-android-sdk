@@ -133,6 +133,5 @@ class BTResponseParserTest {
         assertThatThrownBy { BTResponseParser(response) }
             .isInstanceOf(UnknownBTResponseException::class.java)
             .hasMessageContaining("42")
-
     }
 }
