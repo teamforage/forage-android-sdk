@@ -10,11 +10,17 @@ import com.joinforage.forage.android.R
 /**
  * ImageView containing the Forage logo
  */
-internal fun getLogoImageViewLayout(context: Context): LinearLayout {
+internal fun getLogoImageViewLayout(context: Context, useDarkTheme: Boolean = false): LinearLayout {
     val forageLogoHeight = context.resources.getDimensionPixelSize(R.dimen.forage_logo_height)
 
+    val forageLogoResource =
+        if (useDarkTheme) {
+            R.drawable.powered_by_forage_logo_dark
+        } else {
+            R.drawable.powered_by_forage_logo
+        }
     val imageView = ImageView(context).apply {
-        setImageResource(R.drawable.powered_by_forage_logo)
+        setImageResource(forageLogoResource)
         layoutParams = LinearLayout.LayoutParams(
             MATCH_PARENT,
             forageLogoHeight
