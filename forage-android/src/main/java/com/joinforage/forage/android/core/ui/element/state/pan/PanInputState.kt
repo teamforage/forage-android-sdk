@@ -37,7 +37,8 @@ internal class PanInputState(
                 PaymentCaptureErrorCard(),
                 BalanceCheckErrorCard(),
                 NonProdValidEbtCard(),
-                EmptyEbtCashBalanceCard()
+                EmptyEbtCashBalanceCard(),
+                PinEncryptionTestCard()
             )
         )
     }
