@@ -81,12 +81,16 @@ abstract class ForagePinElement @JvmOverloads constructor(
         vault.clearText()
     }
 
-    override fun showKeyboard() = vault.showKeyboard()
+    override fun showKeyboard() {
+        vault.showKeyboard()
+    }
 
     override fun getVaultSubmitter(
         envConfig: EnvConfig,
         logger: Log
-    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
+    ): AbstractVaultSubmitter {
+        return vault.getVaultSubmitter(envConfig, logger)
+    }
 
     // While the events that ForageElements expose mirrors the
     // blur, focus, change etc events of an Android view,
