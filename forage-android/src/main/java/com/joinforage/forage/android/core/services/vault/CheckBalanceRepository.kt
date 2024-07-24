@@ -46,7 +46,7 @@ internal class CheckBalanceRepository(
         return if (response is ForageApiResponse.Success) {
             // response comes as (snap, non_snap) but we've historically
             // returned (snap, cash) in our SDK public API. So, we need
-            // to parse the JSON nad convert to (snap, cash).
+            // to parse the JSON and convert to (snap, cash).
             // we also need to return a ForageApiResponse.Success
             // so, the journey looks like
             // ForageApiResponse.Success (this is response)
