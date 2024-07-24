@@ -18,7 +18,6 @@ import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.state.ElementState
-import com.joinforage.forage.android.pos.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
 import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
@@ -29,7 +28,6 @@ import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentReposito
 import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
-import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
 
 /**
  * The entry point for **in-store POS Terminal** transactions.

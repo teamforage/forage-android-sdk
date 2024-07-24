@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos
+package com.joinforage.forage.android.pos.services
 
 import android.util.Base64
 import com.joinforage.forage.android.core.services.ForageConfig
