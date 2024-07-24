@@ -40,28 +40,23 @@ internal class CheckBalanceRepository(
             else -> return response
         }
 
-        val balanceResponse = when (
-            val response = vaultSubmitter.submit(
-                getVaultRequestParams(encryptionKeys, paymentMethod)
-            )
-        ) {
+        val response = vaultSubmitter.submit(
+            getVaultRequestParams(encryptionKeys, paymentMethod)
+        )
+        return if (response is ForageApiResponse.Success) {
             // response comes as (snap, non_snap) but we've historically
             // returned (snap, cash) in our SDK public API. So, we need
-            // to parse the JSON nad convert to (snap, cash) here
-            is ForageApiResponse.Success -> EbtBalance.fromVaultResponse(response)
-            else -> return response
+            // to parse the JSON nad convert to (snap, cash).
+            // we also need to return a ForageApiResponse.Success
+            // so, the journey looks like
+            // ForageApiResponse.Success (this is response)
+            // -> EbtBalance (this is balanceResponse)
+            // -> ForageApiResponse.Success (you are here / the line just below)
+            // -> EbtBalance (at a future point if you use typed responses!!)
+            EbtBalance.fromVaultResponse(response).toForageApiResponse()
+        } else {
+            response
         }
-
-        logger.i("[HTTP] Received updated balance information for Payment Method $paymentMethodRef")
-
-        // even though we used EbtBalance to convert to (snap, cash),
-        // we ultimately need to return a ForageApiResponse.Success
-        // so, the journey looks like
-        // ForageApiResponse.Success (this is response)
-        // -> EbtBalance (this is balanceResponse)
-        // -> ForageApiResponse.Success (you are here / the line just below)
-        // -> EbtBalance (at a future point if you use typed responses!!)
-        return balanceResponse.toForageApiResponse()
     }
 
     private fun buildVaultRequestParams(

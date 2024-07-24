@@ -37,7 +37,7 @@ internal class CapturePaymentRepository(
             else -> return response
         }
 
-        val response = vaultSubmitter.submit(
+        return vaultSubmitter.submit(
             params = VaultSubmitterParams(
                 encryptionKeys = encryptionKeys,
                 idempotencyKey = paymentRef,
@@ -48,13 +48,5 @@ internal class CapturePaymentRepository(
                 sessionToken = sessionToken
             )
         )
-
-        return when (response) {
-            is ForageApiResponse.Success -> {
-                logger.i("[HTTP] Received updated Payment $paymentRef for Payment $paymentRef")
-                return response
-            }
-            else -> response
-        }
     }
 }
