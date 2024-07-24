@@ -97,7 +97,11 @@ sealed class ForageApiResponse<out T> {
      */
     data class Failure internal constructor(val error: ForageError) : ForageApiResponse<Nothing>() {
 
-        // support legacy list of single error
+        @Deprecated(
+            message = "Use `.error` property instead of `.errors[0]`. There will only ever by 1 error in the list",
+            level = DeprecationLevel.WARNING,
+            replaceWith = ReplaceWith("error")
+        )
         val errors: List<ForageError> = listOf(error)
 
         internal constructor(httpStatusCode: Int, code: String, message: String, details: ForageErrorDetails? = null) :
