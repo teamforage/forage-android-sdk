@@ -448,12 +448,12 @@ class POSViewModel : ViewModel() {
         // without raising a "NotImplementedError".
         return ForageTerminalSDK.init(
             context = context,
-            ksnDir = createKsnDirForSampleApp(context),
             posTerminalId = terminalId,
             forageConfig = ForageConfig(
                 merchantId = _uiState.value.merchantId,
                 sessionToken = _uiState.value.sessionToken
-            )
+            ),
+            ksnDir = createKsnDirForSampleApp(context),
         )
     }
 }

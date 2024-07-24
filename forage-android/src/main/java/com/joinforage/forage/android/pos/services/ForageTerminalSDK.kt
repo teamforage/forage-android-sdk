@@ -108,13 +108,16 @@ class ForageTerminalSDK internal constructor(
          * used for a transaction. The max length of the string is 255 characters.
          * @param ForageConfig **Required**. A [ForageConfig][com.joinforage.forage.android.core.services.ForageConfig] instance that specifies a
          * `merchantId` and `sessionToken`.
+         * @param ksnDir **Optional**. A File instance representing a directory where the KSN file
+         * for DUKPT should reside. If no directory is supplied, the KSN file will live in the
+         * root of the application's files directory.
          */
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
-            ksnDir: File,
             posTerminalId: String,
-            forageConfig: ForageConfig
+            forageConfig: ForageConfig,
+            ksnDir: File = context.filesDir
         ): ForageTerminalSDK {
             val (merchantId, sessionToken) = forageConfig
             val logSuffix = "on Terminal $posTerminalId for Merchant $merchantId"
