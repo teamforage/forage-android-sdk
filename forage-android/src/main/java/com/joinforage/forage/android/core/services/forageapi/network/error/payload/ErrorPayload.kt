@@ -31,17 +31,17 @@ internal abstract class ErrorPayload(
     companion object {
         fun parseJson(jsonErrorResponse: JSONObject): ErrorPayload {
             when {
-                SingleErrorResponse(jsonErrorResponse).isMatch() -> {
-                    return SingleErrorResponse(jsonErrorResponse)
+                SingleErrorResponsePayload(jsonErrorResponse).isMatch() -> {
+                    return SingleErrorResponsePayload(jsonErrorResponse)
                 }
-                ErrorListResponse(jsonErrorResponse).isMatch() -> {
-                    return ErrorListResponse(jsonErrorResponse)
+                ErrorListResponsePayload(jsonErrorResponse).isMatch() -> {
+                    return ErrorListResponsePayload(jsonErrorResponse)
                 }
-                RosettaBadRequest(jsonErrorResponse).isMatch() -> {
-                    return RosettaBadRequest(jsonErrorResponse)
+                RosettaBadRequestResponsePayload(jsonErrorResponse).isMatch() -> {
+                    return RosettaBadRequestResponsePayload(jsonErrorResponse)
                 }
-                RosettaErrorResponse(jsonErrorResponse).isMatch() -> {
-                    return RosettaErrorResponse(jsonErrorResponse)
+                RosettaErrorResponsePayload(jsonErrorResponse).isMatch() -> {
+                    return RosettaErrorResponsePayload(jsonErrorResponse)
                 }
                 else -> {
                     throw UnexpectedResponseError(jsonErrorResponse.toString())

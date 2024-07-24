@@ -22,7 +22,7 @@ import org.json.JSONObject
  *   ]
  * }
  */
-internal class ErrorListResponse(jsonErrorResponse: JSONObject) : ErrorPayload(jsonErrorResponse) {
+internal class ErrorListResponsePayload(jsonErrorResponse: JSONObject) : ErrorPayload(jsonErrorResponse) {
     // dynamic properties so that they do not throw an error
     // during constructor calling
     private val errors: JSONArray

@@ -17,7 +17,7 @@ import org.json.JSONObject
  * see these errors returned to the SDK
  *
  */
-internal class RosettaBadRequest(
+internal class RosettaBadRequestResponsePayload(
     jsonErrorResponse: JSONObject
 ) : ErrorPayload(jsonErrorResponse) {
     override fun parseCode(): String = "unknown_error"

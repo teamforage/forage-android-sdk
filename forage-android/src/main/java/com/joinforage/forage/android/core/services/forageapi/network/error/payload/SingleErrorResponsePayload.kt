@@ -18,7 +18,7 @@ import org.json.JSONObject
  *   }
  * }
  */
-internal class SingleErrorResponse(
+internal class SingleErrorResponsePayload(
     jsonErrorResponse: JSONObject
 ) : ErrorPayload(jsonErrorResponse) {
     // dynamic properties so that they do not throw an error

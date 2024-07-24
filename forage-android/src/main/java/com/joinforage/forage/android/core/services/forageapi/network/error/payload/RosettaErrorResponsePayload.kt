@@ -18,7 +18,7 @@ import org.json.JSONObject
  * passing this header correctly so we would not expect to see
  * this errors returned to the SDK in prod
  */
-internal class RosettaErrorResponse(
+internal class RosettaErrorResponsePayload(
     jsonErrorResponse: JSONObject
 ) : ErrorPayload(jsonErrorResponse) {
     override fun parseCode(): String = jsonErrorResponse.getString("name")
