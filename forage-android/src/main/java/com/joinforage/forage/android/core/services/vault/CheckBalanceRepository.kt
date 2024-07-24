@@ -45,11 +45,22 @@ internal class CheckBalanceRepository(
                 getVaultRequestParams(encryptionKeys, paymentMethod)
             )
         ) {
+            // response comes as (snap, non_snap) but we've historically
+            // returned (snap, cash) in our SDK public API. So, we need
+            // to parse the JSON nad convert to (snap, cash) here
             is ForageApiResponse.Success -> EbtBalance.fromVaultResponse(response)
             else -> return response
         }
 
         logger.i("[HTTP] Received updated balance information for Payment Method $paymentMethodRef")
+
+        // even though we used EbtBalance to convert to (snap, cash),
+        // we ultimately need to return a ForageApiResponse.Success
+        // so, the journey looks like
+        // ForageApiResponse.Success (this is response)
+        // -> EbtBalance (this is balanceResponse)
+        // -> ForageApiResponse.Success (you are here / the line just below)
+        // -> EbtBalance (at a future point if you use typed responses!!)
         return balanceResponse.toForageApiResponse()
     }
 
