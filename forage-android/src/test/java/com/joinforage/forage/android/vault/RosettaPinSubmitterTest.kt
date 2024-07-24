@@ -137,7 +137,7 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
         val result = executeSubmit(paymentRef)
         assertTrue(result is ForageApiResponse.Failure)
 
-        val firstError = (result as ForageApiResponse.Failure).errors[0]
+        val error = (result as ForageApiResponse.Failure).error
 
         assertEquals(
             """
@@ -149,9 +149,9 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
             """.trimIndent(),
             mockLogger.errorLogs.last().getMessage()
         )
-        assertEquals("authorization header malformed", firstError.message)
-        assertEquals(401, firstError.httpStatusCode)
-        assertEquals("auth_header_malformed", firstError.code)
+        assertEquals("authorization header malformed", error.message)
+        assertEquals(401, error.httpStatusCode)
+        assertEquals("auth_header_malformed", error.code)
     }
 
     @Test
@@ -162,7 +162,7 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
         val result = executeSubmit(paymentRef)
 
         assertTrue(result is ForageApiResponse.Failure)
-        val firstError = (result as ForageApiResponse.Failure).errors[0]
+        val error = (result as ForageApiResponse.Failure).error
         assertEquals(
             """
             [forage] Received ForageError from forage: Code: missing_merchant_account
@@ -173,9 +173,9 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
             """.trimIndent(),
             mockLogger.errorLogs.last().getMessage()
         )
-        assertEquals("No merchant account FNS number was provided.", firstError.message)
-        assertEquals(401, firstError.httpStatusCode)
-        assertEquals("missing_merchant_account", firstError.code)
+        assertEquals("No merchant account FNS number was provided.", error.message)
+        assertEquals(401, error.httpStatusCode)
+        assertEquals("missing_merchant_account", error.code)
     }
 
     @Test
@@ -186,14 +186,14 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
         val result = executeSubmit(paymentRef)
 
         assertTrue(result is ForageApiResponse.Failure)
-        val firstError = (result as ForageApiResponse.Failure).errors[0]
+        val error = (result as ForageApiResponse.Failure).error
         assertEquals(
             "Failed to send request to Forage Vault.",
             mockLogger.errorLogs.last().getMessage()
         )
-        assertEquals("Unknown Server Error", firstError.message)
-        assertEquals(500, firstError.httpStatusCode)
-        assertEquals("unknown_server_error", firstError.code)
+        assertEquals("Unknown Server Error", error.message)
+        assertEquals(500, error.httpStatusCode)
+        assertEquals("unknown_server_error", error.code)
     }
 
     // The paths dictate which mock server response to expect
