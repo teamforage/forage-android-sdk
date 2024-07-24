@@ -13,7 +13,7 @@ import org.json.JSONObject
  *   "name": "auth_header_malformed"
  * }
  *
- * These are should never happen in production.
+ * These should never happen in production.
  */
 internal class RosettaErrorResponse(
     jsonErrorResponse: JSONObject

@@ -11,7 +11,7 @@ import org.json.JSONObject
  *   "detail": "Authentication credentials were not provided."
  * }
  *
- * These are should never happen in production.
+ * These should never happen in production.
  */
 internal class RosettaBadRequest(
     jsonErrorResponse: JSONObject
