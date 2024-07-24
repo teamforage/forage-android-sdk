@@ -12,7 +12,6 @@ import java.security.spec.RSAKeyGenParameterSpec.F4
 import javax.crypto.Cipher
 import android.util.Base64 as AndroidBase64
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal class RsaKeyManager() {
     private var keyPair: KeyPair? = null
 
