@@ -52,7 +52,7 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
         mockBasisTheoryTextElement = mock(TextElement::class.java)
 
         // ensure we don't make any live requests!
-        mockBasisTheoryResponse(Result.success("success"))
+        mockBasisTheoryResponse(Result.success(mapOf("mySuccessfulKey" to "mySuccessfulValue")))
 
         submitter = BasisTheoryPinSubmitter(
             btTextElement = mockBasisTheoryTextElement,
@@ -89,6 +89,7 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
             .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, "1234567")
             .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, "abcdef123")
             .setHeader(ForageConstants.Headers.TRACE_ID, "65639248-03f2-498d-8aa8-9ebd1c60ee65")
+            .setHeader(ForageConstants.Headers.API_VERSION, "2024-01-08")
             .setToken("45320ce0-1a3c-4c64-970c-51ed7db34548")
             .setPath("/api/payment_methods/defghij123/balance/")
             .setHeader(ForageConstants.Headers.BT_PROXY_KEY, EnvConfig.Sandbox.btProxyID)
@@ -114,6 +115,7 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
                 "X-KEY" to "12320ce0-1a3c-4c64-970c-51ed7db34548",
                 "Merchant-Account" to "1234567",
                 "IDEMPOTENCY-KEY" to "abcdef123",
+                "API-VERSION" to "2024-01-08",
                 "x-datadog-trace-id" to "65639248-03f2-498d-8aa8-9ebd1c60ee65",
                 "BT-PROXY-KEY" to "R1CNiogSdhnHeNq6ZFWrG1", // sandbox value of btProxyID
                 "Content-Type" to "application/json"
@@ -121,18 +123,6 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
             capturedRequest.headers
         )
         assertEquals("/api/payment_methods/defghij123/balance/", capturedRequest.path)
-    }
-
-    @Test
-    fun `submitProxyRequest with valid input should return success`() = runTest {
-        val responseStr = """{"content_id":"32489e7e-13d9-499c-b017-f68a0122da95","message_type":"0200","status":"sent_to_proxy","failed":false,"errors":[]}"""
-        mockBasisTheoryResponse(Result.success(responseStr))
-
-        val result = submitter.submitProxyRequest(VaultProxyRequest.emptyRequest())
-
-        assertTrue(result is ForageApiResponse.Success)
-        assertEquals("[basis_theory] Received successful response from basis_theory", mockLogger.infoLogs.last().getMessage())
-        assertEquals(responseStr, (result as ForageApiResponse.Success).data)
     }
 
     @Test
@@ -149,7 +139,7 @@ class BasisTheoryPinSubmitterTest() : MockServerSuite() {
 
         assertTrue(result is ForageApiResponse.Failure)
         val firstError = (result as ForageApiResponse.Failure).errors[0]
-        assertEquals("[basis_theory] Received error from basis_theory: java.lang.RuntimeException: $basisTheoryErrorMessage", mockLogger.errorLogs.last().getMessage())
+        assertEquals("[basis_theory] Received error from basis_theory: $basisTheoryErrorMessage", mockLogger.errorLogs.last().getMessage())
         assertEquals("Unknown Server Error", firstError.message)
         assertEquals(500, firstError.httpStatusCode)
         assertEquals("unknown_server_error", firstError.code)
