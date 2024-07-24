@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.pos.services.encryption.storage
 
-import android.content.Context
 import com.joinforage.forage.android.pos.encryption.ByteUtils
 import com.joinforage.forage.android.pos.services.encryption.dukpt.KsnComponent
 import java.io.File
@@ -78,8 +77,8 @@ internal interface PersistentStorage {
     fun read(): List<String>
 }
 
-internal class PersistentFile(private val context: Context) : PersistentStorage {
-    private fun _getFileSync() = File(context.filesDir, KSN_FILE_NAME)
+internal class PersistentFile(private val ksnDir: File) : PersistentStorage {
+    private fun _getFileSync() = File(ksnDir, KSN_FILE_NAME)
     override fun write(content: String) {
         _getFileSync().outputStream().use { it.write(content.toByteArray()) }
     }
@@ -196,7 +195,7 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         ksnFile.write(nextKsnState.fileContent)
     }
     companion object {
-        fun byFile(context: Context) = KsnFileManager(PersistentFile(context))
+        fun byDir(ksnDir: File) = KsnFileManager(PersistentFile(ksnDir))
         fun byString() = KsnFileManager(PersistentString())
     }
 }
