@@ -3,7 +3,6 @@ package com.joinforage.forage.android.pos.services.vault
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.core.services.vault.VaultSubmitter
@@ -13,13 +12,11 @@ internal class PosCheckBalanceRepository(
     vaultSubmitter: VaultSubmitter,
     encryptionKeyService: EncryptionKeyService,
     paymentMethodService: PaymentMethodService,
-    pollingService: PollingService,
     logger: Log
 ) : CheckBalanceRepository(
     vaultSubmitter,
     encryptionKeyService,
     paymentMethodService,
-    pollingService,
     logger
 ) {
 

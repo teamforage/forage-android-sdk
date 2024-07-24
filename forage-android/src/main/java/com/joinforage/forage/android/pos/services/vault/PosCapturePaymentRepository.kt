@@ -4,7 +4,6 @@ import com.joinforage.forage.android.core.services.forageapi.encryptkey.Encrypti
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
 import com.joinforage.forage.android.core.services.vault.VaultSubmitter
@@ -12,14 +11,12 @@ import com.joinforage.forage.android.core.services.vault.VaultSubmitter
 internal class PosCapturePaymentRepository(
     vaultSubmitter: VaultSubmitter,
     encryptionKeyService: EncryptionKeyService,
-    pollingService: PollingService,
     paymentService: PaymentService,
     paymentMethodService: PaymentMethodService,
     logger: Log
 ) : CapturePaymentRepository(
     vaultSubmitter,
     encryptionKeyService,
-    pollingService,
     paymentService,
     paymentMethodService,
     logger

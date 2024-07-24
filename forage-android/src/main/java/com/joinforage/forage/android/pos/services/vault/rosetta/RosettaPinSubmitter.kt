@@ -113,7 +113,8 @@ internal class RosettaPinSubmitter(
                 sessionToken = headerValues.sessionToken,
                 merchantId = headerValues.merchantId,
                 traceId = logger.getTraceIdValue(),
-                idempotencyKey = headerValues.idempotencyKey
+                idempotencyKey = headerValues.idempotencyKey,
+                apiVersion = "2024-01-08"
             )
 
             val vaultService: NetworkService = object : NetworkService(okHttpClient, logger) {}

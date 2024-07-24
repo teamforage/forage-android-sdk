@@ -7,12 +7,9 @@ import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.MessageStatusService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
@@ -381,10 +378,6 @@ class ForageTerminalSDK internal constructor(
                 vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-                pollingService = PollingService(
-                    messageStatusService = MessageStatusService(config.apiBaseUrl, okHttpClient, logger),
-                    logger = logger
-                ),
                 logger = logger
             ).posCheckBalance(
                 merchantId = forageConfig.merchantId,
@@ -484,10 +477,6 @@ class ForageTerminalSDK internal constructor(
             encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
             paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
             paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-            pollingService = PollingService(
-                messageStatusService = MessageStatusService(config.apiBaseUrl, okHttpClient, logger),
-                logger = logger
-            ),
             logger = logger
         ).capturePosPayment(
             merchantId = forageConfig.merchantId,
@@ -674,10 +663,6 @@ class ForageTerminalSDK internal constructor(
                 encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
                 paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
                 paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-                pollingService = PollingService(
-                    messageStatusService = MessageStatusService(config.apiBaseUrl, okHttpClient, logger),
-                    logger = logger
-                ),
                 logger = logger,
                 refundService = PosRefundService(config.apiBaseUrl, logger, okHttpClient)
             ).refundPayment(
