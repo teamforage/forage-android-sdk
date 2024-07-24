@@ -106,7 +106,7 @@ class InsufficientFundsDetailsTest {
         val jsonObject = null
 
         // When
-        val result = ForageErrorDetails.EbtError51Details.from(jsonObject)
+        val result = ForageErrorDetails.EbtError51Details(jsonObject)
 
         // Then
         assertThat(result.snapBalance).isNull()
@@ -119,7 +119,7 @@ class InsufficientFundsDetailsTest {
         val jsonObject = JSONObject("{}")
 
         // When
-        val result = ForageErrorDetails.EbtError51Details.from(jsonObject)
+        val result = ForageErrorDetails.EbtError51Details(jsonObject)
 
         // Then
         assertThat(result.snapBalance).isNull()
@@ -137,7 +137,7 @@ class InsufficientFundsDetailsTest {
         )
 
         // When
-        val result = ForageErrorDetails.EbtError51Details.from(jsonObject)
+        val result = ForageErrorDetails.EbtError51Details(jsonObject)
 
         // Then
         val details = result as ForageErrorDetails.EbtError51Details

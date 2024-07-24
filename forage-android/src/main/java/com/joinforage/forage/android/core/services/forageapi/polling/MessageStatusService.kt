@@ -3,7 +3,6 @@ package com.joinforage.forage.android.core.services.forageapi.polling
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.addTrailingSlash
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.NetworkService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import okhttp3.HttpUrl
@@ -27,13 +26,9 @@ internal class MessageStatusService(
             attributes = mapOf("content_id" to contentId)
         )
         ForageApiResponse.Failure(
-            listOf(
-                ForageError(
-                    500,
-                    "unknown_server_error",
-                    ex.message.orEmpty()
-                )
-            )
+            500,
+            "unknown_server_error",
+            ex.message.orEmpty()
         )
     }
 

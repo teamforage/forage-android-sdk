@@ -1,8 +1,6 @@
 package com.joinforage.forage.android.ecom.services.vault.bt
 
-import com.joinforage.forage.android.core.services.forageapi.network.ForageApiError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 
@@ -46,14 +44,8 @@ internal class BTResponseParser(btRes: Result<Any?>) : VaultResponseParser {
     private fun parseForageError(resRegExp: BaseResponseRegExp): ForageApiResponse.Failure? {
         if (resRegExp.bodyText == null || resRegExp.statusCode == null) return null
         return try {
-            val forageApiError = ForageApiError.ForageApiErrorMapper.from(resRegExp.bodyText)
-            val firstError = forageApiError.errors[0]
-            return ForageApiResponse.Failure.fromError(
-                ForageError(resRegExp.statusCode, firstError.code, firstError.message)
-            )
+            ForageApiResponse.Failure(resRegExp.statusCode, resRegExp.bodyText)
         } catch (_: Exception) {
-            // if we throw (likely a NullPointerException) when trying to extract the ForageApiError,
-            // that means the response is not a ForageApiError
             null
         }
     }

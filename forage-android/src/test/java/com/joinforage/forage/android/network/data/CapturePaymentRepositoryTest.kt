@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
@@ -82,7 +81,7 @@ class CapturePaymentRepositoryTest : MockServerSuite() {
         server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
-        val failureResponse = ForageApiResponse.Failure(listOf(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        val failureResponse = ForageApiResponse.Failure(500, "unknown_server_error", "Some error message from VGS")
         setMockVaultResponse(failureResponse)
 
         val response = executeCapturePayment()

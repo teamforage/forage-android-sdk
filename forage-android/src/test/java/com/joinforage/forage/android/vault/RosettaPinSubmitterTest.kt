@@ -160,16 +160,19 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
 
         val firstError = (result as ForageApiResponse.Failure).errors[0]
 
-        // NOTE: The Rosetta error-parsing is not perfect at the moment.
-        // We currently attempt to parse Rosetta errors as Forage errors on failed requests.
-        // Which results in an undesirable (but currently tolerable) JSON Exception
-        // This will be fixed when we introduce sync capture + balance.
-        assertEquals("JSONObject[\"path\"] not found.", mockLogger.errorLogs.last().getError()!!.message)
-
-        assertEquals("Failed to send request to Forage Vault.", mockLogger.errorLogs.last().getMessage())
-        assertEquals("Unknown Server Error", firstError.message)
-        assertEquals(500, firstError.httpStatusCode)
-        assertEquals("unknown_server_error", firstError.code)
+        assertEquals(
+            """
+            [forage] Received ForageError from forage: Code: auth_header_malformed
+            Message: authorization header malformed
+            Status Code: 401
+            Error Details (below):
+            null
+            """.trimIndent(),
+            mockLogger.errorLogs.last().getMessage()
+        )
+        assertEquals("authorization header malformed", firstError.message)
+        assertEquals(401, firstError.httpStatusCode)
+        assertEquals("auth_header_malformed", firstError.code)
     }
 
     @Test

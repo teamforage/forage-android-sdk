@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.core.services.forageapi.network
 
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.telemetry.Log
 import okhttp3.Call
 import okhttp3.Callback
@@ -28,22 +29,9 @@ internal abstract class NetworkService(
                                 val body = response.body
                                 if (body != null) {
                                     try {
-                                        val parsedError =
-                                            ForageApiError.ForageApiErrorMapper.from(body.string())
-                                        val error = parsedError.errors[0]
-                                        logger.e("[HTTP] Received ${response.code} response from API ${parsedError.path} with message: ${error.message}")
-
-                                        continuation.resumeWith(
-                                            Result.success(
-                                                ForageApiResponse.Failure.fromError(
-                                                    ForageError(
-                                                        response.code,
-                                                        error.code,
-                                                        error.message
-                                                    )
-                                                )
-                                            )
-                                        )
+                                        val error = ForageError(response.code, body.string())
+                                        logger.e("[HTTP] Received ${response.code} response from API ${request.url.encodedPath} with message: ${error.message}")
+                                        continuation.resumeWith(Result.success(ForageApiResponse.Failure(error)))
                                     } catch (e: Exception) {
                                         logger.e("[HTTP] Received malformed error response from API", throwable = e)
                                         continuation.resumeWith(Result.failure(e))

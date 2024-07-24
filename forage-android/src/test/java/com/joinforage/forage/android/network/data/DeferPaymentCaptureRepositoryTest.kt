@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.network.data
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
@@ -59,7 +58,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        val failureResponse = ForageApiResponse.Failure(listOf<ForageError>(ForageError(500, "unknown_server_error", "Some error message from VGS")))
+        val failureResponse = ForageApiResponse.Failure(500, "unknown_server_error", "Some error message from VGS")
         setMockVaultResponse(failureResponse)
 
         val response = executeDeferPaymentCapture()
@@ -113,7 +112,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
         val expectedMessage = "You don't have access to this endpoint"
         val expectedForageCode = "permission_denied"
         val expectedStatusCode = 401
-        setMockVaultResponse(ForageApiResponse.Failure.fromError(ForageError(expectedStatusCode, expectedForageCode, expectedMessage)))
+        setMockVaultResponse(ForageApiResponse.Failure(expectedStatusCode, expectedForageCode, expectedMessage))
 
         val response = executeDeferPaymentCapture()
 
