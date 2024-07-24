@@ -5,7 +5,6 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBa
 import com.joinforage.forage.android.core.services.hasNonNull
 import org.json.JSONObject
 
-
 /**
  * @property created A UTC-8 timestamp of when the Receipt was created, represented as an ISO 8601 date-time string.
  * @property ebtCashAmount The USD amount charged/refunded to the EBT Cash balance of the EBT Card, represented as a numeric string.
@@ -28,7 +27,7 @@ data class RefundReceipt(
     val otherAmount: String, //  "0.00",
     val salesTaxApplied: String, //  "0.00",
     val transactionType: String, //  "Refund",
-    val sequenceNumber: String, //  "RE000d9d
+    val sequenceNumber: String //  "RE000d9d
 ) {
     internal constructor(jsonString: String) : this(JSONObject(jsonString))
     internal constructor(jsonObject: JSONObject) : this(
@@ -49,7 +48,7 @@ data class RefundReceipt(
         otherAmount = jsonObject.getString("other_amount"),
         salesTaxApplied = jsonObject.getString("sales_tax_applied"),
         transactionType = jsonObject.getString("transaction_type"),
-        sequenceNumber = jsonObject.getString("sequence_number"),
+        sequenceNumber = jsonObject.getString("sequence_number")
     )
 }
 
@@ -60,12 +59,12 @@ data class RefundReceipt(
  */
 data class PosTerminal(
     val terminalId: String,
-    val providerTerminalId: String,
+    val providerTerminalId: String
 ) {
     internal constructor(jsonString: String) : this(JSONObject(jsonString))
     internal constructor(jsonObject: JSONObject) : this(
         terminalId = jsonObject.getString("terminal_id"),
-        providerTerminalId = jsonObject.getString("provider_terminal_id"),
+        providerTerminalId = jsonObject.getString("provider_terminal_id")
     )
 }
 
@@ -108,7 +107,7 @@ data class Refund(
     val reason: String,
     val posTerminal: PosTerminal,
     val sequenceNumber: String,
-    val externalOrderId: String?,
+    val externalOrderId: String?
 ) {
     internal constructor(jsonString: String) : this(JSONObject(jsonString))
     internal constructor(jsonObject: JSONObject) : this(
@@ -132,7 +131,7 @@ data class Refund(
         reason = jsonObject.getString("reason"),
         posTerminal = PosTerminal(jsonObject.getJSONObject("pos_terminal")),
         sequenceNumber = jsonObject.getString("sequence_number"),
-        externalOrderId = jsonObject.getString("external_order_id"),
+        externalOrderId = jsonObject.getString("external_order_id")
     )
 
     internal companion object {
@@ -147,6 +146,5 @@ data class Refund(
         }
     }
 }
-
 
 internal fun JSONObject.toMap(): Map<String, String> = keys().asSequence().associateWith { get(it).toString() }

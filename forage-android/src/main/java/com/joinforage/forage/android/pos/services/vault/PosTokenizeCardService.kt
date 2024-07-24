@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.pos.services.vault
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodRequestBody
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.TokenizeCardService
 import com.joinforage.forage.android.pos.services.forageapi.paymentmethod.PosPaymentMethodRequestBody
