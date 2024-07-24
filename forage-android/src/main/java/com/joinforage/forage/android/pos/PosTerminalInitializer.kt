@@ -1,8 +1,6 @@
 package com.joinforage.forage.android.pos
 
-import android.os.Build
 import android.util.Base64
-import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.pos.encryption.CertificateSigningRequest

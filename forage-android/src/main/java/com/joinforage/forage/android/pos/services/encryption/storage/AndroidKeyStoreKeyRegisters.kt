@@ -1,7 +1,5 @@
 package com.joinforage.forage.android.pos.services.encryption.storage
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.pos.encryption.DerivationKeyAlias
 import com.joinforage.forage.android.pos.services.encryption.AesBlock
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptCounter
