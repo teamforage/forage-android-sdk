@@ -1,7 +1,5 @@
 package com.joinforage.forage.android.pos.encryption.certificate
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.nio.charset.StandardCharsets
 import java.security.KeyPair

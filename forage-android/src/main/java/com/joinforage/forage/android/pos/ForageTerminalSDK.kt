@@ -1,8 +1,6 @@
 package com.joinforage.forage.android.pos.services
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
