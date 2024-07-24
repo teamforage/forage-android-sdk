@@ -4,7 +4,7 @@ import com.joinforage.forage.android.core.services.forageapi.polling.ForageError
 import org.json.JSONException
 import org.json.JSONObject
 
-class UnexpectedResponseError(jsonStringResponse: String) :
+class UnknownForageFailureResponse(jsonStringResponse: String) :
     Exception(jsonStringResponse)
 
 internal abstract class ErrorPayload(
@@ -44,7 +44,7 @@ internal abstract class ErrorPayload(
                     return RosettaErrorResponsePayload(jsonErrorResponse)
                 }
                 else -> {
-                    throw UnexpectedResponseError(jsonErrorResponse.toString())
+                    throw UnknownForageFailureResponse(jsonErrorResponse.toString())
                 }
             }
         }

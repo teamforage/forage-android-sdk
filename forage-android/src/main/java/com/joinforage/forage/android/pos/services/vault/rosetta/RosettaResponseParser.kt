@@ -11,8 +11,18 @@ internal class RosettaResponseParser(rosettaResponse: ForageApiResponse<String>)
     // just return null here.
     override val vaultError: ForageApiResponse.Failure? = null
 
-    override val forageError: ForageApiResponse.Failure? = if (rosettaResponse is ForageApiResponse.Failure) rosettaResponse else null
-    override val successfulResponse: ForageApiResponse.Success<String>? = if (rosettaResponse is ForageApiResponse.Success) rosettaResponse else null
+    override val forageError: ForageApiResponse.Failure? =
+        if (rosettaResponse is ForageApiResponse.Failure) {
+            rosettaResponse
+        } else {
+            null
+        }
+    override val successfulResponse: ForageApiResponse.Success<String>? =
+        if (rosettaResponse is ForageApiResponse.Success) {
+            rosettaResponse
+        } else {
+            null
+        }
 
     override val vaultErrorMsg: String = rosettaResponse.toString()
     override val rawResponse: String = rosettaResponse.toString()

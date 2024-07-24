@@ -89,7 +89,7 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
             method = Method.POST,
             headers = headers(
                 "Authorization" to "Bearer ${mockData.sessionToken}",
-                "API-VERSION" to "default",
+                "API-VERSION" to "2024-01-08",
                 "Content-Type" to "application/json; charset=utf-8",
                 "IDEMPOTENCY-KEY" to MOCK_IDEMPOTENCY_KEY,
                 "Merchant-Account" to mockData.merchantId,
@@ -151,7 +151,7 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
     }
 
     @Test
-    fun `Rosetta returns a vault error`() = runTest {
+    fun `Rosetta returns a an API error before vaulting`() = runTest {
         val paymentRef = "xyzVaultError123"
         server.givenRosettaPaymentCaptureRequest(paymentRef).returnsRosettaError()
 
