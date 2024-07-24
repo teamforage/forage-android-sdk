@@ -75,10 +75,10 @@ class FlowBalanceViewModel @Inject constructor(
                     }
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Check Balance Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Check Balance Response: ${response.error.message}")
 
                     _isLoading.value = false
-                    _error.value = response.errors[0].message
+                    _error.value = response.error.message
                 }
             }
         }

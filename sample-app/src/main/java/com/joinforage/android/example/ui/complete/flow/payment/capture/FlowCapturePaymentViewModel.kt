@@ -60,12 +60,12 @@ class FlowCapturePaymentViewModel @Inject constructor(
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Capture Snap Payment Response: ${response.errors[0].message} Payment: $snapPaymentRef")
+                    Log.d(TAG, "Capture Snap Payment Response: ${response.error.message} Payment: $snapPaymentRef")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        snapResponse = response.errors[0].message,
-                        snapResponseError = response.errors[0].toString()
+                        snapResponse = response.error.message,
+                        snapResponseError = response.error.toString()
                     )
                 }
             }
@@ -92,12 +92,12 @@ class FlowCapturePaymentViewModel @Inject constructor(
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Defer Capture Snap Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Defer Capture Snap Response: ${response.error.message}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        snapResponse = response.errors[0].message,
-                        snapResponseError = response.errors[0].toString()
+                        snapResponse = response.error.message,
+                        snapResponseError = response.error.toString()
                     )
                 }
             }
@@ -127,12 +127,12 @@ class FlowCapturePaymentViewModel @Inject constructor(
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Capture Cash Payment Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Capture Cash Payment Response: ${response.error.message}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        cashResponse = response.errors[0].message,
-                        cashResponseError = response.errors[0].toString()
+                        cashResponse = response.error.message,
+                        cashResponseError = response.error.toString()
                     )
                 }
             }
@@ -159,12 +159,12 @@ class FlowCapturePaymentViewModel @Inject constructor(
                     )
                 }
                 is ForageApiResponse.Failure -> {
-                    Log.d(TAG, "Defer Capture Cash Response: ${response.errors[0].message}")
+                    Log.d(TAG, "Defer Capture Cash Response: ${response.error.message}")
 
                     _uiState.value = _uiState.value!!.copy(
                         isLoading = false,
-                        cashResponse = response.errors[0].message,
-                        cashResponseError = response.errors[0].toString()
+                        cashResponse = response.error.message,
+                        cashResponseError = response.error.toString()
                     )
                 }
             }
