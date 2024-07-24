@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.model
 
-import com.joinforage.forage.android.core.services.forageapi.network.error.ForageErrorDetails
+import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 import com.joinforage.forage.android.core.services.forageapi.polling.SQSError
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject

@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.core.services.forageapi.network.error
 
 import com.joinforage.forage.android.core.services.forageapi.network.error.payload.ErrorPayload
+import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 
 /**
  * A model that represents an error response from the Forage API.

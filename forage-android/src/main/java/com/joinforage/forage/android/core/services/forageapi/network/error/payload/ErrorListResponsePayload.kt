@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.core.services.forageapi.network.error.payload
 
-import com.joinforage.forage.android.core.services.forageapi.network.error.ForageErrorDetails
+import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 import org.json.JSONArray
 import org.json.JSONObject
 

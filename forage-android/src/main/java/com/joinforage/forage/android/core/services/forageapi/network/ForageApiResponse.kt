@@ -1,11 +1,11 @@
 package com.joinforage.forage.android.core.services.forageapi.network
 
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
-import com.joinforage.forage.android.core.services.forageapi.network.error.ForageErrorDetails
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 
 internal val UnknownErrorApiResponse =
     ForageApiResponse.Failure(500, "unknown_server_error", "Unknown Server Error")
