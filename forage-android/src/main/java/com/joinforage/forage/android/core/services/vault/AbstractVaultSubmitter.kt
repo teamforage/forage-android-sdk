@@ -113,7 +113,6 @@ internal abstract class AbstractVaultSubmitter(
         .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, params.merchantId)
         .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, params.idempotencyKey)
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())
-        .setHeader(ForageConstants.Headers.API_VERSION, "default")
         .setHeader(ForageConstants.Headers.SESSION_TOKEN, "${ForageConstants.Headers.BEARER} ${params.sessionToken}")
         .setToken(vaultToken)
 
