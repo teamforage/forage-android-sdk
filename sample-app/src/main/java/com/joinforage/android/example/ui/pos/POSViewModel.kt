@@ -453,7 +453,7 @@ class POSViewModel : ViewModel() {
                 merchantId = _uiState.value.merchantId,
                 sessionToken = _uiState.value.sessionToken
             ),
-            ksnDir = createKsnDirForSampleApp(context),
+            ksnDir = createKsnDirForSampleApp(context)
         )
     }
 }
