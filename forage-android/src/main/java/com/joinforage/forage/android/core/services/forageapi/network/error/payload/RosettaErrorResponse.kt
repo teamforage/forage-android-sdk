@@ -13,7 +13,10 @@ import org.json.JSONObject
  *   "name": "auth_header_malformed"
  * }
  *
- * These should never happen in production.
+ * This is error happens when you don't pass Bearer: session_token
+ * as the auth header when accessing Rosetta. The SDK ought to be
+ * passing this header correctly so we would not expect to see
+ * this errors returned to the SDK in prod
  */
 internal class RosettaErrorResponse(
     jsonErrorResponse: JSONObject

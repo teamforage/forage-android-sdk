@@ -11,7 +11,11 @@ import org.json.JSONObject
  *   "detail": "Authentication credentials were not provided."
  * }
  *
- * These should never happen in production.
+ * This error happens when you don't include the access_token
+ * when trying to create a session token. Session tokens should
+ * be created in the server so, in prod, we do not expect to
+ * see these errors returned to the SDK
+ *
  */
 internal class RosettaBadRequest(
     jsonErrorResponse: JSONObject
