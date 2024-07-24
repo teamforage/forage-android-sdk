@@ -18,7 +18,6 @@ import com.joinforage.forage.android.fixtures.givenRosettaPaymentCaptureRequest
 import com.joinforage.forage.android.fixtures.returnsMalformedError
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsRosettaError
-import com.joinforage.forage.android.fixtures.returnsSendToProxy
 import com.joinforage.forage.android.fixtures.returnsUnauthorized
 import com.joinforage.forage.android.mock.MockLogger
 import com.joinforage.forage.android.mock.MockServiceFactory
@@ -33,7 +32,6 @@ import me.jorgecastillo.hiroaki.matchers.times
 import me.jorgecastillo.hiroaki.models.json
 import me.jorgecastillo.hiroaki.verify
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -129,25 +127,6 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
         assertEquals(mockRosettaToken, rosettaToken1)
         assertEquals(mockRosettaToken, rosettaToken2)
         assertEquals(mockRosettaToken, rosettaToken3)
-    }
-
-    @Test
-    fun `submitProxyRequest with valid input should return success`() = runTest {
-        val paymentRef = "abcdefgSuccess123"
-
-        // This can be replace with PaymentModel response instead of Message response
-        // when we introduce synchronous payment captures in the android-sdk
-        server.givenRosettaPaymentCaptureRequest(paymentRef).returnsSendToProxy()
-
-        val result = executeSubmit(paymentRef)
-        assertTrue(result is ForageApiResponse.Success)
-
-        val actualJsonObject = JSONObject((result as ForageApiResponse.Success).data)
-
-        assertEquals("[forage] Received successful response from forage", mockLogger.infoLogs.last().getMessage())
-        assertEquals("45639248-03f2-498d-8aa8-9ebd1c60ee65", actualJsonObject.getString("content_id"))
-        assertEquals("sent_to_proxy", actualJsonObject.getString("status"))
-        assertEquals(false, actualJsonObject.getBoolean("failed"))
     }
 
     @Test

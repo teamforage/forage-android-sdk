@@ -7,14 +7,12 @@ import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 
 internal class CapturePaymentRepository(
     private val vaultSubmitter: VaultSubmitter,
     private val encryptionKeyService: EncryptionKeyService,
-    private val pollingService: PollingService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
     private val logger: Log

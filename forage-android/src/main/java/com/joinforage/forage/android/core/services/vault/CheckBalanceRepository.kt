@@ -6,7 +6,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.polling.PollingService
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import java.util.UUID
@@ -15,7 +14,6 @@ internal class CheckBalanceRepository(
     private val vaultSubmitter: VaultSubmitter,
     private val encryptionKeyService: EncryptionKeyService,
     private val paymentMethodService: PaymentMethodService,
-    private val pollingService: PollingService,
     private val logger: Log
 ) {
     suspend fun checkBalance(
