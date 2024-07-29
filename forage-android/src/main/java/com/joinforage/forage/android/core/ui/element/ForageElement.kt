@@ -16,7 +16,7 @@ internal interface DynamicEnvElement {
      * )
      * foragePanEditText.setForageConfig(
      *     ForageConfig(
-     *         merchantId = "mid/<merchant_id>",
+     *         merchantId = "<merchant_id>",
      *         sessionToken = "<session_token>"
      *     )
      * )

@@ -54,7 +54,7 @@ import java.io.File
  *     context = androidContext,
  *     posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
  *     forageConfig = ForageConfig(
- *         merchantId = "mid/123ab45c67",
+ *         merchantId = "123ab45c67",
  *         sessionToken = "sandbox_ey123..."
  *     )
  * )
@@ -89,7 +89,7 @@ class ForageTerminalSDK internal constructor(
          *         context = androidContext,
          *         posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
          *         forageConfig = ForageConfig(
-         *             merchantId = "mid/123ab45c67",
+         *             merchantId = "123ab45c67",
          *             sessionToken = "sandbox_ey123..."
          *         )
          *     )
@@ -171,7 +171,7 @@ class ForageTerminalSDK internal constructor(
      * ```kotlin
      * // Example tokenizeCard call in a TokenizeViewModel.kt
      * class TokenizeViewMode : ViewModel() {
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun tokenizeCard(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
@@ -242,7 +242,7 @@ class ForageTerminalSDK internal constructor(
      * ```kotlin
      * // Example tokenizeCard(TokenizeMagSwipeParams) call in a TokenizePosViewModel.kt
      * class TokenizePosViewModel : ViewModel() {
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun tokenizePosCard(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
@@ -415,7 +415,7 @@ class ForageTerminalSDK internal constructor(
      * // Example capturePayment call in a PaymentCaptureViewModel.kt
      * class PaymentCaptureViewModel : ViewModel() {
      *     val snapPaymentRef = "s0alzle0fal"
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun capturePayment(forageVaultElement: ForagePINEditText, paymentRef: String) =
@@ -518,7 +518,7 @@ class ForageTerminalSDK internal constructor(
      * // Example deferPaymentCapture call in a DeferPaymentCaptureViewModel.kt
      * class DeferPaymentCaptureViewModel  : ViewModel() {
      *     val snapPaymentRef = "s0alzle0fal"
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun deferPaymentCapture(forageVaultElement: ForagePINEditText, paymentRef: String) =
