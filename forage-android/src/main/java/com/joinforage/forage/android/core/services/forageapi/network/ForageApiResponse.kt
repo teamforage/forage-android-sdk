@@ -94,7 +94,7 @@ sealed class ForageApiResponse<out T> {
      * @property errors A list of [ForageError] instances that you can unpack to programmatically
      * handle the error and display the appropriate customer-facing message.
      */
-    data class Failure internal constructor(val error: ForageError) : ForageApiResponse<Nothing>() {
+    data class Failure(val error: ForageError) : ForageApiResponse<Nothing>() {
 
         @Deprecated(
             message = "Use `.error` property instead of `.errors[0]`. There will only ever by 1 error in the list",
