@@ -33,16 +33,15 @@
 
     <com.joinforage.forage.android.pos.ui.element.ForagePinPad
             android:id="@+id/my_pin_pad"
+            android:layout_height="0dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/foragePinEditText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:forage_buttonLayoutMargin="10dp"
             app:forage_doneButtonText="@string/pinpad_done"
-            app:forage_buttonLayoutMargin="@dimen/keypad_btn_margin"
-            app:forage_buttonLayoutHeight="@dimen/keypad_btn_height"
             app:forage_useDarkTheme="false"
             app:forage_deleteButtonIcon="@android:drawable/ic_delete"
-            app:forage_doneButtonIcon="@android:drawable/ic_menu_revert" />
+            app:forage_doneButtonIcon="@android:drawable/ic_menu_revert"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

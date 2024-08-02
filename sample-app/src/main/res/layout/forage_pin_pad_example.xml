@@ -4,23 +4,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto">
-    <LinearLayout
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
     <com.joinforage.forage.android.pos.ui.element.ForagePinPad
             android:id="@+id/my_pin_pad"
+            android:layout_height="200dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:forage_doneButtonText="@string/pinpad_done"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:forage_buttonLayoutMargin="@dimen/keypad_btn_margin"
-            app:forage_buttonLayoutHeight="@dimen/keypad_btn_height"
+            app:forage_doneButtonText="@string/pinpad_done"
+            app:forage_useDarkTheme="false"
             app:forage_deleteButtonIcon="@android:drawable/ic_delete"
             app:forage_doneButtonIcon="@android:drawable/ic_menu_revert"
         />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

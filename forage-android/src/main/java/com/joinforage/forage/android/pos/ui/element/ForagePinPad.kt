@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
 import androidx.annotation.StringRes
+import androidx.core.view.children
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.telemetry.Log
@@ -102,7 +103,6 @@ internal class PinPadStateManager(
  *         android:layout_width="match_parent"
  *         android:layout_height="wrap_content"
  *         app:forage_buttonLayoutMargin="@dimen/keypad_btn_margin"
- *         app:forage_buttonLayoutHeight="@dimen/keypad_btn_height"
  *         app:forage_deleteButtonIcon="@android:drawable/ic_delete"
  *      />
  *
@@ -222,9 +222,6 @@ private class Styles(context: Context, attrs: AttributeSet?) {
     val doneButtonText: Int
 
     @Px
-    val buttonLayoutHeight: Int
-
-    @Px
     val buttonLayoutMargin: Int
 
     val useDarkTheme: Boolean
@@ -235,7 +232,6 @@ private class Styles(context: Context, attrs: AttributeSet?) {
         deleteButtonIcon = attributes.getResourceId(R.styleable.ForageKeypad_forage_deleteButtonIcon, 0)
         doneButtonIcon = attributes.getResourceId(R.styleable.ForageKeypad_forage_doneButtonIcon, 0)
         doneButtonText = attributes.getResourceId(R.styleable.ForageKeypad_forage_doneButtonText, 0)
-        buttonLayoutHeight = attributes.getLayoutDimension(R.styleable.ForageKeypad_forage_buttonLayoutHeight, 86)
         buttonLayoutMargin = attributes.getLayoutDimension(R.styleable.ForageKeypad_forage_buttonLayoutMargin, 8)
         attributes.recycle()
     }
@@ -251,57 +247,31 @@ private class KeypadStyler(
     private val styles: Styles
 ) {
     fun applyStyling() {
-        val rowOneButtons =
-            with(binding) {
-                setOf(forageButton1, forageButton2, forageButton3, forageButtonDelete)
-            }
-
-        val rowTwoButtons =
-            with(binding) {
-                setOf(forageButton4, forageButton5, forageButton6)
-            }
-
-        val rowThreeButtons =
-            with(binding) {
-                setOf(forageButton7, forageButton8, forageButton9)
-            }
-
-        val rowFourButtons =
-            with(binding) {
-                setOf(forageButton0, forageButtonClear, forageButtonDone)
-            }
-
-        val columnTwoButtons =
-            with(binding) {
-                setOf(forageButton2, forageButton5, forageButton8, forageButton0)
-            }
-
-        val columnThreeButtons =
-            with(binding) {
-                setOf(forageButton3, forageButton6, forageButton9, forageButtonClear)
-            }
-
-        val columnFourButtons =
-            with(binding) {
-                setOf(forageButtonDelete, forageButtonDone)
-            }
-
-        rowOneButtons.forEach {
-            it.layoutParams.height = styles.buttonLayoutHeight
+        val rows = with(binding) {
+            setOf(forageRow1, forageRow2, forageRow3, forageRow4)
         }
 
-        // apply padding top to all non-top rows (i.e. not row 1)
-        (rowTwoButtons + rowThreeButtons + rowFourButtons).forEach {
-            it.layoutParams.height = styles.buttonLayoutHeight
-            (
-                it.layoutParams as
-                    ViewGroup.MarginLayoutParams
-                ).topMargin = styles.buttonLayoutMargin
+//        // set rows to appropriate height
+//        rows.forEach { row ->
+//            row.layoutParams.height = styles.buttonLayoutHeight
+//        }
+
+        // apply top margin to cells rows 2 - 4
+        val bottomRows = rows - setOf(binding.forageRow1)
+        rows.forEach { row ->
+            // set the margin of all cells in each row
+            row.children.forEach { cell ->
+                (cell.layoutParams as ViewGroup.MarginLayoutParams).topMargin = styles.buttonLayoutMargin
+            }
         }
 
-        // apply padding start to all non-start cols (i.e. not col 1)
-        (columnTwoButtons + columnThreeButtons + columnFourButtons).forEach {
-            (it.layoutParams as ViewGroup.MarginLayoutParams).marginStart = styles.buttonLayoutMargin
+        // apply start margin to cells in columns 2 - 4
+        rows.forEach { row ->
+            // Get the children of the row
+            val children = row.children.toList().drop(1)
+            children.forEach { cell ->
+                (cell.layoutParams as ViewGroup.MarginLayoutParams).marginStart = styles.buttonLayoutMargin
+            }
         }
 
         with(binding) {
