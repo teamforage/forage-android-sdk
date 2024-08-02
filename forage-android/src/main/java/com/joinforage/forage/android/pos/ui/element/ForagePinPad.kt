@@ -157,7 +157,7 @@ class ForagePinPad @JvmOverloads constructor(
 
     @Deprecated(
         message = "This function is deprecated and is not supported in future releases.",
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun setOnDoneListener(l: StatefulElementListener<PinPadState>) {
         manager = manager.withOnDoneCallback(l)
