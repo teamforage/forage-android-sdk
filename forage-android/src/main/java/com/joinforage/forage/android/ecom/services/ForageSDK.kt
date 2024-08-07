@@ -76,7 +76,7 @@ class ForageSDK {
      * ```kotlin
      * // Example tokenizeEBTCard call in a TokenizeViewModel.kt
      * class TokenizeViewModel : ViewModel() {
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun tokenizeEBTCard(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
@@ -243,7 +243,7 @@ class ForageSDK {
      * // Example capturePayment call in a PaymentCaptureViewModel.kt
      * class PaymentCaptureViewModel : ViewModel() {
      *     val snapPaymentRef = "s0alzle0fal"
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun capturePayment(foragePinEditText: ForagePINEditText, paymentRef: String) =
@@ -337,7 +337,7 @@ class ForageSDK {
      * // Example deferPaymentCapture call in a DeferPaymentCaptureViewModel.kt
      * class DeferPaymentCaptureViewModel  : ViewModel() {
      *     val snapPaymentRef = "s0alzle0fal"
-     *     val merchantId = "mid/<merchant_id>"
+     *     val merchantId = "<merchant_id>"
      *     val sessionToken = "<session_token>"
      *
      *     fun deferPaymentCapture(foragePinEditText: ForagePINEditText, paymentRef: String) =

@@ -7,8 +7,8 @@ package com.joinforage.forage.android.core.services
  * [setForageConfig][com.joinforage.forage.android.core.ui.element.ForagePanElement.setForageConfig] to
  * configure an Element.
  *
- * @property merchantId A unique Merchant ID that Forage provides during onboarding
- * onboarding preceded by "mid/". For example, `mid/123ab45c67`.
+ * @property merchantId A unique Merchant ID that Forage provides during onboarding, as in
+ * `123ab45c67`.
  * The Merchant ID can be found in the Forage [Sandbox](https://dashboard.sandbox.joinforage.app/login/)
  * or [Production](https://dashboard.joinforage.app/login/) Dashboard.
  *
