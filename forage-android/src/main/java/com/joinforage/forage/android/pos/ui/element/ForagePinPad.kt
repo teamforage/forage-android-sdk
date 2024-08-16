@@ -17,7 +17,6 @@ import com.joinforage.forage.android.core.services.vault.SecurePinCollector
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
 import com.joinforage.forage.android.core.ui.element.state.pin.PinInputState
-import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
 import com.joinforage.forage.android.databinding.ForageKeypadBinding
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 import com.joinforage.forage.android.pos.ui.element.state.pin.PinPadState
@@ -132,8 +131,13 @@ class ForagePinPad @JvmOverloads constructor(
             }
         ).configureKeypad()
 
-        // include Forage logo after keypad
-        addView(getLogoImageViewLayout(context, styles.useDarkTheme))
+        // set Forage logo based on light vs dark mode
+        val forageLogoResource = if (styles.useDarkTheme) {
+            R.drawable.powered_by_forage_logo_dark
+        } else {
+            R.drawable.powered_by_forage_logo
+        }
+        binding.poweredByForageImageView.setImageResource(forageLogoResource)
         orientation = VERTICAL
     }
 
@@ -251,23 +255,15 @@ private class KeypadStyler(
             setOf(forageRow1, forageRow2, forageRow3, forageRow4)
         }
 
-//        // set rows to appropriate height
-//        rows.forEach { row ->
-//            row.layoutParams.height = styles.buttonLayoutHeight
-//        }
-
-        // apply top margin to cells rows 2 - 4
-        val bottomRows = rows - setOf(binding.forageRow1)
         rows.forEach { row ->
-            // set the margin of all cells in each row
+            // apply bottom margin to all cells for consistent spacing
+            // between grid rows and the Forage logo
             row.children.forEach { cell ->
-                (cell.layoutParams as ViewGroup.MarginLayoutParams).topMargin = styles.buttonLayoutMargin
+                (cell.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin = styles.buttonLayoutMargin
             }
-        }
 
-        // apply start margin to cells in columns 2 - 4
-        rows.forEach { row ->
-            // Get the children of the row
+            // apply start margin to cells in columns 2 - 4
+            // by skipping the cells from the col 1
             val children = row.children.toList().drop(1)
             children.forEach { cell ->
                 (cell.layoutParams as ViewGroup.MarginLayoutParams).marginStart = styles.buttonLayoutMargin

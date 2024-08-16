@@ -40,6 +40,16 @@
                 app:forage_deleteButtonIcon="@android:drawable/ic_delete"
                 app:forage_doneButtonIcon="@android:drawable/ic_menu_revert" />
 
+        <com.joinforage.forage.android.pos.ui.element.ForagePinPad
+                android:id="@+id/my_pin_pad_2"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:forage_buttonLayoutMargin="10dp"
+                app:forage_doneButtonText="@string/pinpad_done"
+                app:forage_useDarkTheme="false"
+                app:forage_deleteButtonIcon="@android:drawable/ic_delete"
+                app:forage_doneButtonIcon="@android:drawable/ic_menu_revert" />
+
 
     </LinearLayout>
 </ScrollView>
