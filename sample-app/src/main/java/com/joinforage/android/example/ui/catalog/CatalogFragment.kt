@@ -45,7 +45,7 @@ class CatalogFragment : Fragment() {
         // created via XML and has some XML styles associated
         // with it.
         val dynamicPinEditText = ForagePINEditText(requireContext(), null, R.attr.catalogPinStyleRef)
-        binding.root.addView(dynamicPinEditText)
+        binding.catalogRootLayout.addView(dynamicPinEditText)
 
         binding.firstForageEditText.setForageConfig(forageConfig)
 
