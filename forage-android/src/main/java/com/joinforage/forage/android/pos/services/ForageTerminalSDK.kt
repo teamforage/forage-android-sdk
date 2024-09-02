@@ -202,7 +202,7 @@ class ForageTerminalSDK internal constructor(
         params: TokenizeManualEntryParams
     ): ForageApiResponse<String> {
         val (foragePanEditText, reusable) = params
-        val (merchantId, sessionToken) = getForageConfigOrThrow(foragePanEditText.getForageConfig())
+        val (merchantId, sessionToken) = forageConfig
         val config = EnvConfig.fromSessionToken(sessionToken)
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -275,8 +275,8 @@ class ForageTerminalSDK internal constructor(
      * object.
      */
     suspend fun tokenizeCard(params: TokenizeMagSwipeParams): ForageApiResponse<String> {
-        val (posForageConfig, track2Data, reusable) = params
-        val (merchantId, sessionToken) = posForageConfig
+        val (track2Data, reusable) = params
+        val (merchantId, sessionToken) = forageConfig
         val config = EnvConfig.fromSessionToken(sessionToken)
         val logger = Log.getInstance()
             .addAttribute("pos_terminal_id", posTerminalId)
@@ -763,24 +763,6 @@ class ForageTerminalSDK internal constructor(
 }
 
 /**
- * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
- * ForageConfig is not set.
- *
- * @param element A ForageElement instance
- * @return The ForageConfig associated with the ForageElement
- */
-internal fun getForageConfigOrThrow(forageConfig: ForageConfig?): ForageConfig {
-    return forageConfig ?: throw ForageConfigNotSetException(
-        """
-    The ForageElement you passed did not have a ForageConfig. In order to submit
-    a request via Forage SDK, your ForageElement MUST have a ForageConfig.
-    Make sure to call myForageElement.setForageConfig(forageConfig: ForageConfig) 
-    immediately on your ForageElement 
-        """.trimIndent()
-    )
-}
-
-/**
  * A model that represents the parameters that [ForageTerminalSDK] requires to tokenize a card by
  * entering the card number into a [ForagePANEditText].
  * This data class is not supported for online-only transactions.
@@ -804,8 +786,6 @@ data class TokenizeManualEntryParams(
  * [TokenizeMagSwipeParams] are passed to the
  * [tokenizeCard][com.joinforage.forage.android.pos.services.ForageTerminalSDK.tokenizeCard] method.
  *
- * @property forageConfig **Required**. The [ForageConfig] configuration details required to
- * authenticate with the Forage API.
  * @property track2Data **Required**. The information encoded on Track 2 of the card’s magnetic
  * stripe, excluding the start and stop sentinels and any LRC characters. _Example value_:
  * `"123456789123456789=123456789123"`
@@ -813,7 +793,6 @@ data class TokenizeManualEntryParams(
  * multiple payments. Defaults to true.
  */
 data class TokenizeMagSwipeParams(
-    val forageConfig: ForageConfig,
     val track2Data: String,
     val reusable: Boolean = true
 )

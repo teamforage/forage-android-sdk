@@ -180,10 +180,7 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.tokenizeCard(
-                TokenizeMagSwipeParams(
-                    uiState.value.forageConfig,
-                    track2Data
-                )
+                TokenizeMagSwipeParams(track2Data)
             )
 
             when (response) {
