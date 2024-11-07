@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:forage-android/src/main/java/com/joinforage/forage/android/pos/ui/vault/RosettaPinElement.kt
-package com.joinforage.forage.android.pos.ui.vault
-========
-package com.joinforage.forage.android.ecom.ui.vault.rosetta
->>>>>>>> 773e0801 (Rename ecom/ui/vault/forage -> ecom/ui/vault/rosetta (#281)):forage-android/src/main/java/com/joinforage/forage/android/ecom/ui/vault/rosetta/RosettaPinElement.kt
+package com.joinforage.forage.android.pos.ui.vault.rosetta
 
 import android.content.Context
 import android.content.res.TypedArray
