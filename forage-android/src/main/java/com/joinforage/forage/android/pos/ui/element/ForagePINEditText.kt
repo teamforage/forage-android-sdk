@@ -10,7 +10,7 @@ import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
-import com.joinforage.forage.android.pos.ui.vault.RosettaPinElement
+import com.joinforage.forage.android.pos.ui.vault.rosetta.RosettaPinElement
 
 /**
  * A [ForagePinElement] that securely collects a card PIN. You can use a [ForagePINEditText]

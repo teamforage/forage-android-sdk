@@ -11,6 +11,5 @@
     <dimen name="box_corner_radius_bottom_start">4dp</dimen>
     <dimen name="box_corner_radius_bottom_end">0dp</dimen>
     <dimen name="small_text">16sp</dimen>
-    <dimen name="keypad_btn_margin">1dp</dimen>
-    <dimen name="keypad_btn_height">40dp</dimen>
+    <dimen name="keypad_btn_margin">5dp</dimen>
 </resources>

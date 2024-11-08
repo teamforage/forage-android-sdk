@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.ui.vault
+package com.joinforage.forage.android.pos.ui.vault.rosetta
 
 import android.content.Context
 import android.content.res.TypedArray

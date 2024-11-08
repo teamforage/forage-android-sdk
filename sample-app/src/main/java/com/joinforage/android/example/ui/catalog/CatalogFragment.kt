@@ -10,6 +10,7 @@ import com.joinforage.android.example.R
 import com.joinforage.android.example.databinding.FragmentCatalogBinding
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
+import com.joinforage.forage.android.pos.ui.element.state.pin.PinPadState
 
 class CatalogFragment : Fragment() {
 
@@ -44,7 +45,7 @@ class CatalogFragment : Fragment() {
         // created via XML and has some XML styles associated
         // with it.
         val dynamicPinEditText = ForagePINEditText(requireContext(), null, R.attr.catalogPinStyleRef)
-        binding.root.addView(dynamicPinEditText)
+        binding.catalogRootLayout.addView(dynamicPinEditText)
 
         binding.firstForageEditText.setForageConfig(forageConfig)
 
@@ -53,6 +54,8 @@ class CatalogFragment : Fragment() {
         //  more than once is OK and does not cause a crash. So,
         //  these duplicate calls are intentional here
         binding.firstForageEditText.setForageConfig(forageConfig)
+
+        binding.myPinPad.setOnDoneListener { state: PinPadState -> println("PinPadState: ${state.length}") }
 
         return root
     }

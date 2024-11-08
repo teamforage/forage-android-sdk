@@ -1,20 +1,7 @@
 package com.joinforage.forage.android.core.services
 
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import okhttp3.HttpUrl
 import org.json.JSONObject
-import kotlin.random.Random
-
-/**
- * We generate a random jitter amount to add to our retry delay when polling for the status of
- * Payments and Payment Methods so that we can avoid a thundering herd scenario in which there are
- * several requests retrying at the same exact time.
- *
- * Returns a random integer between -25 and 25
- */
-internal fun getJitterAmount(random: Random = Random.Default): Int {
-    return random.nextInt(-25, 26)
-}
 
 internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
     return this.addPathSegment("")
@@ -60,16 +47,6 @@ internal object ForageConstants {
 
     object VGS {
         const val PIN_FIELD_NAME = "pin"
-    }
-
-    object ErrorResponseObjects {
-        val INCOMPLETE_PIN_ERROR = listOf(
-            ForageError(
-                400,
-                "user_error",
-                "Invalid EBT Card PIN entered. Please enter your 4-digit PIN."
-            )
-        )
     }
 }
 

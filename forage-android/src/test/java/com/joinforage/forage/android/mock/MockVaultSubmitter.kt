@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.mock
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.ForageError
 import com.joinforage.forage.android.core.services.vault.VaultSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultSubmitterParams
 
@@ -25,12 +24,10 @@ internal class MockVaultSubmitter : VaultSubmitter {
     override suspend fun submit(params: VaultSubmitterParams): ForageApiResponse<String> {
         return responses.getOrDefault(
             params.path,
-            ForageApiResponse.Failure.fromError(
-                ForageError(
-                    500,
-                    "unknown_server_error",
-                    "Unknown Server Error"
-                )
+            ForageApiResponse.Failure(
+                500,
+                "unknown_server_error",
+                "Unknown Server Error"
             )
         )
     }

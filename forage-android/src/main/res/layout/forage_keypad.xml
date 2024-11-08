@@ -1,133 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <!-- row 1 -->
+    <LinearLayout
+            android:id="@+id/forage_row_1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal">
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_1"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="1"
+                style="@style/ForageKeypadDigitButtonStyle" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/forage_button_1"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_2"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="2"
+                style="@style/ForageKeypadDigitButtonStyle" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/forage_button_2"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_3"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="3"
+                style="@style/ForageKeypadDigitButtonStyle" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Del"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/forage_button_3"
-            style="@style/ForageKeypadIconOnlyButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_delete"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text=""
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                style="@style/ForageKeypadIconOnlyButtonStyle" />
+    </LinearLayout>
 
     <!-- row 2 -->
+    <LinearLayout
+            android:id="@+id/forage_row_2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal">
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_1"
-            app:layout_constraintStart_toStartOf="parent"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_4"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="4"
+                style="@style/ForageKeypadDigitButtonStyle" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_1"
-            app:layout_constraintStart_toEndOf="@id/forage_button_4"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_5"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="5"
+                style="@style/ForageKeypadDigitButtonStyle" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="6"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_1"
-            app:layout_constraintStart_toEndOf="@id/forage_button_5"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_6"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="6"
+                style="@style/ForageKeypadDigitButtonStyle" />
+
+        <!--        A blank cell-->
+        <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
+    </LinearLayout>
 
     <!-- row 3 -->
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="7"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_4"
-            app:layout_constraintStart_toStartOf="parent"
-            style="@style/ForageKeypadDigitButtonStyle" />
+    <LinearLayout
+            android:id="@+id/forage_row_3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal">
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="8"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_4"
-            app:layout_constraintStart_toEndOf="@id/forage_button_7"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_7"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="7"
+                style="@style/ForageKeypadDigitButtonStyle" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_9"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="9"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_4"
-            app:layout_constraintStart_toEndOf="@id/forage_button_8"
-            style="@style/ForageKeypadDigitButtonStyle" />
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_8"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="8"
+                style="@style/ForageKeypadDigitButtonStyle" />
+
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_9"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="9"
+                style="@style/ForageKeypadDigitButtonStyle" />
+
+        <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+    </LinearLayout>
 
     <!-- row 4 -->
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_7"
-            app:layout_constraintStart_toStartOf="@id/forage_button_8"
-            app:layout_constraintEnd_toEndOf="@id/forage_button_8"
-            style="@style/ForageKeypadDigitButtonStyle" />
+    <LinearLayout
+            android:id="@+id/forage_row_4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal">
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="C"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_9"
-            style="@style/ForageKeypadDigitButtonStyle"
-            app:layout_constraintStart_toEndOf="@id/forage_button_0" />
+        <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
 
-    <com.google.android.material.button.MaterialButton
-            android:id="@+id/forage_button_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Done"
-            app:layout_constraintTop_toBottomOf="@id/forage_button_9"
-            style="@style/ForageKeypadDoneButtonStyle"
-            app:layout_constraintStart_toEndOf="@id/forage_button_clear" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_0"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="0"
+                style="@style/ForageKeypadDigitButtonStyle" />
+
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_clear"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="C"
+                style="@style/ForageKeypadDigitButtonStyle" />
+
+        <com.google.android.material.button.MaterialButton
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:id="@+id/forage_button_done"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:text="Done"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                style="@style/ForageKeypadDoneButtonStyle" />
+    </LinearLayout>
+    <ImageView
+            android:id="@+id/poweredByForageImageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/powered_by_forage_logo"
+            android:layout_gravity="center_horizontal"
+    />
+</LinearLayout>

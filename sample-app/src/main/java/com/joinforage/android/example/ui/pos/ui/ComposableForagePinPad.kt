@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.joinforage.android.example.databinding.ForagePinPadExampleBinding
 import com.joinforage.forage.android.pos.ui.element.ForagePinPad
+import com.joinforage.forage.android.pos.ui.element.state.pin.PinPadState
 
 @Composable
 fun ComposableForagePinPad(
@@ -49,6 +50,7 @@ fun ComposableForagePinPad(
             // keypad and not the EditText
             withPinElementReference(myPinPad)
         }
+        myPinPad.setOnDoneListener { state: PinPadState -> println("PinPadState: $state") }
     }
 }
 

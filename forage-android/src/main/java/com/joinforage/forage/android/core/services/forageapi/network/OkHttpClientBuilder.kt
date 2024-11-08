@@ -19,7 +19,8 @@ internal object OkHttpClientBuilder {
         sessionToken: String,
         merchantId: String? = null,
         idempotencyKey: String? = null,
-        traceId: String? = null
+        traceId: String? = null,
+        apiVersion: String = "default"
     ): OkHttpClient = singletonClient.newBuilder()
         .addInterceptor(
             Interceptor { chain ->
@@ -29,43 +30,25 @@ internal object OkHttpClientBuilder {
                         ForageConstants.Headers.AUTHORIZATION,
                         "${ForageConstants.Headers.BEARER} $sessionToken"
                     )
-                    .run {
-                        // If the API_VERSION header has already been appended, don't override it!
-                        chain.request().headers[ForageConstants.Headers.API_VERSION]?.let {
-                            this
+                    .apply {
+                        if (chain.request().headers[ForageConstants.Headers.API_VERSION] == null) {
+                            addHeader(ForageConstants.Headers.API_VERSION, apiVersion)
                         }
-                            // Otherwise, set the default API_VERSION header
-                            ?: addHeader(
-                                ForageConstants.Headers.API_VERSION,
-                                "default"
-                            )
                     }
-                    .run {
+                    .apply {
                         merchantId?.let {
-                            addHeader(
-                                ForageConstants.Headers.MERCHANT_ACCOUNT,
-                                merchantId
-                            )
+                            addHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, it)
                         }
-                            ?: this
                     }
-                    .run {
+                    .apply {
                         idempotencyKey?.let {
-                            addHeader(
-                                ForageConstants.Headers.IDEMPOTENCY_KEY,
-                                idempotencyKey
-                            )
+                            addHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, it)
                         }
-                            ?: this
                     }
-                    .run {
+                    .apply {
                         traceId?.let {
-                            addHeader(
-                                ForageConstants.Headers.TRACE_ID,
-                                traceId
-                            )
+                            addHeader(ForageConstants.Headers.TRACE_ID, it)
                         }
-                            ?: this
                     }
                     .build()
 
