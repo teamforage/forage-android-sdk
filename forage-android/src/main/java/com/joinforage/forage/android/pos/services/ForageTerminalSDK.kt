@@ -1,9 +1,7 @@
 package com.joinforage.forage.android.pos.services
 
 import android.content.Context
-import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
@@ -22,9 +20,7 @@ import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentReposit
 import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepository
 import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
 import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
-import com.joinforage.forage.android.pos.services.vault.PosTokenizeCardService
 import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
-import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import java.io.File
 
 /**
@@ -35,7 +31,6 @@ import java.io.File
  * **You need to call [`ForageTerminalSDK.init`][init] to initialize the SDK.**
  * Then you can perform operations like:
  * <br><br>
- * * [Tokenizing card information][tokenizeCard]
  * * [Checking the balance of a card][checkBalance]
  * * [Collecting a card PIN for a payment and
  * deferring the capture of the payment to the server][deferPaymentCapture]
@@ -92,7 +87,7 @@ class ForageTerminalSDK internal constructor(
          *     )
          *
          *     // Use the forageTerminalSdk to call other methods
-         *     // (e.g. tokenizeCard, checkBalance, etc.)
+         *     // (e.g. checkBalance, etc.)
          * } catch (e: Exception) {
          *     // handle initialization error
          * }
@@ -154,150 +149,6 @@ class ForageTerminalSDK internal constructor(
     }
 
     /**
-     * Tokenizes a card via manual entry into a [ForagePANEdit Text]
-     * [com.joinforage.forage.android.pos.ui.element.ForagePANEditText] Element.
-     * * On success, the object includes a `ref` token that represents an instance of a Forage
-     * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods). You can store
-     * the token in your database and reference it for future transactions, like to call
-     * [checkBalance] or to [create a Payment](https://docs.joinforage.app/reference/create-a-payment)
-     * in Forage's database. *(Example [PosPaymentMethod](https://github.com/teamforage/forage-android-sdk/blob/229a0c7d38dcae751070aed45ff2f7e7ea2a5abb/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/tokenize/PosPaymentMethod.kt#L7) class)*
-     * * On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
-     * the response includes a list of [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError]
-     * objects that you can unpack to programmatically handle the error and display the appropriate
-     * customer-facing message based on the `ForageError.code`.
-     * ```kotlin
-     * // Example tokenizeCard call in a TokenizeViewModel.kt
-     * class TokenizeViewMode : ViewModel() {
-     *     val merchantId = "<merchant_id>"
-     *     val sessionToken = "<session_token>"
-     *
-     *     fun tokenizeCard(foragePanEditText: ForagePANEditText) = viewModelScope.launch {
-     *         val response = forageTerminalSdk.tokenizeCard(
-     *           foragePanEditText = foragePanEditText,
-     *           reusable = true
-     *         )
-     *
-     *         when (response) {
-     *             is ForageApiResponse.Success -> {
-     *                 // parse response.data for the PaymentMethod object
-     *             }
-     *             is ForageApiResponse.Failure -> {
-     *                 // do something with error text (i.e. response.message)
-     *             }
-     *         }
-     *     }
-     * }
-     * ```
-     * @param params **Required**. A [TokenizeManualEntryParams] model that passes a reference to a
-     * [ForagePANEditText] instance that collects the customer's card number and an optional
-     * `reusable` boolean that Forage uses to tokenize the card.
-     * [setForageConfig][com.joinforage.forage.android.core.ui.element.ForagePanElement.setForageConfig]
-     * must have been called on the instance before it can be passed.
-     * @throws ForageConfigNotSetException If the [ForageConfig] is not set for the provided
-     * [ForagePANEditText] instance.
-     *
-     * @return A [ForageApiResponse] object.
-     */
-    suspend fun tokenizeCard(
-        params: TokenizeManualEntryParams
-    ): ForageApiResponse<String> {
-        val (foragePanEditText, reusable) = params
-        val (merchantId, sessionToken) = forageConfig
-        val config = EnvConfig.fromSessionToken(sessionToken)
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("reusable", reusable)
-            .addAttribute("merchant_ref", merchantId)
-            .i("[POS] Tokenizing Payment Method via UI PAN entry on Terminal $posTerminalId")
-
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-
-        return PosTokenizeCardService(
-            config.apiBaseUrl,
-            okHttpClient,
-            logger
-        ).tokenizeCard(
-            cardNumber = foragePanEditText.getPanNumber(),
-            reusable = reusable
-        )
-    }
-
-    /**
-     * Tokenizes a card via a magnetic swipe from a physical POS Terminal.
-     * * On success, the object includes a `ref` token that represents an instance of a Forage
-     * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods). You can store
-     * the token for future transactions, like to call [checkBalance] or to
-     * [create a Payment](https://docs.joinforage.app/reference/create-a-payment) in Forage's database.
-     * * On failure, for example in the case of [`unsupported_bin`](https://docs.joinforage.app/reference/errors#unsupported_bin),
-     * the response includes a list of [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError]
-     * objects that you can unpack to programmatically handle the error and display the appropriate
-     * customer-facing message based on the `ForageError.code`.
-     * ```kotlin
-     * // Example tokenizeCard(TokenizeMagSwipeParams) call in a TokenizePosViewModel.kt
-     * class TokenizePosViewModel : ViewModel() {
-     *     val merchantId = "<merchant_id>"
-     *     val sessionToken = "<session_token>"
-     *
-     *     fun tokenizePosCard(foragePinEditText: ForagePINEditText) = viewModelScope.launch {
-     *         val response = forageTerminalSdk.tokenizeCard(
-     *           TokenizeMagSwipeParams(
-     *             forageConfig = ForageConfig(
-     *               merchantId = merchantId,
-     *               sessionToken = sessionToken
-     *             ),
-     *             track2Data = "<read_track_2_data>" // "123456789123456789=123456789123",
-     *           // reusable = true
-     *           )
-     *         )
-     *
-     *         when (response) {
-     *             is ForageApiResponse.Success -> {
-     *                 // parse response.data for the PaymentMethod object
-     *             }
-     *             is ForageApiResponse.Failure -> {
-     *                 // do something with error text (i.e. response.message)
-     *             }
-     *         }
-     *     }
-     * }
-     * ```
-     * @param params **Required**. A [TokenizeMagSwipeParams] model that passes the [ForageConfig],
-     * the card's `track2Data`, and a `reusable` boolean that Forage uses to tokenize the card.
-     *
-     * @throws ForageConfigNotSetException If the [ForageConfig] is not set for the provided
-     * [ForagePANEditText] instance.
-     *
-     * @return A [ForageAPIResponse][com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse]
-     * object.
-     */
-    suspend fun tokenizeCard(params: TokenizeMagSwipeParams): ForageApiResponse<String> {
-        val (track2Data, reusable) = params
-        val (merchantId, sessionToken) = forageConfig
-        val config = EnvConfig.fromSessionToken(sessionToken)
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("reusable", reusable)
-            .addAttribute("merchant_ref", merchantId)
-            .i(
-                "[POS] Tokenizing Payment Method using magnetic card swipe with Track 2 data on Terminal $posTerminalId"
-            )
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = sessionToken,
-            merchantId = merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-        return PosTokenizeCardService(
-            config.apiBaseUrl,
-            okHttpClient,
-            logger
-        ).tokenizeMagSwipeCard(track2Data = track2Data, reusable = reusable)
-    }
-
-    /**
      * Checks the balance of a previously created
      * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods)
      * via a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
@@ -343,7 +194,7 @@ class ForageTerminalSDK internal constructor(
      * a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
      * (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
      * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad]) and a
-     * `paymentMethodRef`, found in the response from a call to [tokenizeCard] or the
+     * `paymentMethodRef`, found in the response from a call to the
      * [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method)
      * endpoint, that Forage uses to check the payment method's balance.
      *
@@ -763,41 +614,6 @@ class ForageTerminalSDK internal constructor(
 }
 
 /**
- * A model that represents the parameters that [ForageTerminalSDK] requires to tokenize a card by
- * entering the card number into a [ForagePANEditText].
- * This data class is not supported for online-only transactions.
- * [TokenizeManualEntryParams] are passed to the
- * [tokenizeCard][com.joinforage.forage.android.pos.services.ForageTerminalSDK.tokenizeCard] method.
- *
- * @property foragePanEditText **Required**. A reference to a [ForagePANEditText] instance that
- * collects the customer's card number.
- * @property reusable Optional. A boolean that indicates whether the same card can be used to create
- * multiple payments. Defaults to true.
- */
-data class TokenizeManualEntryParams(
-    val foragePanEditText: ForagePANEditText,
-    val reusable: Boolean = true
-)
-
-/**
- * A model that represents the parameters that [ForageTerminalSDK] requires to tokenize a card via
- * a magnetic swipe from a physical POS Terminal.
- * This data class is not supported for online-only transactions.
- * [TokenizeMagSwipeParams] are passed to the
- * [tokenizeCard][com.joinforage.forage.android.pos.services.ForageTerminalSDK.tokenizeCard] method.
- *
- * @property track2Data **Required**. The information encoded on Track 2 of the card’s magnetic
- * stripe, excluding the start and stop sentinels and any LRC characters. _Example value_:
- * `"123456789123456789=123456789123"`
- * @property reusable Optional. A boolean that indicates whether the same card can be used to create
- * multiple payments. Defaults to true.
- */
-data class TokenizeMagSwipeParams(
-    val track2Data: String,
-    val reusable: Boolean = true
-)
-
-/**
  * A model that represents the parameters that Forage requires to check a card's balance.
  * [CheckBalanceParams] are passed to the
  * [checkBalance][com.joinforage.forage.android.pos.services.ForageTerminalSDK.checkBalance] method.
@@ -807,9 +623,8 @@ data class TokenizeMagSwipeParams(
  * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad]).
  * @property paymentMethodRef A unique string identifier for a previously created
  * [`PaymentMethod`](https://docs.joinforage.app/reference/payment-methods) in Forage's database,
- * found in the response from a call to
- * [tokenizeCard][com.joinforage.forage.android.pos.services.ForageTerminalSDK.tokenizeCard]
- * or the [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method)
+ * found in the response from a call to the
+ * [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method)
  * endpoint.
  */
 data class CheckBalanceParams(
