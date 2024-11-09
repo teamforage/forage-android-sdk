@@ -1,10 +1,13 @@
 package com.joinforage.android.example.ui.pos
 
+import ManualEntryPaymentMethod
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.textfield.TextInputEditText
 import com.joinforage.android.example.ui.pos.data.BalanceCheck
 import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.POSUIState
@@ -14,8 +17,8 @@ import com.joinforage.android.example.ui.pos.data.PosPaymentResponseJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Refund
 import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
 import com.joinforage.android.example.ui.pos.data.RefundUIState
+import com.joinforage.android.example.ui.pos.data.tokenize.MagSwipePaymentMethod
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
-import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethodJsonAdapter
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
@@ -27,8 +30,6 @@ import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
 import com.joinforage.forage.android.pos.services.DeferPaymentRefundParams
 import com.joinforage.forage.android.pos.services.ForageTerminalSDK
 import com.joinforage.forage.android.pos.services.RefundPaymentParams
-import com.joinforage.forage.android.pos.services.TokenizeMagSwipeParams
-import com.joinforage.forage.android.pos.services.TokenizeManualEntryParams
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -155,46 +156,43 @@ class POSViewModel : ViewModel() {
 
     fun tokenizeEBTCard(context: Context, foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
-            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
-            val response = forageTerminalSdk.tokenizeCard(
-                TokenizeManualEntryParams(foragePanEditText, true)
-            )
-
-            when (response) {
-                is ForageApiResponse.Success -> {
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<PosPaymentMethod> = PosPaymentMethodJsonAdapter(moshi)
-                    val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod, tokenizationError = null) }
-                    onSuccess(tokenizedPaymentMethod)
-                }
-                is ForageApiResponse.Failure -> {
-                    Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(tokenizationError = response.toString(), tokenizedPaymentMethod = null) }
-                }
+            val pan = (
+                (
+                    (foragePanEditText.getChildAt(0) as ViewGroup)
+                        .getChildAt(0)as ViewGroup
+                    )
+                    .getChildAt(0) as TextInputEditText
+                )
+                .text.toString().filter { it.isDigit() }
+            try {
+                val response = api.tokenizeManualEntry(
+                    ManualEntryPaymentMethod(pan)
+                )
+                foragePanEditText.toString()
+                Log.i("Tokenization successful", response.toString())
+                _uiState.update { it.copy(tokenizedPaymentMethod = response, tokenizationError = null) }
+                onSuccess(response)
+            } catch (e: Exception) {
+                val error = e.message.toString()
+                Log.e("POSViewModel", error)
+                _uiState.update { it.copy(tokenizationError = error, tokenizedPaymentMethod = null) }
             }
         }
     }
 
     fun tokenizeEBTCard(context: Context, track2Data: String, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
-            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
-            val response = forageTerminalSdk.tokenizeCard(
-                TokenizeMagSwipeParams(track2Data)
-            )
-
-            when (response) {
-                is ForageApiResponse.Success -> {
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<PosPaymentMethod> = PosPaymentMethodJsonAdapter(moshi)
-                    val tokenizedPaymentMethod = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(tokenizedPaymentMethod = tokenizedPaymentMethod, tokenizationError = null) }
-                    onSuccess(tokenizedPaymentMethod)
-                }
-                is ForageApiResponse.Failure -> {
-                    Log.e("POSViewModel", response.toString())
-                    _uiState.update { it.copy(tokenizationError = response.toString(), tokenizedPaymentMethod = null) }
-                }
+            try {
+                val response = api.tokenizeManualEntry(
+                    MagSwipePaymentMethod(track2Data)
+                )
+                Log.i("Tokenization successful", response.toString())
+                _uiState.update { it.copy(tokenizedPaymentMethod = response, tokenizationError = null) }
+                onSuccess(response)
+            } catch (e: Exception) {
+                val error = e.message.toString()
+                Log.e("POSViewModel", error)
+                _uiState.update { it.copy(tokenizationError = error, tokenizedPaymentMethod = null) }
             }
         }
     }
