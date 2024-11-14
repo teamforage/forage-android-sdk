@@ -96,6 +96,7 @@ internal enum class StateIIN(
     KANSAS("601413", 16, USState.KANSAS),
     KENTUCKY("507709", 16, USState.KENTUCKY),
     LOUISIANA("504476", 16, USState.LOUISIANA),
+
     // we found out that Maine has 16 and 19 digit PANs 🤷
     MAINE16("507703", 16, USState.MAINE),
     MAINE19("507703", 19, USState.MAINE),
