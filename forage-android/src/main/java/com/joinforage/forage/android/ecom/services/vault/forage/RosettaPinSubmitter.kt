@@ -6,7 +6,6 @@ import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.addPathSegmentsSafe
 import com.joinforage.forage.android.core.services.addTrailingSlash
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.NetworkService
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
@@ -36,11 +35,6 @@ internal class RosettaPinSubmitter(
     logger = logger
 ) {
     override val vaultType: VaultType = VaultType.FORAGE_VAULT_TYPE
-
-    // x-key header is not applicable to forage
-    override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
-        return ""
-    }
 
     override suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String> {
         return try {
@@ -75,12 +69,10 @@ internal class RosettaPinSubmitter(
 
     override fun buildProxyRequest(
         params: VaultSubmitterParams,
-        encryptionKey: String,
         vaultToken: String
     ) = super
         .buildProxyRequest(
             params = params,
-            encryptionKey = encryptionKey,
             vaultToken = vaultToken
         )
         .setHeader(ForageConstants.Headers.CONTENT_TYPE, "application/json")

@@ -28,3 +28,10 @@ fun PotentialRequestChain.returnsMalformedError() = thenRespond(
         jsonBody = inlineBody("{}")
     )
 )
+
+fun PotentialRequestChain.returnsUnauthorized() = thenRespond(
+    error(
+        401,
+        jsonBody = fileBody("fixtures/vault/unauthorized_capture_request.json")
+    )
+)

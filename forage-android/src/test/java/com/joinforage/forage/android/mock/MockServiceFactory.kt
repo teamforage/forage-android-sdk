@@ -1,7 +1,5 @@
 package com.joinforage.forage.android.mock
 
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
@@ -41,7 +39,6 @@ internal class MockServiceFactory(
         // PIN-related interactions
         const val paymentRef: String = "6ae6a45ff1"
         const val paymentMethodRef: String = "1f148fe399"
-        const val contentId: String = "45639248-03f2-498d-8aa8-9ebd1c60ee65"
         val balance: Balance = EbtBalance(
             snap = "100.00",
             cash = "100.00"
@@ -53,13 +50,12 @@ internal class MockServiceFactory(
             balance = null,
             card = EbtCard(
                 last4 = "7845",
-                token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token",
+                token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token,forage-token",
                 fingerprint = "fingerprint"
             ),
             customerId = "test-android-customer-id",
             reusable = true
         )
-        val mockEncryptionKeys = EncryptionKeys("vgs-alias", "bt-alias")
     }
 
     companion object {
@@ -73,7 +69,6 @@ internal class MockServiceFactory(
     }
 
     private val okHttpClient by lazy { createMockHttpClient(logger) }
-    private val encryptionKeyService by lazy { createEncryptionKeyService() }
     private val paymentMethodService by lazy { createPaymentMethodService() }
     private val paymentService by lazy { createPaymentService() }
 
@@ -88,7 +83,6 @@ internal class MockServiceFactory(
     override fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
         return CheckBalanceRepository(
             vaultSubmitter = mockVaultSubmitter,
-            encryptionKeyService = encryptionKeyService,
             paymentMethodService = paymentMethodService,
             logger = logger
         )
@@ -97,7 +91,6 @@ internal class MockServiceFactory(
     override fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
         return CapturePaymentRepository(
             vaultSubmitter = mockVaultSubmitter,
-            encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService,
             logger = logger
@@ -107,13 +100,11 @@ internal class MockServiceFactory(
     override fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
         return DeferPaymentCaptureRepository(
             vaultSubmitter = mockVaultSubmitter,
-            encryptionKeyService = encryptionKeyService,
             paymentService = paymentService,
             paymentMethodService = paymentMethodService
         )
     }
 
-    private fun createEncryptionKeyService() = EncryptionKeyService(emptyUrl(), okHttpClient, logger)
     private fun createPaymentMethodService() = PaymentMethodService(emptyUrl(), okHttpClient, logger)
     private fun createPaymentService() = PaymentService(emptyUrl(), okHttpClient, logger)
 }

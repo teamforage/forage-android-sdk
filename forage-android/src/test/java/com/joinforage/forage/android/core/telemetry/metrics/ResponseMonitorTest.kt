@@ -47,7 +47,7 @@ class ResponseMonitorTest {
     @Test
     fun `Vault proxy monitor should log error if path is not set`() {
         val mockLogger = MockLogger()
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(userAction = UserAction.CAPTURE, mockLogger)
         vaultProxyResponseMonitor.setMethod("POST").setHttpStatusCode(200).logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -57,7 +57,7 @@ class ResponseMonitorTest {
     @Test
     fun `Vault proxy monitor should log error if method is not set`() {
         val mockLogger = MockLogger()
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(userAction = UserAction.CAPTURE, mockLogger)
         vaultProxyResponseMonitor.setPath("this/is/test/path/").setHttpStatusCode(200).logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -67,7 +67,7 @@ class ResponseMonitorTest {
     @Test
     fun `Vault proxy monitor should log error if status code is not set`() {
         val mockLogger = MockLogger()
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(userAction = UserAction.CAPTURE, mockLogger)
         vaultProxyResponseMonitor.setPath("this/is/test/path/").setMethod("POST").logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -77,9 +77,9 @@ class ResponseMonitorTest {
     @Test
     fun `Validate the attributes of a successful vault proxy log`() {
         val mockLogger = MockLogger()
-        val vaultType = VaultType.VGS_VAULT_TYPE
+        val vaultType = VaultType.FORAGE_VAULT_TYPE
         val userAction = UserAction.CAPTURE
-        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(vault = vaultType, userAction = userAction, mockLogger)
+        val vaultProxyResponseMonitor = VaultProxyResponseMonitor(userAction = userAction, mockLogger)
         val path = "this/is/test/path/"
         val method = "POST"
         val statusCode = 200
@@ -113,7 +113,7 @@ class ResponseMonitorTest {
     @Test
     fun `Customer perceived monitor should log error if outcome type is not set`() {
         val mockLogger = MockLogger()
-        val customerPerceivedResponseMonitor = CustomerPerceivedResponseMonitor(vault = VaultType.VGS_VAULT_TYPE, userAction = UserAction.CAPTURE, mockLogger)
+        val customerPerceivedResponseMonitor = CustomerPerceivedResponseMonitor(userAction = UserAction.CAPTURE, mockLogger)
         customerPerceivedResponseMonitor.logResult()
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(1)
         Assertions.assertThat(mockLogger.infoLogs.count()).isEqualTo(0)
@@ -123,9 +123,9 @@ class ResponseMonitorTest {
     @Test
     fun `Validate the attributes of a successful customer perceived response time log`() {
         val mockLogger = MockLogger()
-        val vaultType = VaultType.VGS_VAULT_TYPE
+        val vaultType = VaultType.FORAGE_VAULT_TYPE
         val userAction = UserAction.CAPTURE
-        val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(vault = vaultType, userAction = userAction, mockLogger)
+        val roundTripResponseMonitor = CustomerPerceivedResponseMonitor(userAction = userAction, mockLogger)
         roundTripResponseMonitor.setEventOutcome(EventOutcome.SUCCESS).setHttpStatusCode(200).logResult()
 
         Assertions.assertThat(mockLogger.errorLogs.count()).isEqualTo(0)

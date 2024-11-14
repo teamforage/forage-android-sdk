@@ -225,7 +225,6 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
                  * But the x-key header is not applicable to Rosetta client
                  * and is omitted via [RosettaPinSubmitter.parseEncryptionKey]
                  */
-                .setHeader(ForageConstants.Headers.X_KEY, "22320ce0-1a3c-4c64-970c-51ed7db34548")
                 .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, mockData.merchantId)
                 .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, MOCK_IDEMPOTENCY_KEY)
                 .setHeader(ForageConstants.Headers.TRACE_ID, MOCK_TRACE_ID)
@@ -236,7 +235,6 @@ class RosettaPinSubmitterTest() : MockServerSuite() {
         }
 
         private fun buildMockVaultParams(path: String) = VaultSubmitterParams(
-            encryptionKeys = MockServiceFactory.ExpectedData.mockEncryptionKeys,
             idempotencyKey = MOCK_IDEMPOTENCY_KEY,
             merchantId = "1234567",
             path = "/api/payments/abcdefg123/capture/",

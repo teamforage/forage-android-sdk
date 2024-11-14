@@ -41,8 +41,7 @@ data class EbtBalance(
          *     "snap": "1000.00",
          *     "non_snap": "1000.00",
          *     "updated": "2024-07-11T07:50:27.355331-07:00"
-         *   },
-         *   "content_id": "13d711a6-75af-4564-935c-05854f829b5e"
+         *   }
          * }
          */
         internal fun fromVaultResponse(res: ForageApiResponse.Success<String>): EbtBalance {

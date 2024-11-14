@@ -2,18 +2,6 @@ package com.joinforage.forage.android.core.services
 
 import okhttp3.HttpUrl
 import org.json.JSONObject
-import kotlin.random.Random
-
-/**
- * We generate a random jitter amount to add to our retry delay when polling for the status of
- * Payments and Payment Methods so that we can avoid a thundering herd scenario in which there are
- * several requests retrying at the same exact time.
- *
- * Returns a random integer between -25 and 25
- */
-internal fun getJitterAmount(random: Random = Random.Default): Int {
-    return random.nextInt(-25, 26)
-}
 
 internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
     return this.addPathSegment("")
@@ -22,14 +10,12 @@ internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
 internal object ForageConstants {
 
     object Headers {
-        const val X_KEY = "X-KEY"
         const val MERCHANT_ACCOUNT = "Merchant-Account"
         const val IDEMPOTENCY_KEY = "IDEMPOTENCY-KEY"
         const val TRACE_ID = "x-datadog-trace-id"
         const val AUTHORIZATION = "Authorization"
         const val BEARER = "Bearer"
         const val API_VERSION = "API-VERSION"
-        const val BT_PROXY_KEY = "BT-PROXY-KEY"
         const val CONTENT_TYPE = "Content-Type"
         const val SESSION_TOKEN = "Session-Token"
     }
@@ -46,23 +32,14 @@ internal object ForageConstants {
     }
 
     object PathSegment {
-        const val ISO_SERVER = "iso_server"
-        const val ENCRYPTION_ALIAS = "encryption_alias"
         const val API = "api"
         const val PAYMENT_METHODS = "payment_methods"
-        const val MESSAGE = "message"
         const val PAYMENTS = "payments"
         const val REFUNDS = "refunds"
-    }
-
-    object VGS {
-        const val PIN_FIELD_NAME = "pin"
     }
 }
 
 internal enum class VaultType(val value: String) {
-    VGS_VAULT_TYPE("vgs"),
-    BT_VAULT_TYPE("basis_theory"),
     FORAGE_VAULT_TYPE("forage");
 
     override fun toString(): String {

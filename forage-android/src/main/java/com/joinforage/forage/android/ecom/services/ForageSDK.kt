@@ -3,7 +3,6 @@ package com.joinforage.forage.android.ecom.services
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
@@ -208,7 +207,6 @@ class ForageSDK {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor(
-            vault = foragePinEditText.vault.vaultType,
             userAction = UserAction.BALANCE,
             logger
         )
@@ -304,7 +302,6 @@ class ForageSDK {
         // This block is used for Metrics Tracking!
         // ------------------------------------------------------
         val measurement = CustomerPerceivedResponseMonitor(
-            vault = foragePinEditText.getVaultType(),
             userAction = UserAction.CAPTURE,
             logger
         )
@@ -423,7 +420,6 @@ class ForageSDK {
                 traceId = logger.getTraceIdValue()
             )
         }
-        private val encryptionKeyService by lazy { createEncryptionKeyService() }
         private val paymentMethodService by lazy { createPaymentMethodService() }
         private val paymentService by lazy { createPaymentService() }
 
@@ -436,7 +432,6 @@ class ForageSDK {
         open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
             return CheckBalanceRepository(
                 vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
-                encryptionKeyService = encryptionKeyService,
                 paymentMethodService = paymentMethodService,
                 logger = logger
             )
@@ -445,7 +440,6 @@ class ForageSDK {
         open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
             return CapturePaymentRepository(
                 vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
-                encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService,
                 logger = logger
@@ -455,13 +449,11 @@ class ForageSDK {
         open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
             return DeferPaymentCaptureRepository(
                 vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
-                encryptionKeyService = encryptionKeyService,
                 paymentService = paymentService,
                 paymentMethodService = paymentMethodService
             )
         }
 
-        private fun createEncryptionKeyService() = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPaymentMethodService() = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
         private fun createPaymentService() = PaymentService(config.apiBaseUrl, okHttpClient, logger)
     }

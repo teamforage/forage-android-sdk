@@ -1,7 +1,6 @@
 package com.joinforage.forage.android.vault
 
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
@@ -30,10 +29,8 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
     }
 
     companion object {
-        private val mockEncryptionKeys = EncryptionKeys("vgs-alias", "bt-alias")
         private val mockPaymentMethod = MockServiceFactory.ExpectedData.mockPaymentMethod
         private val mockVaultParams = VaultSubmitterParams(
-            encryptionKeys = mockEncryptionKeys,
             idempotencyKey = "mock-idempotency-key",
             merchantId = "1234567",
             path = "/api/payments/abcdefg123/capture/",
@@ -179,29 +176,18 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
 
     @Test
     fun `grabs the correct vault token`() = runTest {
-        val basisTheorySubmitter = object : ConcreteVaultSubmitter(
+        val forageSubmitter = object : ConcreteVaultSubmitter(
             collector = mockCollector,
             logger = mockLogger
         ) {
             override fun getVaultToken(paymentMethod: PaymentMethod): String? {
-                return pickVaultTokenByIndex(paymentMethod, 1)
+                return pickVaultTokenByIndex(paymentMethod, 2)
             }
         }
 
-        val vgsSubmitter = object : ConcreteVaultSubmitter(
-            collector = mockCollector,
-            logger = mockLogger
-        ) {
-            override fun getVaultToken(paymentMethod: PaymentMethod): String? {
-                return pickVaultTokenByIndex(paymentMethod, 0)
-            }
-        }
+        val forageVaultToken = forageSubmitter.getVaultToken(mockVaultParams.paymentMethod)
 
-        val basisTheoryVaultToken = basisTheorySubmitter.getVaultToken(mockVaultParams.paymentMethod)
-        val vgsVaultToken = vgsSubmitter.getVaultToken(mockVaultParams.paymentMethod)
-
-        assertEquals("tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7", vgsVaultToken)
-        assertEquals("basis-theory-token", basisTheoryVaultToken)
+        assertEquals("forage-token", forageVaultToken)
     }
 
     @Test
@@ -220,11 +206,11 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         concreteVaultSubmitter.submit(mockVaultParams)
 
         assertThat(mockLogger.infoLogs).anyMatch { logEntry ->
-            logEntry.getMessage().contains("[Metrics] Received response from vgs proxy")
+            logEntry.getMessage().contains("[Metrics] Received response from forage proxy")
         }
         val attributes = mockLogger.getMetricsLog().getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("capture")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("vault_response")
         assertThat(attributes.getValue("log_type").toString()).isEqualTo("metric")
@@ -247,7 +233,6 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
 
         concreteVaultSubmitter.submit(
             VaultSubmitterParams(
-                encryptionKeys = mockEncryptionKeys,
                 idempotencyKey = "mock-idempotency-key",
                 merchantId = "1234567",
                 path = "/api/payment_methods/abcdefg123/balance/",
@@ -261,11 +246,11 @@ class AbstractVaultSubmitterTest : MockServerSuite() {
         val metricsLog = mockLogger.getMetricsLog()
 
         assertThat(mockLogger.infoLogs).anyMatch { logEntry ->
-            logEntry.getMessage().contains("[Metrics] Received response from vgs proxy")
+            logEntry.getMessage().contains("[Metrics] Received response from forage proxy")
         }
         val attributes = metricsLog.getAttributes()
         assertThat(attributes.getValue("response_time_ms").toString().toDouble()).isGreaterThan(0.0)
-        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("vgs")
+        assertThat(attributes.getValue("vault_type").toString()).isEqualTo("forage")
         assertThat(attributes.getValue("action").toString()).isEqualTo("balance")
         assertThat(attributes.getValue("event_name").toString()).isEqualTo("vault_response")
         assertThat(attributes.getValue("path").toString()).isEqualTo("/api/payment_methods/abcdefg123/balance/")
@@ -281,10 +266,7 @@ internal open class ConcreteVaultSubmitter(
     collector = collector,
     logger = logger
 ) {
-    override val vaultType: VaultType = VaultType.VGS_VAULT_TYPE
-    override fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String {
-        return "mock-encryption-key-alias"
-    }
+    override val vaultType: VaultType = VaultType.FORAGE_VAULT_TYPE
 
     override suspend fun submitProxyRequest(
         vaultProxyRequest: VaultProxyRequest

@@ -4,15 +4,12 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
-import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
 import com.joinforage.forage.android.fixtures.givenPaymentRef
-import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsFailedPayment
 import com.joinforage.forage.android.fixtures.returnsFailedPaymentMethod
 import com.joinforage.forage.android.fixtures.returnsPayment
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
-import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
 import kotlinx.coroutines.test.runTest
@@ -41,20 +38,7 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should return a failure when the getting the encryption key fails`() = runTest {
-        server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
-
-        val response = executeDeferPaymentCapture()
-
-        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val clientError = response as ForageApiResponse.Failure
-
-        assertThat(clientError.error.message).contains("Authentication credentials were not provided.")
-    }
-
-    @Test
-    fun `it should return a failure when VGS returns a failure`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+    fun `it should return a failure when Rosetta returns a failure`() = runTest {
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
@@ -68,7 +52,6 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
     @Test
     fun `it should return a failure when the get payment returns a failure`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsFailedPayment()
 
         val response = executeDeferPaymentCapture()
@@ -85,7 +68,6 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
     @Test
     fun `it should return a failure when the get payment method returns a failure`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsFailedPaymentMethod()
 
@@ -104,7 +86,6 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
     @Test
     fun `it should fail on Vault proxy PIN submission`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
@@ -126,7 +107,6 @@ class DeferPaymentCaptureRepositoryTest : MockServerSuite() {
 
     @Test
     fun `it should succeed with empty string response`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentRef().returnsPayment()
         server.givenPaymentMethodRef().returnsPaymentMethod()
