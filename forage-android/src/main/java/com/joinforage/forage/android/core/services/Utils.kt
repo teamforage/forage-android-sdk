@@ -34,7 +34,6 @@ internal object ForageConstants {
     object PathSegment {
         const val API = "api"
         const val PAYMENT_METHODS = "payment_methods"
-        const val MESSAGE = "message"
         const val PAYMENTS = "payments"
         const val REFUNDS = "refunds"
     }
