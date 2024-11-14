@@ -83,8 +83,8 @@ class StrictForEmptyInputTest {
 
     @Test
     fun `cardNumber is the shared ND-SD card number`() {
-        val longMaineNumber: String = "5081321111111111" // North Dakota/South Dakota is 508132
-        val state = PanInputState.forEmptyInput().handleChangeEvent(longMaineNumber)
+        val longDakotaNumber: String = "5081321111111111" // North Dakota/South Dakota is 508132
+        val state = PanInputState.forEmptyInput().handleChangeEvent(longDakotaNumber)
 
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
