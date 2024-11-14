@@ -1,5 +1,5 @@
 {
-  "path": "/api/message/1c53e9e0-92e9-4568-a128-deecf4c2194a/",
+  "path": "/api/payments/abc123ref/capture",
   "errors": [
     {
       "code": "missing_merchant_account",

@@ -4,11 +4,8 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
-import com.joinforage.forage.android.fixtures.givenEncryptionKey
 import com.joinforage.forage.android.fixtures.givenPaymentMethodRef
-import com.joinforage.forage.android.fixtures.returnsEncryptionKeySuccessfully
 import com.joinforage.forage.android.fixtures.returnsPaymentMethod
-import com.joinforage.forage.android.fixtures.returnsUnauthorizedEncryptionKey
 import com.joinforage.forage.android.mock.MockServiceFactory
 import com.joinforage.forage.android.mock.MockVaultSubmitter
 import kotlinx.coroutines.test.runTest
@@ -37,23 +34,10 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
     }
 
     @Test
-    fun `it should return a failure when the getting the encryption key fails`() = runTest {
-        server.givenEncryptionKey().returnsUnauthorizedEncryptionKey()
-
-        val response = executeCheckBalance()
-
-        assertThat(response).isExactlyInstanceOf(ForageApiResponse.Failure::class.java)
-        val clientError = response as ForageApiResponse.Failure
-
-        assertThat(clientError.error.message).contains("Authentication credentials were not provided.")
-    }
-
-    @Test
-    fun `it should return a failure when VGS returns a failure`() = runTest {
-        server.givenEncryptionKey().returnsEncryptionKeySuccessfully()
+    fun `it should return a failure when Forage returns a failure`() = runTest {
         server.givenPaymentMethodRef().returnsPaymentMethod()
 
-        val failureResponse = ForageApiResponse.Failure(500, "unknown_server_error", "Some error message from VGS")
+        val failureResponse = ForageApiResponse.Failure(500, "unknown_server_error", "Some error message from Rosetta")
         setMockVaultResponse(failureResponse)
 
         val response = executeCheckBalance()
@@ -74,9 +58,5 @@ class CheckBalanceRepositoryTest : MockServerSuite() {
             path = "/api/payment_methods/${expectedData.paymentMethodRef}/balance/",
             response = response
         )
-    }
-
-    companion object {
-        private const val MAX_POLL_MESSAGE_ATTEMPTS = 10
     }
 }

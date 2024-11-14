@@ -55,7 +55,7 @@ internal enum class EventOutcome(val value: String) {
 
 internal enum class EventName(val value: String) {
     /*
-    VAULT_RESPONSE refers to a response from the VGS or BT submit actions.
+    VAULT_RESPONSE refers to a response from the Rosetta submit actions.
      */
     VAULT_RESPONSE("vault_response"),
 
@@ -63,8 +63,7 @@ internal enum class EventName(val value: String) {
     CUSTOMER_PERCEIVED_RESPONSE refers to the response from a balance or capture action. There are
     multiple chained requests that come from the client when executing a balance or capture action.
     Ex of a balance action:
-    [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT -> [GET] Poll for Response ->
-    [GET] PaymentMethod -> Return Balance
+    [GET] PaymentMethod -> [POST] to Rosetta -> Return Balance
      */
     CUSTOMER_PERCEIVED_RESPONSE("customer_perceived_response");
 
@@ -120,17 +119,15 @@ internal abstract class ResponseMonitor<T>(metricsLogger: Log? = Log.getInstance
 }
 
 /*
-    VaultProxyResponseMonitor is used to track the response time from the VGS and BT submit
-    functions. The timer begins when a balance or capture request is submitted to VGS/BT
+    VaultProxyResponseMonitor is used to track the response time from the Rosetta submit
+    function. The timer begins when a balance or capture request is submitted to Rosetta
     and ends when a response is received by the SDK.
      */
-internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor<VaultProxyResponseMonitor>(metricsLogger) {
-    private var vaultType: VaultType? = null
+internal class VaultProxyResponseMonitor(userAction: UserAction, metricsLogger: Log?) : ResponseMonitor<VaultProxyResponseMonitor>(metricsLogger) {
     private var userAction: UserAction? = null
     private var eventName: EventName = EventName.VAULT_RESPONSE
 
     init {
-        this.vaultType = vault
         this.userAction = userAction
     }
 
@@ -150,7 +147,7 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
             return
         }
 
-        val vaultType = vaultType
+        val vaultType = VaultType.FORAGE_VAULT_TYPE
         val userAction = userAction
 
         val forageErrorCodeOrNull = forageErrorCode ?: UnknownForageErrorCode.UNKNOWN
@@ -178,17 +175,15 @@ internal class VaultProxyResponseMonitor(vault: VaultType, userAction: UserActio
     that come from the client when executing a balance or capture action. The timer begins when the
     first HTTP request is sent from the SDK and ends when the the SDK returns information back to
     the user. Ex of a balance action:
-    Timer Begins -> [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT ->
+    Timer Begins -> [GET] PaymentMethod -> [POST] to Rosetta ->
     [GET] Poll for Response -> [GET] PaymentMethod -> Timer Ends -> Return Balance
      */
-internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: UserAction, metricsLogger: Log?) : ResponseMonitor<CustomerPerceivedResponseMonitor>(metricsLogger) {
-    private var vaultType: VaultType? = null
+internal class CustomerPerceivedResponseMonitor(userAction: UserAction, metricsLogger: Log?) : ResponseMonitor<CustomerPerceivedResponseMonitor>(metricsLogger) {
     private var userAction: UserAction? = null
     private var eventOutcome: EventOutcome? = null
     private var eventName: EventName = EventName.CUSTOMER_PERCEIVED_RESPONSE
 
     init {
-        this.vaultType = vault
         this.userAction = userAction
     }
 
@@ -232,7 +227,7 @@ internal class CustomerPerceivedResponseMonitor(vault: VaultType, userAction: Us
             return
         }
 
-        val vaultType = vaultType
+        val vaultType = VaultType.FORAGE_VAULT_TYPE
         val userAction = userAction
 
         val forageErrorCodeOrNull = forageErrorCode ?: UnknownForageErrorCode.UNKNOWN

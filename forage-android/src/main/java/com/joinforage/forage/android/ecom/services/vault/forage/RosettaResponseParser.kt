@@ -6,7 +6,7 @@ import com.joinforage.forage.android.core.services.vault.VaultResponseParser
 internal class RosettaResponseParser(rosettaResponse: ForageApiResponse<String>) : VaultResponseParser {
     override val isNullResponse: Boolean = false
 
-    // Unlike VGS and Basis Theory, Vault-specific errors are handled in
+    // Vault-specific errors are handled in
     // the try..catch block that makes the request to the vault, so we
     // just return null here.
     override val vaultError: ForageApiResponse.Failure? = null

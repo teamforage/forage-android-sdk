@@ -2,7 +2,6 @@ package com.joinforage.forage.android.core.services.vault
 
 import com.joinforage.forage.android.core.services.ForageConstants
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
@@ -18,7 +17,6 @@ internal val IncompletePinError = ForageApiResponse.Failure(
 )
 
 internal open class VaultSubmitterParams(
-    open val encryptionKeys: EncryptionKeys,
     open val idempotencyKey: String,
     open val merchantId: String,
     open val path: String,
@@ -56,7 +54,6 @@ internal abstract class AbstractVaultSubmitter(
         }
 
         val vaultToken = getVaultToken(params.paymentMethod)
-        val encryptionKey = parseEncryptionKey(params.encryptionKeys)
 
         // if a vault provider is missing a token, we will
         // gracefully fail here
@@ -67,7 +64,6 @@ internal abstract class AbstractVaultSubmitter(
 
         // ========= USED FOR REPORTING IMPORTANT METRICS =========
         val proxyResponseMonitor = VaultProxyResponseMonitor(
-            vault = vaultType,
             userAction = params.userAction,
             metricsLogger = logger
         )
@@ -78,7 +74,6 @@ internal abstract class AbstractVaultSubmitter(
 
         val vaultProxyRequest = buildProxyRequest(
             params = params,
-            encryptionKey = encryptionKey,
             vaultToken = vaultToken
         ).setPath(params.path).setParams(params)
 
@@ -99,17 +94,14 @@ internal abstract class AbstractVaultSubmitter(
     }
 
     // abstract methods
-    internal abstract fun parseEncryptionKey(encryptionKeys: EncryptionKeys): String
     internal abstract suspend fun submitProxyRequest(vaultProxyRequest: VaultProxyRequest): ForageApiResponse<String>
     internal abstract fun getVaultToken(paymentMethod: PaymentMethod): String?
 
     // concrete methods
     protected open fun buildProxyRequest(
         params: VaultSubmitterParams,
-        encryptionKey: String,
         vaultToken: String
     ) = VaultProxyRequest.emptyRequest()
-        .setHeader(ForageConstants.Headers.X_KEY, encryptionKey)
         .setHeader(ForageConstants.Headers.MERCHANT_ACCOUNT, params.merchantId)
         .setHeader(ForageConstants.Headers.IDEMPOTENCY_KEY, params.idempotencyKey)
         .setHeader(ForageConstants.Headers.TRACE_ID, logger.getTraceIdValue())

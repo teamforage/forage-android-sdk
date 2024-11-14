@@ -1,7 +1,5 @@
 package com.joinforage.forage.android.core.services.vault
 
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
@@ -12,7 +10,6 @@ import com.joinforage.forage.android.core.services.telemetry.UserAction
 
 internal class CapturePaymentRepository(
     private val vaultSubmitter: VaultSubmitter,
-    private val encryptionKeyService: EncryptionKeyService,
     private val paymentService: PaymentService,
     private val paymentMethodService: PaymentMethodService,
     private val logger: Log
@@ -22,10 +19,6 @@ internal class CapturePaymentRepository(
         paymentRef: String,
         sessionToken: String
     ): ForageApiResponse<String> {
-        val encryptionKeys = when (val response = encryptionKeyService.getEncryptionKey()) {
-            is ForageApiResponse.Success -> EncryptionKeys.ModelMapper.from(response.data)
-            else -> return response
-        }
         val paymentMethodRef = when (val response = paymentService.getPayment(paymentRef)) {
             is ForageApiResponse.Success -> Payment.getPaymentMethodRef(response.data)
             else -> return response
@@ -37,7 +30,6 @@ internal class CapturePaymentRepository(
 
         return vaultSubmitter.submit(
             params = VaultSubmitterParams(
-                encryptionKeys = encryptionKeys,
                 idempotencyKey = paymentRef,
                 merchantId = merchantId,
                 path = AbstractVaultSubmitter.capturePaymentPath(paymentRef),

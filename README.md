@@ -52,7 +52,4 @@ The `/sample-app/` folder in this repository contains a very simple integration 
 - Minimum API Level Android 5.0 (API level 21)
 - [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) v1.6.4
 - 3rd party libraries:
-  - [VGS-Collect-Android](https://github.com/verygoodsecurity/vgs-collect-android) v1.7.3
-  - [Basis-Theory-Android](https://github.com/Basis-Theory/basistheory-android) v2.5.0
   - [OkHttp](https://github.com/square/okhttp) v4.10.0
-  - [Launch Darkly](https://github.com/launchdarkly/android-client-sdk) v4.2.1

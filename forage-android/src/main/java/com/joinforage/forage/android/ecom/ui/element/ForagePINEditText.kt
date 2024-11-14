@@ -16,10 +16,7 @@ import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
-import com.joinforage.forage.android.ecom.services.launchdarkly.LDManager
-import com.joinforage.forage.android.ecom.ui.vault.bt.BTVaultWrapper
 import com.joinforage.forage.android.ecom.ui.vault.rosetta.RosettaPinElement
-import com.launchdarkly.sdk.android.LDConfig
 
 /**
  * A [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -57,7 +54,6 @@ class ForagePINEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
-    private val btVaultWrapper: BTVaultWrapper
     private val rosettaPinElement: RosettaPinElement
 
     /**
@@ -91,34 +87,17 @@ class ForagePINEditText @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ForagePINEditText, defStyleAttr, 0)
             .apply {
                 try {
-
-                    // at this point in time, we do not know the environment and
-                    // we are operating and thus do not know whether to add
-                    // BTVaultWrapper or ForageVaultElement to the UI.
-                    // But that's OK. We can hedge and instantiate all of them.
-                    // Then, within setForageConfig, once we know the environment
-                    // and are thus able to initial LaunchDarkly and find out
-                    // whether to use BT or Forage. So, below we are hedging.
-                    btVaultWrapper = BTVaultWrapper(context, attrs, defStyleAttr)
                     rosettaPinElement = RosettaPinElement(context, attrs, defStyleAttr)
-                    // ensure all wrappers init with the
-                    // same typeface (or the attributes)
-                    btVaultWrapper.typeface = rosettaPinElement.typeface
+                    val textSize = getDimension(R.styleable.ForagePINEditText_textSize, -1f)
+                    if (textSize != -1f) {
+                        rosettaPinElement.setTextSize(textSize)
+                    }
                 } finally {
                     recycle()
                 }
             }
 
-        // The following pieces of code are to fix height
-        // differences in the appearance of Rosetta-backed
-        // vs BT-backed ForagePINEditText in the case where
-        // no app:inputHeight or app:inputWidth are set.
-
-        // zero out the padding for Basis Theory element
-        val btFrame = btVaultWrapper.getTextElement()
-        val btTextElement = btFrame.getChildAt(0) as AppCompatEditText
-        btTextElement.setPadding(0, 0, 0, 0)
-
+        // TODO: Make sure this works still
         // ensure Rosetta's textSize is the same as BTs textSize
         // There are three cases:
         //  1) using XML layouts and somebody passes app:textSize ->
@@ -133,7 +112,7 @@ class ForagePINEditText @JvmOverloads constructor(
         //  3) create dynamic instance of ForagePINEditText and
         //      never call setTextSize ->
         //      This line of code fixes that issue
-        rosettaPinElement.setTextSize(btTextElement.textSize)
+//        rosettaPinElement.setTextSize(btTextElement.textSize)
     }
 
     private fun initWithForageConfig(forageConfig: ForageConfig) {
@@ -143,11 +122,7 @@ class ForagePINEditText @JvmOverloads constructor(
         val logger = Log.getInstance()
         logger.initializeDD(context, forageConfig)
 
-        // defer to the concrete subclass for the details of obtaining
-        // and instantiating the backing vault instance. We just need
-        // to guarantee that the vault is instantiated prior to adding
-        // it to the parent view
-        _SET_ONLY_vault = determineBackingVault(forageConfig, logger)
+        _SET_ONLY_vault = rosettaPinElement
 
         _linearLayout.addView(vault.getTextElement())
         _linearLayout.addView(getLogoImageViewLayout(context))
@@ -183,29 +158,11 @@ class ForagePINEditText @JvmOverloads constructor(
         forageConfigManager.forageConfig = forageConfig
     }
 
-    private fun determineBackingVault(forageConfig: ForageConfig, logger: Log): VaultWrapper {
-        // initialize Launch Darkly singleton
-        val ldMobileKey = EnvConfig.fromForageConfig(forageConfig).ldMobileKey
-        val ldConfig = LDConfig.Builder().mobileKey(ldMobileKey).build()
-        LDManager.initialize(context.applicationContext as Application, ldConfig)
-
-        // decide on a vault provider and the corresponding vault wrapper
-        val vaultType = LDManager.getVaultProvider(logger)
-        return if (vaultType == VaultType.BT_VAULT_TYPE) {
-            btVaultWrapper
-        } else {
-            rosettaPinElement
-        }
-    }
-
     internal fun getForageConfig() = forageConfigManager.forageConfig
 
     override var typeface: Typeface?
-        get() = if (vault == btVaultWrapper) btVaultWrapper.typeface else rosettaPinElement.typeface
+        get() = rosettaPinElement.typeface
         set(value) {
-            // keep all vault providers in sync regardless of
-            // whether they were added to the UI
-            btVaultWrapper.typeface = value
             rosettaPinElement.typeface = value
         }
 }
