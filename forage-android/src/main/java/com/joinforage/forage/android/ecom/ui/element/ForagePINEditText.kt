@@ -1,15 +1,11 @@
 package com.joinforage.forage.android.ecom.ui.element
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Typeface
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatEditText
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
-import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
@@ -96,23 +92,6 @@ class ForagePINEditText @JvmOverloads constructor(
                     recycle()
                 }
             }
-
-        // TODO: Make sure this works still
-        // ensure Rosetta's textSize is the same as BTs textSize
-        // There are three cases:
-        //  1) using XML layouts and somebody passes app:textSize ->
-        //      both RosettaPinElement and BTVaultWrapper read
-        //      that value and independently set the correct textSize
-        //  2) using XML layouts and app:textSize is not set ->
-        //      This line of code fixes that issue
-        //  3) create dynamic instance of ForagePINEditText and
-        //      call setTextSize ->
-        //      setTextSize calls vault.setTextSize so the only
-        //      visible text field will have the correct textSize
-        //  3) create dynamic instance of ForagePINEditText and
-        //      never call setTextSize ->
-        //      This line of code fixes that issue
-//        rosettaPinElement.setTextSize(btTextElement.textSize)
     }
 
     private fun initWithForageConfig(forageConfig: ForageConfig) {
