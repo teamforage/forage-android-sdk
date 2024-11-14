@@ -20,7 +20,11 @@ internal class PanInputState(
     val validationError: ElementValidationError? = validators
         .map { it.checkForValidationError(normalizedPanText) }
         .firstOrNull { it != null }
-    val usState: USState? = queryForStateIIN(normalizedPanText)?.publicEnum
+
+    // Some states, like Maine, issue PANs with differing
+    // lengths (e.g. 16 and 19). It's Maine in both cases so
+    // doing .firstOrNull supports() is sufficient
+    val usState: USState? = queryForStateIIN(normalizedPanText).firstOrNull()?.publicEnum
 
     fun handleChangeEvent(newPanText: String) = PanInputState(
         newPanText,
