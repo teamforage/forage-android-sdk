@@ -3,6 +3,7 @@ package com.joinforage.forage.android.pos.services.forageapi.refund
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.hasNonNull
+import com.joinforage.forage.android.core.services.toMap
 import org.json.JSONObject
 
 /**
@@ -147,4 +148,4 @@ data class Refund(
     }
 }
 
-internal fun JSONObject.toMap(): Map<String, String> = keys().asSequence().associateWith { get(it).toString() }
+

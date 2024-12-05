@@ -4,6 +4,7 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balan
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.getStringOrNull
 import com.joinforage.forage.android.core.services.hasNonNull
+import com.joinforage.forage.android.core.services.toMap
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -156,4 +157,4 @@ data class Payment(
 internal fun JSONArray.toListOfStrings(): List<String> =
     List(this.length()) { index -> this.getString(index) }
 
-internal fun JSONObject.toMap(): Map<String, String> = keys().asSequence().associateWith { get(it).toString() }
+

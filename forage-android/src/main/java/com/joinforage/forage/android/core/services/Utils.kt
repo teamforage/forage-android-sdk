@@ -2,6 +2,7 @@ package com.joinforage.forage.android.core.services
 
 import okhttp3.HttpUrl
 import org.json.JSONObject
+import kotlin.random.Random
 
 internal fun HttpUrl.Builder.addTrailingSlash(): HttpUrl.Builder {
     return this.addPathSegment("")
@@ -84,3 +85,12 @@ internal fun JSONObject.getStringOrNull(fieldName: String): String? {
 internal fun JSONObject.hasNonNull(fieldName: String): Boolean {
     return has(fieldName) && !isNull(fieldName)
 }
+
+fun generateTraceId(): String {
+    // Seed the random number generator with current time
+    val random = Random(System.currentTimeMillis())
+    val length = 14
+    return "44" + (1..length).map { random.nextInt(10) }.joinToString("")
+}
+
+internal fun JSONObject.toMap(): Map<String, String> = keys().asSequence().associateWith { get(it).toString() }
