@@ -32,4 +32,13 @@ data class PaymentMethod(
         card = EbtCard(jsonObject.getJSONObject("card")),
         reusable = jsonObject.optBoolean("reusable", true)
     )
+
+    val fullPan: String
+        get() {
+            try {
+                return (card as EbtCard).number!!
+            } catch (e: Exception) {
+                throw EbtCard.MissingFullPanException(ref)
+            }
+        }
 }
