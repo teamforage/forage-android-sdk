@@ -2,7 +2,7 @@ package com.joinforage.android.example.ui.pos.data
 
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.pos.services.CardholderInteraction
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
 
 data class POSUIState(
     val merchantId: String = "c67e8569c1", // <your_merchant_id>

@@ -29,9 +29,9 @@ import com.joinforage.forage.android.pos.services.CheckBalanceParams
 import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
 import com.joinforage.forage.android.pos.services.DeferPaymentRefundParams
 import com.joinforage.forage.android.pos.services.ForageTerminalSDK
-import com.joinforage.forage.android.pos.services.MagSwipeInteraction
-import com.joinforage.forage.android.pos.services.ManualEntryInteraction
 import com.joinforage.forage.android.pos.services.RefundPaymentParams
+import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
+import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
