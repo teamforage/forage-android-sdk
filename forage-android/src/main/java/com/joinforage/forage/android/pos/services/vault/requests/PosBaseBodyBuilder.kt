@@ -21,10 +21,10 @@ internal class PosBaseBodyBuilder(
             "pos_terminal",
             (body.optJSONObject("pos_terminal") ?: JSONObject()).apply {
                 put(
-                    "ecl_fallback",
+                    "card_details",
                     JSONObject().apply {
-                        put("terminal_capabilities", capabilities)
-                        put("cardholder_interaction_type", interaction.type.name)
+                        put("terminal_capabilities", capabilities.value)
+                        put("pos_entry_mode", interaction.type.value)
                         if (interaction.type == CardholderInteractionType.KeyEntry) {
                             put("manual_entry_pan", interaction.rawPan)
                         } else {
