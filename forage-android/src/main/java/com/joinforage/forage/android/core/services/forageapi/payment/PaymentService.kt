@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.core.services.forageapi.payment
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.GetPaymentRequest
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.requests.GetPaymentRequest
 
 interface IPaymentService {
     suspend fun fetchPayment(paymentRef: String): Payment

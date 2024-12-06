@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core.services.forageapi
+package com.joinforage.forage.android.core.services.forageapi.requests
 
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig

@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.pos
 
-import com.joinforage.forage.android.core.services.forageapi.BaseApiRequest
-import com.joinforage.forage.android.core.services.forageapi.HttpRequestFailedException
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.HttpRequestFailedException
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
 
 internal class TestFailedRequestHttpEngine(private val exception: Exception) : IHttpEngine {
     override suspend fun sendRequest(request: BaseApiRequest): String {

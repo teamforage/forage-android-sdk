@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core.services.forageapi
+package com.joinforage.forage.android.core.services.forageapi.requests
 
 internal abstract class BaseApiRequest(
     val url: String,

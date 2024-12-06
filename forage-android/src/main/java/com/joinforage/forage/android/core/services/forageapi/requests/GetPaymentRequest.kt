@@ -1,14 +1,15 @@
-package com.joinforage.forage.android.core.services.forageapi
+package com.joinforage.forage.android.core.services.forageapi.requests
 
 import com.joinforage.forage.android.core.services.ForageConfig
 
-internal class GetPaymentMethodRequest(
-    paymentMethodRef: String,
+internal class GetPaymentRequest(
+    paymentRef: String,
     forageConfig: ForageConfig,
     traceId: String
 ) : ClientApiRequest.GetRequest(
-    path = "api/payment_methods/$paymentMethodRef/",
+    path = "api/payments/$paymentRef/",
     forageConfig,
     traceId,
     Headers.ApiVersion.V_2023_05_15
+
 )

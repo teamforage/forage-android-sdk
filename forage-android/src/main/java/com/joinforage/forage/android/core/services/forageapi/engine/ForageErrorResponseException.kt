@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core.services.forageapi
+package com.joinforage.forage.android.core.services.forageapi.engine
 
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 

@@ -1,7 +1,9 @@
-package com.joinforage.forage.android.core.services.forageapi
+package com.joinforage.forage.android.core.services.forageapi.engine
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
+import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
+import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
