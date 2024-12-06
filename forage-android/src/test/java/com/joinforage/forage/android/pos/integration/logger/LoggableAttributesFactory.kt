@@ -1,13 +1,13 @@
 package com.joinforage.forage.android.pos.integration.logger
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.UserAction
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.MetricAttributes
 import com.joinforage.forage.android.core.services.telemetry.MetricName
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.telemetry.extractTenantIdFromToken
 import com.joinforage.forage.android.pos.integration.base64.JavaBase64Util
 

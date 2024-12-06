@@ -1,9 +1,9 @@
 package com.joinforage.forage.android.pos.integration.forageapi.paymentmethod
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.ClientApiRequest
-import com.joinforage.forage.android.core.services.forageapi.Headers
-import com.joinforage.forage.android.core.services.forageapi.makeApiUrl
+import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
+import com.joinforage.forage.android.core.services.forageapi.requests.Headers
+import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
 import org.json.JSONObject
 
 internal class CreateManualEntryPaymentMethodRequest(

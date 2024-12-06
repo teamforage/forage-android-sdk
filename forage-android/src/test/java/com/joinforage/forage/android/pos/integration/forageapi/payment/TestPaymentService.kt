@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.pos.integration.forageapi.payment
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.ForageErrorResponseException
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService

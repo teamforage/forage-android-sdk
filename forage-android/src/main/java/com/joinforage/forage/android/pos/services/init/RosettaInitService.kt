@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos.services.init
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import org.json.JSONObject
 
 internal data class SignedCertificate(val certificate: String) {

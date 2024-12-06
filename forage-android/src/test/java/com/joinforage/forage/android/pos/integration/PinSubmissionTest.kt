@@ -2,11 +2,8 @@ package com.joinforage.forage.android.pos.integration
 
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.UserAction
-import com.joinforage.forage.android.core.services.forageapi.BaseApiRequest
-import com.joinforage.forage.android.core.services.forageapi.ForageErrorResponseException
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
-import com.joinforage.forage.android.core.services.forageapi.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.FailedToReadKsnFileError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.IncompletePinError
@@ -19,9 +16,11 @@ import com.joinforage.forage.android.core.services.forageapi.payment.SubmissionT
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
 import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.Loggable
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.pos.TestFailedRequestHttpEngine
 import com.joinforage.forage.android.pos.TestStringResponseHttpEngine
@@ -32,7 +31,7 @@ import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.Tes
 import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.dressUpPanAsTrack2
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
-import com.joinforage.forage.android.pos.services.MagSwipeInteraction
+import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
 import com.joinforage.forage.android.pos.services.encryption.storage.IPersistentStorage
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
@@ -61,7 +60,6 @@ class PinSubmissionTest {
         private val badPIN = "1234"
         private val validPIN = pan.takeLast(4)
         private val env = EnvConfig.Dev
-        private val httpEngine = OkHttpEngine()
         private val traceId = generateTraceId()
         private val ksnFileManager = StringKsnManager()
         private val keyRegisters = InMemoryKeyRegisters()

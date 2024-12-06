@@ -1,9 +1,9 @@
 package com.joinforage.forage.android.pos.services.vault.requests
 
 import com.joinforage.forage.android.core.services.vault.requests.IBaseBodyBuilder
-import com.joinforage.forage.android.pos.services.CardholderInteraction
-import com.joinforage.forage.android.pos.services.CardholderInteractionType
-import com.joinforage.forage.android.pos.services.TerminalCapabilities
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteractionType
+import com.joinforage.forage.android.pos.services.emvchip.TerminalCapabilities
 import org.json.JSONObject
 
 internal class PosBaseBodyBuilder(

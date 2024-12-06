@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.core.services.vault.errors
 
-import com.joinforage.forage.android.core.services.forageapi.HttpRequestFailedException
+import com.joinforage.forage.android.core.services.forageapi.engine.HttpRequestFailedException
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.IncompletePinError
 import com.joinforage.forage.android.core.services.forageapi.network.PaymentMethodErrorResponse

@@ -2,13 +2,15 @@ package com.joinforage.forage.android.pos.services
 
 import android.content.Context
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.telemetry.DatadogLogger
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.state.ElementState
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
+import com.joinforage.forage.android.pos.services.emvchip.TerminalCapabilities
 import com.joinforage.forage.android.pos.services.encryption.certificate.RsaKeyManager
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.storage.AndroidKeyStoreKeyRegisters

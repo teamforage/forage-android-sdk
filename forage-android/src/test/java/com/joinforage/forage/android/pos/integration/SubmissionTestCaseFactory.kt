@@ -1,15 +1,15 @@
 package com.joinforage.forage.android.core.services.forageapi.payment
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.UserAction
-import com.joinforage.forage.android.core.services.forageapi.ClientApiRequest
-import com.joinforage.forage.android.core.services.forageapi.Headers
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
-import com.joinforage.forage.android.core.services.forageapi.makeApiUrl
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
+import com.joinforage.forage.android.core.services.forageapi.requests.Headers
+import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.ISecurePinCollector
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.errors.BaseErrorStrategy
@@ -18,8 +18,8 @@ import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequest
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.pos.TestStringResponseHttpEngine
 import com.joinforage.forage.android.pos.integration.logger.InMemoryLogger
-import com.joinforage.forage.android.pos.services.CardholderInteraction
-import com.joinforage.forage.android.pos.services.TerminalCapabilities
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
+import com.joinforage.forage.android.pos.services.emvchip.TerminalCapabilities
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.pos.services.vault.submission.PosBalanceCheckSubmission

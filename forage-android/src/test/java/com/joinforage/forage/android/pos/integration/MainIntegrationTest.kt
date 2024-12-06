@@ -1,8 +1,7 @@
 package com.joinforage.forage.android.pos.integration
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.UserAction
-import com.joinforage.forage.android.core.services.forageapi.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.EncryptionKeyGenerationError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
@@ -14,6 +13,7 @@ import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.Loggable
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
+import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.pos.integration.base64.JavaBase64Util
 import com.joinforage.forage.android.pos.integration.forageapi.getAccessToken
@@ -23,7 +23,7 @@ import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.Tes
 import com.joinforage.forage.android.pos.integration.logger.InMemoryLogger
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
-import com.joinforage.forage.android.pos.services.ManualEntryInteraction
+import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
 import com.joinforage.forage.android.pos.services.encryption.certificate.RsaKeyManager
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters

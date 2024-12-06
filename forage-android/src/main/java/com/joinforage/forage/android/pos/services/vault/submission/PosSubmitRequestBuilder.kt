@@ -1,11 +1,11 @@
 package com.joinforage.forage.android.pos.services.vault.submission
 
-import com.joinforage.forage.android.core.services.forageapi.ClientApiRequest
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
-import com.joinforage.forage.android.pos.services.CardholderInteraction
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.dukpt.SecureKeyStorageRegisters
 import com.joinforage.forage.android.pos.services.encryption.iso4.PinBlockIso4

@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos.integration.forageapi
 
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.services.forageapi.makeApiUrl
+import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
 import java.util.Base64
 
 internal fun makeBasicAuthHeader(username: String, password: String) =

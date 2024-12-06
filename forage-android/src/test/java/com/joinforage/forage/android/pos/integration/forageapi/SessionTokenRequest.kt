@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.pos.integration.forageapi
 
-import com.joinforage.forage.android.core.services.forageapi.OkHttpEngine
-import com.joinforage.forage.android.core.services.forageapi.makeApiUrl
-import com.joinforage.forage.android.core.services.forageapi.makeBearerAuthHeader
+import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
+import com.joinforage.forage.android.core.services.forageapi.requests.makeBearerAuthHeader
 import org.json.JSONObject
 
 internal class SessionTokenRequest(

@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.core.services.vault.submission
 
-import com.joinforage.forage.android.core.services.forageapi.ClientApiRequest
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 import com.joinforage.forage.android.core.services.vault.requests.IEcomBuildRequestDelegate

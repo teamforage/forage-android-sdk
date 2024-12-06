@@ -1,12 +1,12 @@
 package com.joinforage.forage.android.core.services.vault
 
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.forageapi.ClientApiRequest
-import com.joinforage.forage.android.core.services.forageapi.ForageErrorResponseException
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
+import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 
 internal class RosettaPinSubmitter(
     val plainTextPin: String,

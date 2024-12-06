@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos.integration.forageapi.paymentmethod
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 
