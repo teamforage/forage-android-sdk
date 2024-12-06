@@ -1,6 +1,10 @@
 package com.joinforage.forage.android.pos.emvchip
 
-import com.joinforage.forage.android.pos.services.emvchip.*
+import com.joinforage.forage.android.pos.services.emvchip.CardholderInteractionType
+import com.joinforage.forage.android.pos.services.emvchip.InsertEMVInteraction
+import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
+import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
+import com.joinforage.forage.android.pos.services.emvchip.TapEMVInteraction
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

@@ -44,5 +44,4 @@ class Track2Parser(track2Data: String) {
             "220" -> CardholderInteractionType.MagSwipeFallback
             else -> CardholderInteractionType.Unknown
         }
-
 }

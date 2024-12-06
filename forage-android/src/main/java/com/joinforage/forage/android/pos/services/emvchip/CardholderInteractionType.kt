@@ -6,5 +6,5 @@ enum class CardholderInteractionType {
     MagSwipeFallback,
     Insert,
     Tap,
-    Unknown,
+    Unknown
 }

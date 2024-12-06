@@ -6,4 +6,3 @@ interface CardholderInteraction {
     val track2Data: String?
     val emvField55Data: String?
 }
-
