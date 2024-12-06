@@ -14,14 +14,14 @@ import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.FileKsnManager
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
+import com.joinforage.forage.android.pos.services.init.AndroidBase64Util
+import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
+import com.joinforage.forage.android.pos.services.init.RosettaInitService
 import com.joinforage.forage.android.pos.services.vault.submission.PosBalanceCheckSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosCapturePaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosDeferCapturePaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosDeferRefundPaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosRefundPaymentSubmission
-import com.joinforage.forage.android.pos.services.init.AndroidBase64Util
-import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
-import com.joinforage.forage.android.pos.services.init.RosettaInitService
 import java.io.File
 
 /**
