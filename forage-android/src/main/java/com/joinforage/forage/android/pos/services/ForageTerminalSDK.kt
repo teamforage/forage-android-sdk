@@ -2,25 +2,26 @@ package com.joinforage.forage.android.pos.services
 
 import android.content.Context
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeyService
+import com.joinforage.forage.android.core.services.forageapi.OkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.telemetry.UserAction
+import com.joinforage.forage.android.core.services.telemetry.DatadogLogger
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.state.ElementState
+import com.joinforage.forage.android.pos.services.encryption.certificate.RsaKeyManager
+import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
+import com.joinforage.forage.android.pos.services.encryption.storage.AndroidKeyStoreKeyRegisters
+import com.joinforage.forage.android.pos.services.encryption.storage.FileKsnManager
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.pos.services.forageapi.refund.PosRefundService
-import com.joinforage.forage.android.pos.services.vault.DeferPaymentRefundRepository
-import com.joinforage.forage.android.pos.services.vault.PosCapturePaymentRepository
-import com.joinforage.forage.android.pos.services.vault.PosCheckBalanceRepository
-import com.joinforage.forage.android.pos.services.vault.PosDeferPaymentCaptureRepository
-import com.joinforage.forage.android.pos.services.vault.PosRefundPaymentRepository
-import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
+import com.joinforage.forage.android.pos.services.vault.submission.PosBalanceCheckSubmission
+import com.joinforage.forage.android.pos.services.vault.submission.PosCapturePaymentSubmission
+import com.joinforage.forage.android.pos.services.vault.submission.PosDeferCapturePaymentSubmission
+import com.joinforage.forage.android.pos.services.vault.submission.PosDeferRefundPaymentSubmission
+import com.joinforage.forage.android.pos.services.vault.submission.PosRefundPaymentSubmission
+import com.joinforage.forage.android.pos.services.init.AndroidBase64Util
+import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
+import com.joinforage.forage.android.pos.services.init.RosettaInitService
 import java.io.File
 
 /**
@@ -57,8 +58,25 @@ import java.io.File
  */
 class ForageTerminalSDK internal constructor(
     private val posTerminalId: String,
-    private val forageConfig: ForageConfig
+    private val forageConfig: ForageConfig,
+    private val ksnFileManager: KsnFileManager,
+    private val capabilities: TerminalCapabilities,
+    private val _logger: DatadogLogger
 ) {
+    private val traceId = _logger.traceId
+    internal val httpEngine = OkHttpEngine()
+    internal val paymentMethodService =
+        PaymentMethodService(
+            forageConfig,
+            traceId,
+            httpEngine
+        )
+    internal val paymentService =
+        PaymentService(
+            forageConfig,
+            traceId,
+            httpEngine
+        )
 
     companion object {
         /**
@@ -104,47 +122,45 @@ class ForageTerminalSDK internal constructor(
          * for DUKPT should reside. If no directory is supplied, the KSN file will live in the
          * root of the application's files directory.
          */
+
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
             posTerminalId: String,
             forageConfig: ForageConfig,
-            ksnDir: File = context.filesDir
+            ksnDir: File = context.filesDir,
+            capabilities: TerminalCapabilities = TerminalCapabilities.TapAndInsert
         ): ForageTerminalSDK {
-            val (merchantId, sessionToken) = forageConfig
-            val logSuffix = "on Terminal $posTerminalId for Merchant $merchantId"
-            val logger = Log.getInstance()
-            logger.initializeDD(context, forageConfig)
-            logger
-                .addAttribute("pos_terminal_id", posTerminalId)
-                .addAttribute("merchant_ref", merchantId)
-                .i("[POS] Executing ForageTerminalSDK.init() initialization sequence $logSuffix")
+            val dd = DatadogLogger.getPosDatadogInstance(context, forageConfig)
+            val logger = DatadogLogger.forPos(dd, forageConfig, posTerminalId)
+            val httpEngine = OkHttpEngine()
+            val ksnFileManager = FileKsnManager(ksnDir)
+            val rosetta = RosettaInitService(
+                forageConfig,
+                logger.traceId,
+                posTerminalId,
+                httpEngine
+            )
+            val base64Util = AndroidBase64Util()
+            val rsaKeyManager = RsaKeyManager(base64Util)
+            val keyRegisters = AndroidKeyStoreKeyRegisters()
 
-            try {
-                val ksnFileManager = KsnFileManager.byDir(ksnDir)
-                // STOPGAP to feed `context` to ForagePinSubmitter
-                RosettaPinSubmitter.ksnFileManager = ksnFileManager
+            PosTerminalInitializer(
+                ksnFileManager,
+                logger,
+                rosetta,
+                keyRegisters,
+                base64Util,
+                rsaKeyManager
+            ) { ksn -> DukptService(ksn, keyRegisters) }.safeInit()
 
-                val initializer = PosTerminalInitializer(
-                    logger = logger,
-                    ksnManager = ksnFileManager
-                )
-
-                initializer.execute(
-                    posTerminalId = posTerminalId,
-                    merchantId = merchantId,
-                    sessionToken = sessionToken
-                )
-
-                logger.i("[POS] Initialized ForageTerminalSDK using the init() method $logSuffix")
-            } catch (e: Exception) {
-                // clear file!
-
-                logger.e("[POS] Failed to initialize ForageTerminalSDK using the init() method.", e)
-                throw Exception("Failed to initialize the ForageTerminalSDK")
-            }
-
-            return ForageTerminalSDK(posTerminalId, forageConfig)
+            return ForageTerminalSDK(
+                posTerminalId,
+                forageConfig,
+                ksnFileManager,
+                capabilities,
+                logger
+            )
         }
     }
 
@@ -205,39 +221,19 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentMethodRef) = params
-        val config = forageConfig.envConfig
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("merchant_ref", forageConfig.merchantId)
-            .addAttribute("payment_method_ref", paymentMethodRef)
-            .i(
-                "[POS] Called checkBalance for PaymentMethod $paymentMethodRef on Terminal $posTerminalId"
-            )
-        val measurement = CustomerPerceivedResponseMonitor(
-            VaultType.FORAGE_VAULT_TYPE,
-            UserAction.BALANCE,
-            logger
-        )
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = forageConfig.sessionToken,
-            merchantId = forageConfig.merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-        val balanceResponse =
-            PosCheckBalanceRepository(
-                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
-                encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
-                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-                logger = logger
-            ).posCheckBalance(
-                merchantId = forageConfig.merchantId,
-                paymentMethodRef = paymentMethodRef,
-                posTerminalId = posTerminalId,
-                sessionToken = forageConfig.sessionToken
-            )
-        measurement.setEventOutcome(balanceResponse).logResult()
-        return balanceResponse
+        val (forageVaultElement, paymentMethodRef, interaction) = params
+        return PosBalanceCheckSubmission(
+            paymentMethodRef = paymentMethodRef,
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            paymentMethodService = paymentMethodService,
+            ksnFileManager = ksnFileManager,
+            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
+            interaction = interaction,
+            capabilities = capabilities,
+            forageConfig = forageConfig,
+            posTerminalId = posTerminalId,
+            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+        ).submit()
     }
 
     /**
@@ -306,39 +302,19 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentRef) = params
-        val config = forageConfig.envConfig
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("payment_ref", paymentRef)
-            .addAttribute("merchant_ref", forageConfig.merchantId)
-            .i("[POS] Called capturePayment for Payment $paymentRef")
-        val measurement = CustomerPerceivedResponseMonitor(
-            VaultType.FORAGE_VAULT_TYPE,
-            UserAction.CAPTURE,
-            logger
-        )
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = forageConfig.sessionToken,
-            merchantId = forageConfig.merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-        val captureResponse = PosCapturePaymentRepository(
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
-            encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
-            paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-            paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-            logger = logger
-        ).capturePosPayment(
-            merchantId = forageConfig.merchantId,
+        val (forageVaultElement, paymentRef, interaction) = params
+        return PosCapturePaymentSubmission(
             paymentRef = paymentRef,
-            sessionToken = forageConfig.sessionToken,
-            posTerminalId = posTerminalId
-        )
-
-        measurement.setEventOutcome(captureResponse).logResult()
-
-        return captureResponse
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            paymentMethodService = paymentMethodService,
+            paymentService = paymentService,
+            ksnFileManager = ksnFileManager,
+            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
+            interaction = interaction,
+            capabilities = capabilities,
+            forageConfig = forageConfig,
+            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+        ).submit()
     }
 
     /**
@@ -402,30 +378,19 @@ class ForageTerminalSDK internal constructor(
     suspend fun deferPaymentCapture(
         params: DeferPaymentCaptureParams
     ): ForageApiResponse<String> {
-        val (forageVaultElement, paymentRef) = params
-        val config = forageConfig.envConfig
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("payment_ref", paymentRef)
-            .addAttribute("merchant_ref", forageConfig.merchantId)
-            .i("[POS] Called deferPaymentCapture for Payment $paymentRef")
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = forageConfig.sessionToken,
-            merchantId = forageConfig.merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-        return PosDeferPaymentCaptureRepository(
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
-            encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
-            paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-            paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-            logger = logger
-        ).deferPosPaymentCapture(
-            merchantId = forageConfig.merchantId,
+        val (forageVaultElement, paymentRef, interaction) = params
+        return PosDeferCapturePaymentSubmission(
             paymentRef = paymentRef,
-            sessionToken = forageConfig.sessionToken,
-            posTerminalId
-        )
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            paymentMethodService = paymentMethodService,
+            paymentService = paymentService,
+            ksnFileManager = ksnFileManager,
+            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
+            interaction = interaction,
+            capabilities = capabilities,
+            forageConfig = forageConfig,
+            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+        ).submit()
     }
 
     /**
@@ -483,47 +448,23 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun refundPayment(params: RefundPaymentParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentRef, amount, reason) = params
-        val config = forageConfig.envConfig
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("payment_ref", paymentRef)
-            .addAttribute("merchant_ref", forageConfig.merchantId)
-            .i(
-                """
-                [POS] Called refundPayment for Payment $paymentRef
-                with amount: $amount
-                for reason: $reason
-                on Terminal: $posTerminalId
-                """.trimIndent()
-            )
-        val measurement = CustomerPerceivedResponseMonitor(
-            VaultType.FORAGE_VAULT_TYPE,
-            UserAction.REFUND,
-            logger
-        )
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = forageConfig.sessionToken,
-            merchantId = forageConfig.merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-
-        val refund =
-            PosRefundPaymentRepository(
-                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
-                encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
-                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-                paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-                logger = logger,
-                refundService = PosRefundService(config.apiBaseUrl, logger, okHttpClient)
-            ).refundPayment(
-                merchantId = forageConfig.merchantId,
-                posTerminalId = posTerminalId,
-                refundParams = params,
-                sessionToken = forageConfig.sessionToken
-            )
-        measurement.setEventOutcome(refund).logResult()
-        return refund
+        val (forageVaultElement, paymentRef, amount, reason, metadata, interaction) = params
+        return PosRefundPaymentSubmission(
+            paymentRef = paymentRef,
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            paymentMethodService = paymentMethodService,
+            paymentService = paymentService,
+            ksnFileManager = ksnFileManager,
+            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
+            interaction = interaction,
+            capabilities = capabilities,
+            forageConfig = forageConfig,
+            amount = amount,
+            reason = reason,
+            metadata = metadata,
+            posTerminalId = posTerminalId,
+            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+        ).submit()
     }
 
     /**
@@ -572,44 +513,20 @@ class ForageTerminalSDK internal constructor(
      * for the related step-by-step guide.
      */
     suspend fun deferPaymentRefund(params: DeferPaymentRefundParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentRef) = params
-        val config = forageConfig.envConfig
-        val logger = Log.getInstance()
-            .addAttribute("pos_terminal_id", posTerminalId)
-            .addAttribute("payment_ref", paymentRef)
-            .addAttribute("merchant_ref", forageConfig.merchantId)
-            .i(
-                """
-                [POS] Called deferPaymentRefund for Payment $paymentRef
-                on Terminal: $posTerminalId
-                """.trimIndent()
-            )
-        val measurement = CustomerPerceivedResponseMonitor(
-            VaultType.FORAGE_VAULT_TYPE,
-            UserAction.DEFER_REFUND,
-            logger
-        )
-        val okHttpClient = OkHttpClientBuilder.provideOkHttpClient(
-            sessionToken = forageConfig.sessionToken,
-            merchantId = forageConfig.merchantId,
-            traceId = logger.getTraceIdValue()
-        )
-        val refund =
-            DeferPaymentRefundRepository(
-                vaultSubmitter = forageVaultElement.getVaultSubmitter(config, logger),
-                encryptionKeyService = EncryptionKeyService(config.apiBaseUrl, okHttpClient, logger),
-                paymentService = PaymentService(config.apiBaseUrl, okHttpClient, logger),
-                paymentMethodService = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger),
-                logger = logger
-            ).deferPaymentRefund(
-                merchantId = forageConfig.merchantId,
-                paymentRef = paymentRef,
-                sessionToken = forageConfig.sessionToken,
-                posTerminalId
-            )
-        measurement.setEventOutcome(refund).logResult()
-
-        return refund
+        val (forageVaultElement, paymentRef, interaction) = params
+        return PosDeferRefundPaymentSubmission(
+            paymentRef = paymentRef,
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            paymentMethodService = paymentMethodService,
+            paymentService = paymentService,
+            ksnFileManager = ksnFileManager,
+            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
+            interaction = interaction,
+            capabilities = capabilities,
+            forageConfig = forageConfig,
+            posTerminalId = posTerminalId,
+            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+        ).submit()
     }
 }
 
@@ -629,7 +546,8 @@ class ForageTerminalSDK internal constructor(
  */
 data class CheckBalanceParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentMethodRef: String
+    val paymentMethodRef: String,
+    val interaction: CardholderInteraction
 )
 
 /**
@@ -647,7 +565,8 @@ data class CheckBalanceParams(
  */
 data class CapturePaymentParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentRef: String
+    val paymentRef: String,
+    val interaction: CardholderInteraction
 )
 
 /**
@@ -672,7 +591,8 @@ data class CapturePaymentParams(
  */
 data class DeferPaymentCaptureParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentRef: String
+    val paymentRef: String,
+    val interaction: CardholderInteraction
 )
 
 /**
@@ -698,7 +618,8 @@ data class RefundPaymentParams(
     val paymentRef: String,
     val amount: Float,
     val reason: String,
-    val metadata: Map<String, String>? = null
+    val metadata: Map<String, String>? = null,
+    val interaction: CardholderInteraction
 )
 
 /**
@@ -717,5 +638,6 @@ data class RefundPaymentParams(
  */
 data class DeferPaymentRefundParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentRef: String
+    val paymentRef: String,
+    val interaction: CardholderInteraction
 )

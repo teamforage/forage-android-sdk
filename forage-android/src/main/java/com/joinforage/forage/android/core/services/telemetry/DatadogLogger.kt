@@ -10,7 +10,7 @@ import com.joinforage.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.generateTraceId
-import com.joinforage.forage.android.pos.services.vault.rosetta.AndroidBase64Util
+import com.joinforage.forage.android.pos.services.init.AndroidBase64Util
 
 internal class DatadogEngine(val dd: Logger) : ILogEngine {
     override fun captureLog(loggable: Loggable) {

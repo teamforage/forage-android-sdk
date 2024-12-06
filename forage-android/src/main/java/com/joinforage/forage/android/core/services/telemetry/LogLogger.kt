@@ -2,7 +2,7 @@ package com.joinforage.forage.android.core.services.telemetry
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
-import com.joinforage.forage.android.pos.services.vault.rosetta.IBase64Util
+import com.joinforage.forage.android.pos.services.init.IBase64Util
 import org.json.JSONObject
 
 internal fun extractTenantIdFromToken(

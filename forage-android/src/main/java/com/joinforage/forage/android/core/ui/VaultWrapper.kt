@@ -8,8 +8,7 @@ import android.view.View
 import android.widget.FrameLayout
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.ui.element.SimpleElementListener
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
 import com.joinforage.forage.android.core.ui.element.state.FocusState
@@ -46,10 +45,7 @@ internal abstract class VaultWrapper @JvmOverloads constructor(
     abstract fun getTextElement(): View
     abstract fun showKeyboard()
 
-    abstract fun getVaultSubmitter(
-        envConfig: EnvConfig,
-        logger: Log
-    ): AbstractVaultSubmitter
+    abstract fun getVaultSubmitter(envConfig: EnvConfig): RosettaPinSubmitter
 
     fun getThemeAccentColor(context: Context): Int {
         val outValue = TypedValue()
