@@ -25,7 +25,6 @@ internal class DukptCounter(val count: UInt) {
     companion object {
         private const val MAX_EXECUTION_TIME_MS = 5000 // 5 seconds
 
-
         tailrec fun incToNextExistingKey(
             counter: DukptCounter,
             keyRegisters: SecureKeyStorageRegisters,

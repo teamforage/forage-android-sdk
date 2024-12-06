@@ -7,8 +7,6 @@ import com.joinforage.forage.android.core.services.forageapi.BaseApiRequest
 import com.joinforage.forage.android.core.services.forageapi.ForageErrorResponseException
 import com.joinforage.forage.android.core.services.forageapi.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.OkHttpEngine
-import com.joinforage.forage.android.pos.TestFailedRequestHttpEngine
-import com.joinforage.forage.android.pos.TestStringResponseHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.FailedToReadKsnFileError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.IncompletePinError
@@ -22,11 +20,16 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCa
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.generateTraceId
-import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.Loggable
+import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
+import com.joinforage.forage.android.pos.TestFailedRequestHttpEngine
+import com.joinforage.forage.android.pos.TestStringResponseHttpEngine
 import com.joinforage.forage.android.pos.integration.forageapi.getAccessToken
 import com.joinforage.forage.android.pos.integration.forageapi.getSessionToken
+import com.joinforage.forage.android.pos.integration.forageapi.payment.TestPaymentService
+import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.TestPaymentMethodService
+import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.dressUpPanAsTrack2
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
 import com.joinforage.forage.android.pos.services.MagSwipeInteraction
@@ -34,9 +37,6 @@ import com.joinforage.forage.android.pos.services.encryption.storage.IPersistent
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.pos.services.encryption.storage.StringKsnManager
-import com.joinforage.forage.android.pos.integration.forageapi.payment.TestPaymentService
-import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.TestPaymentMethodService
-import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.dressUpPanAsTrack2
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest

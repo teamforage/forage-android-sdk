@@ -10,7 +10,6 @@ import com.joinforage.forage.android.pos.integration.base64.JavaBase64Util
 import com.joinforage.forage.android.pos.integration.forageapi.getAccessToken
 import com.joinforage.forage.android.pos.integration.forageapi.getSessionToken
 import com.joinforage.forage.android.pos.integration.logger.InMemoryLogger
-import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.encryption.AesBlock
 import com.joinforage.forage.android.pos.services.encryption.certificate.IRsaKeyManager
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
@@ -22,6 +21,7 @@ import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKey
 import com.joinforage.forage.android.pos.services.encryption.storage.KeySerialNumber
 import com.joinforage.forage.android.pos.services.init.IRosettaInitService
 import com.joinforage.forage.android.pos.services.init.InitialPosState
+import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.init.SignedCertificate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
