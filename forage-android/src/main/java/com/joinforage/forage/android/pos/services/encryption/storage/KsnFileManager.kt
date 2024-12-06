@@ -71,13 +71,13 @@ internal data class KeySerialNumber(
         )
 }
 
-internal interface PersistentStorage {
+internal interface IPersistentStorage {
     fun exists(): Boolean
     fun write(content: String)
     fun read(): List<String>
 }
 
-internal class PersistentFile(private val ksnDir: File) : PersistentStorage {
+internal class PersistentFile(private val ksnDir: File) : IPersistentStorage {
     private fun _getFileSync() = File(ksnDir, KSN_FILE_NAME)
     override fun write(content: String) {
         _getFileSync().outputStream().use { it.write(content.toByteArray()) }
@@ -87,17 +87,29 @@ internal class PersistentFile(private val ksnDir: File) : PersistentStorage {
     override fun read(): List<String> = _getFileSync().readLines()
 }
 
-internal class PersistentString(private var content: String = "") : PersistentStorage {
+internal class PersistentString(private var _content: String = "") : IPersistentStorage {
+    val content: String
+        get() = _content
     override fun write(content: String) {
-        this.content = content
+        this._content = content
     }
-    override fun exists(): Boolean = content.isNotEmpty()
-    override fun read(): List<String> = content.lines()
+    override fun exists(): Boolean = _content.isNotEmpty()
+    override fun read(): List<String> = _content.lines()
 }
 
-internal class KsnFileManager(private val ksnFile: PersistentStorage) {
+internal interface IKsnFileManager {
+    fun init(initialKeyId: String): Boolean
+    fun isInitialized(): Boolean
+    fun readBaseDerivationKeyId(): KsnComponent?
+    fun readDeviceDerivationId(): KsnComponent?
+    fun readDukptClientTxCount(): KsnComponent?
+    fun readAll(): KeySerialNumber
+    fun updateKsn(nextKsnState: KeySerialNumber)
+}
 
-    fun init(initialKeyId: String): Boolean {
+internal abstract class KsnFileManager(protected val ksnFile: IPersistentStorage) : IKsnFileManager {
+
+    override fun init(initialKeyId: String): Boolean {
         require(initialKeyId.length == 16) {
             "The Initial Key Id must be exactly 16 characters, which is 64 bits."
         }
@@ -141,19 +153,24 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     // can be read and is an int (greater than 0) seems like a
     // convenient way of killing two birds with
     // one stone
-    fun isInitialized(): Boolean {
-        val res = readDukptClientTxCount()
-        return res != null && res.toUInt() > 0u
+    override fun isInitialized(): Boolean {
+        // TODO: add a test to ensure this method calls exist() first
+        if (ksnFile.exists()) {
+            val res = readDukptClientTxCount()
+            return res != null && res.toUInt() > 0u
+        } else {
+            return false
+        }
     }
 
     // Base Derivation Key is line 0
-    fun readBaseDerivationKeyId(): KsnComponent? {
+    override fun readBaseDerivationKeyId(): KsnComponent? {
         val deviceIdHexStr = ksnFile.read().getOrNull(0) ?: return null
         return if (deviceIdHexStr.isEmpty()) null else KsnComponent(deviceIdHexStr)
     }
 
     // Device Derivation Id is line 1
-    fun readDeviceDerivationId(): KsnComponent? {
+    override fun readDeviceDerivationId(): KsnComponent? {
         val deviceIdHexStr = ksnFile.read().getOrNull(1) ?: return null
         return if (deviceIdHexStr.isEmpty()) null else KsnComponent(deviceIdHexStr)
     }
@@ -165,23 +182,24 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
     // tx count associated with the current working
     // key call readAll() since it returns a
     // KeySerialManager which has the workingKeyTxCount
-    fun readDukptClientTxCount(): KsnComponent? {
+    override fun readDukptClientTxCount(): KsnComponent? {
         val txCount = ksnFile.read().getOrNull(2)?.toUIntOrNull() ?: return null
         return KsnComponent(txCount)
     }
 
-    fun readAll(): KeySerialNumber? {
-        val bdkId = readBaseDerivationKeyId() ?: return null
-        val deviceId = readDeviceDerivationId() ?: return null
-        val txCount = readDukptClientTxCount() ?: return null
-
-        return KeySerialNumber(baseDerivationKeyId = bdkId, deviceId = deviceId, dukptClientTxCount = txCount)
+    override fun readAll(): KeySerialNumber = try {
+        val bdkId = readBaseDerivationKeyId()
+        val deviceId = readDeviceDerivationId()
+        val txCount = readDukptClientTxCount()
+        KeySerialNumber(bdkId!!, deviceId!!, txCount!!)
+    } catch (e: Exception) {
+        throw CannotReadKsnFileException(e)
     }
 
     // the KSN File manager is not responsible for
     // incrementing the counter. It will blindly write
     // valid KSN content to the persistent file
-    fun updateKsn(nextKsnState: KeySerialNumber) {
+    override fun updateKsn(nextKsnState: KeySerialNumber) {
         val actualBdkId = nextKsnState.baseDerivationKeyId.uppercase()
         val expectedBdkId = readBaseDerivationKeyId()?.toHexString()?.uppercase()
         require(actualBdkId == expectedBdkId) {
@@ -194,8 +212,14 @@ internal class KsnFileManager(private val ksnFile: PersistentStorage) {
         }
         ksnFile.write(nextKsnState.fileContent)
     }
-    companion object {
-        fun byDir(ksnDir: File) = KsnFileManager(PersistentFile(ksnDir))
-        fun byString() = KsnFileManager(PersistentString())
-    }
+
+    class CannotReadKsnFileException(cause: Throwable) : Exception(cause)
+}
+
+internal class FileKsnManager(ksnDir: File) : KsnFileManager(PersistentFile(ksnDir))
+
+internal class StringKsnManager(
+    initialKsn: String = ""
+) : KsnFileManager(PersistentString(initialKsn)) {
+    fun clone() = StringKsnManager((ksnFile as PersistentString).content)
 }

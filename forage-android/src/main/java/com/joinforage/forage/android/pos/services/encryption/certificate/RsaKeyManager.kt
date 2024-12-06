@@ -1,5 +1,7 @@
-package com.joinforage.forage.android.pos.encryption.certificate
+package com.joinforage.forage.android.pos.services.encryption.certificate
 
+import com.joinforage.forage.android.pos.encryption.certificate.generateRawCsr
+import com.joinforage.forage.android.pos.services.init.IBase64Util
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.nio.charset.StandardCharsets
 import java.security.KeyPair
@@ -8,9 +10,18 @@ import java.security.Security
 import java.security.spec.RSAKeyGenParameterSpec
 import java.security.spec.RSAKeyGenParameterSpec.F4
 import javax.crypto.Cipher
-import android.util.Base64 as AndroidBase64
 
-internal class RsaKeyManager() {
+interface IRsaKeyManager {
+    fun encrypt(str: String): ByteArray
+    fun encrypt(data: ByteArray): ByteArray
+    fun decrypt(encryptedData: ByteArray): ByteArray
+    fun deleteKeyPair()
+    fun generateCSRBase64(): String
+}
+
+internal class RsaKeyManager(
+    private val base64Encoder: IBase64Util
+) : IRsaKeyManager {
     private var keyPair: KeyPair? = null
 
     init {
@@ -23,42 +34,40 @@ internal class RsaKeyManager() {
         keyPair = keyPairGenerator.generateKeyPair()
     }
 
-    fun encrypt(str: String): ByteArray {
+    override fun encrypt(str: String): ByteArray {
         val asBytes = str.toByteArray(StandardCharsets.UTF_8)
         return encrypt(asBytes)
     }
 
-    fun encrypt(data: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
-            .apply { init(Cipher.ENCRYPT_MODE, keyPair!!.public) }
+    override fun encrypt(data: ByteArray): ByteArray {
+        val cipher = Cipher.getInstance(
+            "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
+        ).apply {
+            init(Cipher.ENCRYPT_MODE, keyPair!!.public)
+        }
         return cipher.doFinal(data)
     }
 
-    fun decrypt(encryptedData: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding").apply {
+    override fun decrypt(encryptedData: ByteArray): ByteArray {
+        val cipher = Cipher.getInstance(
+            "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
+        ).apply {
             init(Cipher.DECRYPT_MODE, keyPair!!.private)
         }
         return cipher.doFinal(encryptedData)
     }
 
-    fun deleteKeyPair() {
+    override fun deleteKeyPair() {
         keyPair = null
     }
 
-    fun generateCSRBase64(): String {
+    override fun generateCSRBase64(): String {
         val rawCsr = generateRawCsr(keyPair!!)
-        return AndroidBase64.encodeToString(rawCsr.toByteArray(), AndroidBase64.DEFAULT)
+        return base64Encoder.encode(rawCsr)
     }
 
     companion object {
         private const val KEY_SIZE = 4096
         internal const val CERT_SUBJECT: String = "C = US, O = Forage Technology Corporation, OU = Engineering, ST = California, CN = Forage, L = San Francisco"
-
-        fun fromAndroidKeystore(): RsaKeyManager {
-            Security.removeProvider("BC")
-            Security.addProvider(BouncyCastleProvider())
-
-            return RsaKeyManager()
-        }
     }
 }

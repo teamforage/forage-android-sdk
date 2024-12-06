@@ -3,10 +3,15 @@ package com.joinforage.forage.android.pos.services.encryption.dukpt
 import com.joinforage.forage.android.pos.services.encryption.AesBlock
 import com.joinforage.forage.android.pos.services.encryption.storage.KeySerialNumber
 
+internal interface IDukptService {
+    fun loadKey(initialDerivationKeyMaterial: AesBlock): KeySerialNumber
+    fun generateWorkingKey(): Pair<WorkingKey, KeySerialNumber>
+}
+
 internal class DukptService(
     private val ksn: KeySerialNumber,
     private val keyRegisters: SecureKeyStorageRegisters
-) {
+) : IDukptService {
     private val deviceDerivationId: KsnComponent = KsnComponent(ksn.deviceDerivationId)
     private var txCounter: DukptCounter = DukptCounter(ksn.dukptClientTxCount)
 
@@ -62,7 +67,7 @@ internal class DukptService(
             }
     }
 
-    fun generateWorkingKey(): Pair<WorkingKey, KeySerialNumber> {
+    override fun generateWorkingKey(): Pair<WorkingKey, KeySerialNumber> {
         // go to the next txCounter value that has computed key
         // NOTE: this won't change the txCounter if the current
         //  txCounter value already has a key associated with it
@@ -102,7 +107,7 @@ internal class DukptService(
         return Pair(workingKey, nextKsnState)
     }
 
-    fun loadKey(initialDerivationKeyMaterial: AesBlock): KeySerialNumber {
+    override fun loadKey(initialDerivationKeyMaterial: AesBlock): KeySerialNumber {
         keyRegisters.reset()
         val initialDerivationKey =
             keyRegisters.setInitialDerivationKey(initialDerivationKeyMaterial)
