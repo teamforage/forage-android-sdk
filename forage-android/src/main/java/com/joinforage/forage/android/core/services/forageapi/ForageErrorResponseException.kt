@@ -11,4 +11,3 @@ import com.joinforage.forage.android.core.services.forageapi.network.error.Forag
 internal class ForageErrorResponseException(
     val forageError: ForageError
 ) : Exception()
-
