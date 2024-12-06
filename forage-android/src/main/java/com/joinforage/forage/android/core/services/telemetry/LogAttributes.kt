@@ -2,7 +2,6 @@ package com.joinforage.forage.android.core.services.telemetry
 
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.UserAction
 
 internal data class LogAttributes(
     val forageConfig: ForageConfig,

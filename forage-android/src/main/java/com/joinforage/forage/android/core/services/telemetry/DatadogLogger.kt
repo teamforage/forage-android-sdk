@@ -9,8 +9,6 @@ import com.joinforage.datadog.android.log.LogsConfiguration
 import com.joinforage.datadog.android.privacy.TrackingConsent
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.LogService
-import com.joinforage.forage.android.core.services.UserAction
 import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.pos.services.vault.rosetta.AndroidBase64Util
 

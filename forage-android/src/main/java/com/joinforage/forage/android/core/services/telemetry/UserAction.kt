@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.core.services
+package com.joinforage.forage.android.core.services.telemetry
 
 internal enum class UserAction(val value: String) {
     BALANCE("balance"),
