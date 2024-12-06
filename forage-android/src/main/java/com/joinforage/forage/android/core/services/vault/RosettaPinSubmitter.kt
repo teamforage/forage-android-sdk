@@ -28,7 +28,6 @@ internal class RosettaPinSubmitter(
     companion object {
         const val TOKEN_DELIMITER = ","
 
-
         fun pickVaultTokenByIndex(paymentMethod: PaymentMethod, index: Int): String {
             val tokensString = (paymentMethod.card as EbtCard).token
             val tokensList = tokensString.split(TOKEN_DELIMITER)

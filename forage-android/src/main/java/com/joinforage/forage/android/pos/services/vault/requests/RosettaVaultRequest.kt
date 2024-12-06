@@ -28,4 +28,3 @@ internal abstract class RosettaVaultRequest(
         headers = headers.setIdempotencyKey(idempotencyKey).setXKey("")
     }
 }
-

@@ -9,8 +9,8 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownTime
 import com.joinforage.forage.android.core.services.forageapi.network.error.payload.ErrorPayload
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
-import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
+import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 
 internal class BaseErrorStrategy(private val logLogger: LogLogger) : IErrorStrategy {
     override suspend fun handleError(error: Throwable, cleanup: () -> Unit): ForageApiResponse<String> {
