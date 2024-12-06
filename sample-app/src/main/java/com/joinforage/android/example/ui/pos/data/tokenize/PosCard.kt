@@ -9,5 +9,6 @@ data class PosCard(
     val last4: String,
     val created: String,
     val token: String,
-    val state: String?
+    val state: String?,
+    val number: String
 )

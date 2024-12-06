@@ -29,6 +29,8 @@ import com.joinforage.forage.android.pos.services.CheckBalanceParams
 import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
 import com.joinforage.forage.android.pos.services.DeferPaymentRefundParams
 import com.joinforage.forage.android.pos.services.ForageTerminalSDK
+import com.joinforage.forage.android.pos.services.MagSwipeInteraction
+import com.joinforage.forage.android.pos.services.ManualEntryInteraction
 import com.joinforage.forage.android.pos.services.RefundPaymentParams
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 import com.squareup.moshi.JsonAdapter
@@ -51,6 +53,17 @@ private fun createKsnDirForSampleApp(context: Context): File {
     return directory
 }
 
+private fun hackyWayToReadPAN(foragePanEditText: ForagePANEditText): String = (
+    (
+        (foragePanEditText.getChildAt(0) as ViewGroup)
+            .getChildAt(0)as ViewGroup
+        )
+        .getChildAt(0) as TextInputEditText
+    )
+    .text.toString().filter { it.isDigit() }
+
+private fun dressUpPanAsTrack2(pan: String?): String = ";$pan=4912220abc?"
+
 @SuppressLint("NewApi")
 class POSViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(POSUIState())
@@ -71,12 +84,49 @@ class POSViewModel : ViewModel() {
         _uiState.update { it.copy(localPayment = payment) }
     }
 
-    fun setLocalRefundState(refundState: RefundUIState, onComplete: () -> Unit) {
+    fun setLocalRefundStateAsManualEntry(
+        refundState: RefundUIState,
+        foragePanEditText: ForagePANEditText,
+        onComplete: () -> Unit
+    ) {
         viewModelScope.launch {
             try {
+                val pan = hackyWayToReadPAN(foragePanEditText)
                 val payment = api.getPayment(refundState.paymentRef)
                 val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
-                _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = paymentMethod) }
+                _uiState.update {
+                    it.copy(
+                        localRefundState = refundState,
+                        tokenizedPaymentMethod = paymentMethod,
+                        cardholderInteraction = ManualEntryInteraction(pan)
+                    )
+                }
+                onComplete()
+            } catch (e: HttpException) {
+                _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = null) }
+                onComplete()
+            }
+        }
+    }
+
+    fun setLocalRefundStateAsTrack2(
+        refundState: RefundUIState,
+        foragePanEditText: ForagePANEditText,
+        onComplete: () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val pan = hackyWayToReadPAN(foragePanEditText)
+                val track2 = dressUpPanAsTrack2(pan)
+                val payment = api.getPayment(refundState.paymentRef)
+                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                _uiState.update {
+                    it.copy(
+                        localRefundState = refundState,
+                        tokenizedPaymentMethod = paymentMethod,
+                        cardholderInteraction = MagSwipeInteraction(track2Data = track2)
+                    )
+                }
                 onComplete()
             } catch (e: HttpException) {
                 _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = null) }
@@ -154,29 +204,42 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeEBTCard(context: Context, foragePanEditText: ForagePANEditText, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+    fun tokenizeManualEntryEBTCard(foragePanEditText: ForagePANEditText, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
-            val pan = (
-                (
-                    (foragePanEditText.getChildAt(0) as ViewGroup)
-                        .getChildAt(0)as ViewGroup
-                    )
-                    .getChildAt(0) as TextInputEditText
-                )
-                .text.toString().filter { it.isDigit() }
+            val pan = hackyWayToReadPAN(foragePanEditText)
             try {
                 val response = api.tokenizeManualEntry(
                     ManualEntryPaymentMethod(pan)
                 )
-                foragePanEditText.toString()
                 Log.i("Tokenization successful", response.toString())
-                _uiState.update { it.copy(tokenizedPaymentMethod = response, tokenizationError = null) }
+                _uiState.update {
+                    it.copy(
+                        tokenizedPaymentMethod = response,
+                        tokenizationError = null,
+                        cardholderInteraction = ManualEntryInteraction(pan)
+                    )
+                }
                 onSuccess(response)
             } catch (e: Exception) {
                 val error = e.message.toString()
                 Log.e("POSViewModel", error)
                 _uiState.update { it.copy(tokenizationError = error, tokenizedPaymentMethod = null) }
             }
+        }
+    }
+    fun tokenizeTrack2EBTCard(foragePanEditText: ForagePANEditText, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+        // no need to reinvent the wheel. For Track 2 data, we can just do
+        // what the Manual Entry flow does and then dress up the PAN
+        // as Track 2 data and pass that dressed up Track 2 to the SDK
+        tokenizeManualEntryEBTCard(foragePanEditText) { posPaymentMethod ->
+            val pan = posPaymentMethod?.card?.number
+            val track2 = dressUpPanAsTrack2(pan)
+            _uiState.update {
+                it.copy(
+                    cardholderInteraction = MagSwipeInteraction(track2Data = track2)
+                )
+            }
+            onSuccess(posPaymentMethod)
         }
     }
 
@@ -187,7 +250,13 @@ class POSViewModel : ViewModel() {
                     MagSwipePaymentMethod(track2Data)
                 )
                 Log.i("Tokenization successful", response.toString())
-                _uiState.update { it.copy(tokenizedPaymentMethod = response, tokenizationError = null) }
+                _uiState.update {
+                    it.copy(
+                        tokenizedPaymentMethod = response,
+                        tokenizationError = null,
+                        cardholderInteraction = MagSwipeInteraction(track2Data)
+                    )
+                }
                 onSuccess(response)
             } catch (e: Exception) {
                 val error = e.message.toString()
@@ -201,7 +270,11 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.checkBalance(
-                CheckBalanceParams(forageVaultElement, paymentMethodRef)
+                CheckBalanceParams(
+                    forageVaultElement,
+                    paymentMethodRef,
+                    _uiState.value.cardholderInteraction!!
+                )
             )
 
             when (response) {
@@ -241,7 +314,11 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.deferPaymentCapture(
-                DeferPaymentCaptureParams(forageVaultElement, paymentRef)
+                DeferPaymentCaptureParams(
+                    forageVaultElement,
+                    paymentRef,
+                    _uiState.value.cardholderInteraction!!
+                )
             )
 
             when (response) {
@@ -274,7 +351,11 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.deferPaymentRefund(
-                DeferPaymentRefundParams(forageVaultElement, paymentRef)
+                DeferPaymentRefundParams(
+                    forageVaultElement,
+                    paymentRef,
+                    _uiState.value.cardholderInteraction!!
+                )
             )
 
             when (response) {
@@ -300,7 +381,11 @@ class POSViewModel : ViewModel() {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.capturePayment(
-                CapturePaymentParams(forageVaultElement, paymentRef)
+                CapturePaymentParams(
+                    forageVaultElement,
+                    paymentRef,
+                    _uiState.value.cardholderInteraction!!
+                )
             )
 
             when (response) {
@@ -343,7 +428,9 @@ class POSViewModel : ViewModel() {
                     forageVaultElement,
                     paymentRef,
                     amount,
-                    reason
+                    reason,
+                    mapOf(),
+                    _uiState.value.cardholderInteraction!!
                 )
             )
 

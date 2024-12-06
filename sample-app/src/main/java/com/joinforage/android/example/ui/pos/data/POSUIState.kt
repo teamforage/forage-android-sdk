@@ -2,14 +2,16 @@ package com.joinforage.android.example.ui.pos.data
 
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.pos.services.CardholderInteraction
 
 data class POSUIState(
-    val merchantId: String = "1234567", // <your_merchant_id>
-    val sessionToken: String = "sandbox_eyabcdef...", // <your_oauth_or_session_token>
+    val merchantId: String = "c67e8569c1", // <your_merchant_id>
+    val sessionToken: String = "dev_eyJhIjogNDU2NiwgInNrIjogIl9CYXFERGVROUs2eEhPNExGOGo1NGc9PSIsICJ0IjogMzF9.Z0NcCQ.z9LIC6NsRUDwVsqZv8uNRwQ63g8SuwnSJlxOSiPwtN0", // <your_oauth_or_session_token>
 
     // Tokenizing EBT Cards
     val tokenizedPaymentMethod: PosPaymentMethod? = null,
     val tokenizationError: String? = null,
+    val cardholderInteraction: CardholderInteraction? = null,
 
     // Checking balances of those EBT Cards
     val balance: BalanceCheck? = null,
