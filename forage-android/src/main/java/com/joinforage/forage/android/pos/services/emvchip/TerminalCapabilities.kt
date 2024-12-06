@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.services
+package com.joinforage.forage.android.pos.services.emvchip
 
 enum class TerminalCapabilities {
     KeyEntryOnly,
