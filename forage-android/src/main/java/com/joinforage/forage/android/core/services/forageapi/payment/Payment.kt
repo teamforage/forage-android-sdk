@@ -156,5 +156,3 @@ data class Payment(
 
 internal fun JSONArray.toListOfStrings(): List<String> =
     List(this.length()) { index -> this.getString(index) }
-
-
