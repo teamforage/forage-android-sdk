@@ -190,7 +190,7 @@
                 android:layout_weight="2"
                 android:layout_height="match_parent"
                 android:text="Done"
-                app:iconGravity="textStart"
+                app:iconGravity="top"
                 app:iconPadding="0dp"
                 style="@style/ForageKeypadDoneButtonStyle" />
     </LinearLayout>
