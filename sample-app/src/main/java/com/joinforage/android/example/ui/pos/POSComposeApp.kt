@@ -219,13 +219,26 @@ fun POSComposeApp(
             composable(route = POSScreen.BIManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
                     forageConfig = uiState.forageConfig,
-                    onSubmitButtonClicked = {
+                    onSubmitAsManualEntry = {
                         if (panElement != null) {
                             panElement!!.clearFocus()
-                            viewModel.tokenizeEBTCard(
-                                context,
+                            viewModel.tokenizeManualEntryEBTCard(
                                 panElement as ForagePANEditText,
-                                k9SDK.terminalId,
+                                onSuccess = {
+                                    if (it?.ref != null) {
+                                        Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
+                                        viewModel.resetPinActionErrors()
+                                        navController.navigate(POSScreen.BIPINEntryScreen.name)
+                                    }
+                                }
+                            )
+                        }
+                    },
+                    onSubmitAsTrack2 = {
+                        if (panElement != null) {
+                            panElement!!.clearFocus()
+                            viewModel.tokenizeTrack2EBTCard(
+                                panElement as ForagePANEditText,
                                 onSuccess = {
                                     if (it?.ref != null) {
                                         Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $it.ref")
@@ -401,14 +414,34 @@ fun POSComposeApp(
             composable(route = POSScreen.PAYManualPANEntryScreen.name) {
                 ManualPANEntryScreen(
                     forageConfig = uiState.forageConfig,
-                    onSubmitButtonClicked = {
+                    onSubmitAsManualEntry = {
                         Log.i("POSComposeApp", "Calling onSubmitButtonClicked in ManualPANEntryScreen in PAYChoosePANMethodScreen")
                         if (panElement != null) {
                             panElement!!.clearFocus()
-                            viewModel.tokenizeEBTCard(
-                                context,
+                            viewModel.tokenizeManualEntryEBTCard(
                                 panElement as ForagePANEditText,
-                                k9SDK.terminalId,
+                                onSuccess = { tokenizedCard ->
+                                    Log.i("POSComposeApp", "payment method? — $tokenizedCard")
+                                    if (tokenizedCard?.ref != null && uiState.localPayment != null) {
+                                        Log.i("POSComposeApp", "Successfully tokenized EBT card with ref: $tokenizedCard.ref")
+                                        val payment = uiState.localPayment!!.copy(paymentMethodRef = tokenizedCard.ref)
+                                        viewModel.createPayment(payment = payment, onSuccess = { serverPayment ->
+                                            if (serverPayment.ref !== null) {
+                                                viewModel.resetPinActionErrors()
+                                                navController.navigate(POSScreen.PAYPINEntryScreen.name)
+                                            }
+                                        })
+                                    }
+                                }
+                            )
+                        }
+                    },
+                    onSubmitAsTrack2 = {
+                        Log.i("POSComposeApp", "Calling onSubmitButtonClicked in ManualPANEntryScreen in PAYChoosePANMethodScreen")
+                        if (panElement != null) {
+                            panElement!!.clearFocus()
+                            viewModel.tokenizeTrack2EBTCard(
+                                panElement as ForagePANEditText,
                                 onSuccess = { tokenizedCard ->
                                     Log.i("POSComposeApp", "payment method? — $tokenizedCard")
                                     if (tokenizedCard?.ref != null && uiState.localPayment != null) {
@@ -569,13 +602,32 @@ fun POSComposeApp(
             }
             composable(route = POSScreen.REFUNDDetailsScreen.name) {
                 RefundDetailsScreen(
-                    onConfirmButtonClicked = { paymentRef, amount, reason ->
+                    forageConfig = uiState.forageConfig,
+                    withPanElementReference = { panElement = it },
+                    onConfirmAsManualEntry = { paymentRef, amount, reason ->
                         val refundState = RefundUIState(
                             paymentRef = paymentRef,
                             amount = amount,
                             reason = reason
                         )
-                        viewModel.setLocalRefundState(refundState) {
+                        viewModel.setLocalRefundStateAsManualEntry(
+                            refundState,
+                            panElement as ForagePANEditText
+                        ) {
+                            viewModel.resetPinActionErrors()
+                            navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
+                        }
+                    },
+                    onConfirmAsTrack2 = { paymentRef, amount, reason ->
+                        val refundState = RefundUIState(
+                            paymentRef = paymentRef,
+                            amount = amount,
+                            reason = reason
+                        )
+                        viewModel.setLocalRefundStateAsTrack2(
+                            refundState,
+                            panElement as ForagePANEditText
+                        ) {
                             viewModel.resetPinActionErrors()
                             navController.navigate(POSScreen.REFUNDPINEntryScreen.name)
                         }

@@ -1,9 +1,11 @@
 package com.joinforage.android.example.ui.pos.network
 
+import ManualEntryPaymentMethod
 import com.joinforage.android.example.network.model.EnvConfig
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
 import com.joinforage.android.example.ui.pos.data.Refund
+import com.joinforage.android.example.ui.pos.data.tokenize.MagSwipePaymentMethod
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.squareup.moshi.Moshi
@@ -56,6 +58,16 @@ interface PosApiService {
     @POST("api/payment_methods/{paymentMethodRef}/")
     suspend fun getPaymentMethod(
         @Path("paymentMethodRef") paymentMethodRef: String
+    ): PosPaymentMethod
+
+    @POST("api/payment_methods/")
+    suspend fun tokenizeManualEntry(
+        @Body requestBody: ManualEntryPaymentMethod
+    ): PosPaymentMethod
+
+    @POST("api/payment_methods/")
+    suspend fun tokenizeManualEntry(
+        @Body requestBody: MagSwipePaymentMethod
     ): PosPaymentMethod
 
     companion object {

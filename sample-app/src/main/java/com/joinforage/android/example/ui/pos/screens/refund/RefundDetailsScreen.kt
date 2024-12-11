@@ -19,11 +19,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joinforage.android.example.ui.extensions.withTestId
+import com.joinforage.android.example.ui.pos.ui.ComposableForagePANEditText
 import com.joinforage.android.example.ui.pos.ui.ScreenWithBottomRow
+import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 
 @Composable
 fun RefundDetailsScreen(
-    onConfirmButtonClicked: (paymentRef: String, amount: Float, reason: String) -> Unit,
+    forageConfig: ForageConfig,
+    withPanElementReference: (element: ForagePANEditText) -> Unit,
+    onConfirmAsManualEntry: (paymentRef: String, amount: Float, reason: String) -> Unit,
+    onConfirmAsTrack2: (paymentRef: String, amount: Float, reason: String) -> Unit,
     onCancelButtonClicked: () -> Unit
 ) {
     var paymentRefInput by rememberSaveable {
@@ -41,6 +47,11 @@ fun RefundDetailsScreen(
     ScreenWithBottomRow(
         mainContent = {
             Text("Configure the details of the refund", fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            ComposableForagePANEditText(
+                forageConfig,
+                withPanElementReference = withPanElementReference
+            )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = paymentRefInput,
@@ -80,10 +91,17 @@ fun RefundDetailsScreen(
             }
             Spacer(modifier = Modifier.width(12.dp))
             Button(
-                onClick = { onConfirmButtonClicked(paymentRefInput, refundAmountInput.toFloat(), reasonInput) },
+                onClick = { onConfirmAsManualEntry(paymentRefInput, refundAmountInput.toFloat(), reasonInput) },
                 modifier = Modifier.withTestId("pos_submit_button")
             ) {
                 Text("Confirm")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { onConfirmAsTrack2(paymentRefInput, refundAmountInput.toFloat(), reasonInput) },
+                modifier = Modifier.withTestId("pos_track_2_submit_button")
+            ) {
+                Text("Confirm as Track 2")
             }
         }
     )

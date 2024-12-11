@@ -4,12 +4,11 @@ import com.joinforage.forage.android.core.services.forageapi.polling.ForageError
 import org.json.JSONException
 import org.json.JSONObject
 
-class UnknownForageFailureResponse(jsonStringResponse: String) :
-    Exception(jsonStringResponse)
-
 internal abstract class ErrorPayload(
     val jsonErrorResponse: JSONObject
 ) {
+    class UnknownForageFailureResponse(val rawResponse: String) :
+        Exception("Unknown Forage Failure Response: $rawResponse")
 
     abstract fun parseCode(): String
     abstract fun parseMessage(): String
@@ -31,6 +30,9 @@ internal abstract class ErrorPayload(
     companion object {
         fun parseJson(jsonErrorResponse: JSONObject): ErrorPayload {
             when {
+                DeferredRefundErrorResponsePayload(jsonErrorResponse).isMatch() -> {
+                    return DeferredRefundErrorResponsePayload(jsonErrorResponse)
+                }
                 SingleErrorResponsePayload(jsonErrorResponse).isMatch() -> {
                     return SingleErrorResponsePayload(jsonErrorResponse)
                 }

@@ -1,10 +1,7 @@
 package com.joinforage.forage.android.fixtures
 
-import com.joinforage.forage.android.core.services.forageapi.encryptkey.EncryptionKeys
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.ui.element.state.pan.USState
 
 internal object ExpectedData {
@@ -25,20 +22,4 @@ internal object ExpectedData {
         snap = "100.00",
         cash = "100.00"
     )
-
-    val mockPaymentMethod = PaymentMethod(
-        ref = "1f148fe399",
-        type = "ebt",
-        balance = null,
-        card = EbtCard(
-            last4 = "7845",
-            token = "tok_sandbox_sYiPe9Q249qQ5wQyUPP5f7,basis-theory-token",
-            number = cardNumber,
-            fingerprint = "fingerprint",
-            usState = cardUsState
-        ),
-        customerId = "test-android-customer-id",
-        reusable = true
-    )
-    val mockEncryptionKeys = EncryptionKeys("vgs-alias", "bt-alias")
 }

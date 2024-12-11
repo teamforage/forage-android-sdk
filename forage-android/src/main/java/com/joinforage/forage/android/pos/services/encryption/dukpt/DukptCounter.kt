@@ -23,18 +23,27 @@ internal class DukptCounter(val count: UInt) {
     fun toKsnComponent(): KsnComponent = KsnComponent(count)
 
     companion object {
+        private const val MAX_EXECUTION_TIME_MS = 5000 // 5 seconds
+
         tailrec fun incToNextExistingKey(
             counter: DukptCounter,
-            keyRegisters: SecureKeyStorageRegisters
+            keyRegisters: SecureKeyStorageRegisters,
+            startTime: Long = System.currentTimeMillis()
         ): DukptCounter {
+            if (System.currentTimeMillis() - startTime > MAX_EXECUTION_TIME_MS) {
+                throw InfiniteLoopException()
+            }
+
             if (keyRegisters.isKeySet(counter.currentKeyIndex)) {
                 return counter
             }
-            return incToNextExistingKey(counter.incByLsb(), keyRegisters)
+            return incToNextExistingKey(counter.incByLsb(), keyRegisters, startTime)
         }
 
         fun fromZero() = DukptCounter(0u)
     }
+
+    class InfiniteLoopException : Exception("incToNextExistingKey has been running for more than 5 seconds")
 
     // for helpful debugging
     override fun toString(): String = count.toString(16)

@@ -5,8 +5,7 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
+import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.pos.ui.element.ForagePINEditText
 import com.joinforage.forage.android.pos.ui.vault.rosetta.RosettaPinElement
@@ -68,9 +67,8 @@ class ForagePINEditText @JvmOverloads constructor(
         set(value) { vault.typeface = value }
 
     override fun getVaultSubmitter(
-        envConfig: EnvConfig,
-        logger: Log
-    ): AbstractVaultSubmitter = vault.getVaultSubmitter(envConfig, logger)
+        envConfig: EnvConfig
+    ): RosettaPinSubmitter = vault.getVaultSubmitter(envConfig)
 
     override fun showKeyboard() = vault.showKeyboard()
 }

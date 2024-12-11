@@ -16,7 +16,6 @@ import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
-import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.element.state.FocusState
 import com.joinforage.forage.android.core.ui.element.state.pan.PanEditTextState
 import com.joinforage.forage.android.core.ui.element.state.pan.PanInputState
@@ -193,12 +192,6 @@ abstract class ForagePanElement @JvmOverloads constructor(
     internal fun getForageConfig() = forageConfigManager.forageConfig
 
     private fun initWithForageConfig(forageConfig: ForageConfig) {
-        // Must initialize DD at the beginning of each render function. DD requires the context,
-        // so we need to wait until a context is present to run initialization code. However,
-        // we have logging all over the SDK that relies on the render happening first.
-        val logger = Log.getInstance()
-        logger.initializeDD(context, forageConfig)
-
         _SET_ONLY_inputState = if (EnvConfig.inProd(forageConfig)) {
             // strictly support only valid Ebt PAN numbers
             PanInputState.forEmptyInput()
@@ -224,7 +217,6 @@ abstract class ForagePanElement @JvmOverloads constructor(
         addView(textInputLayout)
 
         addView(getLogoImageViewLayout(context))
-        logger.i("[View] ForagePANEditText successfully rendered")
     }
 
     override fun showKeyboard() {

@@ -18,16 +18,15 @@ import androidx.core.content.getSystemService
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.VaultType
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.vault.AbstractVaultSubmitter
-import com.joinforage.forage.android.core.services.vault.SecurePinCollector
+import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
+import com.joinforage.forage.android.core.services.vault.ISecurePinCollector
+import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusBottomStart
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopEnd
 import com.joinforage.forage.android.core.ui.getBoxCornerRadiusTopStart
 import com.joinforage.forage.android.core.ui.textwatcher.PinTextWatcher
-import com.joinforage.forage.android.pos.services.vault.rosetta.RosettaPinSubmitter
 
 internal class RosettaPinElement @JvmOverloads constructor(
     context: Context,
@@ -43,18 +42,16 @@ internal class RosettaPinElement @JvmOverloads constructor(
     }
 
     override fun getVaultSubmitter(
-        envConfig: EnvConfig,
-        logger: Log
-    ): AbstractVaultSubmitter = RosettaPinSubmitter(
+        envConfig: EnvConfig
+    ): RosettaPinSubmitter = RosettaPinSubmitter(
         _editText.text.toString(),
-        object : SecurePinCollector {
+        object : ISecurePinCollector {
             override fun clearText() {
                 this@RosettaPinElement.clearText()
             }
             override fun isComplete(): Boolean = inputState.isComplete
         },
-        envConfig,
-        logger
+        OkHttpEngine()
     )
 
     override fun showKeyboard() {

@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos.encryption.certificate
 
+import com.joinforage.forage.android.pos.services.encryption.certificate.RsaKeyManager
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
 import org.bouncycastle.jce.provider.BouncyCastleProvider

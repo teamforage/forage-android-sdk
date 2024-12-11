@@ -18,7 +18,8 @@ import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
 @Composable
 fun ManualPANEntryScreen(
     forageConfig: ForageConfig,
-    onSubmitButtonClicked: () -> Unit,
+    onSubmitAsManualEntry: () -> Unit,
+    onSubmitAsTrack2: () -> Unit,
     onBackButtonClicked: () -> Unit,
     withPanElementReference: (element: ForagePANEditText) -> Unit,
     errorText: String? = null
@@ -33,11 +34,19 @@ fun ManualPANEntryScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = onSubmitButtonClicked,
+                onClick = onSubmitAsManualEntry,
                 modifier = Modifier.withTestId("pos_submit_button")
             ) {
                 Text("Submit")
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onSubmitAsTrack2,
+                modifier = Modifier.withTestId("pos_track_2_submit_button")
+            ) {
+                Text("Submit as Track 2")
+            }
+            Text("Track 2 will submit '<pan>=4912220'")
             Spacer(modifier = Modifier.height(16.dp))
             ErrorText(errorText)
         },
@@ -57,7 +66,8 @@ fun ManualPANEntryScreen(
 fun ManualPANEntryScreenPreview() {
     ManualPANEntryScreen(
         forageConfig = ForageConfig("", ""),
-        onSubmitButtonClicked = {},
+        onSubmitAsManualEntry = {},
+        onSubmitAsTrack2 = {},
         onBackButtonClicked = {},
         withPanElementReference = {}
     )
