@@ -49,10 +49,9 @@ private class PosRosettaDeferRefundPaymentRequest(
         keySerialNumber,
         txnCounter,
         interaction,
-        capabilities
-    ).build().apply {
-        put("pos_terminal", JSONObject().put("provider_terminal_id", posTerminalId))
-    }
+        capabilities,
+        posTerminalId
+    ).build()
 )
 
 internal class PosDeferRefundPaymentSubmission(

@@ -26,6 +26,7 @@ import com.joinforage.forage.android.pos.services.vault.requests.IPosBuildReques
 import com.joinforage.forage.android.pos.services.vault.requests.PosBaseBodyBuilder
 
 private class PosRosettaDeferCapturePaymentRequest(
+    posTerminalId: String,
     forageConfig: ForageConfig,
     traceId: String,
     idempotencyKey: String,
@@ -35,7 +36,7 @@ private class PosRosettaDeferCapturePaymentRequest(
     interaction: CardholderInteraction,
     txnCounter: String,
     capabilities: TerminalCapabilities,
-    paymentRef: String
+    paymentRef: String,
 ) : RosettaDeferCapturePaymentRequest(
     forageConfig = forageConfig,
     traceId = traceId,
@@ -47,7 +48,8 @@ private class PosRosettaDeferCapturePaymentRequest(
         keySerialNumber,
         txnCounter,
         interaction,
-        capabilities
+        capabilities,
+        posTerminalId,
     ).build()
 )
 
@@ -61,6 +63,7 @@ internal class PosDeferCapturePaymentSubmission(
     interaction: CardholderInteraction,
     private val capabilities: TerminalCapabilities,
     private val forageConfig: ForageConfig,
+    private val posTerminalId: String,
     private val logLogger: LogLogger
 ) : ISubmitDelegate, IPosBuildRequestDelegate {
 
@@ -71,6 +74,7 @@ internal class PosDeferCapturePaymentSubmission(
         pinTranslationParams: PinTranslationParams,
         interaction: CardholderInteraction
     ): ClientApiRequest = PosRosettaDeferCapturePaymentRequest(
+        posTerminalId = posTerminalId,
         forageConfig = forageConfig,
         traceId = traceId,
         idempotencyKey = idempotencyKey,

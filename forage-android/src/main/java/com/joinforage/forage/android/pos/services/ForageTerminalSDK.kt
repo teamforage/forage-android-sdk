@@ -315,6 +315,7 @@ class ForageTerminalSDK internal constructor(
             interaction = interaction,
             capabilities = capabilities,
             forageConfig = forageConfig,
+            posTerminalId = posTerminalId,
             logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
         ).submit()
     }
@@ -391,6 +392,7 @@ class ForageTerminalSDK internal constructor(
             interaction = interaction,
             capabilities = capabilities,
             forageConfig = forageConfig,
+            posTerminalId = posTerminalId,
             logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
         ).submit()
     }

@@ -9,6 +9,8 @@ import org.json.JSONObject
 import org.junit.Test
 
 class PosBaseBodyBuilderTest {
+    private val testTerminalId = "test-terminal-id"
+
     @Test
     fun `pos_terminal existing keys are not overwritten`() {
         val existingBody = JSONObject().apply {
@@ -21,13 +23,16 @@ class PosBaseBodyBuilderTest {
             keySerialNumber = "ksn",
             txnCounter = "txnCounter",
             interaction = ManualEntryInteraction("rawPan"),
-            capabilities = TerminalCapabilities.TapAndInsert
+            capabilities = TerminalCapabilities.TapAndInsert,
+            posTerminalId = testTerminalId
         )
 
         val result = builder.build(existingBody)
 
-        assertThat(result.getJSONObject("pos_terminal").getString("existing_key")).isEqualTo("existing_value")
-        assertThat(result.getJSONObject("pos_terminal").has("card_details")).isTrue
+        val posTerminal = result.getJSONObject("pos_terminal")
+        assertThat(posTerminal.getString("existing_key")).isEqualTo("existing_value")
+        assertThat(posTerminal.has("card_details")).isTrue
+        assertThat(posTerminal.getString("provider_terminal_id")).isEqualTo(testTerminalId)
     }
 
     @Test
@@ -38,14 +43,17 @@ class PosBaseBodyBuilderTest {
             keySerialNumber = "ksn",
             txnCounter = "txnCounter",
             interaction = ManualEntryInteraction("rawPan"),
-            capabilities = TerminalCapabilities.TapAndInsert
+            capabilities = TerminalCapabilities.TapAndInsert,
+            posTerminalId = testTerminalId
         )
 
         val result = builder.build(body)
 
-        val cardDetails = result.getJSONObject("pos_terminal").getJSONObject("card_details")
+        val posTerminal = result.getJSONObject("pos_terminal")
+        val cardDetails = posTerminal.getJSONObject("card_details")
         assertThat(cardDetails.getString("manual_entry_pan")).isEqualTo("rawPan")
         assertThat(cardDetails.getString("track_2_data")).isEqualTo("")
+        assertThat(posTerminal.getString("provider_terminal_id")).isEqualTo(testTerminalId)
     }
 
     @Test
@@ -56,14 +64,17 @@ class PosBaseBodyBuilderTest {
             keySerialNumber = "ksn",
             txnCounter = "txnCounter",
             interaction = MagSwipeInteraction("track2Data"),
-            capabilities = TerminalCapabilities.TapAndInsert
+            capabilities = TerminalCapabilities.TapAndInsert,
+            posTerminalId = testTerminalId
         )
 
         val result = builder.build(body)
 
-        val cardDetails = result.getJSONObject("pos_terminal").getJSONObject("card_details")
+        val posTerminal = result.getJSONObject("pos_terminal")
+        val cardDetails = posTerminal.getJSONObject("card_details")
         assertThat(cardDetails.getString("track_2_data")).isEqualTo("track2Data")
         assertThat(cardDetails.has("manual_entry_pan")).isFalse
+        assertThat(posTerminal.getString("provider_terminal_id")).isEqualTo(testTerminalId)
     }
 
     @Test
@@ -72,7 +83,6 @@ class PosBaseBodyBuilderTest {
         val encryptedPinBlock = "encryptedPin"
         val keySerialNumber = "ksn"
         val txnCounter = "txnCounter"
-        val rawPan = "rawPan"
         val track2Data = "track2Data"
         val interaction = MagSwipeInteraction(track2Data)
         val capabilities = TerminalCapabilities.TapAndInsert
@@ -82,7 +92,8 @@ class PosBaseBodyBuilderTest {
             keySerialNumber = keySerialNumber,
             txnCounter = txnCounter,
             interaction = interaction,
-            capabilities = capabilities
+            capabilities = capabilities,
+            posTerminalId = testTerminalId
         )
 
         val result = builder.build(body)
@@ -98,5 +109,6 @@ class PosBaseBodyBuilderTest {
         assertThat(cardDetails.getString("pos_entry_mode")).isEqualTo(interaction.type.value)
         assertThat(cardDetails.getString("track_2_data")).isEqualTo(track2Data)
         assertThat(cardDetails.has("manual_entry_pan")).isFalse
+        assertThat(posTerminal.getString("provider_terminal_id")).isEqualTo(testTerminalId)
     }
 }
