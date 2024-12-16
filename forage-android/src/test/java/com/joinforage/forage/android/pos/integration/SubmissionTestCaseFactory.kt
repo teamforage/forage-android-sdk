@@ -150,6 +150,7 @@ internal class SubmissionTestCaseFactory(
             paymentService = paymentService,
             paymentRef = paymentRef,
             forageConfig = forageConfig,
+            posTerminalId = posTerminalId,
             interaction = interaction,
             capabilities = TerminalCapabilities.TapAndInsert
         )
@@ -176,6 +177,7 @@ internal class SubmissionTestCaseFactory(
             paymentService = paymentService,
             paymentRef = paymentRef,
             forageConfig = forageConfig,
+            posTerminalId = posTerminalId,
             interaction = interaction,
             capabilities = TerminalCapabilities.TapAndInsert
         )

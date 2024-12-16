@@ -22,7 +22,6 @@ import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileMana
 import com.joinforage.forage.android.pos.services.vault.errors.PosErrorStrategy
 import com.joinforage.forage.android.pos.services.vault.requests.IPosBuildRequestDelegate
 import com.joinforage.forage.android.pos.services.vault.requests.PosBaseBodyBuilder
-import org.json.JSONObject
 
 private class PosRosettaBalanceInquiryRequest(
     forageConfig: ForageConfig,
@@ -45,10 +44,9 @@ private class PosRosettaBalanceInquiryRequest(
         keySerialNumber,
         txnCounter,
         interaction,
-        capabilities
-    ).build().apply {
-        put("pos_terminal", JSONObject().put("provider_terminal_id", posTerminalId))
-    }
+        capabilities,
+        posTerminalId
+    ).build()
 )
 
 internal class PosBalanceCheckSubmission(

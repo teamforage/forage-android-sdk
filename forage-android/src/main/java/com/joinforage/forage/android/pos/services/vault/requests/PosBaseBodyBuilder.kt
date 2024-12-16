@@ -11,7 +11,8 @@ internal class PosBaseBodyBuilder(
     private val keySerialNumber: String,
     private val txnCounter: String,
     private val interaction: CardholderInteraction,
-    private val capabilities: TerminalCapabilities
+    private val capabilities: TerminalCapabilities,
+    private val posTerminalId: String
 ) : IBaseBodyBuilder {
     override fun build(body: JSONObject): JSONObject = body.apply {
         put("pin", encryptedPinBlock)
@@ -20,13 +21,15 @@ internal class PosBaseBodyBuilder(
         put(
             "pos_terminal",
             (body.optJSONObject("pos_terminal") ?: JSONObject()).apply {
+                put("provider_terminal_id", posTerminalId)
                 put(
-                    "ecl_fallback",
+                    "card_details",
                     JSONObject().apply {
-                        put("terminal_capabilities", capabilities)
-                        put("cardholder_interaction_type", interaction.type.name)
+                        put("terminal_capabilities", capabilities.value)
+                        put("pos_entry_mode", interaction.type.value)
                         if (interaction.type == CardholderInteractionType.KeyEntry) {
                             put("manual_entry_pan", interaction.rawPan)
+                            put("track_2_data", "")
                         } else {
                             put("track_2_data", interaction.track2Data)
                         }

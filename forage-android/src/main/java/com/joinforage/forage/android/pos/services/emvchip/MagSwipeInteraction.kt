@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.pos.services.emvchip
 
-class MagSwipeInteraction(
-    track2Data: String
-) : CardInteraction(track2Data) {
-    override val type: CardholderInteractionType = parser.interactionType
-    override val emvField55Data: String? = null
+data class MagSwipeInteraction(
+    override val track2Data: String
+) : CardholderInteraction {
+    override val rawPan: String? = null
+    override val type = CardholderInteractionType.MagSwipe
 }
