@@ -172,16 +172,16 @@ class MainIntegrationTest {
 
         // Test Cash Payment Flow (sync)
         val cashTxAmount = "1.00"
-        val cashPayment = testCashPaymentFlow(originalBalance, cashTxAmount)
-        testCashRefundFlow(originalBalance, cashPayment, cashTxAmount)
+        val cashPayment = testCashPaymentFlow(cashTxAmount)
+        testCashRefundFlow(cashPayment, cashTxAmount)
 
         // Test SNAP Payment Flow  (deferred)
         val snapTxAmount = "1.00"
-        val snapPayment = testSnapPaymentFlow(originalBalance, snapTxAmount)
-        testSnapRefundFlow(originalBalance, snapPayment, snapTxAmount)
+        val snapPayment = testSnapPaymentFlow(snapTxAmount)
+        testSnapRefundFlow(snapPayment, snapTxAmount)
     }
 
-    private suspend fun testCashPaymentFlow(originalBalance: EbtBalance, amount: String): Payment {
+    private suspend fun testCashPaymentFlow(amount: String): Payment {
         // Create and capture cash payment
         val cashPayment = paymentService.createPayment(paymentMethod.ref, posTerminalId, amount, "ebt_cash")
         val (captureSubmission) = swipeLegacySubmitTestCaseFactory.newCapturePaymentSubmission(
@@ -196,7 +196,7 @@ class MainIntegrationTest {
         return cashPayment
     }
 
-    private suspend fun testCashRefundFlow(originalBalance: EbtBalance, cashPayment: Payment, amount: String) {
+    private suspend fun testCashRefundFlow(cashPayment: Payment, amount: String) {
         // Refund the cash payment
         val (refundSubmission) = swipeFallbackSubmitTestCaseFactory.newRefundPaymentSubmission(
             paymentRef = cashPayment.ref,
@@ -209,7 +209,7 @@ class MainIntegrationTest {
         assertThat(refundedCash.status).isEqualTo("succeeded")
     }
 
-    private suspend fun testSnapPaymentFlow(originalBalance: EbtBalance, amount: String): Payment {
+    private suspend fun testSnapPaymentFlow(amount: String): Payment {
         // Create and defer capture SNAP payment
         val snapPayment = paymentService.createPayment(paymentMethod.ref, posTerminalId, amount, "ebt_snap")
         val (deferSubmission) = keyEntrySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
@@ -227,7 +227,7 @@ class MainIntegrationTest {
         return snapPayment
     }
 
-    private suspend fun testSnapRefundFlow(originalBalance: EbtBalance, snapPayment: Payment, amount: String) {
+    private suspend fun testSnapRefundFlow(snapPayment: Payment, amount: String) {
         // Create deferred refund
         val (deferredRefundSubmission) = keyEntrySubmitTestCaseFactory.newDeferredRefundSubmission(
             paymentRef = snapPayment.ref
