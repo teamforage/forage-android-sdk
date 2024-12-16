@@ -45,6 +45,7 @@ class PosBaseBodyBuilderTest {
 
         val cardDetails = result.getJSONObject("pos_terminal").getJSONObject("card_details")
         assertThat(cardDetails.getString("manual_entry_pan")).isEqualTo("rawPan")
+        assertThat(cardDetails.getString("track_2_data")).isEqualTo("")
     }
 
     @Test
