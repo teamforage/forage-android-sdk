@@ -23,6 +23,7 @@ import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.Tes
 import com.joinforage.forage.android.pos.integration.logger.InMemoryLogger
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
+import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
 import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
 import com.joinforage.forage.android.pos.services.encryption.certificate.RsaKeyManager
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
@@ -50,7 +51,9 @@ class MainIntegrationTest {
         private val username = "o3vJFaHmO3eOGLxhREmwk7GHIAD4k7E9WTOwGeUP"
         private val password = "BrqSz3vDhb98nwW2wJ7OpZtx5eQYTKuJGhAD4BxSKKk0yvBNjBy6yVArn1wpFQJX618yo2oA4PUCyRWJj4SflMuhPGSGj4kaJXK158uMJvOdtT5CU4uVyeopfpx3ooDx"
         private val pan = "6777 7777 7777 7777".filter { it.isDigit() }
-        private val interaction = ManualEntryInteraction(pan)
+        private val manualEntryInteraction = ManualEntryInteraction(pan)
+        private val swipeLegacyInteraction = MagSwipeInteraction(";${pan}=4912120abcde?")
+        private val swipeFallbackInteraction = MagSwipeInteraction(";${pan}=4912220abcde?")
         private val badPIN = "1234"
         private val validPIN = pan.takeLast(4)
         private val env = EnvConfig.Dev
@@ -68,7 +71,9 @@ class MainIntegrationTest {
         private lateinit var payment: Payment
         private lateinit var failureAttrs: LoggableAttributes
         private lateinit var accessToken: String
-        private lateinit var submissionTestCaseFactory: SubmissionTestCaseFactory
+        private lateinit var keyEntrySubmitTestCaseFactory: SubmissionTestCaseFactory
+        private lateinit var swipeLegacySubmitTestCaseFactory: SubmissionTestCaseFactory
+        private lateinit var swipeFallbackSubmitTestCaseFactory: SubmissionTestCaseFactory
 
         @BeforeClass
         @JvmStatic
@@ -93,7 +98,7 @@ class MainIntegrationTest {
             pmRefProvider = TestPmRefProvider(paymentMethod.ref)
 
             // Initialize the submission test case factory
-            submissionTestCaseFactory = SubmissionTestCaseFactory(
+            keyEntrySubmitTestCaseFactory = SubmissionTestCaseFactory(
                 validPIN = validPIN,
                 forageConfig = forageConfig,
                 ksnFileManager = ksnFileManager,
@@ -101,7 +106,37 @@ class MainIntegrationTest {
                 paymentMethodRef = paymentMethod.ref,
                 paymentRef = payment.ref,
                 posTerminalId = posTerminalId,
-                interaction = interaction,
+                interaction = manualEntryInteraction,
+                traceId = traceId,
+                paymentMethodService = paymentMethodService,
+                paymentService = paymentService,
+                vaultHttpEngine = httpEngine
+            )
+
+            swipeLegacySubmitTestCaseFactory = SubmissionTestCaseFactory(
+                validPIN = validPIN,
+                forageConfig = forageConfig,
+                ksnFileManager = ksnFileManager,
+                keyRegisters = keyRegisters,
+                paymentMethodRef = paymentMethod.ref,
+                paymentRef = payment.ref,
+                posTerminalId = posTerminalId,
+                interaction = swipeLegacyInteraction,
+                traceId = traceId,
+                paymentMethodService = paymentMethodService,
+                paymentService = paymentService,
+                vaultHttpEngine = httpEngine
+            )
+
+            swipeFallbackSubmitTestCaseFactory = SubmissionTestCaseFactory(
+                validPIN = validPIN,
+                forageConfig = forageConfig,
+                ksnFileManager = ksnFileManager,
+                keyRegisters = keyRegisters,
+                paymentMethodRef = paymentMethod.ref,
+                paymentRef = payment.ref,
+                posTerminalId = posTerminalId,
+                interaction = swipeFallbackInteraction,
                 traceId = traceId,
                 paymentMethodService = paymentMethodService,
                 paymentService = paymentService,
@@ -131,7 +166,7 @@ class MainIntegrationTest {
     @Test
     fun testEnd2EndHappyPath() = runTest {
         // Get initial balance using new submission factory
-        val (balanceSubmission) = submissionTestCaseFactory.newBalanceCheckSubmission()
+        val (balanceSubmission) = keyEntrySubmitTestCaseFactory.newBalanceCheckSubmission()
         val balanceResponse = balanceSubmission.submit()
         val originalBalance = ((balanceResponse as ForageApiResponse.Success<String>).toBalance() as EbtBalance)
 
@@ -149,7 +184,7 @@ class MainIntegrationTest {
     private suspend fun testCashPaymentFlow(originalBalance: EbtBalance, amount: String): Payment {
         // Create and capture cash payment
         val cashPayment = paymentService.createPayment(paymentMethod.ref, posTerminalId, amount, "ebt_cash")
-        val (captureSubmission) = submissionTestCaseFactory.newCapturePaymentSubmission(
+        val (captureSubmission) = swipeLegacySubmitTestCaseFactory.newCapturePaymentSubmission(
             paymentRef = cashPayment.ref
         )
         val captureResponse = captureSubmission.submit()
@@ -157,15 +192,13 @@ class MainIntegrationTest {
 
         // Verify balance was reduced by payment amount
         assertThat(capturedCash.status).isEqualTo("succeeded")
-//        assertThat((capturedCash.receipt!!.balance as EbtBalance).cash.toFloat())
-//            .isEqualTo(originalBalance.cash.toFloat() - amount.toFloat())
 
         return cashPayment
     }
 
     private suspend fun testCashRefundFlow(originalBalance: EbtBalance, cashPayment: Payment, amount: String) {
         // Refund the cash payment
-        val (refundSubmission) = submissionTestCaseFactory.newRefundPaymentSubmission(
+        val (refundSubmission) = swipeFallbackSubmitTestCaseFactory.newRefundPaymentSubmission(
             paymentRef = cashPayment.ref,
             amount = amount.toFloat()
         )
@@ -174,14 +207,12 @@ class MainIntegrationTest {
 
         // Verify balance was restored after refund
         assertThat(refundedCash.status).isEqualTo("succeeded")
-//        assertThat((refundedCash.receipt!!.balance as EbtBalance).cash.toFloat())
-//            .isEqualTo(originalBalance.cash.toFloat())
     }
 
     private suspend fun testSnapPaymentFlow(originalBalance: EbtBalance, amount: String): Payment {
         // Create and defer capture SNAP payment
         val snapPayment = paymentService.createPayment(paymentMethod.ref, posTerminalId, amount, "ebt_snap")
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
+        val (deferSubmission) = keyEntrySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = snapPayment.ref
         )
         val snapDeferResponse = deferSubmission.submit()
@@ -192,15 +223,13 @@ class MainIntegrationTest {
 
         // Verify balance was reduced by payment amount
         assertThat(capturedSnap.status).isEqualTo("succeeded")
-//        assertThat((capturedSnap.receipt!!.balance as EbtBalance).snap.toFloat())
-//            .isEqualTo(originalBalance.snap.toFloat() - amount.toFloat())
 
         return snapPayment
     }
 
     private suspend fun testSnapRefundFlow(originalBalance: EbtBalance, snapPayment: Payment, amount: String) {
         // Create deferred refund
-        val (deferredRefundSubmission) = submissionTestCaseFactory.newDeferredRefundSubmission(
+        val (deferredRefundSubmission) = keyEntrySubmitTestCaseFactory.newDeferredRefundSubmission(
             paymentRef = snapPayment.ref
         )
         val snapDeferredRefundResponse = deferredRefundSubmission.submit()
@@ -218,15 +247,13 @@ class MainIntegrationTest {
 
         // Verify refund succeeded and balance was restored
         assertThat(refundedSnap.status).isEqualTo("succeeded")
-//        assertThat((refundedSnap.receipt!!.balance as EbtBalance).snap.toFloat())
-//            .isEqualTo(originalBalance.snap.toFloat())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testBadPINScenarios() = runTest {
         // Test balance check with bad PIN
-        val (balanceSubmission) = submissionTestCaseFactory.newBalanceCheckSubmission(pin = badPIN)
+        val (balanceSubmission) = keyEntrySubmitTestCaseFactory.newBalanceCheckSubmission(pin = badPIN)
         val balanceCheckResponse = balanceSubmission.submit()
         assertBadPinError(balanceCheckResponse)
 
@@ -237,7 +264,7 @@ class MainIntegrationTest {
             amount = "1.00",
             fundingType = "ebt_cash"
         )
-        val (captureSubmission) = submissionTestCaseFactory.newCapturePaymentSubmission(
+        val (captureSubmission) = swipeLegacySubmitTestCaseFactory.newCapturePaymentSubmission(
             paymentRef = cashPayment.ref,
             pin = badPIN
         )
@@ -251,7 +278,7 @@ class MainIntegrationTest {
             amount = "1.00",
             fundingType = "ebt_snap"
         )
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
+        val (deferSubmission) = swipeFallbackSubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = snapPayment.ref,
             pin = badPIN
         )
@@ -262,7 +289,7 @@ class MainIntegrationTest {
         assertBadPinError(deferCaptureResponse)
 
         // Capture the cash payment first with valid PIN
-        val (captureSuccessSubmission) = submissionTestCaseFactory.newCapturePaymentSubmission(
+        val (captureSuccessSubmission) = keyEntrySubmitTestCaseFactory.newCapturePaymentSubmission(
             paymentRef = cashPayment.ref,
             pin = validPIN
         )
@@ -270,7 +297,7 @@ class MainIntegrationTest {
         assertThat(captureSuccessResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
         // Test refund with bad PIN on captured payment
-        val (refundSubmission) = submissionTestCaseFactory.newRefundPaymentSubmission(
+        val (refundSubmission) = swipeLegacySubmitTestCaseFactory.newRefundPaymentSubmission(
             paymentRef = cashPayment.ref,
             pin = badPIN,
             amount = 1.00f
@@ -279,7 +306,7 @@ class MainIntegrationTest {
         assertBadPinError(refundResponse)
 
         // Test deferred refund with bad PIN on captured payment
-        val (deferredRefundSubmission) = submissionTestCaseFactory.newDeferredRefundSubmission(
+        val (deferredRefundSubmission) = swipeFallbackSubmitTestCaseFactory.newDeferredRefundSubmission(
             paymentRef = cashPayment.ref,
             pin = badPIN
         )
@@ -295,7 +322,7 @@ class MainIntegrationTest {
         assertBadPinError(deferredRefundCaptureResponse)
 
         // Finally restore the balance with a successful refund
-        val (successfulRefundSubmission) = submissionTestCaseFactory.newRefundPaymentSubmission(
+        val (successfulRefundSubmission) = keyEntrySubmitTestCaseFactory.newRefundPaymentSubmission(
             paymentRef = cashPayment.ref,
             pin = validPIN,
             amount = 1.00f
@@ -321,7 +348,7 @@ class MainIntegrationTest {
         val staleKsnManager = ksnFileManager.clone()
 
         // Make an initial balance check to advance the key registers
-        val (initialSubmission) = submissionTestCaseFactory.newBalanceCheckSubmission()
+        val (initialSubmission) = keyEntrySubmitTestCaseFactory.newBalanceCheckSubmission()
         val initialResponse = initialSubmission.submit()
         assertThat(initialResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
@@ -331,7 +358,7 @@ class MainIntegrationTest {
             submission,
             logger,
             collector
-        ) = submissionTestCaseFactory.newBalanceCheckSubmission(
+        ) = swipeFallbackSubmitTestCaseFactory.newBalanceCheckSubmission(
             ksnFileManager = staleKsnManager
         )
 
@@ -365,7 +392,7 @@ class MainIntegrationTest {
             fundingType = "ebt_snap"
         )
 
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
+        val (deferSubmission) = swipeLegacySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = snapPayment.ref
         )
         val snapDeferResponse = deferSubmission.submit()
@@ -394,7 +421,7 @@ class MainIntegrationTest {
         )
 
         // Defer capture the payment
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
+        val (deferSubmission) = keyEntrySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = snapPayment.ref
         )
         val snapDeferResponse = deferSubmission.submit()
@@ -406,7 +433,7 @@ class MainIntegrationTest {
 
         // Now attempt to refund for much more than the original purchase
         val largeRefundAmount = 10000.00f
-        val (refundSubmission) = submissionTestCaseFactory.newRefundPaymentSubmission(
+        val (refundSubmission) = swipeFallbackSubmitTestCaseFactory.newRefundPaymentSubmission(
             paymentRef = snapPayment.ref,
             amount = largeRefundAmount
         )
@@ -424,7 +451,7 @@ class MainIntegrationTest {
         assertThat(actualRes).isEqualTo(expectedRes)
 
         // Clean up by refunding the original amount
-        val (cleanupRefundSubmission) = submissionTestCaseFactory.newRefundPaymentSubmission(
+        val (cleanupRefundSubmission) = keyEntrySubmitTestCaseFactory.newRefundPaymentSubmission(
             paymentRef = snapPayment.ref,
             amount = snapTxAmount.toFloat()
         )
@@ -432,5 +459,3 @@ class MainIntegrationTest {
         assertThat(cleanupResponse).isInstanceOf(ForageApiResponse.Success::class.java)
     }
 }
-
-// TODO: cover some passing Track2 data cases. Right now everything is manual entry!
