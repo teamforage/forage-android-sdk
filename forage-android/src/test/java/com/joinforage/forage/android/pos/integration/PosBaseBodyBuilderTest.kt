@@ -14,9 +14,12 @@ class PosBaseBodyBuilderTest {
     @Test
     fun `pos_terminal existing keys are not overwritten`() {
         val existingBody = JSONObject().apply {
-            put("pos_terminal", JSONObject().apply {
-                put("existing_key", "existing_value")
-            })
+            put(
+                "pos_terminal",
+                JSONObject().apply {
+                    put("existing_key", "existing_value")
+                }
+            )
         }
         val builder = PosBaseBodyBuilder(
             encryptedPinBlock = "encryptedPin",

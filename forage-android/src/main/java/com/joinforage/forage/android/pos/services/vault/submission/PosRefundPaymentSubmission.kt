@@ -24,7 +24,6 @@ import com.joinforage.forage.android.pos.services.vault.errors.PosErrorStrategy
 import com.joinforage.forage.android.pos.services.vault.requests.IPosBuildRequestDelegate
 import com.joinforage.forage.android.pos.services.vault.requests.PosBaseBodyBuilder
 import com.joinforage.forage.android.pos.services.vault.requests.RosettaRefundPaymentRequest
-import org.json.JSONObject
 
 private class PosRosettaRefundPaymentRequest(
     forageConfig: ForageConfig,

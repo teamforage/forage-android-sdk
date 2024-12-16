@@ -12,7 +12,7 @@ internal class PosBaseBodyBuilder(
     private val txnCounter: String,
     private val interaction: CardholderInteraction,
     private val capabilities: TerminalCapabilities,
-    private val posTerminalId: String,
+    private val posTerminalId: String
 ) : IBaseBodyBuilder {
     override fun build(body: JSONObject): JSONObject = body.apply {
         put("pin", encryptedPinBlock)

@@ -52,8 +52,8 @@ class MainIntegrationTest {
         private val password = "BrqSz3vDhb98nwW2wJ7OpZtx5eQYTKuJGhAD4BxSKKk0yvBNjBy6yVArn1wpFQJX618yo2oA4PUCyRWJj4SflMuhPGSGj4kaJXK158uMJvOdtT5CU4uVyeopfpx3ooDx"
         private val pan = "6777 7777 7777 7777".filter { it.isDigit() }
         private val manualEntryInteraction = ManualEntryInteraction(pan)
-        private val swipeLegacyInteraction = MagSwipeInteraction(";${pan}=4912120abcde?")
-        private val swipeFallbackInteraction = MagSwipeInteraction(";${pan}=4912220abcde?")
+        private val swipeLegacyInteraction = MagSwipeInteraction(";$pan=4912120abcde?")
+        private val swipeFallbackInteraction = MagSwipeInteraction(";$pan=4912220abcde?")
         private val badPIN = "1234"
         private val validPIN = pan.takeLast(4)
         private val env = EnvConfig.Dev

@@ -36,7 +36,7 @@ private class PosRosettaDeferCapturePaymentRequest(
     interaction: CardholderInteraction,
     txnCounter: String,
     capabilities: TerminalCapabilities,
-    paymentRef: String,
+    paymentRef: String
 ) : RosettaDeferCapturePaymentRequest(
     forageConfig = forageConfig,
     traceId = traceId,
@@ -49,7 +49,7 @@ private class PosRosettaDeferCapturePaymentRequest(
         txnCounter,
         interaction,
         capabilities,
-        posTerminalId,
+        posTerminalId
     ).build()
 )
 
