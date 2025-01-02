@@ -69,7 +69,6 @@ class PosTerminalInitializerTest {
             override fun encrypt(str: String): ByteArray = ByteArray(0)
             override fun encrypt(data: ByteArray): ByteArray = ByteArray(0)
             override fun decrypt(encryptedData: ByteArray): ByteArray = ByteArray(16)
-            override fun deleteKeyPair() {}
             override fun generateCSRBase64(): String = ""
         }
 
@@ -302,7 +301,6 @@ class PosTerminalInitializerTest {
             override fun decrypt(encryptedData: ByteArray): ByteArray {
                 throw exception
             }
-            override fun deleteKeyPair() {}
             override fun generateCSRBase64(): String = ""
         }
 

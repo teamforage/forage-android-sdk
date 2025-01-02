@@ -38,7 +38,6 @@ internal class PosTerminalInitializer(
         val decryptedInitialDerivationKey = rsaKeyManager.decrypt(
             encryptedData = decodedIpek
         )
-        rsaKeyManager.deleteKeyPair()
 
         val dukptService = dukptServiceFactory(KeySerialNumber(ksnStr))
         val ksn = dukptService.loadKey(AesBlock(decryptedInitialDerivationKey))
