@@ -148,7 +148,6 @@ class MainIntegrationTest {
                 ksnFileManager,
                 InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId)),
                 rosetta,
-                keyRegisters,
                 JavaBase64Util(),
                 RsaKeyManager(JavaBase64Util())
             ) { ksn -> DukptService(ksn, keyRegisters) }.safeInit()

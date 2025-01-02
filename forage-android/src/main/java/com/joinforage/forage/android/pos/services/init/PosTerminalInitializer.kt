@@ -15,7 +15,6 @@ internal class PosTerminalInitializer(
     private val ksnManager: IKsnFileManager,
     logEngine: LogLogger,
     private val rosetta: IRosettaInitService,
-    private val keyRegisters: SecureKeyStorageRegisters,
     private val base64: IBase64Util,
     private val rsaKeyManager: IRsaKeyManager,
     private val dukptServiceFactory: (KeySerialNumber) -> IDukptService

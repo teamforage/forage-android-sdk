@@ -108,7 +108,6 @@ class PosTerminalInitializerTest {
         ksnManager,
         logger,
         rosetta,
-        keyRegisters,
         JavaBase64Util(),
         rsaKeyManager,
         dukptServiceFactory
