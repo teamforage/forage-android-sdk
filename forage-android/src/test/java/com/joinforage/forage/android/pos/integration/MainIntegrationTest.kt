@@ -343,22 +343,14 @@ class MainIntegrationTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testDukptInfiniteLoopException() = runTest {
-        // Create a clone of the KSN file manager before any operations
-        val staleKsnManager = ksnFileManager.clone()
-
-        // Make an initial balance check to advance the key registers
-        val (initialSubmission) = keyEntrySubmitTestCaseFactory.newBalanceCheckSubmission()
-        val initialResponse = initialSubmission.submit()
-        assertThat(initialResponse).isInstanceOf(ForageApiResponse.Success::class.java)
-
-        // Now create a new submission with the stale KSN manager
-        // This should cause an infinite loop when trying to find the next key
+        // Simulate a situation where DUKPT cannot find the next available
+        // key and enters an infinite loop to make sure we can recover
         val (
             submission,
             logger,
             collector
         ) = swipeFallbackSubmitTestCaseFactory.newBalanceCheckSubmission(
-            ksnFileManager = staleKsnManager
+            keyRegisters = InMemoryKeyRegisters() // no keys set
         )
 
         val response = submission.submit(pmRefProvider)
