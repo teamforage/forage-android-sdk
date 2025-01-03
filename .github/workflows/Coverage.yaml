@@ -16,7 +16,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v3
 
       - name: Setup JDK 17
         uses: actions/setup-java@v3
