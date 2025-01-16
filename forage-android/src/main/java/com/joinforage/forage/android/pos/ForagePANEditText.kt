@@ -6,8 +6,7 @@ import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.ui.element.ForagePanElement
 
 /**
- * A [ForagePanElement] that securely collects a customer's card number. You need a [ForagePANEditText]
- * to call the method to manually [tokenize a card][com.joinforage.forage.android.pos.services.ForageTerminalSDK.tokenizeCard].
+ * A [ForagePanElement] that securely collects a customer's card number.
  * ```xml
  * <!-- Example forage_pan_component.xml -->
  * <?xml version="1.0" encoding="utf-8"?>
