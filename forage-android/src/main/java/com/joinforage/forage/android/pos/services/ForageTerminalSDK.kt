@@ -119,8 +119,13 @@ class ForageTerminalSDK internal constructor(
      * used for a transaction. The max length of the string is 255 characters.
      * @param ForageConfig **Required**. A [ForageConfig][com.joinforage.forage.android.core.services.ForageConfig] instance that specifies a
      * `merchantId` and `sessionToken`.
-     * @param ksnDir **Optional**. Specifies the directory where the SDK initializes and stores state for DUKPT * (Derived Unique Key Per Transaction) key generation. By default, this is set to the app's `filesDir`. * Choose a directory that the host application won't frequently modify or delete * to prevent unnecessary reinitialization of the SDK's state.
-     * @param capabilities **Optional**. Defines the terminal's capabilities for processing transactions, such as supporting card swiping, * tapping, or inserting. This information is used to report terminal features for compliance purposes. * Most applications can use the default value without modification.
+     * @param ksnDir **Optional**. Specifies the directory where the SDK initializes and stores state for DUKPT
+     *   (Derived Unique Key Per Transaction) key generation. By default, this is set to the app's `filesDir`.
+     *   Choose a directory that the host application won't frequently modify or delete
+     *   to prevent unnecessary reinitialization of the SDK's state.
+     * @param capabilities **Optional**. Defines the terminal's capabilities for processing transactions, such as supporting card swiping,
+     *   tapping, or inserting. This information is used to report terminal features for compliance purposes.
+     *   Most applications can use the default value without modification.
      */
     companion object {
         @Throws(Exception::class)
