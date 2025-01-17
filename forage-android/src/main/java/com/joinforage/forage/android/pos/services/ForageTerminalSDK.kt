@@ -80,54 +80,54 @@ class ForageTerminalSDK internal constructor(
             httpEngine
         )
 
-    /**
-     * A method that initializes the [ForageTerminalSDK].
-     *
-     * **You must call [init] ahead of calling
-     * any other methods on a ForageTerminalSDK instance.**
-     *
-     * Forage may perform some long running initialization operations in
-     * certain circumstances. The operations typically last less than 10 seconds and only occur
-     * infrequently.
-     *
-     * ⚠️The [ForageTerminalSDK.init] method is only available in the private
-     * distribution of the Forage Terminal SDK.
-     *
-     *```kotlin
-     * // Example: Initialize the Forage Terminal SDK
-     * try {
-     *     val forageTerminalSdk = ForageTerminalSDK.init(
-     *         context = androidContext,
-     *         posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
-     *         forageConfig = ForageConfig(
-     *             merchantId = "123ab45c67",
-     *             sessionToken = "sandbox_ey123..."
-     *         )
-     *     )
-     *
-     *     // Use the forageTerminalSdk to call other methods
-     *     // (e.g. checkBalance, etc.)
-     * } catch (e: Exception) {
-     *     // handle initialization error
-     * }
-     * ```
-     *
-     * @throws Exception If the initialization fails.
-     *
-     * @param context **Required**. The Android application context.
-     * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
-     * used for a transaction. The max length of the string is 255 characters.
-     * @param ForageConfig **Required**. A [ForageConfig][com.joinforage.forage.android.core.services.ForageConfig] instance that specifies a
-     * `merchantId` and `sessionToken`.
-     * @param ksnDir **Optional**. Specifies the directory where the SDK initializes and stores state for DUKPT
-     *   (Derived Unique Key Per Transaction) key generation. By default, this is set to the app's `filesDir`.
-     *   Choose a directory that the host application won't frequently modify or delete
-     *   to prevent unnecessary reinitialization of the SDK's state.
-     * @param capabilities **Optional**. Defines the terminal's capabilities for processing transactions, such as supporting card swiping,
-     *   tapping, or inserting. This information is used to report terminal features for compliance purposes.
-     *   Most applications can use the default value without modification.
-     */
     companion object {
+        /**
+         * A method that initializes the [ForageTerminalSDK].
+         *
+         * **You must call [init] ahead of calling
+         * any other methods on a ForageTerminalSDK instance.**
+         *
+         * Forage may perform some long running initialization operations in
+         * certain circumstances. The operations typically last less than 10 seconds and only occur
+         * infrequently.
+         *
+         * ⚠️The [ForageTerminalSDK.init] method is only available in the private
+         * distribution of the Forage Terminal SDK.
+         *
+         *```kotlin
+         * // Example: Initialize the Forage Terminal SDK
+         * try {
+         *     val forageTerminalSdk = ForageTerminalSDK.init(
+         *         context = androidContext,
+         *         posTerminalId = "<id-that-uniquely-identifies-the-pos-terminal>",
+         *         forageConfig = ForageConfig(
+         *             merchantId = "123ab45c67",
+         *             sessionToken = "sandbox_ey123..."
+         *         )
+         *     )
+         *
+         *     // Use the forageTerminalSdk to call other methods
+         *     // (e.g. checkBalance, etc.)
+         * } catch (e: Exception) {
+         *     // handle initialization error
+         * }
+         * ```
+         *
+         * @throws Exception If the initialization fails.
+         *
+         * @param context **Required**. The Android application context.
+         * @param posTerminalId **Required**. A string that uniquely identifies the POS Terminal
+         * used for a transaction. The max length of the string is 255 characters.
+         * @param ForageConfig **Required**. A [ForageConfig][com.joinforage.forage.android.core.services.ForageConfig] instance that specifies a
+         * `merchantId` and `sessionToken`.
+         * @param ksnDir **Optional**. Specifies the directory where the SDK initializes and stores state for DUKPT
+         *   (Derived Unique Key Per Transaction) key generation. By default, this is set to the app's `filesDir`.
+         *   Choose a directory that the host application won't frequently modify or delete
+         *   to prevent unnecessary reinitialization of the SDK's state.
+         * @param capabilities **Optional**. Defines the terminal's capabilities for processing transactions, such as supporting card swiping,
+         *   tapping, or inserting. This information is used to report terminal features for compliance purposes.
+         *   Most applications can use the default value without modification.
+         */
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
