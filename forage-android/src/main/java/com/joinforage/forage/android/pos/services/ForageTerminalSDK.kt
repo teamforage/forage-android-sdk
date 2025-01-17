@@ -34,13 +34,13 @@ import java.io.File
  * **You need to call [`ForageTerminalSDK.init`][init] to initialize the SDK.**
  * Then you can perform operations like:
  * <br><br>
- * * [Checking the balance of a card][checkBalance]
- * * [Collecting a card PIN for a payment and
+ * - [Checking the balance of a card][checkBalance]
+ * - [Collecting a card PIN for a payment and
  * deferring the capture of the payment to the server][deferPaymentCapture]
- * * [Capturing a payment immediately][capturePayment]
- * * [Collecting a customer's card PIN for a refund and defer the completion of the refund to the
+ * - [Capturing a payment immediately][capturePayment]
+ * - [Collecting a customer's card PIN for a refund and defer the completion of the refund to the
  * server][deferPaymentRefund]
- * * [Refunding a payment immediately][refundPayment]
+ * - [Refunding a payment immediately][refundPayment]
  * <br><br>
  *
  *```kotlin
@@ -120,11 +120,14 @@ class ForageTerminalSDK internal constructor(
          * used for a transaction. The max length of the string is 255 characters.
          * @param ForageConfig **Required**. A [ForageConfig][com.joinforage.forage.android.core.services.ForageConfig] instance that specifies a
          * `merchantId` and `sessionToken`.
-         * @param ksnDir **Optional**. A File instance representing a directory where the KSN file
-         * for DUKPT should reside. If no directory is supplied, the KSN file will live in the
-         * root of the application's files directory.
+         * @param ksnDir **Optional**. Specifies the directory where the SDK initializes and stores state for DUKPT
+         *   (Derived Unique Key Per Transaction) key generation. By default, this is set to the app's `filesDir`.
+         *   Choose a directory that the host application won't frequently modify or delete
+         *   to prevent unnecessary reinitialization of the SDK's state.
+         * @param capabilities **Optional**. Defines the terminal's capabilities for processing transactions, such as supporting card swiping,
+         *   tapping, or inserting. This information is used to report terminal features for compliance purposes.
+         *   Most applications can use the default value without modification.
          */
-
         @Throws(Exception::class)
         suspend fun init(
             context: Context,
@@ -547,6 +550,13 @@ class ForageTerminalSDK internal constructor(
  * found in the response from a call to the
  * [Create a `PaymentMethod`](https://docs.joinforage.app/reference/create-payment-method)
  * endpoint.
+ * @property interaction Represents the method of interaction between the cardholder and the terminal.
+ * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
+ * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
+ * <br>
+ * For example:<br>
+ *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
+ *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
  */
 data class CheckBalanceParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
@@ -566,6 +576,13 @@ data class CheckBalanceParams(
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
  * database, returned by the
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ * @property interaction Represents the method of interaction between the cardholder and the terminal.
+ * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
+ * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
+ * <br>
+ * For example:<br>
+ *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
+ *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
  */
 data class CapturePaymentParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
@@ -592,6 +609,13 @@ data class CapturePaymentParams(
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
  * database, returned by the
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ * @property interaction Represents the method of interaction between the cardholder and the terminal.
+ * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
+ * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
+ * <br>
+ * For example:<br>
+ *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
+ *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
  */
 data class DeferPaymentCaptureParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
@@ -616,6 +640,13 @@ data class DeferPaymentCaptureParams(
  * @property reason **Required**. A string that describes why the payment is to be refunded.
  * @property metadata Optional. A map of merchant-defined key-value pairs. For example, some
  * merchants attach their credit card processor’s ID for the customer making the refund.
+ * @property interaction Represents the method of interaction between the cardholder and the terminal.
+ * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
+ * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
+ * <br>
+ * For example:<br>
+ *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
+ *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
  */
 data class RefundPaymentParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
@@ -639,6 +670,13 @@ data class RefundPaymentParams(
  * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
  * database, returned by the
  * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
+ * @property interaction Represents the method of interaction between the cardholder and the terminal.
+ * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
+ * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
+ * <br>
+ * For example:<br>
+ *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
+ *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
  */
 data class DeferPaymentRefundParams(
     val forageVaultElement: ForageVaultElement<ElementState>,

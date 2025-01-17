@@ -28,9 +28,7 @@ import com.joinforage.forage.android.core.ui.getThemeAccentColor
 import com.joinforage.forage.android.core.ui.textwatcher.FormatPanTextWatcher
 
 /**
- * A [ForageElement] that securely collects a customer's card number. You need an instance of a
- * [ForagePanElement] to call the method to manually [tokenize a card][com.joinforage.forage.android.pos.services.ForageTerminalSDK.tokenizeCard].
- */
+ * A [ForageElement] that securely collects a customer's card number. */
 abstract class ForagePanElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -173,7 +171,7 @@ abstract class ForagePanElement @JvmOverloads constructor(
      * ```kotlin
      * // Example: Call setForageConfig on a ForagePANEditText Element
      * val foragePanEditText = root?.findViewById<ForagePANEditText>(
-     *     R.id.tokenizeForagePanEditText
+     *     R.id.ForagePanEditText
      * )
      * foragePanEditText.setForageConfig(
      *     ForageConfig(
