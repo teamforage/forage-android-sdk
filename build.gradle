@@ -27,7 +27,7 @@ subprojects {
 
         String dokkaBaseConfiguration = """
         {
-          "footerMessage": "<a href=\\"https://www.joinforage.com/\\"style=\\"color: inherit; text-decoration: none;\\">© 2023–2025 Forage Technology Corporation.</a>",
+          "footerMessage": "© 2023–2025 <a href=\\"https://www.joinforage.com/\\"style=\\"color: inherit; text-decoration: none;\\">Forage Technology Corporation</a>.",
           "separateInheritedMembers": true
         }
         """
