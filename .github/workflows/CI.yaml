@@ -65,7 +65,7 @@ jobs:
           pytest --lf --last-failed-no-failures none  --suppress-no-test-exit-code android/tests/test_basic_flow.py
 
       - name: Upload build outputs (APKs and SDK AARs)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-outputs
           path: |
