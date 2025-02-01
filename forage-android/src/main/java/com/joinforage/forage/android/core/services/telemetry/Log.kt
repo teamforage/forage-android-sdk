@@ -48,7 +48,9 @@ internal interface Log {
                     clientToken = envConfig.ddClientToken,
                     env = envConfig.FLAVOR.value,
                     variant = envConfig.FLAVOR.value
-                ).build()
+                )
+                    .setProxy("https://pci.browser-intake-datadoghq.com")
+                    .build()
                 Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
                 val logsConfig = LogsConfiguration.Builder().build()
                 Logs.enable(logsConfig)
