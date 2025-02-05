@@ -1,9 +1,8 @@
-package com.joinforage.forage.android.core.services.vault.requests
+package com.joinforage.forage.android.ecom.services.vault
 
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 
-// TODO: move this into the /ecom folder and delete from POS repo
 internal interface IEcomBuildRequestDelegate {
     suspend fun buildRequest(
         paymentMethod: VaultPaymentMethod,

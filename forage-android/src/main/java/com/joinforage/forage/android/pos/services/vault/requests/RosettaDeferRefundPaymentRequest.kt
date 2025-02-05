@@ -1,18 +1,18 @@
-package com.joinforage.forage.android.core.services.vault.requests
+package com.joinforage.forage.android.pos.services.vault.requests
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
-import com.joinforage.forage.android.ecom.services.vault.RosettaVaultRequest
 import org.json.JSONObject
 
-internal abstract class RosettaBalanceInquiryRequest(
+internal abstract class RosettaDeferRefundPaymentRequest(
     forageConfig: ForageConfig,
     traceId: String,
     idempotencyKey: String,
     paymentMethod: VaultPaymentMethod,
+    paymentRef: String,
     body: JSONObject
 ) : RosettaVaultRequest(
-    path = "proxy/api/payment_methods/${paymentMethod.ref}/balance/",
+    path = "proxy/api/payments/$paymentRef/refunds/collect_pin/",
     forageConfig = forageConfig,
     traceId = traceId,
     idempotencyKey = idempotencyKey,

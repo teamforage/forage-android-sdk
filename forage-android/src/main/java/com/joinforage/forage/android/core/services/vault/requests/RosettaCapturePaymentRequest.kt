@@ -2,7 +2,7 @@ package com.joinforage.forage.android.core.services.vault.requests
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
-import com.joinforage.forage.android.pos.services.vault.requests.RosettaVaultRequest
+import com.joinforage.forage.android.ecom.services.vault.RosettaVaultRequest
 import org.json.JSONObject
 
 internal abstract class RosettaCapturePaymentRequest(
