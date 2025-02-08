@@ -7,17 +7,14 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaym
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 import com.joinforage.forage.android.core.services.vault.errors.BaseErrorStrategy
 import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRecorder
+import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
 import com.joinforage.forage.android.core.services.vault.requests.RosettaCapturePaymentRequest
-import com.joinforage.forage.android.core.services.vault.submission.ISubmitDelegate
-import com.joinforage.forage.android.core.services.vault.submission.PaymentSubmission
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.ecom.services.vault.EcomBaseBodyBuilder
-import com.joinforage.forage.android.ecom.services.vault.IEcomBuildRequestDelegate
 
 private class EcomRosettaCapturePaymentRequest(
     forageConfig: ForageConfig,
@@ -41,40 +38,36 @@ internal class EcomCapturePaymentSubmission(
     private val paymentMethodService: IPaymentMethodService,
     private val paymentService: IPaymentService,
     private val forageConfig: ForageConfig,
-    private val rawPin: String,
     private val logLogger: LogLogger
-) : ISubmitDelegate, IEcomBuildRequestDelegate {
+) : ISubmitRequestBuilder {
 
     override suspend fun buildRequest(
-        paymentMethod: VaultPaymentMethod,
         idempotencyKey: String,
-        traceId: String
-    ): ClientApiRequest = EcomRosettaCapturePaymentRequest(
-        forageConfig = forageConfig,
-        traceId = traceId,
-        idempotencyKey = idempotencyKey,
-        paymentMethod = paymentMethod,
-        paymentRef = paymentRef,
-        rawPin = rawPin
-    )
-
-    private val captureRequestBuilder = EcomSubmitRequestBuilder(this)
-
-    override suspend fun submit(paymentMethodRefProvider: IPmRefProvider): ForageApiResponse<String> {
-        return PinSubmission(
-            vaultSubmitter = vaultSubmitter,
-            errorStrategy = BaseErrorStrategy(logLogger),
-            requestBuilder = captureRequestBuilder,
-            metricsRecorder = VaultMetricsRecorder(logLogger),
-            paymentMethodService = paymentMethodService,
-            userAction = UserAction.CAPTURE,
-            logLogger = logLogger
-        ).submit(paymentMethodRefProvider)
+        traceId: String,
+        vaultSubmitter: RosettaPinSubmitter,
+    ): ClientApiRequest {
+        val paymentMethodRef = paymentService.fetchPayment(paymentRef).paymentMethodRef
+        logLogger.setPaymentMethodRef(paymentMethodRef)
+        val paymentMethod = paymentMethodService.fetchPaymentMethod(paymentMethodRef).parsed
+        val token = vaultSubmitter.getVaultToken(paymentMethod)
+        val vaultPm = VaultPaymentMethod(ref = paymentMethod.ref, token = token)
+        return EcomRosettaCapturePaymentRequest(
+            forageConfig = forageConfig,
+            traceId = traceId,
+            idempotencyKey = idempotencyKey,
+            paymentMethod = vaultPm,
+            paymentRef = paymentRef,
+            rawPin = vaultSubmitter.plainTextPin
+        )
     }
 
-    suspend fun submit(): ForageApiResponse<String> = PaymentSubmission(
-        paymentService = paymentService,
-        paymentRef = paymentRef,
-        delegate = this
+    suspend fun submit(): ForageApiResponse<String> = PinSubmission(
+        vaultSubmitter = vaultSubmitter,
+        errorStrategy = BaseErrorStrategy(logLogger),
+        requestBuilder = this,
+        metricsRecorder = VaultMetricsRecorder(logLogger),
+        userAction = UserAction.CAPTURE,
+        logLogger = logLogger
     ).submit()
+
 }
