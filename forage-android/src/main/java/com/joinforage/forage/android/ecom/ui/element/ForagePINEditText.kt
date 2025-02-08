@@ -6,13 +6,12 @@ import android.util.AttributeSet
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
-import com.joinforage.forage.android.core.services.telemetry.Log
 import com.joinforage.forage.android.core.ui.VaultWrapper
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 import com.joinforage.forage.android.core.ui.getLogoImageViewLayout
-import com.joinforage.forage.android.ecom.ui.vault.rosetta.RosettaPinElement
+import com.joinforage.forage.android.core.ui.element.RosettaPinElement
 
 /**
  * A [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
@@ -95,19 +94,10 @@ class ForagePINEditText @JvmOverloads constructor(
     }
 
     private fun initWithForageConfig(forageConfig: ForageConfig) {
-        // Must initialize DD at the beginning of each render function. DD requires the context,
-        // so we need to wait until a context is present to run initialization code. However,
-        // we have logging all over the SDK that relies on the render happening first.
-        val logger = Log.getInstance()
-        logger.initializeDD(context, forageConfig)
-
         _SET_ONLY_vault = rosettaPinElement
-
         _linearLayout.addView(vault.getTextElement())
         _linearLayout.addView(getLogoImageViewLayout(context))
         addView(_linearLayout)
-
-        logger.i("[View] ForagePINEditText successfully rendered")
     }
 
     private val forageConfigManager = ForageConfigManager {
