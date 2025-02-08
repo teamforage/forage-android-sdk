@@ -88,9 +88,14 @@ internal class DatadogLogger(
         fun forEcom(
             ddLogger: Logger,
             forageConfig: ForageConfig,
+            customerId: String?,
             traceId: String = generateTraceId()
         ): DatadogLogger {
-            val attrs = LogAttributes(forageConfig = forageConfig, traceId = traceId)
+            val attrs = LogAttributes(
+                forageConfig = forageConfig,
+                traceId = traceId,
+                customerId = customerId,
+            )
             return DatadogLogger(
                 ddLogger,
                 attrs,
