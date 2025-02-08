@@ -9,12 +9,20 @@ import org.json.JSONObject
 internal class PostPaymentMethodRequest(
     forageConfig: ForageConfig,
     traceId: String,
-    requestBody: JSONObject,
+    rawPan: String,
+    customerId: String?,
+    reusable: Boolean,
 ) : ClientApiRequest.PostRequest(
     url = makeApiUrl(forageConfig, "api/payment_methods/"),
     forageConfig = forageConfig,
     traceId = traceId,
     apiVersion = Headers.ApiVersion.V_2023_05_15,
     headers = Headers(),
-    body = requestBody
+    body = JSONObject().apply {
+        put("customer_id", customerId)
+        put("reusable", reusable)
+        put("card", JSONObject().apply {
+            put("number", rawPan)
+        })
+    }
 ) 
