@@ -1,9 +1,6 @@
-package com.joinforage.forage.android.ecom.services.vault.requests
+package com.joinforage.forage.android.core.services.forageapi.requests
 
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
-import com.joinforage.forage.android.core.services.forageapi.requests.Headers
-import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
 import org.json.JSONObject
 
 internal class PostPaymentMethodRequest(

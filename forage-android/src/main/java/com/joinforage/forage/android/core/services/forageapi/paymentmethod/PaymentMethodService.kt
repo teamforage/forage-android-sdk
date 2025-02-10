@@ -3,7 +3,7 @@ package com.joinforage.forage.android.core.services.forageapi.paymentmethod
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.requests.GetPaymentMethodRequest
-import com.joinforage.forage.android.ecom.services.vault.requests.PostPaymentMethodRequest
+import com.joinforage.forage.android.core.services.forageapi.requests.PostPaymentMethodRequest
 
 internal class PaymentMethodResponse(val json: String) {
     val parsed = PaymentMethod(json)
