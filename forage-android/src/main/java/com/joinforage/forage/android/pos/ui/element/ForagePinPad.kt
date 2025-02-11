@@ -11,7 +11,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.children
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.vault.ISecurePinCollector
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
@@ -141,7 +141,8 @@ class ForagePinPad @JvmOverloads constructor(
     }
 
     override fun getVaultSubmitter(
-        envConfig: EnvConfig
+        envConfig: EnvConfig,
+        httpEngine: IHttpEngine
     ): RosettaPinSubmitter {
         return RosettaPinSubmitter(
             manager.rawPinText,
@@ -151,7 +152,7 @@ class ForagePinPad @JvmOverloads constructor(
                 }
                 override fun isComplete(): Boolean = manager.isComplete
             },
-            OkHttpEngine()
+            httpEngine
         )
     }
 

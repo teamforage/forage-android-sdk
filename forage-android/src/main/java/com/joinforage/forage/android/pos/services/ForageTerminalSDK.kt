@@ -2,7 +2,8 @@ package com.joinforage.forage.android.pos.services
 
 import android.content.Context
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.telemetry.AndroidBase64Util
 import com.joinforage.forage.android.core.services.telemetry.DatadogLogger
@@ -63,9 +64,9 @@ class ForageTerminalSDK internal constructor(
     private val forageConfig: ForageConfig,
     private val ksnFileManager: KsnFileManager,
     private val capabilities: TerminalCapabilities,
-    private val _logger: DatadogLogger
+    private val _logger: DatadogLogger,
+    private val httpEngine: IHttpEngine
 ) {
-    internal val httpEngine = OkHttpEngine()
 
     companion object {
         /**
@@ -121,7 +122,7 @@ class ForageTerminalSDK internal constructor(
             capabilities: TerminalCapabilities = TerminalCapabilities.TapAndInsert
         ): ForageTerminalSDK {
             val logger = PosDatadogLoggerFactory(context, forageConfig, posTerminalId).makeLogger()
-            val httpEngine = OkHttpEngine()
+            val httpEngine = PosOkHttpEngine()
             val ksnFileManager = FileKsnManager(ksnDir)
             val rosetta = RosettaInitService(
                 forageConfig,
@@ -145,7 +146,8 @@ class ForageTerminalSDK internal constructor(
                 forageConfig,
                 ksnFileManager,
                 capabilities,
-                logger
+                logger,
+                httpEngine
             )
         }
     }
@@ -209,7 +211,7 @@ class ForageTerminalSDK internal constructor(
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (forageVaultElement, interaction) = params
         return PosBalanceCheckSubmission(
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -289,7 +291,7 @@ class ForageTerminalSDK internal constructor(
         val (forageVaultElement, paymentRef, interaction) = params
         return PosCapturePaymentSubmission(
             paymentRef = paymentRef,
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -364,7 +366,7 @@ class ForageTerminalSDK internal constructor(
         val (forageVaultElement, paymentRef, interaction) = params
         return PosDeferCapturePaymentSubmission(
             paymentRef = paymentRef,
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -433,7 +435,7 @@ class ForageTerminalSDK internal constructor(
         val (forageVaultElement, paymentRef, amount, reason, metadata, interaction) = params
         return PosRefundPaymentSubmission(
             paymentRef = paymentRef,
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -496,7 +498,7 @@ class ForageTerminalSDK internal constructor(
         val (forageVaultElement, paymentRef, interaction) = params
         return PosDeferRefundPaymentSubmission(
             paymentRef = paymentRef,
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
+            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,

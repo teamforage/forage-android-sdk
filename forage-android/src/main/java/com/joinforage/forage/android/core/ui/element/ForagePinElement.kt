@@ -60,10 +60,18 @@ abstract class ForagePinElement @JvmOverloads constructor(
     }
 
     override fun getVaultSubmitter(
-        envConfig: EnvConfig
-    ): RosettaPinSubmitter {
-        return vault.getVaultSubmitter(envConfig)
-    }
+        envConfig: EnvConfig,
+        httpEngine: IHttpEngine
+    ): RosettaPinSubmitter = RosettaPinSubmitter(
+        _editText.text.toString(),
+        object : ISecurePinCollector {
+            override fun clearText() {
+                this@ForagePinElement.clearText()
+            }
+            override fun isComplete(): Boolean = inputState.isComplete
+        },
+        httpEngine
+    )
 
     // While the events that ForageElements expose mirrors the
     // blur, focus, change etc events of an Android view,

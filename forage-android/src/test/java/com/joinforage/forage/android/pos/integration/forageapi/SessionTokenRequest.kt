@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.pos.integration.forageapi
 
-import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
 import com.joinforage.forage.android.core.services.forageapi.requests.makeBearerAuthHeader
 import org.json.JSONObject
@@ -19,7 +19,7 @@ internal class SessionTokenRequest(
 }
 
 internal suspend fun getSessionToken(accessToken: String, merchantRef: String): String {
-    val jsonString = OkHttpEngine().sendRequest(
+    val jsonString = PosOkHttpEngine().sendRequest(
         SessionTokenRequest(accessToken, merchantRef)
     )
     return JSONObject(jsonString).getString("token")

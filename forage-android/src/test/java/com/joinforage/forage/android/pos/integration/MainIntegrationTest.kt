@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.pos.integration
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.EncryptionKeyGenerationError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
@@ -57,7 +57,7 @@ class MainIntegrationTest {
         private val badPIN = "1234"
         private val validPIN = pan.takeLast(4)
         private val env = EnvConfig.Dev
-        private val httpEngine = OkHttpEngine()
+        private val httpEngine = PosOkHttpEngine()
         private val traceId = generateTraceId()
         private val ksnFileManager = StringKsnManager()
         private val keyRegisters = InMemoryKeyRegisters()
