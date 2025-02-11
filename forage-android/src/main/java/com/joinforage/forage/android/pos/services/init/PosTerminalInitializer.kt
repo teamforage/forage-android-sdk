@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos.services.init
 
+import com.joinforage.forage.android.core.services.telemetry.IBase64Util
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.pos.services.encryption.AesBlock
 import com.joinforage.forage.android.pos.services.encryption.certificate.IRsaKeyManager
