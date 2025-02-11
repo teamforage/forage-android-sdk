@@ -3,12 +3,12 @@ package com.joinforage.forage.android.pos.services.vault.submission
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
+import com.joinforage.forage.android.core.services.forageapi.requests.RosettaVaultRequest
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.errors.BaseErrorStrategy
 import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRecorder
-import com.joinforage.forage.android.core.services.vault.requests.RosettaBalanceInquiryRequest
 import com.joinforage.forage.android.core.services.vault.submission.BalanceCheckSubmission
 import com.joinforage.forage.android.core.services.vault.submission.ISubmitDelegate
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
@@ -30,7 +30,8 @@ private class PosRosettaBalanceInquiryRequest(
     txnCounter: String,
     capabilities: TerminalCapabilities,
     posTerminalId: String
-) : RosettaBalanceInquiryRequest(
+) : RosettaVaultRequest(
+    path = "proxy/api/payment_methods/balance/",
     forageConfig = forageConfig,
     traceId = traceId,
     idempotencyKey = idempotencyKey,
