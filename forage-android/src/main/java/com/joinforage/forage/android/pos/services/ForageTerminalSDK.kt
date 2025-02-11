@@ -17,7 +17,6 @@ import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.FileKsnManager
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
-import com.joinforage.forage.android.pos.services.init.AndroidBase64Util
 import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.init.RosettaInitService
 import com.joinforage.forage.android.pos.services.vault.submission.PosBalanceCheckSubmission
