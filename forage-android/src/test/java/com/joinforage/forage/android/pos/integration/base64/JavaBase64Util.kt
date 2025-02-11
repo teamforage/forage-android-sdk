@@ -1,6 +1,6 @@
 package com.joinforage.forage.android.pos.integration.base64
 
-import com.joinforage.forage.android.pos.services.init.IBase64Util
+import com.joinforage.forage.android.core.services.telemetry.IBase64Util
 import java.util.Base64
 
 class JavaBase64Util : IBase64Util {

@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos.services.encryption.certificate
 
+import com.joinforage.forage.android.core.services.telemetry.IBase64Util
 import com.joinforage.forage.android.pos.encryption.certificate.generateRawCsr
 import com.joinforage.forage.android.pos.services.init.IBase64Util
 import org.bouncycastle.jce.provider.BouncyCastleProvider
