@@ -6,6 +6,7 @@ import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.telemetry.AndroidBase64Util
 import com.joinforage.forage.android.core.services.telemetry.DatadogLogger
+import com.joinforage.forage.android.core.services.telemetry.PosDatadogLoggerFactory
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
@@ -64,7 +65,6 @@ class ForageTerminalSDK internal constructor(
     private val capabilities: TerminalCapabilities,
     private val _logger: DatadogLogger
 ) {
-    private val traceId = _logger.traceId
     internal val httpEngine = OkHttpEngine()
 
     companion object {
@@ -120,8 +120,7 @@ class ForageTerminalSDK internal constructor(
             ksnDir: File = context.filesDir,
             capabilities: TerminalCapabilities = TerminalCapabilities.TapAndInsert
         ): ForageTerminalSDK {
-            val dd = DatadogLogger.getPosDatadogInstance(context, forageConfig)
-            val logger = DatadogLogger.forPos(dd, forageConfig, posTerminalId)
+            val logger = PosDatadogLoggerFactory(context, forageConfig, posTerminalId).makeLogger()
             val httpEngine = OkHttpEngine()
             val ksnFileManager = FileKsnManager(ksnDir)
             val rosetta = RosettaInitService(
@@ -217,7 +216,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+            logLogger = _logger
         ).submit()
     }
 
@@ -297,7 +296,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+            logLogger = _logger
         ).submit()
     }
 
@@ -372,7 +371,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+            logLogger = _logger
         ).submit()
     }
 
@@ -444,7 +443,7 @@ class ForageTerminalSDK internal constructor(
             reason = reason,
             metadata = metadata,
             posTerminalId = posTerminalId,
-            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+            logLogger = _logger
         ).submit()
     }
 
@@ -504,7 +503,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = DatadogLogger.forPos(_logger.dd, forageConfig, posTerminalId, _logger.traceId)
+            logLogger = _logger
         ).submit()
     }
 }
