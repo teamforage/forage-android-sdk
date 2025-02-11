@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.core.services.vault
 
-import com.joinforage.forage.android.core.services.VaultType
 import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
@@ -13,7 +12,6 @@ internal class RosettaPinSubmitter(
     val collector: ISecurePinCollector,
     val httpEngine: IHttpEngine
 ) {
-    val vaultType = VaultType.FORAGE_VAULT_TYPE
     suspend fun submit(request: ClientApiRequest): ForageApiResponse.Success<String> = try {
         ForageApiResponse.Success(httpEngine.sendRequest(request))
     } catch (e: ForageErrorResponseException) {

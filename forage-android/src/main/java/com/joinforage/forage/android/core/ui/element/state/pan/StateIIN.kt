@@ -96,7 +96,10 @@ internal enum class StateIIN(
     KANSAS("601413", 16, USState.KANSAS),
     KENTUCKY("507709", 16, USState.KENTUCKY),
     LOUISIANA("504476", 16, USState.LOUISIANA),
-    MAINE("507703", 19, USState.MAINE),
+
+    // we found out that Maine has 16 and 19 digit PANs 🤷
+    MAINE16("507703", 16, USState.MAINE),
+    MAINE19("507703", 19, USState.MAINE),
     MARYLAND("600528", 16, USState.MARYLAND),
     MASSACHUSETTS("600875", 18, USState.MASSACHUSETTS),
     MICHIGAN("507711", 16, USState.MICHIGAN),
@@ -133,20 +136,34 @@ internal enum class StateIIN(
 internal fun missingStateIIN(cardNumber: String): Boolean {
     return cardNumber.length < STATE_INN_LENGTH
 }
-internal fun queryForStateIIN(cardNumber: String): StateIIN? {
-    return StateIIN.values().find { cardNumber.startsWith(it.iin) }
+internal fun queryForStateIIN(cardNumber: String): List<StateIIN> {
+    return StateIIN.values().filter { cardNumber.startsWith(it.iin) }
 }
 internal fun hasInvalidStateIIN(cardNumber: String): Boolean {
-    return queryForStateIIN(cardNumber) == null
+    return queryForStateIIN(cardNumber) == listOf<StateIIN>()
 }
 internal fun tooShortForStateIIN(cardNumber: String): Boolean {
-    val iin = queryForStateIIN(cardNumber) ?: return true
-    return cardNumber.length < iin.panLength
+    val matchingIINs = queryForStateIIN(cardNumber)
+    if (matchingIINs.isEmpty()) return true
+
+    val maxPanLength = matchingIINs.maxOf { it.panLength }
+    val matchesAnyLength = matchingIINs.any { cardNumber.length == it.panLength }
+    return cardNumber.length < maxPanLength && !matchesAnyLength
 }
+
 internal fun tooLongForStateIIN(cardNumber: String): Boolean {
-    val iin = queryForStateIIN(cardNumber) ?: return true
-    return cardNumber.length > iin.panLength
+    val matchingIINs = queryForStateIIN(cardNumber)
+    if (matchingIINs.isEmpty()) return true
+
+    // if the card number is not at least as short as of any StateIINs' length
+    // then the card must be longer than all of them and is thus too long
+    return matchingIINs.none { cardNumber.length <= it.panLength }
 }
 internal fun isCorrectLength(cardNumber: String): Boolean {
-    return !tooShortForStateIIN(cardNumber) && !tooLongForStateIIN(cardNumber)
+    val matchingIINs = queryForStateIIN(cardNumber)
+    if (matchingIINs.isEmpty()) return false
+
+    // the card number needs the same length of at least 1 of
+    // allowed StateIINs
+    return matchingIINs.any { cardNumber.length == it.panLength }
 }
