@@ -4,8 +4,6 @@ import android.content.Context
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.OkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.telemetry.DatadogLogger
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.state.ElementState
@@ -67,18 +65,6 @@ class ForageTerminalSDK internal constructor(
 ) {
     private val traceId = _logger.traceId
     internal val httpEngine = OkHttpEngine()
-    internal val paymentMethodService =
-        PaymentMethodService(
-            forageConfig,
-            traceId,
-            httpEngine
-        )
-    internal val paymentService =
-        PaymentService(
-            forageConfig,
-            traceId,
-            httpEngine
-        )
 
     companion object {
         /**
@@ -221,11 +207,9 @@ class ForageTerminalSDK internal constructor(
      * @return A [ForageApiResponse] object.
      */
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentMethodRef, interaction) = params
+        val (forageVaultElement, interaction) = params
         return PosBalanceCheckSubmission(
-            paymentMethodRef = paymentMethodRef,
             vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
-            paymentMethodService = paymentMethodService,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -306,8 +290,6 @@ class ForageTerminalSDK internal constructor(
         return PosCapturePaymentSubmission(
             paymentRef = paymentRef,
             vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -383,8 +365,6 @@ class ForageTerminalSDK internal constructor(
         return PosDeferCapturePaymentSubmission(
             paymentRef = paymentRef,
             vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -454,8 +434,6 @@ class ForageTerminalSDK internal constructor(
         return PosRefundPaymentSubmission(
             paymentRef = paymentRef,
             vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -519,8 +497,6 @@ class ForageTerminalSDK internal constructor(
         return PosDeferRefundPaymentSubmission(
             paymentRef = paymentRef,
             vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig),
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = AndroidKeyStoreKeyRegisters(),
             interaction = interaction,
@@ -548,7 +524,6 @@ class ForageTerminalSDK internal constructor(
  */
 data class CheckBalanceParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentMethodRef: String,
     val interaction: CardholderInteraction
 )
 

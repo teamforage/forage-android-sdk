@@ -14,7 +14,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownTime
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.forageapi.payment.SubmissionTestCaseFactory
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
 import com.joinforage.forage.android.core.services.generateTraceId
@@ -65,7 +64,6 @@ class PinSubmissionTest {
         private val keyRegisters = InMemoryKeyRegisters()
         private val paymentMethodRef = "fake_payment_method_ref"
         private val paymentRef = "fake_payment_ref"
-        private val pmRefProvider = TestPmRefProvider(paymentMethodRef)
 
         private lateinit var forageConfig: ForageConfig
         private lateinit var successAttrs: LoggableAttributes
@@ -118,7 +116,7 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt()
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isInstanceOf(ForageApiResponse.Success::class.java)
 
         assertThat(collector.wasCleared).isTrue
@@ -141,7 +139,7 @@ class PinSubmissionTest {
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(isComplete = false)
 
-        val response = (submission.submit(pmRefProvider) as ForageApiResponse.Failure)
+        val response = (submission.submit() as ForageApiResponse.Failure)
         assertThat(response).isEqualTo(IncompletePinError)
 
         assertThat(collector.wasCleared).isTrue
@@ -150,40 +148,6 @@ class PinSubmissionTest {
         val expectedLogs = listOf(
             Loggable.Info("[balance]", "[START] Submit Attempt", failureAttrs.logAttrs.noPM),
             Loggable.Warn("[balance]", "[END] Submission failed.\n\nPin is incomplete.", failureAttrs.logAttrs.all)
-        )
-        assertThat(logger.logs).isEqualTo(expectedLogs)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testFailedToFetchPaymentMethod() = runTest {
-        val (
-            submission,
-            logger,
-            collector
-        ) = submissionTestCaseFactory.newPinSubmissionAttempt(
-            paymentMethodService = TestPaymentMethodService(
-                forageConfig,
-                traceId,
-                TestStringResponseHttpEngine("some bad response")
-            )
-        )
-
-        val response = submission.submit(pmRefProvider)
-        assertThat(response).isEqualTo(PaymentMethodErrorResponse(paymentMethodRef))
-
-        // Verify the collector was cleared
-        assertThat(collector.wasCleared).isTrue
-
-        // Verify the logs show the payment method fetch failure
-        val expectedLogs = listOf(
-            Loggable.Info("[balance]", "[START] Submit Attempt", failureAttrs.logAttrs.noPM),
-            Loggable.Error(
-                "[balance]",
-                "[END] Submission failed.\n\nFailed to fetch PaymentMethod $paymentMethodRef",
-                org.json.JSONException("A JSONObject text must begin with '{' at 1 [character 2 line 1]"),
-                failureAttrs.logAttrs.all
-            )
         )
         assertThat(logger.logs).isEqualTo(expectedLogs)
     }
@@ -208,7 +172,7 @@ class PinSubmissionTest {
             }
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         val failureResponse = (response as ForageApiResponse.Failure).error
         assertThat(failureResponse).isEqualTo(forageError)
 
@@ -259,7 +223,7 @@ class PinSubmissionTest {
             }
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(UnknownErrorApiResponse)
 
         // Verify the collector was cleared
@@ -290,7 +254,7 @@ class PinSubmissionTest {
             vaultHttpEngine = TestFailedRequestHttpEngine(exception)
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(UnknownTimeoutErrorResponse)
 
         // Verify the collector was cleared
@@ -321,7 +285,7 @@ class PinSubmissionTest {
             vaultHttpEngine = TestFailedRequestHttpEngine(exception)
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(UnknownErrorApiResponse)
 
         // Verify the collector was cleared
@@ -334,47 +298,6 @@ class PinSubmissionTest {
                 "[balance]",
                 "[END] Submission failed.\n\nFailed HTTP request",
                 exception,
-                failureAttrs.logAttrs.all
-            )
-        )
-        assertThat(logger.logs).isEqualTo(expectedLogs)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testFailedToFetchPaymentException() = runTest {
-        val (
-            submission,
-            logger,
-            collector
-        ) = submissionTestCaseFactory.newCapturePaymentSubmission(
-            paymentService = TestPaymentService(
-                forageConfig,
-                traceId,
-                TestStringResponseHttpEngine("some bad response")
-            )
-        )
-
-        val response = submission.submit()
-        assertThat(response).isEqualTo(PaymentErrorResponse(paymentRef))
-
-        val failureAttrs = LoggableAttributesFactory(
-            forageConfig = forageConfig,
-            traceId = traceId,
-            posTerminalId = posTerminalId,
-            paymentMethodRef = paymentMethodRef
-        )(UserAction.CAPTURE, 500, MetricOutcome.FAILURE)
-
-        // Verify the collector was cleared
-        assertThat(collector.wasCleared).isTrue
-
-        // Verify the logs show the payment fetch failure
-        val expectedLogs = listOf(
-            Loggable.Info("[capture]", "[START] Submit Attempt", failureAttrs.logAttrs.noPM),
-            Loggable.Error(
-                "[capture]",
-                "[END] Submission failed.\n\nFailed to fetch Payment $paymentRef",
-                org.json.JSONException("A JSONObject text must begin with '{' at 1 [character 2 line 1]"),
                 failureAttrs.logAttrs.all
             )
         )
@@ -403,14 +326,9 @@ class PinSubmissionTest {
             submission,
             logger,
             collector
-        ) = submissionTestCaseFactory.newBalanceCheckSubmission(
-            paymentMethodService = object : IPaymentMethodService {
-                override suspend fun fetchPaymentMethod(paymentMethodRef: String): PaymentMethod =
-                    paymentMethodWithIncompleteToken
-            }
-        )
+        ) = submissionTestCaseFactory.newBalanceCheckSubmission()
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(UnknownErrorApiResponse)
 
         // Verify the collector was cleared
@@ -445,7 +363,7 @@ class PinSubmissionTest {
             }
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(UnknownErrorApiResponse)
 
         // Verify the collector was cleared
@@ -486,14 +404,9 @@ class PinSubmissionTest {
             submission,
             logger,
             collector
-        ) = submissionTestCaseFactory.newBalanceCheckSubmission(
-            paymentMethodService = object : IPaymentMethodService {
-                override suspend fun fetchPaymentMethod(paymentMethodRef: String): PaymentMethod =
-                    paymentMethodWithMissingPan
-            }
-        )
+        ) = submissionTestCaseFactory.newBalanceCheckSubmission()
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(UnknownErrorApiResponse)
 
         // Verify the collector was cleared
@@ -535,10 +448,6 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newBalanceCheckSubmission(
-            paymentMethodService = object : IPaymentMethodService {
-                override suspend fun fetchPaymentMethod(paymentMethodRef: String): PaymentMethod =
-                    paymentMethodWithIncompleteToken
-            },
             ksnFileManager = object : KsnFileManager(
                 object : IPersistentStorage {
                     override fun exists(): Boolean {
@@ -556,7 +465,7 @@ class PinSubmissionTest {
             ) {}
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(FailedToReadKsnFileError)
 
         // Verify the collector was cleared

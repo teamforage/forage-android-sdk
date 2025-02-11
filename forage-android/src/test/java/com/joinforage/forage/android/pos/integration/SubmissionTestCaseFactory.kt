@@ -2,9 +2,6 @@ package com.joinforage.forage.android.core.services.forageapi.payment
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.forageapi.requests.Headers
 import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
@@ -57,60 +54,13 @@ internal class SubmissionTestCaseFactory(
     private val posTerminalId: String,
     private val interaction: CardholderInteraction,
     private val traceId: String,
-    private val paymentMethodService: IPaymentMethodService = createMockPaymentMethodService(paymentMethodRef),
-    private val paymentService: IPaymentService = createMockPaymentService(paymentMethodRef),
     private val vaultHttpEngine: IHttpEngine = TestStringResponseHttpEngine("yay, success!")
 ) {
-
-    companion object {
-
-        fun createMockPaymentMethodService(pmRef: String): IPaymentMethodService =
-            object : IPaymentMethodService {
-                override suspend fun fetchPaymentMethod(paymentMethodRef: String): PaymentMethod =
-                    PaymentMethod(
-                        ref = pmRef,
-                        type = "ebt",
-                        customerId = "dummy_customer_id",
-                        balance = null,
-                        card = EbtCard(
-                            last4 = "7777",
-                            fingerprint = "dummy_fingerprint",
-                            token = "dummy_token",
-                            number = "6777777777777777",
-                            usState = null
-                        ),
-                        reusable = true
-                    )
-            }
-
-        fun createMockPaymentService(pmRef: String): IPaymentService =
-            object : IPaymentService {
-                override suspend fun fetchPayment(paymentRef: String): Payment =
-                    Payment(
-                        amount = "1.00",
-                        created = "2024-01-01T00:00:00Z",
-                        deliveryAddress = null,
-                        description = "test payment",
-                        fundingType = "ebt_snap",
-                        isDelivery = false,
-                        merchant = "dummy_merchant",
-                        metadata = null,
-                        paymentMethodRef = pmRef,
-                        receipt = null,
-                        ref = "dummy_payment_ref",
-                        refunds = emptyList(),
-                        status = "succeeded",
-                        successDate = "2024-01-01T00:00:00Z",
-                        updated = "2024-01-01T00:00:00Z"
-                    )
-            }
-    }
 
     fun newBalanceCheckSubmission(
         pin: String = validPIN,
         ksnFileManager: KsnFileManager = this.ksnFileManager,
         keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        paymentMethodService: IPaymentMethodService = this.paymentMethodService,
         vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
         logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId))
     ): SubmissionTestCase<PosBalanceCheckSubmission> {
@@ -120,9 +70,7 @@ internal class SubmissionTestCaseFactory(
             logLogger = logger,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = keyRegisters,
-            paymentMethodService = paymentMethodService,
             forageConfig = forageConfig,
-            paymentMethodRef = paymentMethodRef,
             posTerminalId = posTerminalId,
             interaction = interaction,
             capabilities = TerminalCapabilities.TapAndInsert
@@ -135,8 +83,6 @@ internal class SubmissionTestCaseFactory(
         ksnFileManager: KsnFileManager = this.ksnFileManager,
         paymentRef: String = this.paymentRef,
         keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        paymentMethodService: IPaymentMethodService = this.paymentMethodService,
-        paymentService: IPaymentService = this.paymentService,
         vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
         logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId))
     ): SubmissionTestCase<PosCapturePaymentSubmission> {
@@ -146,8 +92,6 @@ internal class SubmissionTestCaseFactory(
             logLogger = logger,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = keyRegisters,
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             paymentRef = paymentRef,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
@@ -162,8 +106,6 @@ internal class SubmissionTestCaseFactory(
         ksnFileManager: KsnFileManager = this.ksnFileManager,
         paymentRef: String = this.paymentRef,
         keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        paymentMethodService: IPaymentMethodService = this.paymentMethodService,
-        paymentService: IPaymentService = this.paymentService,
         vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
         logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId))
     ): SubmissionTestCase<PosDeferCapturePaymentSubmission> {
@@ -173,8 +115,6 @@ internal class SubmissionTestCaseFactory(
             logLogger = logger,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = keyRegisters,
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             paymentRef = paymentRef,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
@@ -189,8 +129,6 @@ internal class SubmissionTestCaseFactory(
         ksnFileManager: KsnFileManager = this.ksnFileManager,
         paymentRef: String = this.paymentRef,
         keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        paymentMethodService: IPaymentMethodService = this.paymentMethodService,
-        paymentService: IPaymentService = this.paymentService,
         vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
         logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId)),
         amount: Float,
@@ -203,8 +141,6 @@ internal class SubmissionTestCaseFactory(
             logLogger = logger,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = keyRegisters,
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             paymentRef = paymentRef,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
@@ -222,8 +158,6 @@ internal class SubmissionTestCaseFactory(
         ksnFileManager: KsnFileManager = this.ksnFileManager,
         paymentRef: String = this.paymentRef,
         keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        paymentMethodService: IPaymentMethodService = this.paymentMethodService,
-        paymentService: IPaymentService = this.paymentService,
         vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
         logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId))
     ): SubmissionTestCase<PosDeferRefundPaymentSubmission> {
@@ -233,8 +167,6 @@ internal class SubmissionTestCaseFactory(
             logLogger = logger,
             ksnFileManager = ksnFileManager,
             keystoreRegisters = keyRegisters,
-            paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
             paymentRef = paymentRef,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
@@ -246,7 +178,6 @@ internal class SubmissionTestCaseFactory(
 
     fun newPinSubmissionAttempt(
         pin: String = validPIN,
-        paymentMethodService: IPaymentMethodService = this.paymentMethodService,
         vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
         logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId)),
         isComplete: Boolean = true
@@ -257,7 +188,6 @@ internal class SubmissionTestCaseFactory(
             errorStrategy = BaseErrorStrategy(logger),
             requestBuilder = object : ISubmitRequestBuilder {
                 override suspend fun buildRequest(
-                    paymentMethod: PaymentMethod,
                     idempotencyKey: String,
                     traceId: String,
                     vaultSubmitter: RosettaPinSubmitter
@@ -271,7 +201,6 @@ internal class SubmissionTestCaseFactory(
                 ) {}
             },
             metricsRecorder = VaultMetricsRecorder(logger),
-            paymentMethodService = paymentMethodService,
             userAction = UserAction.BALANCE,
             logLogger = logger,
             traceId = traceId

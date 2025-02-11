@@ -2,13 +2,10 @@ package com.joinforage.forage.android.pos.services.vault.submission
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
-import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 import com.joinforage.forage.android.core.services.vault.errors.BaseErrorStrategy
 import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRecorder
 import com.joinforage.forage.android.core.services.vault.requests.RosettaBalanceInquiryRequest
@@ -27,7 +24,6 @@ private class PosRosettaBalanceInquiryRequest(
     forageConfig: ForageConfig,
     traceId: String,
     idempotencyKey: String,
-    paymentMethod: VaultPaymentMethod,
     encryptedPinBlock: String,
     keySerialNumber: String,
     interaction: CardholderInteraction,
@@ -38,7 +34,6 @@ private class PosRosettaBalanceInquiryRequest(
     forageConfig = forageConfig,
     traceId = traceId,
     idempotencyKey = idempotencyKey,
-    paymentMethod = paymentMethod,
     body = PosBaseBodyBuilder(
         encryptedPinBlock,
         keySerialNumber,
@@ -50,9 +45,7 @@ private class PosRosettaBalanceInquiryRequest(
 )
 
 internal class PosBalanceCheckSubmission(
-    private val paymentMethodRef: String,
     private val vaultSubmitter: RosettaPinSubmitter,
-    private val paymentMethodService: IPaymentMethodService,
     ksnFileManager: KsnFileManager,
     keystoreRegisters: SecureKeyStorageRegisters,
     interaction: CardholderInteraction,
@@ -63,7 +56,6 @@ internal class PosBalanceCheckSubmission(
 ) : ISubmitDelegate, IPosBuildRequestDelegate {
 
     override suspend fun buildRequest(
-        paymentMethod: VaultPaymentMethod,
         idempotencyKey: String,
         traceId: String,
         pinTranslationParams: PinTranslationParams,
@@ -77,7 +69,6 @@ internal class PosBalanceCheckSubmission(
         txnCounter = pinTranslationParams.txnCounter,
         capabilities = capabilities,
         posTerminalId = posTerminalId,
-        paymentMethod = paymentMethod,
         interaction = interaction
     )
 
@@ -88,20 +79,17 @@ internal class PosBalanceCheckSubmission(
         delegate = this
     )
 
-    override suspend fun submit(paymentMethodRefProvider: IPmRefProvider): ForageApiResponse<String> {
+    override suspend fun rawSubmit(): ForageApiResponse<String> {
         return PinSubmission(
             vaultSubmitter = vaultSubmitter,
             errorStrategy = PosErrorStrategy(logLogger, BaseErrorStrategy(logLogger)),
             requestBuilder = balanceRequestBuilder,
             metricsRecorder = VaultMetricsRecorder(logLogger),
-            paymentMethodService = paymentMethodService,
             userAction = UserAction.BALANCE,
             logLogger = logLogger
-        ).submit(paymentMethodRefProvider)
+        ).submit()
     }
 
-    suspend fun submit(): ForageApiResponse<String> = BalanceCheckSubmission(
-        paymentMethodRef = paymentMethodRef,
-        delegate = this
-    ).submit()
+    suspend fun submit(): ForageApiResponse<String> =
+        BalanceCheckSubmission(delegate = this).submit()
 }

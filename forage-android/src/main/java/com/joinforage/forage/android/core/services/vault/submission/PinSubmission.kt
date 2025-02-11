@@ -1,10 +1,8 @@
 package com.joinforage.forage.android.core.services.vault.submission
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.errors.IErrorStrategy
 import com.joinforage.forage.android.core.services.vault.metrics.IMetricsRecorder
@@ -16,30 +14,21 @@ internal class PinSubmission(
     private val errorStrategy: IErrorStrategy,
     private val requestBuilder: ISubmitRequestBuilder,
     private val metricsRecorder: IMetricsRecorder,
-    private val paymentMethodService: IPaymentMethodService,
     private val userAction: UserAction,
     private val logLogger: LogLogger,
     private val traceId: String = logLogger.traceId
 ) {
 
-    private suspend fun _submit(
-        paymentMethodRefProvider: IPmRefProvider
-    ): ForageApiResponse<String> {
+    private suspend fun _submit(): ForageApiResponse<String> {
         logLogger.setAction(userAction)
         logLogger.i("[START] Submit Attempt")
         metricsRecorder.startCustomerPerceptionMetric()
-
-        val paymentMethodRef = paymentMethodRefProvider.getPaymentMethodRef()
-        logLogger.setPaymentMethodRef(paymentMethodRef)
 
         if (!vaultSubmitter.collector.isComplete()) {
             throw UserIncompletePinException()
         }
 
-        val paymentMethod = paymentMethodService.fetchPaymentMethod(paymentMethodRef)
-
         val request = requestBuilder.buildRequest(
-            paymentMethod,
             "${UUID.randomUUID()}",
             traceId,
             vaultSubmitter
@@ -59,10 +48,8 @@ internal class PinSubmission(
         vaultSubmitter.collector.clearText()
     }
 
-    suspend fun submit(
-        paymentMethodRefProvider: IPmRefProvider
-    ): ForageApiResponse<String> = try {
-        _submit(paymentMethodRefProvider)
+    suspend fun submit(): ForageApiResponse<String> = try {
+        _submit()
     } catch (e: Throwable) {
         if (e is RosettaPinSubmitter.VaultForageErrorResponseException) {
             metricsRecorder.recordMetrics(e.failure)

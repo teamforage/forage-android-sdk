@@ -3,11 +3,9 @@ package com.joinforage.forage.android.core.services.vault.errors
 import com.joinforage.forage.android.core.services.forageapi.engine.HttpRequestFailedException
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.IncompletePinError
-import com.joinforage.forage.android.core.services.forageapi.network.PaymentMethodErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.payload.ErrorPayload
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
@@ -20,11 +18,7 @@ internal class BaseErrorStrategy(private val logLogger: LogLogger) : IErrorStrat
                 logLogger.w("[END] Submission failed.\n\nPin is incomplete.")
                 IncompletePinError
             }
-            is PaymentMethodService.FailedToFetchPaymentMethodException -> {
-                cleanup()
-                logLogger.e("[END] Submission failed.\n\nFailed to fetch PaymentMethod ${error.paymentMethodRef}", error.cause)
-                PaymentMethodErrorResponse(error.paymentMethodRef)
-            }
+
             is RosettaPinSubmitter.VaultForageErrorResponseException -> {
                 cleanup()
                 logLogger.w("[END] Submission failed.\n\nForage Proxy response is:\n\n${error.failure.error}")
