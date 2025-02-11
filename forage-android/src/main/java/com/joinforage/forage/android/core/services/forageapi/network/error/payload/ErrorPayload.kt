@@ -26,32 +26,4 @@ internal abstract class ErrorPayload(
             return false
         }
     }
-
-    companion object {
-        fun parseJson(jsonErrorResponse: JSONObject): ErrorPayload {
-            when {
-                DeferredRefundErrorResponsePayload(jsonErrorResponse).isMatch() -> {
-                    return DeferredRefundErrorResponsePayload(jsonErrorResponse)
-                }
-                SingleErrorResponsePayload(jsonErrorResponse).isMatch() -> {
-                    return SingleErrorResponsePayload(jsonErrorResponse)
-                }
-                ErrorListResponsePayload(jsonErrorResponse).isMatch() -> {
-                    return ErrorListResponsePayload(jsonErrorResponse)
-                }
-                RosettaBadRequestResponsePayload(jsonErrorResponse).isMatch() -> {
-                    return RosettaBadRequestResponsePayload(jsonErrorResponse)
-                }
-                RosettaErrorResponsePayload(jsonErrorResponse).isMatch() -> {
-                    return RosettaErrorResponsePayload(jsonErrorResponse)
-                }
-                else -> {
-                    throw UnknownForageFailureResponse(jsonErrorResponse.toString())
-                }
-            }
-        }
-
-        fun parseJsonString(jsonStringErrorResponse: String): ErrorPayload =
-            parseJson(JSONObject(jsonStringErrorResponse))
-    }
 }

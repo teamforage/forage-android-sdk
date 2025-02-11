@@ -10,7 +10,6 @@ import org.json.JSONObject
  * {
  *   "ref": "e1fff94f29",
  *   "balance": null,
- *   "content_id": "c1898593-fa3d-4a1c-b16b-10ecc38b3619",
  *   "error": {
  *     "message": "Invalid card number - Re-enter Transaction",
  *     "forage_code": "ebt_error_14",

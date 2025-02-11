@@ -139,9 +139,6 @@ sealed class ForageApiResponse<out T> {
         internal constructor(httpStatusCode: Int, code: String, message: String, details: ForageErrorDetails? = null) :
             this(ForageError(httpStatusCode, code, message, details))
 
-        internal constructor(httpStatusCode: Int, jsonString: String) :
-            this(ForageError(httpStatusCode, jsonString))
-
         override fun toString(): String = error.toString()
     }
 }

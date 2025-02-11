@@ -1,7 +1,7 @@
 package com.joinforage.forage.android.core.services.forageapi.engine
 
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import okhttp3.Call
@@ -14,7 +14,9 @@ import okhttp3.Response
 import java.io.IOException
 import kotlin.coroutines.suspendCoroutine
 
-internal class OkHttpEngine : IHttpEngine {
+internal abstract class BaseOkHttpEngine(
+    private val errorParser: ForageErrorResponseParser
+) : IHttpEngine {
 
     fun onFailure(e: IOException): Result<String> = Result.failure(HttpRequestFailedException(e))
 
@@ -23,8 +25,11 @@ internal class OkHttpEngine : IHttpEngine {
         if (it.isSuccessful) {
             Result.success(jsonBody)
         } else {
-            val error = ForageError(it.code, jsonBody)
-            Result.failure(ForageErrorResponseException(error))
+            Result.failure(
+                ForageErrorResponseException(
+                    errorParser.toForageError(it.code, jsonBody)
+                )
+            )
         }
     }
 
