@@ -7,8 +7,6 @@ import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.FailedToReadKsnFileError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.IncompletePinError
-import com.joinforage.forage.android.core.services.forageapi.network.PaymentErrorResponse
-import com.joinforage.forage.android.core.services.forageapi.network.PaymentMethodErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
@@ -23,11 +21,8 @@ import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.pos.TestFailedRequestHttpEngine
-import com.joinforage.forage.android.pos.TestStringResponseHttpEngine
 import com.joinforage.forage.android.pos.integration.forageapi.getAccessToken
 import com.joinforage.forage.android.pos.integration.forageapi.getSessionToken
-import com.joinforage.forage.android.pos.integration.forageapi.payment.TestPaymentService
-import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.TestPaymentMethodService
 import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.dressUpPanAsTrack2
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
 import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
