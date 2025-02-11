@@ -12,6 +12,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.PaymentMeth
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
+import com.joinforage.forage.android.core.services.forageapi.network.error.PosErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.payment.SubmissionTestCaseFactory
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
@@ -217,7 +218,7 @@ class PinSubmissionTest {
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(
             vaultHttpEngine = object : IHttpEngine {
                 override suspend fun sendRequest(request: BaseApiRequest): String {
-                    ForageError(200, malformedResponse.toString())
+                    PosErrorResponseParser().toForageError(200, malformedResponse.toString())
                     return "unreachable code"
                 }
             }

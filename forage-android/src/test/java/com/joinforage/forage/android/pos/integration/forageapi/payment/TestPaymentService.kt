@@ -4,6 +4,7 @@ import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.error.PosErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 
@@ -78,6 +79,6 @@ internal class TestPaymentService(
             ForageApiResponse.Failure(e.forageError)
         } catch (e: Exception) {
             println(e)
-            ForageApiResponse.Failure(1, "")
+            ForageApiResponse.Failure(PosErrorResponseParser().toForageError(1, ""))
         }
 }
