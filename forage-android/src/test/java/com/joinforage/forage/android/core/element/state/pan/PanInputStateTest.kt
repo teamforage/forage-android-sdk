@@ -83,13 +83,57 @@ class StrictForEmptyInputTest {
 
     @Test
     fun `cardNumber is the shared ND-SD card number`() {
-        val longMaineNumber: String = "5081321111111111" // North Dakota/South Dakota is 508132
-        val state = PanInputState.forEmptyInput().handleChangeEvent(longMaineNumber)
+        val longDakotaNumber: String = "5081321111111111" // North Dakota/South Dakota is 508132
+        val state = PanInputState.forEmptyInput().handleChangeEvent(longDakotaNumber)
 
         assertThat(state.isValid).isTrue
         assertThat(state.isComplete).isTrue
         assertThat(state.validationError).isNull()
         assertThat(state.usState).isEqualTo(USState.SOUTH_DAKOTA)
+    }
+
+    @Test
+    fun `16  digit Maine cards numbers are OK `() {
+        val maine16Ok: String = "507703 1111 1111 11" // Maine is 507703
+        val state = PanInputState.forEmptyInput().handleChangeEvent(maine16Ok)
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+        assertThat(state.validationError).isNull()
+        assertThat(state.usState).isEqualTo(USState.MAINE)
+    }
+
+    @Test
+    fun `17 digit Maine cards numbers are NOT ok `() {
+        val maine17Bad: String = "507703 1111 1111 111" // Maine is 507703
+        val state = PanInputState.forEmptyInput().handleChangeEvent(maine17Bad)
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isFalse
+        assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+        assertThat(state.usState).isEqualTo(USState.MAINE)
+    }
+
+    @Test
+    fun `18 digit Maine cards numbers are NOT ok `() {
+        val maine18Bad: String = "507703 1111 1111 111 1" // Maine is 507703
+        val state = PanInputState.forEmptyInput().handleChangeEvent(maine18Bad)
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isFalse
+        assertThat(state.validationError).isEqualTo(IncompleteEbtPanError)
+        assertThat(state.usState).isEqualTo(USState.MAINE)
+    }
+
+    @Test
+    fun `19 digit Maine cards numbers are OK `() {
+        val maine19Ok: String = "507703 1111 1111 111 11" // Maine is 507703
+        val state = PanInputState.forEmptyInput().handleChangeEvent(maine19Ok)
+
+        assertThat(state.isValid).isTrue
+        assertThat(state.isComplete).isTrue
+        assertThat(state.validationError).isNull()
+        assertThat(state.usState).isEqualTo(USState.MAINE)
     }
 }
 
