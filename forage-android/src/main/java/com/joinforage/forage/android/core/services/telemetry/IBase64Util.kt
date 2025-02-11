@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.services.init
+package com.joinforage.forage.android.core.services.telemetry
 
 internal interface IBase64Util {
     fun encode(input: ByteArray): String

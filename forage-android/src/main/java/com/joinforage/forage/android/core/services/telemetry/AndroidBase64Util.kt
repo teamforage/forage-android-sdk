@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.services.init
+package com.joinforage.forage.android.core.services.telemetry
 
 import android.util.Base64
 
