@@ -1,9 +1,7 @@
 package com.joinforage.forage.android.pos.services.vault.submission
 
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
-import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
 import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
@@ -19,23 +17,16 @@ internal class PosSubmitRequestBuilder(
     private val delegate: IPosBuildRequestDelegate
 ) : ISubmitRequestBuilder {
     override suspend fun buildRequest(
-        paymentMethod: PaymentMethod,
         idempotencyKey: String,
         traceId: String,
         vaultSubmitter: RosettaPinSubmitter
     ): ClientApiRequest {
-        val vaultPaymentMethod = VaultPaymentMethod(
-            ref = paymentMethod.ref,
-            token = vaultSubmitter.getVaultToken(paymentMethod)
-        )
-
         val pinTranslationParams = buildPinTranslationParams(
-            paymentMethod.fullPan,
+            interaction.rawPan,
             vaultSubmitter.plainTextPin
         )
 
         return delegate.buildRequest(
-            vaultPaymentMethod,
             idempotencyKey,
             traceId,
             pinTranslationParams,

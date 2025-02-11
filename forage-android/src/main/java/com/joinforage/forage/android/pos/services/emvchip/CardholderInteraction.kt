@@ -9,7 +9,7 @@ package com.joinforage.forage.android.pos.services.emvchip
  * @property type An instance of `CardholderInteractionType`, indicating the method of card entry, such as swipe, tap, insert, or manual entry.
  */
 interface CardholderInteraction {
-    val rawPan: String?
+    val rawPan: String
     val type: CardholderInteractionType
     val track2Data: String?
 }

@@ -108,8 +108,6 @@ class MainIntegrationTest {
                 posTerminalId = posTerminalId,
                 interaction = manualEntryInteraction,
                 traceId = traceId,
-                paymentMethodService = paymentMethodService,
-                paymentService = paymentService,
                 vaultHttpEngine = httpEngine
             )
 
@@ -123,8 +121,6 @@ class MainIntegrationTest {
                 posTerminalId = posTerminalId,
                 interaction = swipeLegacyInteraction,
                 traceId = traceId,
-                paymentMethodService = paymentMethodService,
-                paymentService = paymentService,
                 vaultHttpEngine = httpEngine
             )
 
@@ -138,8 +134,6 @@ class MainIntegrationTest {
                 posTerminalId = posTerminalId,
                 interaction = swipeFallbackInteraction,
                 traceId = traceId,
-                paymentMethodService = paymentMethodService,
-                paymentService = paymentService,
                 vaultHttpEngine = httpEngine
             )
 
@@ -353,7 +347,7 @@ class MainIntegrationTest {
             keyRegisters = InMemoryKeyRegisters() // no keys set
         )
 
-        val response = submission.submit(pmRefProvider)
+        val response = submission.submit()
         assertThat(response).isEqualTo(EncryptionKeyGenerationError)
 
         // Verify the collector was cleared
