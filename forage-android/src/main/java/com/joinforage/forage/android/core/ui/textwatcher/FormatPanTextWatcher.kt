@@ -41,15 +41,23 @@ internal fun stripNonDigits(input: String): String {
     return input.replace(Regex("\\D"), "")
 }
 
-internal fun truncateDigitsByStateIIN(digits: String): String {
-    val stateIIN = queryForStateIIN(digits)
-    val targetLength = stateIIN?.panLength ?: MAX_PAN_LENGTH
-    return digits.take(targetLength)
+internal fun truncateDigitsByMaxAllowedStateIIN(digits: String): String {
+    val matchingIINs = queryForStateIIN(digits)
+    val maxLength = if (matchingIINs.isEmpty()) {
+        MAX_PAN_LENGTH
+    } else {
+        matchingIINs.maxOf { it.panLength }
+    }
+    return digits.take(maxLength)
 }
 
 internal fun formatDigitsByStateIIN(digits: String): String {
-    val stateIIN = queryForStateIIN(digits)
-    val transform = when (stateIIN?.panLength) {
+    val matchingIINs = queryForStateIIN(digits)
+    val nextLargerAllowedPanLength = matchingIINs
+        .map { it.panLength }
+        .filter { it >= digits.length }
+        .minOrNull()
+    val transform = when (nextLargerAllowedPanLength) {
         16 -> space16DigitPAN
         18 -> space18DigitPAN
         19 -> space19DigitPAN
@@ -118,7 +126,7 @@ internal class FormatPanTextWatcher(
             // the TextEdit's content have just been changed and need
             // to be reformatted. Let's do that now
             val onlyDigits = stripNonDigits(rawInput)
-            val truncatedDigits = truncateDigitsByStateIIN(onlyDigits)
+            val truncatedDigits = truncateDigitsByMaxAllowedStateIIN(onlyDigits)
             val newText = formatDigitsByStateIIN(truncatedDigits)
 
             // replace the current (unformatted) content of the
