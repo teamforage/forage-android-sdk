@@ -4,7 +4,6 @@ import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.pos.services.encryption.AesBlock
 import com.joinforage.forage.android.pos.services.encryption.certificate.IRsaKeyManager
 import com.joinforage.forage.android.pos.services.encryption.dukpt.IDukptService
-import com.joinforage.forage.android.pos.services.encryption.dukpt.SecureKeyStorageRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.IKsnFileManager
 import com.joinforage.forage.android.pos.services.encryption.storage.KeySerialNumber
 
@@ -15,7 +14,6 @@ internal class PosTerminalInitializer(
     private val ksnManager: IKsnFileManager,
     logEngine: LogLogger,
     private val rosetta: IRosettaInitService,
-    private val keyRegisters: SecureKeyStorageRegisters,
     private val base64: IBase64Util,
     private val rsaKeyManager: IRsaKeyManager,
     private val dukptServiceFactory: (KeySerialNumber) -> IDukptService
@@ -39,7 +37,6 @@ internal class PosTerminalInitializer(
         val decryptedInitialDerivationKey = rsaKeyManager.decrypt(
             encryptedData = decodedIpek
         )
-        rsaKeyManager.deleteKeyPair()
 
         val dukptService = dukptServiceFactory(KeySerialNumber(ksnStr))
         val ksn = dukptService.loadKey(AesBlock(decryptedInitialDerivationKey))

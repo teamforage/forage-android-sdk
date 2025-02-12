@@ -29,7 +29,6 @@ internal class PosBaseBodyBuilder(
                         put("pos_entry_mode", interaction.type.value)
                         if (interaction.type == CardholderInteractionType.KeyEntry) {
                             put("manual_entry_pan", interaction.rawPan)
-                            put("track_2_data", "")
                         } else {
                             put("track_2_data", interaction.track2Data)
                         }

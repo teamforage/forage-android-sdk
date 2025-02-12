@@ -15,23 +15,19 @@ interface IRsaKeyManager {
     fun encrypt(str: String): ByteArray
     fun encrypt(data: ByteArray): ByteArray
     fun decrypt(encryptedData: ByteArray): ByteArray
-    fun deleteKeyPair()
     fun generateCSRBase64(): String
 }
 
 internal class RsaKeyManager(
     private val base64Encoder: IBase64Util
 ) : IRsaKeyManager {
-    private var keyPair: KeyPair? = null
-
-    init {
+    private val keyPair: KeyPair by lazy {
         Security.removeProvider("BC")
         Security.addProvider(BouncyCastleProvider())
 
         val keyPairGenerator = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME)
-
         keyPairGenerator.initialize(RSAKeyGenParameterSpec(KEY_SIZE, F4))
-        keyPair = keyPairGenerator.generateKeyPair()
+        keyPairGenerator.generateKeyPair()
     }
 
     override fun encrypt(str: String): ByteArray {
@@ -43,7 +39,7 @@ internal class RsaKeyManager(
         val cipher = Cipher.getInstance(
             "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
         ).apply {
-            init(Cipher.ENCRYPT_MODE, keyPair!!.public)
+            init(Cipher.ENCRYPT_MODE, keyPair.public)
         }
         return cipher.doFinal(data)
     }
@@ -52,17 +48,13 @@ internal class RsaKeyManager(
         val cipher = Cipher.getInstance(
             "RSA/NONE/OAEPWithSHA256AndMGF1Padding"
         ).apply {
-            init(Cipher.DECRYPT_MODE, keyPair!!.private)
+            init(Cipher.DECRYPT_MODE, keyPair.private)
         }
         return cipher.doFinal(encryptedData)
     }
 
-    override fun deleteKeyPair() {
-        keyPair = null
-    }
-
     override fun generateCSRBase64(): String {
-        val rawCsr = generateRawCsr(keyPair!!)
+        val rawCsr = generateRawCsr(keyPair)
         return base64Encoder.encode(rawCsr)
     }
 

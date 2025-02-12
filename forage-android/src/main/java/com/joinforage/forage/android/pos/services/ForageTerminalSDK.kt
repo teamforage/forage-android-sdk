@@ -148,16 +148,14 @@ class ForageTerminalSDK internal constructor(
             )
             val base64Util = AndroidBase64Util()
             val rsaKeyManager = RsaKeyManager(base64Util)
-            val keyRegisters = AndroidKeyStoreKeyRegisters()
 
             PosTerminalInitializer(
                 ksnFileManager,
                 logger,
                 rosetta,
-                keyRegisters,
                 base64Util,
                 rsaKeyManager
-            ) { ksn -> DukptService(ksn, keyRegisters) }.safeInit()
+            ) { ksn -> DukptService(ksn, AndroidKeyStoreKeyRegisters()) }.safeInit()
 
             return ForageTerminalSDK(
                 posTerminalId,
