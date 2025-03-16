@@ -1,6 +1,5 @@
 package com.joinforage.forage.android.core.services.forageapi.network.error
 
-import com.joinforage.forage.android.core.services.forageapi.network.error.payload.ErrorPayload
 import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 
 /**
@@ -18,24 +17,12 @@ import com.joinforage.forage.android.core.services.forageapi.polling.ForageError
  * list of error `code` and `message` pairs.
  *
  */
-data class ForageError internal constructor(
+data class ForageError(
     val httpStatusCode: Int,
     val code: String,
     val message: String,
     val details: ForageErrorDetails? = null
 ) {
-
-    internal constructor(httpStatusCode: Int, jsonString: String) : this(
-        httpStatusCode,
-        ErrorPayload.parseJsonString(jsonString)
-    )
-
-    internal constructor(httpStatusCode: Int, errorPayload: ErrorPayload) : this(
-        httpStatusCode,
-        code = errorPayload.parseCode(),
-        message = errorPayload.parseMessage(),
-        details = errorPayload.parseDetails()
-    )
 
     /**
      * A method that converts the [ForageError] response to a string.

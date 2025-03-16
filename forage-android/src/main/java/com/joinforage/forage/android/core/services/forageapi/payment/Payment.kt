@@ -4,6 +4,7 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.Balan
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.getStringOrNull
 import com.joinforage.forage.android.core.services.hasNonNull
+import com.joinforage.forage.android.core.services.toMap
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -95,7 +96,7 @@ data class Receipt(
 data class Payment(
     val amount: String,
     val created: String,
-    val deliveryAddress: Address,
+    val deliveryAddress: Address?,
     val description: String,
     val fundingType: String,
     val isDelivery: Boolean,
@@ -113,7 +114,11 @@ data class Payment(
     internal constructor(jsonObject: JSONObject) : this(
         amount = jsonObject.getString("amount"),
         created = jsonObject.getString("created"),
-        deliveryAddress = Address(jsonObject.getJSONObject("delivery_address")),
+        deliveryAddress = if (jsonObject.hasNonNull("delivery_address")) {
+            Address(jsonObject.getJSONObject("delivery_address"))
+        } else {
+            null
+        },
         description = jsonObject.getString("description"),
         fundingType = jsonObject.getString("funding_type"),
         isDelivery = jsonObject.getBoolean("is_delivery"),
@@ -151,5 +156,3 @@ data class Payment(
 
 internal fun JSONArray.toListOfStrings(): List<String> =
     List(this.length()) { index -> this.getString(index) }
-
-internal fun JSONObject.toMap(): Map<String, String> = keys().asSequence().associateWith { get(it).toString() }
