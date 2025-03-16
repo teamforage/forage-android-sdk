@@ -47,5 +47,13 @@ internal data class PinInputState(
             isComplete = false,
             validationError = null
         )
+
+        // the values of isComplete and isEmpty entirely
+        // determine the values of isValid and validationError
+        // This factory is a convenience function to mint a new
+        // instance of PinInputState with just isComplete and
+        // isEmpty
+        fun from(isComplete: Boolean, isEmpty: Boolean) =
+            forEmptyInput().handleChangeEvent(isComplete, isEmpty)
     }
 }
