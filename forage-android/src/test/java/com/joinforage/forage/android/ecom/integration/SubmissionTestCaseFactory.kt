@@ -4,7 +4,6 @@ import com.joinforage.forage.android.core.logger.InMemoryLogger
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
 import com.joinforage.forage.android.core.services.forageapi.requests.Headers
 import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
@@ -18,6 +17,7 @@ import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRec
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.ecom.TestStringResponseHttpEngine
+import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomBalanceCheckSubmission
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomCapturePaymentSubmission
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomDeferCapturePaymentSubmission

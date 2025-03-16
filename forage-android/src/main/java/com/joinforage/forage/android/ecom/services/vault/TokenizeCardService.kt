@@ -5,10 +5,10 @@ import com.joinforage.forage.android.core.services.forageapi.engine.HttpRequestF
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IPaymentMethodService
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.vault.errors.IErrorStrategy
+import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
+import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
 
 internal class TokenizeCardService(
     val logger: LogLogger,
