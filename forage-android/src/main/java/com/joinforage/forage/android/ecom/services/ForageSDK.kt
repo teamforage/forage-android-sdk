@@ -1,19 +1,16 @@
 package com.joinforage.forage.android.ecom.services
 
-import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
+import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.OkHttpClientBuilder
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.core.services.telemetry.CustomerPerceivedResponseMonitor
-import com.joinforage.forage.android.core.services.telemetry.Log
-import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.vault.CapturePaymentRepository
-import com.joinforage.forage.android.core.services.vault.CheckBalanceRepository
-import com.joinforage.forage.android.core.services.vault.DeferPaymentCaptureRepository
-import com.joinforage.forage.android.core.services.vault.TokenizeCardService
+import com.joinforage.forage.android.ecom.services.telemetry.EcomDatadogLoggerFactory
+import com.joinforage.forage.android.ecom.services.vault.TokenizeCardService
+import com.joinforage.forage.android.ecom.services.vault.submission.EcomBalanceCheckSubmission
+import com.joinforage.forage.android.ecom.services.vault.submission.EcomCapturePaymentSubmission
+import com.joinforage.forage.android.ecom.services.vault.submission.EcomDeferCapturePaymentSubmission
 import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 
@@ -38,6 +35,8 @@ import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
  * Terminal transactions
  */
 class ForageSDK {
+    private val httpEngine = EcomOkHttpEngine()
+
     /**
      * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
      * ForageConfig is not set.
@@ -117,18 +116,23 @@ class ForageSDK {
      */
     suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
-        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePanEditText.getForageConfig())
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        val logger = Log.getInstance()
-            .addAttribute("merchant_ref", merchantId)
-            .addAttribute("customer_id", customerId)
-            .i("[ForageSDK] Tokenizing Payment Method")
-
-        val tokenizeCardService = ServiceFactory(sessionToken, merchantId, logger)
-            .createTokenizeCardService()
-
-        return tokenizeCardService.tokenizeCard(
+        val forageConfig = _getForageConfigOrThrow(foragePanEditText.getForageConfig())
+        val logger = EcomDatadogLoggerFactory(
+            foragePanEditText.context,
+            forageConfig,
+            customerId
+        ).makeLogger()
+        val pmService = PaymentMethodService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
+        )
+        val tokenizeService = TokenizeCardService(
+            logger,
+            forageConfig,
+            pmService
+        )
+        return tokenizeService.tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
             reusable = reusable ?: true
@@ -196,32 +200,24 @@ class ForageSDK {
      */
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
-        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        val logger = Log.getInstance()
-            .addAttribute("merchant_ref", merchantId)
-            .addAttribute("payment_method_ref", paymentMethodRef)
-            .i("[ForageSDK] Called checkBalance for Payment Method $paymentMethodRef")
-
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor(
-            userAction = UserAction.BALANCE,
-            logger
+        val forageConfig = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
+        val logger = EcomDatadogLoggerFactory(
+            foragePinEditText.context,
+            forageConfig,
+            null
+        ).makeLogger()
+        val pmService = PaymentMethodService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
         )
-        // ------------------------------------------------------
-
-        val balanceCheckService = ServiceFactory(sessionToken, merchantId, logger)
-            .createCheckBalanceRepository(foragePinEditText)
-        val response = balanceCheckService.checkBalance(
-            merchantId = merchantId,
+        return EcomBalanceCheckSubmission(
             paymentMethodRef = paymentMethodRef,
-            sessionToken = sessionToken
-        )
-        measurement.setEventOutcome(response).logResult()
-
-        return response
+            vaultSubmitter = foragePinEditText.getVaultSubmitter(forageConfig.envConfig, httpEngine),
+            paymentMethodService = pmService,
+            forageConfig = forageConfig,
+            logLogger = logger
+        ).rawSubmit()
     }
 
     /**
@@ -291,32 +287,30 @@ class ForageSDK {
      */
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
-        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        val logger = Log.getInstance()
-            .addAttribute("merchant_ref", merchantId)
-            .addAttribute("payment_ref", paymentRef)
-            .i("[ForageSDK] Called capturePayment for Payment $paymentRef")
-
-        // This block is used for Metrics Tracking!
-        // ------------------------------------------------------
-        val measurement = CustomerPerceivedResponseMonitor(
-            userAction = UserAction.CAPTURE,
-            logger
+        val forageConfig = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
+        val logger = EcomDatadogLoggerFactory(
+            foragePinEditText.context,
+            forageConfig,
+            null
+        ).makeLogger()
+        val pmService = PaymentMethodService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
         )
-        // ------------------------------------------------------
-
-        val capturePaymentService = ServiceFactory(sessionToken, merchantId, logger)
-            .createCapturePaymentRepository(foragePinEditText)
-        val response = capturePaymentService.capturePayment(
-            merchantId = merchantId,
+        val paymentService = PaymentService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
+        )
+        return EcomCapturePaymentSubmission(
             paymentRef = paymentRef,
-            sessionToken = sessionToken
-        )
-        measurement.setEventOutcome(response).logResult()
-
-        return response
+            vaultSubmitter = foragePinEditText.getVaultSubmitter(forageConfig.envConfig, httpEngine),
+            paymentMethodService = pmService,
+            paymentService = paymentService,
+            forageConfig = forageConfig,
+            logLogger = logger
+        ).submit()
     }
 
     /**
@@ -378,84 +372,30 @@ class ForageSDK {
      */
     suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
-        val (merchantId, sessionToken) = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
-
-        // TODO: replace Log.getInstance() with Log() in future PR
-        val logger = Log.getInstance()
-            .addAttribute("merchant_ref", merchantId)
-            .addAttribute("payment_ref", paymentRef)
-            .i("[ForageSDK] Called deferPaymentCapture for Payment $paymentRef")
-
-        val deferPaymentCaptureService = ServiceFactory(sessionToken, merchantId, logger)
-            .createDeferPaymentCaptureRepository(foragePinEditText)
-        val response = deferPaymentCaptureService.deferPaymentCapture(
-            merchantId = merchantId,
+        val forageConfig = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
+        val logger = EcomDatadogLoggerFactory(
+            foragePinEditText.context,
+            forageConfig,
+            null
+        ).makeLogger()
+        val pmService = PaymentMethodService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
+        )
+        val paymentService = PaymentService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
+        )
+        return EcomDeferCapturePaymentSubmission(
             paymentRef = paymentRef,
-            sessionToken = sessionToken
-        )
-
-        return when (response) {
-            is ForageApiResponse.Success -> {
-                logger.i("[ForageSDK] Successfully deferred payment capture for Payment $paymentRef")
-                ForageApiResponse.Success("")
-            }
-
-            else -> {
-                logger.e("[ForageSDK] Failed to defer payment capture for Payment $paymentRef")
-                response
-            }
-        }
-    }
-
-    internal open class ServiceFactory(
-        private val sessionToken: String,
-        private val merchantId: String,
-        private val logger: Log
-    ) {
-        private val config = EnvConfig.fromSessionToken(sessionToken)
-        private val okHttpClient by lazy {
-            OkHttpClientBuilder.provideOkHttpClient(
-                sessionToken = sessionToken,
-                merchantId = merchantId,
-                traceId = logger.getTraceIdValue()
-            )
-        }
-        private val paymentMethodService by lazy { createPaymentMethodService() }
-        private val paymentService by lazy { createPaymentService() }
-
-        open fun createTokenizeCardService() = TokenizeCardService(
-            config.apiBaseUrl,
-            okHttpClient,
-            logger
-        )
-
-        open fun createCheckBalanceRepository(foragePinEditText: ForagePINEditText): CheckBalanceRepository {
-            return CheckBalanceRepository(
-                vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
-                paymentMethodService = paymentMethodService,
-                logger = logger
-            )
-        }
-
-        open fun createCapturePaymentRepository(foragePinEditText: ForagePINEditText): CapturePaymentRepository {
-            return CapturePaymentRepository(
-                vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
-                paymentService = paymentService,
-                paymentMethodService = paymentMethodService,
-                logger = logger
-            )
-        }
-
-        open fun createDeferPaymentCaptureRepository(foragePinEditText: ForagePINEditText): DeferPaymentCaptureRepository {
-            return DeferPaymentCaptureRepository(
-                vaultSubmitter = foragePinEditText.getVaultSubmitter(foragePinEditText.getForageConfig()!!.envConfig, logger),
-                paymentService = paymentService,
-                paymentMethodService = paymentMethodService
-            )
-        }
-
-        private fun createPaymentMethodService() = PaymentMethodService(config.apiBaseUrl, okHttpClient, logger)
-        private fun createPaymentService() = PaymentService(config.apiBaseUrl, okHttpClient, logger)
+            vaultSubmitter = foragePinEditText.getVaultSubmitter(forageConfig.envConfig, httpEngine),
+            paymentMethodService = pmService,
+            paymentService = paymentService,
+            forageConfig = forageConfig,
+            logLogger = logger
+        ).submit()
     }
 }
 
