@@ -4,7 +4,7 @@ import com.joinforage.forage.android.core.services.forageapi.payment.Address
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.Receipt
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
-import com.joinforage.forage.android.mock.MockServiceFactory
+import com.joinforage.forage.android.fixtures.ExpectedData
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.json.JSONArray
@@ -13,7 +13,7 @@ import org.junit.Test
 
 class PaymentModelTests {
     internal companion object {
-        val testData = MockServiceFactory.ExpectedData
+        val testData = ExpectedData
         val paymentRef = testData.paymentRef
         val amount = "123.45"
         val created = "2023-04-26T18:50:57.049025-07:00"
