@@ -11,13 +11,13 @@ import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.ISecurePinCollector
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
-import com.joinforage.forage.android.ecom.services.vault.TokenizeCardService
 import com.joinforage.forage.android.core.services.vault.errors.BaseErrorStrategy
 import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRecorder
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.ecom.TestStringResponseHttpEngine
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
+import com.joinforage.forage.android.ecom.services.vault.TokenizeCardService
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomBalanceCheckSubmission
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomCapturePaymentSubmission
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomDeferCapturePaymentSubmission
@@ -71,7 +71,7 @@ internal class SubmissionTestCaseFactory(
             paymentMethodRef = paymentMethodRef,
             paymentMethodService = paymentMethodService,
             logLogger = logger,
-            forageConfig = forageConfig,
+            forageConfig = forageConfig
         )
         return SubmissionTestCase(submission, logger, collector)
     }
@@ -89,7 +89,7 @@ internal class SubmissionTestCaseFactory(
             paymentMethodService = paymentMethodService,
             paymentService = paymentService,
             paymentRef = paymentRef,
-            forageConfig = forageConfig,
+            forageConfig = forageConfig
         )
         return SubmissionTestCase(submission, logger, collector)
     }
@@ -107,7 +107,7 @@ internal class SubmissionTestCaseFactory(
             paymentRef = paymentRef,
             forageConfig = forageConfig,
             paymentMethodService = paymentMethodService,
-            paymentService = paymentService,
+            paymentService = paymentService
         )
         return SubmissionTestCase(submission, logger, collector)
     }
@@ -143,5 +143,4 @@ internal class SubmissionTestCaseFactory(
         )
         return SubmissionTestCase(submission, logger, collector)
     }
-
 }

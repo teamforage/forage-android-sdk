@@ -29,7 +29,3 @@ internal open class FetchPaymentMethodService(
         throw FailedToFetchPaymentMethodException(paymentMethodRef, e)
     }
 }
-
-
-
-

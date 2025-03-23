@@ -30,6 +30,7 @@ internal fun PaymentErrorResponse(paymentRef: String) = ForageApiResponse.Failur
     "server_error",
     "Failed to fetch payment $paymentRef."
 )
+
 /**
  * A model that represents the possible types of responses from the Forage API.
  */

@@ -1,8 +1,8 @@
 package com.joinforage.forage.android.core.forageapi
 
-import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.requests.makeApiUrl
 import com.joinforage.forage.android.core.services.forageapi.requests.makeBearerAuthHeader
+import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import org.json.JSONObject
 
 internal class SessionTokenRequest(
