@@ -1,5 +1,9 @@
-package com.joinforage.forage.android.pos.integration.logger
+package com.joinforage.forage.android.pos.logger
 
+import com.joinforage.forage.android.core.base64.JavaBase64Util
+import com.joinforage.forage.android.core.logger.LogAttrsContainer
+import com.joinforage.forage.android.core.logger.LoggableAttributes
+import com.joinforage.forage.android.core.logger.MetricAttributesContainer
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
@@ -9,28 +13,11 @@ import com.joinforage.forage.android.core.services.telemetry.MetricName
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.telemetry.extractTenantIdFromToken
-import com.joinforage.forage.android.pos.integration.base64.JavaBase64Util
 
-internal interface LogAttrsContainer {
-    val noPM: Map<String, String>
-    val all: Map<String, String>
-}
-
-internal interface MetricAttributesContainer {
-    val vaultRes: Map<String, String>
-    val cusPercep: Map<String, String>
-}
-
-internal data class LoggableAttributes(
-    val logAttrs: LogAttrsContainer,
-    val metricAttrs: MetricAttributesContainer
-)
-
-internal class LoggableAttributesFactory(
+internal class PosLoggableAttributesFactory(
     private val forageConfig: ForageConfig,
     private val traceId: String,
-    private val posTerminalId: String,
-    private val paymentMethodRef: String
+    private val posTerminalId: String
 ) {
     operator fun invoke(
         action: UserAction,
@@ -45,9 +32,9 @@ internal class LoggableAttributesFactory(
             tenantId = extractTenantIdFromToken(JavaBase64Util(), forageConfig)
         ).toMap()
 
-        val allAttrs = attrsSansPMRef + mapOf(
+        val allAttrs = attrsSansPMRef/* + mapOf(
             LogAttributes.AttributesKey.PAYMENT_METHOD_REF.key to paymentMethodRef
-        )
+        )*/
 
         val vaultMetricAttrs = allAttrs + MetricAttributes(
             metricName = MetricName.VAULT_RESPONSE,
@@ -85,9 +72,9 @@ internal class LoggableAttributesFactory(
             tenantId = extractTenantIdFromToken(JavaBase64Util(), forageConfig)
         ).toMap()
 
-        val allAttrs = attrsSansPMRef + mapOf(
+        val allAttrs = attrsSansPMRef/* + mapOf(
             LogAttributes.AttributesKey.PAYMENT_METHOD_REF.key to paymentMethodRef
-        )
+        )*/
 
         val vaultMetricAttrs = allAttrs + MetricAttributes(
             metricName = MetricName.VAULT_RESPONSE,

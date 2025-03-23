@@ -1,10 +1,10 @@
-package com.joinforage.forage.android.pos.integration.logger
+package com.joinforage.forage.android.core.logger
 
+import com.joinforage.forage.android.core.base64.JavaBase64Util
 import com.joinforage.forage.android.core.services.telemetry.ILogEngine
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.Loggable
-import com.joinforage.forage.android.pos.integration.base64.JavaBase64Util
 
 internal open class InMemoryLogEngine : ILogEngine {
     val logs: MutableList<Loggable> = emptyList<Loggable>().toMutableList()

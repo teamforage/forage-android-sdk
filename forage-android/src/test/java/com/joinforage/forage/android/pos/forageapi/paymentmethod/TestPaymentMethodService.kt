@@ -1,19 +1,20 @@
-package com.joinforage.forage.android.pos.integration.forageapi.paymentmethod
+package com.joinforage.forage.android.pos.forageapi.paymentmethod
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.FetchPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 
 internal class TestPaymentMethodService(
     forageConfig: ForageConfig,
     traceId: String,
     engine: IHttpEngine
-) : PaymentMethodService(
+) : FetchPaymentMethodService(
     forageConfig,
     traceId,
     engine
 ) {
+
     suspend fun createManualEntryPaymentMethod(pan: String): PaymentMethod =
         engine.sendRequest(
             CreateManualEntryPaymentMethodRequest(

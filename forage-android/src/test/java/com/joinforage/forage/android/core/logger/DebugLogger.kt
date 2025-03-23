@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.integration.logger
+package com.joinforage.forage.android.core.logger
 
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.Loggable

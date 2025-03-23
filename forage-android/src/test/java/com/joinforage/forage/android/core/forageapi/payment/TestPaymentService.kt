@@ -1,12 +1,12 @@
-package com.joinforage.forage.android.pos.integration.forageapi.payment
+package com.joinforage.forage.android.core.forageapi.payment
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.network.error.PosErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.pos.services.network.error.PosErrorResponseParser
 
 internal class TestPaymentService(
     forageConfig: ForageConfig,
@@ -32,6 +32,25 @@ internal class TestPaymentService(
                 description = description,
                 metadata = metadata,
                 paymentMethodRef = paymentMethodRef,
+                posTerminalId = posTerminalId,
+                forageConfig = forageConfig,
+                traceId = traceId
+            )
+        ).let { Payment(it) }
+
+    suspend fun createPayment(
+        posTerminalId: String,
+        amount: String = "1.00",
+        fundingType: String = "ebt_snap",
+        description: String = "test payment",
+        metadata: Map<String, String> = emptyMap()
+    ): Payment =
+        engine.sendRequest(
+            CreatePaymentNoPaymentMethodRequest(
+                amount = amount,
+                fundingType = fundingType,
+                description = description,
+                metadata = metadata,
                 posTerminalId = posTerminalId,
                 forageConfig = forageConfig,
                 traceId = traceId

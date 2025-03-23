@@ -1,5 +1,6 @@
-package com.joinforage.forage.android.core.services.forageapi.network.error
+package com.joinforage.forage.android.pos.services.network.error
 
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.network.error.payload.DeferredRefundErrorResponsePayload
 import com.joinforage.forage.android.core.services.forageapi.network.error.payload.ErrorListResponsePayload
 import com.joinforage.forage.android.core.services.forageapi.network.error.payload.ErrorPayload

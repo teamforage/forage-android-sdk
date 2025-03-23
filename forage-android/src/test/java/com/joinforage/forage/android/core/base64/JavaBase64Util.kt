@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.integration.base64
+package com.joinforage.forage.android.core.base64
 
 import com.joinforage.forage.android.core.services.telemetry.IBase64Util
 import java.util.Base64

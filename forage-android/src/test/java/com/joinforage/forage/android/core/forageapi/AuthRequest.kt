@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.integration.forageapi
+package com.joinforage.forage.android.core.forageapi
 
 import com.joinforage.forage.android.core.services.forageapi.requests.Headers
 

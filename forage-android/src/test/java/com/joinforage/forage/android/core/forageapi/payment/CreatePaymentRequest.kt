@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.integration.forageapi.payment
+package com.joinforage.forage.android.core.forageapi.payment
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest

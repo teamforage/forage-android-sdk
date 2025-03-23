@@ -1,4 +1,4 @@
-package com.joinforage.forage.android.pos.integration.base64
+package com.joinforage.forage.android.core.base64
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
