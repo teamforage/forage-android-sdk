@@ -2,21 +2,21 @@ package com.joinforage.forage.android.ecom.integration
 import com.joinforage.forage.android.core.forageapi.getAccessToken
 import com.joinforage.forage.android.core.forageapi.getSessionToken
 import com.joinforage.forage.android.core.forageapi.payment.TestPaymentService
-import com.joinforage.forage.android.ecom.logger.EcomLoggableAttributesFactory
 import com.joinforage.forage.android.core.logger.LoggableAttributes
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
+import com.joinforage.forage.android.ecom.logger.EcomLoggableAttributesFactory
+import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
+import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -67,7 +67,7 @@ class MainIntegrationTest {
                 reusable = true
             ).parsed
             payment = paymentService.createPayment(
-                paymentMethodRef = paymentMethod.ref,
+                paymentMethodRef = paymentMethod.ref
             )
             pmRefProvider = TestPmRefProvider(paymentMethod.ref)
 
@@ -156,7 +156,6 @@ class MainIntegrationTest {
         // Refund the snap payment
         val refundedSnap = paymentService.refundPayment(snapPayment.ref, amount)
 
-
         // Verify refund succeeded and balance was restored
         assertThat(refundedSnap.status).isEqualTo("processing")
     }
@@ -237,5 +236,4 @@ class MainIntegrationTest {
         assertThat(details.snapBalance).isInstanceOf(String::class.java)
         assertThat(details.cashBalance).isInstanceOf(String::class.java)
     }
-
 }

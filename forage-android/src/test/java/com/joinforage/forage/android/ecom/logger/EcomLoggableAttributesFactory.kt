@@ -14,7 +14,6 @@ import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.telemetry.extractTenantIdFromToken
 
-
 internal class EcomLoggableAttributesFactory(
     private val forageConfig: ForageConfig,
     private val traceId: String,

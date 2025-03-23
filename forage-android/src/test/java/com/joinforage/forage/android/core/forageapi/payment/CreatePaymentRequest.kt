@@ -25,13 +25,16 @@ internal class CreatePaymentRequest(
         put("amount", amount)
         put("funding_type", fundingType)
         put("is_delivery", true)
-        put("delivery_address", JSONObject().apply {
-            put("city", "San Francisco")
-            put("country", "US")
-            put("line1", "1856 Market St.")
-            put("zipcode", "94106")
-            put("state", "CA")
-        })
+        put(
+            "delivery_address",
+            JSONObject().apply {
+                put("city", "San Francisco")
+                put("country", "US")
+                put("line1", "1856 Market St.")
+                put("zipcode", "94106")
+                put("state", "CA")
+            }
+        )
         put("description", description)
         put("metadata", JSONObject(metadata))
         put("payment_method", paymentMethodRef)

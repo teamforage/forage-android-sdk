@@ -4,28 +4,28 @@ import com.joinforage.forage.android.core.TestFailedRequestHttpEngine
 import com.joinforage.forage.android.core.forageapi.getAccessToken
 import com.joinforage.forage.android.core.forageapi.getSessionToken
 import com.joinforage.forage.android.core.forageapi.payment.TestPaymentService
-import com.joinforage.forage.android.ecom.logger.EcomLoggableAttributesFactory
 import com.joinforage.forage.android.core.logger.LoggableAttributes
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.IncompletePinError
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
-import com.joinforage.forage.android.ecom.services.network.error.EcomErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
 import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.Loggable
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
+import com.joinforage.forage.android.ecom.logger.EcomLoggableAttributesFactory
+import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
+import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
+import com.joinforage.forage.android.ecom.services.network.error.EcomErrorResponseParser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -62,11 +62,8 @@ class PinSubmissionTest {
         private lateinit var accessToken: String
         private lateinit var submissionTestCaseFactory: SubmissionTestCaseFactory
 
-
         private val paymentMethodRef = "fake_payment_method_ref"
         private val paymentRef = "fake_payment_ref"
-
-
 
         @BeforeClass
         @JvmStatic
@@ -331,6 +328,4 @@ class PinSubmissionTest {
         )
         assertThat(logger.logs).isEqualTo(expectedLogs)
     }
-
-
 }
