@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.pos.integration
 
+import com.joinforage.forage.android.core.services.getStringOrNull
 import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
 import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
 import com.joinforage.forage.android.pos.services.emvchip.TerminalCapabilities
@@ -55,6 +56,7 @@ class PosBaseBodyBuilderTest {
         val posTerminal = result.getJSONObject("pos_terminal")
         val cardDetails = posTerminal.getJSONObject("card_details")
         assertThat(cardDetails.getString("manual_entry_pan")).isEqualTo("rawPan")
+        assertThat(cardDetails.getStringOrNull("track_2_data")).isNull()
         assertThat(posTerminal.getString("provider_terminal_id")).isEqualTo(testTerminalId)
     }
 
