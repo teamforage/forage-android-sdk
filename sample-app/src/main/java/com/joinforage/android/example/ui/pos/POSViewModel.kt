@@ -1,6 +1,5 @@
 package com.joinforage.android.example.ui.pos
 
-import ManualEntryPaymentMethod
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
@@ -8,33 +7,26 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.textfield.TextInputEditText
-import com.joinforage.android.example.ui.pos.data.BalanceCheck
-import com.joinforage.android.example.ui.pos.data.BalanceCheckJsonAdapter
 import com.joinforage.android.example.ui.pos.data.POSUIState
 import com.joinforage.android.example.ui.pos.data.PosPaymentRequest
 import com.joinforage.android.example.ui.pos.data.PosPaymentResponse
-import com.joinforage.android.example.ui.pos.data.PosPaymentResponseJsonAdapter
 import com.joinforage.android.example.ui.pos.data.Refund
-import com.joinforage.android.example.ui.pos.data.RefundJsonAdapter
 import com.joinforage.android.example.ui.pos.data.RefundUIState
 import com.joinforage.android.example.ui.pos.data.tokenize.MagSwipePaymentMethod
 import com.joinforage.android.example.ui.pos.data.tokenize.PosPaymentMethod
 import com.joinforage.android.example.ui.pos.network.PosApiService
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBalance
 import com.joinforage.forage.android.core.ui.element.ForageVaultElement
 import com.joinforage.forage.android.core.ui.element.state.ElementState
-import com.joinforage.forage.android.pos.services.CapturePaymentParams
 import com.joinforage.forage.android.pos.services.CheckBalanceParams
 import com.joinforage.forage.android.pos.services.DeferPaymentCaptureParams
 import com.joinforage.forage.android.pos.services.DeferPaymentRefundParams
 import com.joinforage.forage.android.pos.services.ForageTerminalSDK
-import com.joinforage.forage.android.pos.services.RefundPaymentParams
 import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
 import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
 import com.joinforage.forage.android.pos.ui.element.ForagePANEditText
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -93,17 +85,17 @@ class POSViewModel : ViewModel() {
             try {
                 val pan = hackyWayToReadPAN(foragePanEditText)
                 val payment = api.getPayment(refundState.paymentRef)
-                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                val paymentMethod = api.getPaymentMethod(payment.paymentMethod!!)
                 _uiState.update {
                     it.copy(
                         localRefundState = refundState,
-                        tokenizedPaymentMethod = paymentMethod,
+                        paymentMethod = paymentMethod,
                         cardholderInteraction = ManualEntryInteraction(pan)
                     )
                 }
                 onComplete()
             } catch (e: HttpException) {
-                _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = null) }
+                _uiState.update { it.copy(localRefundState = refundState) }
                 onComplete()
             }
         }
@@ -119,17 +111,17 @@ class POSViewModel : ViewModel() {
                 val pan = hackyWayToReadPAN(foragePanEditText)
                 val track2 = dressUpPanAsTrack2(pan)
                 val payment = api.getPayment(refundState.paymentRef)
-                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                val paymentMethod = api.getPaymentMethod(payment.paymentMethod!!)
                 _uiState.update {
                     it.copy(
                         localRefundState = refundState,
-                        tokenizedPaymentMethod = paymentMethod,
+                        paymentMethod = paymentMethod,
                         cardholderInteraction = MagSwipeInteraction(track2Data = track2)
                     )
                 }
                 onComplete()
             } catch (e: HttpException) {
-                _uiState.update { it.copy(localRefundState = refundState, tokenizedPaymentMethod = null) }
+                _uiState.update { it.copy(localRefundState = refundState) }
                 onComplete()
             }
         }
@@ -172,10 +164,6 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun resetTokenizationError() {
-        _uiState.update { it.copy(tokenizationError = null) }
-    }
-
     fun resetPinActionErrors() {
         _uiState.update {
             it.copy(
@@ -204,46 +192,34 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun tokenizeManualEntryEBTCard(foragePanEditText: ForagePANEditText, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+    fun tokenizeManualEntryEBTCard(foragePanEditText: ForagePANEditText, onSuccess: () -> Unit) {
         viewModelScope.launch {
             val pan = hackyWayToReadPAN(foragePanEditText)
-            try {
-                val response = api.tokenizeManualEntry(
-                    ManualEntryPaymentMethod(pan)
+            _uiState.update {
+                it.copy(
+                    cardholderInteraction = ManualEntryInteraction(pan)
                 )
-                Log.i("Tokenization successful", response.toString())
-                _uiState.update {
-                    it.copy(
-                        tokenizedPaymentMethod = response,
-                        tokenizationError = null,
-                        cardholderInteraction = ManualEntryInteraction(pan)
-                    )
-                }
-                onSuccess(response)
-            } catch (e: Exception) {
-                val error = e.message.toString()
-                Log.e("POSViewModel", error)
-                _uiState.update { it.copy(tokenizationError = error, tokenizedPaymentMethod = null) }
             }
+            onSuccess()
         }
     }
-    fun tokenizeTrack2EBTCard(foragePanEditText: ForagePANEditText, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+    fun tokenizeTrack2EBTCard(foragePanEditText: ForagePANEditText, onSuccess: () -> Unit) {
         // no need to reinvent the wheel. For Track 2 data, we can just do
         // what the Manual Entry flow does and then dress up the PAN
         // as Track 2 data and pass that dressed up Track 2 to the SDK
-        tokenizeManualEntryEBTCard(foragePanEditText) { posPaymentMethod ->
-            val pan = posPaymentMethod?.card?.number
+        tokenizeManualEntryEBTCard(foragePanEditText) {
+            val pan = hackyWayToReadPAN(foragePanEditText)
             val track2 = dressUpPanAsTrack2(pan)
             _uiState.update {
                 it.copy(
                     cardholderInteraction = MagSwipeInteraction(track2Data = track2)
                 )
             }
-            onSuccess(posPaymentMethod)
+            onSuccess()
         }
     }
 
-    fun tokenizeEBTCard(context: Context, track2Data: String, terminalId: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
+    fun tokenizeEBTCard(track2Data: String, onSuccess: (data: PosPaymentMethod?) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = api.tokenizeManualEntry(
@@ -252,8 +228,6 @@ class POSViewModel : ViewModel() {
                 Log.i("Tokenization successful", response.toString())
                 _uiState.update {
                     it.copy(
-                        tokenizedPaymentMethod = response,
-                        tokenizationError = null,
                         cardholderInteraction = MagSwipeInteraction(track2Data)
                     )
                 }
@@ -261,37 +235,33 @@ class POSViewModel : ViewModel() {
             } catch (e: Exception) {
                 val error = e.message.toString()
                 Log.e("POSViewModel", error)
-                _uiState.update { it.copy(tokenizationError = error, tokenizedPaymentMethod = null) }
             }
         }
     }
 
-    fun checkEBTCardBalance(context: Context, forageVaultElement: ForageVaultElement<ElementState>, paymentMethodRef: String, terminalId: String, onSuccess: (response: BalanceCheck?) -> Unit) {
+    fun checkEBTCardBalance(context: Context, forageVaultElement: ForageVaultElement<ElementState>, terminalId: String, onSuccess: (response: EbtBalance?) -> Unit) {
         viewModelScope.launch {
             val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
             val response = forageTerminalSdk.checkBalance(
                 CheckBalanceParams(
                     forageVaultElement,
-                    paymentMethodRef,
                     _uiState.value.cardholderInteraction!!
                 )
             )
 
             when (response) {
                 is ForageApiResponse.Success -> {
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<BalanceCheck> = BalanceCheckJsonAdapter(moshi)
-                    val balance = jsonAdapter.fromJson(response.data)
+                    val balance = response.toBalance() as EbtBalance
                     _uiState.update { it.copy(balance = balance, balanceCheckError = null) }
 
-                    // we need to refetch the EBT Card here because
+                    // we need to fetch the EBT Card here because
                     // `ForageTerminalSDK(terminalId).checkBalance`
                     // does not return the timestamp of the balance
                     // check and we need to display the timestamp
                     // on the receipt
-                    val updatedCard = api.getPaymentMethod(paymentMethodRef)
+                    val updatedCard = api.getPaymentMethod(balance.paymentMethodRef!!)
                     _uiState.update {
-                        it.copy(tokenizedPaymentMethod = updatedCard)
+                        it.copy(paymentMethod = updatedCard)
                     }
                     onSuccess(balance)
                 }
@@ -377,99 +347,6 @@ class POSViewModel : ViewModel() {
         }
     }
 
-    fun capturePayment(context: Context, forageVaultElement: ForageVaultElement<ElementState>, terminalId: String, paymentRef: String, onSuccess: () -> Unit, onFailure: (sequenceNumber: String?) -> Unit) {
-        viewModelScope.launch {
-            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
-            val response = forageTerminalSdk.capturePayment(
-                CapturePaymentParams(
-                    forageVaultElement,
-                    paymentRef,
-                    _uiState.value.cardholderInteraction!!
-                )
-            )
-
-            when (response) {
-                is ForageApiResponse.Success -> {
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<PosPaymentResponse> = PosPaymentResponseJsonAdapter(moshi)
-                    val paymentResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(capturePaymentResponse = paymentResponse, capturePaymentError = null) }
-
-                    // we need to refetch the EBT Card here because
-                    // capturing a payment does not include the updated
-                    // balance we need to display the balance on the receipt
-                    val paymentMethodRef = paymentResponse!!.paymentMethod
-                    val updatedCard = api.getPaymentMethod(paymentMethodRef)
-                    _uiState.update {
-                        it.copy(tokenizedPaymentMethod = updatedCard)
-                    }
-                    onSuccess()
-                }
-                is ForageApiResponse.Failure -> {
-                    Log.e("POSViewModel", response.errors[0].message)
-                    var payment: PosPaymentResponse? = null
-                    try {
-                        payment = api.getPayment(paymentRef)
-                    } catch (e: HttpException) {
-                        Log.e("POSViewModel", "Failed to re-fetch payment $paymentRef after failed capture")
-                    }
-                    _uiState.update { it.copy(capturePaymentError = response.errors[0].message, capturePaymentResponse = payment) }
-                    onFailure(payment?.sequenceNumber)
-                }
-            }
-        }
-    }
-
-    fun refundPayment(context: Context, forageVaultElement: ForageVaultElement<ElementState>, terminalId: String, amount: Float, paymentRef: String, reason: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        viewModelScope.launch {
-            val forageTerminalSdk = initForageTerminalSDK(context, terminalId)
-            val response = forageTerminalSdk.refundPayment(
-                RefundPaymentParams(
-                    forageVaultElement,
-                    paymentRef,
-                    amount,
-                    reason,
-                    mapOf(),
-                    _uiState.value.cardholderInteraction!!
-                )
-            )
-
-            try {
-                val payment = api.getPayment(paymentRef)
-                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
-                _uiState.update { it.copy(tokenizedPaymentMethod = paymentMethod, tokenizationError = null, capturePaymentResponse = payment, capturePaymentError = null) }
-            } catch (e: HttpException) {
-                Log.e("POSViewModel", "Looking up payment method for refund failed. PaymentRef: $paymentRef")
-            }
-
-            when (response) {
-                is ForageApiResponse.Success -> {
-                    val moshi = Moshi.Builder().build()
-                    val jsonAdapter: JsonAdapter<Refund> = RefundJsonAdapter(moshi)
-                    val refundResponse = jsonAdapter.fromJson(response.data)
-                    _uiState.update { it.copy(refundPaymentResponse = refundResponse, refundPaymentError = null) }
-                    onSuccess()
-                }
-                is ForageApiResponse.Failure -> {
-                    Log.e("POSViewModel", response.toString())
-                    var payment: PosPaymentResponse? = null
-                    var refund: Refund? = null
-                    try {
-                        payment = api.getPayment(paymentRef)
-                        val mostRecentRefundRef = payment.refunds.lastOrNull()
-                        if (mostRecentRefundRef != null) {
-                            refund = api.getRefund(paymentRef, mostRecentRefundRef)
-                        }
-                    } catch (e: HttpException) {
-                        Log.e("POSViewModel", "Failed to re-fetch payment or refund after failed refund attempt. PaymentRef: $paymentRef")
-                    }
-                    _uiState.update { it.copy(refundPaymentError = response.errors[0].message, refundPaymentResponse = refund, capturePaymentResponse = payment) }
-                    onFailure()
-                }
-            }
-        }
-    }
-
     fun voidPayment(paymentRef: String, onSuccess: (response: PosPaymentResponse) -> Unit) {
         val idempotencyKey = UUID.randomUUID().toString()
 
@@ -480,13 +357,13 @@ class POSViewModel : ViewModel() {
                     paymentRef = paymentRef
                 )
                 val payment = api.getPayment(paymentRef)
-                val paymentMethod = api.getPaymentMethod(response.paymentMethod)
+                val paymentMethod = api.getPaymentMethod(response.paymentMethod!!)
                 if (response.receipt != null && payment.receipt != null) {
                     response.receipt!!.isVoided = true
                     response.receipt!!.balance?.snap = ((response.receipt!!.balance?.snap?.toDouble() ?: 0.0) + payment.receipt!!.snapAmount.toDouble()).toString()
                     response.receipt!!.balance?.nonSnap = ((response.receipt!!.balance?.nonSnap?.toDouble() ?: 0.0) + payment.receipt!!.ebtCashAmount.toDouble()).toString()
                 }
-                _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null, tokenizedPaymentMethod = paymentMethod) }
+                _uiState.update { it.copy(voidPaymentResponse = response, voidPaymentError = null, paymentMethod = paymentMethod) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void payment call succeeded: $response")
             } catch (e: HttpException) {
@@ -508,13 +385,13 @@ class POSViewModel : ViewModel() {
                     paymentRef = paymentRef,
                     refundRef = refundRef
                 )
-                val paymentMethod = api.getPaymentMethod(payment.paymentMethod)
+                val paymentMethod = api.getPaymentMethod(payment.paymentMethod!!)
                 if (payment.receipt != null) {
                     response.receipt!!.isVoided = true
                     response.receipt.balance?.snap = ((response.receipt.balance?.snap?.toDouble() ?: 0.0) - refund.receipt!!.snapAmount.toDouble()).toString()
                     response.receipt.balance?.nonSnap = ((response.receipt.balance?.nonSnap?.toDouble() ?: 0.0) - refund.receipt.ebtCashAmount.toDouble()).toString()
                 }
-                _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, tokenizedPaymentMethod = paymentMethod) }
+                _uiState.update { it.copy(voidRefundResponse = response, voidRefundError = null, paymentMethod = paymentMethod) }
                 onSuccess(response)
                 Log.i("POSViewModel", "Void refund call succeeded: $response")
             } catch (e: HttpException) {

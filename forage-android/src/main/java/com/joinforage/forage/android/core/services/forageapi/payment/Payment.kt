@@ -102,7 +102,7 @@ data class Payment(
     val isDelivery: Boolean,
     val merchant: String,
     val metadata: Map<String, String>?,
-    val paymentMethodRef: String,
+    val paymentMethodRef: String?,
     val receipt: Receipt?,
     val ref: String,
     val refunds: List<String>,
@@ -128,7 +128,7 @@ data class Payment(
         } else {
             null
         },
-        paymentMethodRef = jsonObject.getString("payment_method"),
+        paymentMethodRef = jsonObject.getStringOrNull("payment_method"),
         receipt = if (jsonObject.hasNonNull("receipt")) {
             Receipt(jsonObject.getJSONObject("receipt"))
         } else {

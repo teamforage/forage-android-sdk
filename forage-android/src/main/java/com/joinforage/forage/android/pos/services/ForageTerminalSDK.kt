@@ -3,7 +3,6 @@ package com.joinforage.forage.android.pos.services
 import android.content.Context
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
-import com.joinforage.forage.android.core.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.telemetry.AndroidBase64Util
 import com.joinforage.forage.android.core.services.telemetry.DatadogLogger
@@ -17,13 +16,12 @@ import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.storage.AndroidKeyStoreKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.FileKsnManager
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
+import com.joinforage.forage.android.pos.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.init.RosettaInitService
 import com.joinforage.forage.android.pos.services.vault.submission.PosBalanceCheckSubmission
-import com.joinforage.forage.android.pos.services.vault.submission.PosCapturePaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosDeferCapturePaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosDeferRefundPaymentSubmission
-import com.joinforage.forage.android.pos.services.vault.submission.PosRefundPaymentSubmission
 import java.io.File
 
 /**
@@ -63,7 +61,7 @@ class ForageTerminalSDK internal constructor(
     private val forageConfig: ForageConfig,
     private val ksnFileManager: KsnFileManager,
     private val capabilities: TerminalCapabilities,
-    private val _logger: DatadogLogger,
+    private val logger: DatadogLogger,
     private val httpEngine: IHttpEngine
 ) {
 
@@ -220,87 +218,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = _logger
-        ).submit()
-    }
-
-    /**
-     * Immediately captures a payment
-     * via a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
-     * (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
-     * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad]).
-     *
-     * * On success, the object confirms the transaction. The response includes a Forage
-     * [`Payment`](https://docs.joinforage.app/reference/payments) object. *(Example [PosPaymentResponse](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosPaymentResponse.kt#L8) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
-     * * On failure, for example in the case of
-     * [`card_not_reusable`](https://docs.joinforage.app/reference/errors#card_not_reusable) or
-     * [`ebt_error_51`](https://docs.joinforage.app/reference/errors#ebt_error_51) errors, the
-     * response includes a list of
-     * [ForageError][com.joinforage.forage.android.core.services.forageapi.network.ForageError] objects that you can
-     * unpack to programmatically handle the error and display the appropriate
-     * customer-facing message based on the `ForageError.code`.
-     * ```kotlin
-     * // Example capturePayment call in a PaymentCaptureViewModel.kt
-     * class PaymentCaptureViewModel : ViewModel() {
-     *     val snapPaymentRef = "s0alzle0fal"
-     *     val merchantId = "<merchant_id>"
-     *     val sessionToken = "<session_token>"
-     *
-     *     fun capturePayment(forageVaultElement: ForagePINEditText, paymentRef: String) =
-     *         viewModelScope.launch {
-     *             val response = forageTerminalSdk.capturePayment(
-     *                 CapturePaymentParams(
-     *                     forageVaultElement = foragePinEditText,
-     *                     paymentRef = snapPaymentRef
-     *                 )
-     *             )
-     *
-     *             when (response) {
-     *                 is ForageApiResponse.Success -> {
-     *                     // handle successful capture
-     *                 }
-     *                 is ForageApiResponse.Failure -> {
-     *                     val error = response.errors[0]
-     *
-     *                     // handle Insufficient Funds error
-     *                     if (error.code == "ebt_error_51") {
-     *                         val details = error.details as ForageErrorDetails.EbtError51Details
-     *                         val (snapBalance, cashBalance) = details
-     *
-     *                         // do something with balances ...
-     *                     }
-     *                 }
-     *             }
-     *         }
-     * }
-     *```
-     * @param params A [CapturePaymentParams] model that passes a
-     * a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
-     * (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
-     * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad])
-     * instance and a `paymentRef`, returned by the
-     * [Create a Payment](https://docs.joinforage.app/reference/create-a-payment) endpoint, that
-     * Forage uses to capture a payment.
-     *
-     * @see
-     * * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
-     * on error handling.
-     * * [Test EBT Cards](https://docs.joinforage.app/docs/test-ebt-cards#payment-capture-exceptions)
-     * to trigger payment capture exceptions during testing.
-     * @return A [ForageApiResponse] object.
-     */
-    suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentRef, interaction) = params
-        return PosCapturePaymentSubmission(
-            paymentRef = paymentRef,
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
-            ksnFileManager = ksnFileManager,
-            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
-            interaction = interaction,
-            capabilities = capabilities,
-            forageConfig = forageConfig,
-            posTerminalId = posTerminalId,
-            logLogger = _logger
+            logLogger = logger
         ).submit()
     }
 
@@ -375,79 +293,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = _logger
-        ).submit()
-    }
-
-    /**
-     * Refunds a Payment
-     * via a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
-     * (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
-     * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad]).
-     * This method is only available for POS Terminal transactions.
-     * You must use [ForageTerminalSDK].
-     *
-     * * On success, the response includes a Forage
-     * [`PaymentRefund`](https://docs.joinforage.app/reference/create-payment-refund) object. *(Example [Refund](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/0d845ea57d901bbca13775f4f2de4d4ed6f74791/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/Refund.kt#L7-L23) and [Receipt](https://github.com/Forage-PCI-CDE/android-pos-terminal-sdk/blob/main/sample-app/src/main/java/com/joinforage/android/example/ui/pos/data/PosReceipt.kt) class)*
-     * * On failure, for example in the case of
-     * [`ebt_error_61`](https://docs.joinforage.app/reference/errors#ebt_error_61), the response
-     * includes a list of [ForageError] objects. You can unpack the list to programmatically handle
-     * the error and display the appropriate customer-facing message based on the `ForageError.code`.
-     * ```kotlin
-     * // Example refundPayment call in a PosRefundViewModel.kt
-     * class PosRefundViewModel : ViewModel() {
-     *   var paymentRef: String  = ""
-     *   var amount: Float = 0.0
-     *   var reason: String = ""
-     *   var metadata: HashMap? = null
-     *
-     *   fun refundPayment(forageVaultElement: ForagePINEditText) = viewModelScope.launch {
-     *     val forageTerminalSdk = ForageTerminalSDK.init(...) // may throw!
-     *     val refundParams = RefundPaymentParams(
-     *       foragePinEditText,
-     *       paymentRef,
-     *       amount,
-     *       reason,
-     *       metadata,
-     *     )
-     *     val response = forage.refundPayment(refundParams)
-     *
-     *     when (response) {
-     *       is ForageApiResponse.Success -> {
-     *         // do something with response.data
-     *       }
-     *       is ForageApiResponse.Failure -> {
-     *         // do something with response.errors
-     *       }
-     *     }
-     *   }
-     * }
-     * ```
-     * @param params A [RefundPaymentParams] model that passes a
-     * [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
-     * (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
-     * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad]) instance and
-     * a `paymentRef`, returned by the [Create a Payment](https://docs.joinforage.app/reference/create-a-payment)
-     * endpoint, an `amount`, and a `reason` as the RefundPaymentParams.
-     * @see * [SDK errors](https://docs.joinforage.app/reference/errors#sdk-errors) for more information
-     * on error handling.
-     * @return A [ForageApiResponse] object.
-     */
-    suspend fun refundPayment(params: RefundPaymentParams): ForageApiResponse<String> {
-        val (forageVaultElement, paymentRef, amount, reason, metadata, interaction) = params
-        return PosRefundPaymentSubmission(
-            paymentRef = paymentRef,
-            vaultSubmitter = forageVaultElement.getVaultSubmitter(forageConfig.envConfig, httpEngine),
-            ksnFileManager = ksnFileManager,
-            keystoreRegisters = AndroidKeyStoreKeyRegisters(),
-            interaction = interaction,
-            capabilities = capabilities,
-            forageConfig = forageConfig,
-            amount = amount,
-            reason = reason,
-            metadata = metadata,
-            posTerminalId = posTerminalId,
-            logLogger = _logger
+            logLogger = logger
         ).submit()
     }
 
@@ -507,7 +353,7 @@ class ForageTerminalSDK internal constructor(
             capabilities = capabilities,
             forageConfig = forageConfig,
             posTerminalId = posTerminalId,
-            logLogger = _logger
+            logLogger = logger
         ).submit()
     }
 }
@@ -535,32 +381,6 @@ class ForageTerminalSDK internal constructor(
  */
 data class CheckBalanceParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
-    val interaction: CardholderInteraction
-)
-
-/**
- * A model that represents the parameters that Forage requires to capture a payment.
- * [CapturePaymentParams] are passed to the
- * [capturePayment][com.joinforage.forage.android.pos.services.ForageTerminalSDK.capturePayment] method.
- *
- * @property forageVaultElement A reference to a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
- * instance (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
- * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad]).
- * @property paymentRef A unique string identifier for a previously created
- * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's
- * database, returned by the
- * [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
- * @property interaction Represents the method of interaction between the cardholder and the terminal.
- * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
- * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
- * <br>
- * For example:<br>
- *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
- *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
- */
-data class CapturePaymentParams(
-    val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentRef: String,
     val interaction: CardholderInteraction
 )
 
@@ -594,40 +414,6 @@ data class CapturePaymentParams(
 data class DeferPaymentCaptureParams(
     val forageVaultElement: ForageVaultElement<ElementState>,
     val paymentRef: String,
-    val interaction: CardholderInteraction
-)
-
-/**
- * A model that represents the parameters that [ForageTerminalSDK] requires to refund a Payment.
- * [RefundPaymentParams] are passed to the
- * [refundPayment][com.joinforage.forage.android.pos.services.ForageTerminalSDK.refundPayment] method.
- *
- * @property forageVaultElement A reference to a [ForageVaultElement][com.joinforage.forage.android.core.ui.element.ForageVaultElement]
- * instance (either a [ForagePINEditText][com.joinforage.forage.android.pos.ui.element.ForagePINEditText]
- * or a [ForagePinPad][com.joinforage.forage.android.pos.ui.element.ForagePinPad])..
- * @property paymentRef **Required**. A unique string identifier for a previously created
- * [`Payment`](https://docs.joinforage.app/reference/payments) in Forage's database, returned by the
- *  [Create a `Payment`](https://docs.joinforage.app/reference/create-a-payment) endpoint.
- * @property amount **Required**. A positive decimal number that represents how much of the original
- * payment to refund in USD. Precision to the penny is supported.
- * The minimum amount that can be refunded is `0.01`.
- * @property reason **Required**. A string that describes why the payment is to be refunded.
- * @property metadata Optional. A map of merchant-defined key-value pairs. For example, some
- * merchants attach their credit card processor’s ID for the customer making the refund.
- * @property interaction Represents the method of interaction between the cardholder and the terminal.
- * This includes key card details such as PAN (Primary Account Number) and Track 2 data.
- * Use the appropriate implementation of [CardholderInteraction] based on how the card information is obtained.<br>
- * <br>
- * For example:<br>
- *     - `ManualEntryInteraction`: Use when the card details are entered manually.<br>
- *     - `MagSwipeInteraction`: Use when the card is swiped using the magnetic stripe reader.<br>
- */
-data class RefundPaymentParams(
-    val forageVaultElement: ForageVaultElement<ElementState>,
-    val paymentRef: String,
-    val amount: Float,
-    val reason: String,
-    val metadata: Map<String, String>? = null,
     val interaction: CardholderInteraction
 )
 

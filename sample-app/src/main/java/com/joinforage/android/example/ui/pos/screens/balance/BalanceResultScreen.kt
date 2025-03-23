@@ -18,7 +18,6 @@ import com.joinforage.android.example.ui.pos.screens.ReceiptPreviewScreen
 @Composable
 fun BalanceResultScreen(
     merchant: Merchant?,
-    terminalId: String,
     paymentMethod: PosPaymentMethod?,
     balanceCheckError: String?,
     onBackButtonClicked: () -> Unit,
@@ -37,7 +36,7 @@ fun BalanceResultScreen(
             } else {
                 val receipt = BalanceInquiryReceipt(
                     merchant,
-                    terminalId,
+                    paymentMethod.balance.posTerminal!!.providerTerminalId,
                     paymentMethod,
                     balanceCheckError
                 )
@@ -61,7 +60,6 @@ fun BalanceResultScreen(
 fun BalanceResultScreenPreview() {
     BalanceResultScreen(
         merchant = null,
-        terminalId = "",
         paymentMethod = null,
         balanceCheckError = "",
         onBackButtonClicked = {},

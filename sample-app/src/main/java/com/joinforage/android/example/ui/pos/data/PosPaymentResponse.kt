@@ -16,7 +16,7 @@ data class PosPaymentResponse(
     var description: String?,
     var metadata: Map<String, String>?,
     @Json(name = "payment_method")
-    var paymentMethod: String,
+    var paymentMethod: String?,
     @Json(name = "delivery_address")
     var deliveryAddress: Address?,
     @Json(name = "is_delivery")

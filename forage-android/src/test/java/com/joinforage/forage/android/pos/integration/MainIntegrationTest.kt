@@ -1,7 +1,12 @@
 package com.joinforage.forage.android.pos.integration
+import com.joinforage.forage.android.core.base64.JavaBase64Util
+import com.joinforage.forage.android.core.forageapi.getAccessToken
+import com.joinforage.forage.android.core.forageapi.getSessionToken
+import com.joinforage.forage.android.core.forageapi.payment.TestPaymentService
+import com.joinforage.forage.android.core.logger.InMemoryLogger
+import com.joinforage.forage.android.core.logger.LoggableAttributes
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.core.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.EncryptionKeyGenerationError
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
@@ -15,20 +20,15 @@ import com.joinforage.forage.android.core.services.telemetry.Loggable
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
-import com.joinforage.forage.android.pos.integration.base64.JavaBase64Util
-import com.joinforage.forage.android.pos.integration.forageapi.getAccessToken
-import com.joinforage.forage.android.pos.integration.forageapi.getSessionToken
-import com.joinforage.forage.android.pos.integration.forageapi.payment.TestPaymentService
-import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.TestPaymentMethodService
-import com.joinforage.forage.android.pos.integration.logger.InMemoryLogger
-import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
-import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
+import com.joinforage.forage.android.pos.forageapi.paymentmethod.TestPaymentMethodService
+import com.joinforage.forage.android.pos.logger.PosLoggableAttributesFactory
 import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
 import com.joinforage.forage.android.pos.services.emvchip.ManualEntryInteraction
 import com.joinforage.forage.android.pos.services.encryption.certificate.RsaKeyManager
 import com.joinforage.forage.android.pos.services.encryption.dukpt.DukptService
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.StringKsnManager
+import com.joinforage.forage.android.pos.services.forageapi.engine.PosOkHttpEngine
 import com.joinforage.forage.android.pos.services.forageapi.refund.Refund
 import com.joinforage.forage.android.pos.services.init.PosTerminalInitializer
 import com.joinforage.forage.android.pos.services.init.RosettaInitService
@@ -62,7 +62,6 @@ class MainIntegrationTest {
         private val ksnFileManager = StringKsnManager()
         private val keyRegisters = InMemoryKeyRegisters()
 
-        private lateinit var pmRefProvider: TestPmRefProvider
         private lateinit var forageConfig: ForageConfig
         private lateinit var paymentMethodService: TestPaymentMethodService
         private lateinit var paymentService: TestPaymentService
@@ -91,11 +90,7 @@ class MainIntegrationTest {
                 httpEngine
             )
             paymentMethod = paymentMethodService.createManualEntryPaymentMethod(pan)
-            payment = paymentService.createPayment(
-                paymentMethodRef = paymentMethod.ref,
-                posTerminalId = posTerminalId
-            )
-            pmRefProvider = TestPmRefProvider(paymentMethod.ref)
+            payment = paymentService.createPayment(posTerminalId = posTerminalId)
 
             // Initialize the submission test case factory
             keyEntrySubmitTestCaseFactory = SubmissionTestCaseFactory(
@@ -103,7 +98,6 @@ class MainIntegrationTest {
                 forageConfig = forageConfig,
                 ksnFileManager = ksnFileManager,
                 keyRegisters = keyRegisters,
-                paymentMethodRef = paymentMethod.ref,
                 paymentRef = payment.ref,
                 posTerminalId = posTerminalId,
                 interaction = manualEntryInteraction,
@@ -116,7 +110,6 @@ class MainIntegrationTest {
                 forageConfig = forageConfig,
                 ksnFileManager = ksnFileManager,
                 keyRegisters = keyRegisters,
-                paymentMethodRef = paymentMethod.ref,
                 paymentRef = payment.ref,
                 posTerminalId = posTerminalId,
                 interaction = swipeLegacyInteraction,
@@ -129,7 +122,6 @@ class MainIntegrationTest {
                 forageConfig = forageConfig,
                 ksnFileManager = ksnFileManager,
                 keyRegisters = keyRegisters,
-                paymentMethodRef = paymentMethod.ref,
                 paymentRef = payment.ref,
                 posTerminalId = posTerminalId,
                 interaction = swipeFallbackInteraction,
@@ -146,11 +138,10 @@ class MainIntegrationTest {
                 RsaKeyManager(JavaBase64Util())
             ) { ksn -> DukptService(ksn, keyRegisters) }.safeInit()
 
-            failureAttrs = LoggableAttributesFactory(
+            failureAttrs = PosLoggableAttributesFactory(
                 forageConfig = forageConfig,
                 traceId = traceId,
-                posTerminalId = posTerminalId,
-                paymentMethodRef = paymentMethod.ref
+                posTerminalId = posTerminalId
             )(UserAction.BALANCE, 500, MetricOutcome.FAILURE)
         }
     }
@@ -175,36 +166,50 @@ class MainIntegrationTest {
     }
 
     private suspend fun testCashPaymentFlow(amount: String): Payment {
-        // Create and capture cash payment
-        val cashPayment = paymentService.createPayment(paymentMethod.ref, posTerminalId, amount, "ebt_cash")
-        val (captureSubmission) = swipeLegacySubmitTestCaseFactory.newCapturePaymentSubmission(
+        // Create cash payment
+        val cashPayment = paymentService.createPayment(posTerminalId, amount, "ebt_cash")
+
+        // Defer capture the payment
+        val (deferSubmission) = swipeLegacySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = cashPayment.ref
         )
-        val captureResponse = captureSubmission.submit()
-        val capturedCash = ((captureResponse as ForageApiResponse.Success<String>).toPayment())
+        val deferResponse = deferSubmission.submit()
+        assertThat(deferResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
-        // Verify balance was reduced by payment amount
+        // Complete the deferred capture
+        val capturedCash = (paymentService.captureDeferredPayment(cashPayment.ref, accessToken) as ForageApiResponse.Success<String>).toPayment()
+
+        // Verify payment succeeded
         assertThat(capturedCash.status).isEqualTo("succeeded")
 
         return cashPayment
     }
 
     private suspend fun testCashRefundFlow(cashPayment: Payment, amount: String) {
-        // Refund the cash payment
-        val (refundSubmission) = swipeFallbackSubmitTestCaseFactory.newRefundPaymentSubmission(
-            paymentRef = cashPayment.ref,
-            amount = amount.toFloat()
+        // Create deferred refund
+        val (deferredRefundSubmission) = swipeFallbackSubmitTestCaseFactory.newDeferredRefundSubmission(
+            paymentRef = cashPayment.ref
         )
-        val refundResponse = refundSubmission.submit()
-        val refundedCash = Refund((refundResponse as ForageApiResponse.Success<String>).data)
+        val deferredRefundResponse = deferredRefundSubmission.submit()
+        assertThat(deferredRefundResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
-        // Verify balance was restored after refund
+        // Complete deferred refund
+        val refundResult = paymentService.captureDeferredRefund(
+            cashPayment.ref,
+            accessToken,
+            posTerminalId,
+            amount.toFloat()
+        ) as ForageApiResponse.Success<String>
+
+        val refundedCash = Refund(refundResult.data)
+
+        // Verify refund succeeded
         assertThat(refundedCash.status).isEqualTo("succeeded")
     }
 
     private suspend fun testSnapPaymentFlow(amount: String): Payment {
         // Create and defer capture SNAP payment
-        val snapPayment = paymentService.createPayment(paymentMethod.ref, posTerminalId, amount, "ebt_snap")
+        val snapPayment = paymentService.createPayment(posTerminalId, amount, "ebt_snap")
         val (deferSubmission) = keyEntrySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = snapPayment.ref
         )
@@ -250,23 +255,24 @@ class MainIntegrationTest {
         val balanceCheckResponse = balanceSubmission.submit()
         assertBadPinError(balanceCheckResponse)
 
-        // Test cash payment capture with bad PIN
+        // Test cash payment deferred capture with bad PIN
         val cashPayment = paymentService.createPayment(
-            paymentMethodRef = paymentMethod.ref,
             posTerminalId = posTerminalId,
             amount = "1.00",
             fundingType = "ebt_cash"
         )
-        val (captureSubmission) = swipeLegacySubmitTestCaseFactory.newCapturePaymentSubmission(
+        val (deferCashSubmission) = swipeLegacySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = cashPayment.ref,
             pin = badPIN
         )
-        val captureResponse = captureSubmission.submit()
-        assertBadPinError(captureResponse)
+        val deferCashResponse = deferCashSubmission.submit()
+        assertThat(deferCashResponse).isInstanceOf(ForageApiResponse.Success::class.java)
+
+        val deferCashCaptureResponse = paymentService.captureDeferredPayment(cashPayment.ref, accessToken)
+        assertBadPinError(deferCashCaptureResponse)
 
         // Test SNAP payment deferred capture with bad PIN
         val snapPayment = paymentService.createPayment(
-            paymentMethodRef = paymentMethod.ref,
             posTerminalId = posTerminalId,
             amount = "1.00",
             fundingType = "ebt_snap"
@@ -281,22 +287,16 @@ class MainIntegrationTest {
         val deferCaptureResponse = paymentService.captureDeferredPayment(snapPayment.ref, accessToken)
         assertBadPinError(deferCaptureResponse)
 
-        // Capture the cash payment first with valid PIN
-        val (captureSuccessSubmission) = keyEntrySubmitTestCaseFactory.newCapturePaymentSubmission(
+        // Successfully capture the cash payment with valid PIN using deferred flow
+        val (deferSuccessSubmission) = keyEntrySubmitTestCaseFactory.newDeferCapturePaymentSubmission(
             paymentRef = cashPayment.ref,
             pin = validPIN
         )
-        val captureSuccessResponse = captureSuccessSubmission.submit()
-        assertThat(captureSuccessResponse).isInstanceOf(ForageApiResponse.Success::class.java)
+        val deferSuccessResponse = deferSuccessSubmission.submit()
+        assertThat(deferSuccessResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
-        // Test refund with bad PIN on captured payment
-        val (refundSubmission) = swipeLegacySubmitTestCaseFactory.newRefundPaymentSubmission(
-            paymentRef = cashPayment.ref,
-            pin = badPIN,
-            amount = 1.00f
-        )
-        val refundResponse = refundSubmission.submit()
-        assertBadPinError(refundResponse)
+        val capturedCash = paymentService.captureDeferredPayment(cashPayment.ref, accessToken)
+        assertThat(capturedCash).isInstanceOf(ForageApiResponse.Success::class.java)
 
         // Test deferred refund with bad PIN on captured payment
         val (deferredRefundSubmission) = swipeFallbackSubmitTestCaseFactory.newDeferredRefundSubmission(
@@ -314,14 +314,21 @@ class MainIntegrationTest {
         )
         assertBadPinError(deferredRefundCaptureResponse)
 
-        // Finally restore the balance with a successful refund
-        val (successfulRefundSubmission) = keyEntrySubmitTestCaseFactory.newRefundPaymentSubmission(
+        // Finally restore the balance with a successful deferred refund
+        val (successfulDeferredRefundSubmission) = keyEntrySubmitTestCaseFactory.newDeferredRefundSubmission(
             paymentRef = cashPayment.ref,
-            pin = validPIN,
-            amount = 1.00f
+            pin = validPIN
         )
-        val successfulRefundResponse = successfulRefundSubmission.submit()
-        assertThat(successfulRefundResponse).isInstanceOf(ForageApiResponse.Success::class.java)
+        val successfulDeferredRefundResponse = successfulDeferredRefundSubmission.submit()
+        assertThat(successfulDeferredRefundResponse).isInstanceOf(ForageApiResponse.Success::class.java)
+
+        val successfulRefundResult = paymentService.captureDeferredRefund(
+            cashPayment.ref,
+            accessToken,
+            posTerminalId,
+            1.00f
+        )
+        assertThat(successfulRefundResult).isInstanceOf(ForageApiResponse.Success::class.java)
     }
 
     private fun assertBadPinError(response: ForageApiResponse<String>) {
@@ -371,7 +378,6 @@ class MainIntegrationTest {
     fun testSnapPurchaseOfTenThousandInsufficientFundsFailure() = runTest {
         // Attempt to make a SNAP purchase for $10,000 (which should exceed available balance)
         val snapPayment = paymentService.createPayment(
-            paymentMethodRef = paymentMethod.ref,
             posTerminalId = posTerminalId,
             amount = "10000.00",
             fundingType = "ebt_snap"
@@ -399,7 +405,6 @@ class MainIntegrationTest {
         // First make a small SNAP purchase
         val snapTxAmount = "1.00"
         val snapPayment = paymentService.createPayment(
-            paymentMethodRef = paymentMethod.ref,
             posTerminalId = posTerminalId,
             amount = snapTxAmount,
             fundingType = "ebt_snap"
@@ -416,13 +421,21 @@ class MainIntegrationTest {
         val captureResponse = paymentService.captureDeferredPayment(snapPayment.ref, accessToken)
         assertThat(captureResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
-        // Now attempt to refund for much more than the original purchase
+        // Now attempt to refund for much more than the original purchase using deferred refund
         val largeRefundAmount = 10000.00f
-        val (refundSubmission) = swipeFallbackSubmitTestCaseFactory.newRefundPaymentSubmission(
-            paymentRef = snapPayment.ref,
-            amount = largeRefundAmount
+        val (deferredRefundSubmission) = swipeFallbackSubmitTestCaseFactory.newDeferredRefundSubmission(
+            paymentRef = snapPayment.ref
         )
-        val refundResponse = refundSubmission.submit()
+        val deferredRefundResponse = deferredRefundSubmission.submit()
+        assertThat(deferredRefundResponse).isInstanceOf(ForageApiResponse.Success::class.java)
+
+        // Try to complete the deferred refund with a large amount
+        val refundResponse = paymentService.captureDeferredRefund(
+            snapPayment.ref,
+            accessToken,
+            posTerminalId,
+            largeRefundAmount
+        )
 
         // Verify the refund fails with appropriate error
         val actualRes = refundResponse as ForageApiResponse.Failure
@@ -435,12 +448,19 @@ class MainIntegrationTest {
         )
         assertThat(actualRes).isEqualTo(expectedRes)
 
-        // Clean up by refunding the original amount
-        val (cleanupRefundSubmission) = keyEntrySubmitTestCaseFactory.newRefundPaymentSubmission(
-            paymentRef = snapPayment.ref,
-            amount = snapTxAmount.toFloat()
+        // Clean up by refunding the original amount using deferred flow
+        val (cleanupDeferredRefundSubmission) = keyEntrySubmitTestCaseFactory.newDeferredRefundSubmission(
+            paymentRef = snapPayment.ref
         )
-        val cleanupResponse = cleanupRefundSubmission.submit()
+        val cleanupDeferredResponse = cleanupDeferredRefundSubmission.submit()
+        assertThat(cleanupDeferredResponse).isInstanceOf(ForageApiResponse.Success::class.java)
+
+        val cleanupResponse = paymentService.captureDeferredRefund(
+            snapPayment.ref,
+            accessToken,
+            posTerminalId,
+            snapTxAmount.toFloat()
+        )
         assertThat(cleanupResponse).isInstanceOf(ForageApiResponse.Success::class.java)
     }
 }

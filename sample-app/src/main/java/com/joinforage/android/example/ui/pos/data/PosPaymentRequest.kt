@@ -7,7 +7,6 @@ import com.squareup.moshi.JsonClass
 data class PosPaymentRequest(
     val amount: String,
     @Json(name = "funding_type") val fundingType: String,
-    @Json(name = "payment_method") val paymentMethodRef: String,
     val description: String,
     @Json(name = "pos_terminal") val posTerminal: PosTerminalRequestField,
     val metadata: Map<String, String>,
@@ -19,7 +18,6 @@ data class PosPaymentRequest(
             amount = snapAmount,
             description = "Testing POS certification app payments (SNAP Purchase)",
             fundingType = FundingType.EBTSnap.value,
-            paymentMethodRef = "",
             posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
@@ -27,7 +25,6 @@ data class PosPaymentRequest(
             amount = ebtCashAmount,
             description = "Testing POS certification app payments (EBT Cash Purchase)",
             fundingType = FundingType.EBTCash.value,
-            paymentMethodRef = "",
             posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )
@@ -35,7 +32,6 @@ data class PosPaymentRequest(
             amount = ebtCashWithdrawalAmount,
             description = "Testing POS certification app payments (EBT Cash Withdrawal)",
             fundingType = FundingType.EBTCash.value,
-            paymentMethodRef = "",
             posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf(),
             transactionType = TransactionType.Withdrawal.value
@@ -46,7 +42,6 @@ data class PosPaymentRequest(
             transactionType = TransactionType.PurchaseWithCashBack.value,
             description = "Testing POS certification app payments (EBT Cash Purchase with Cash Back)",
             fundingType = FundingType.EBTCash.value,
-            paymentMethodRef = "",
             posTerminal = PosTerminalRequestField(providerTerminalId = terminalId),
             metadata = mapOf()
         )

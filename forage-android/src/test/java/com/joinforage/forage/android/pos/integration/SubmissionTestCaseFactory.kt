@@ -1,5 +1,6 @@
 package com.joinforage.forage.android.core.services.forageapi.payment
 
+import com.joinforage.forage.android.core.logger.InMemoryLogger
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
@@ -14,16 +15,13 @@ import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRec
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.pos.TestStringResponseHttpEngine
-import com.joinforage.forage.android.pos.integration.logger.InMemoryLogger
 import com.joinforage.forage.android.pos.services.emvchip.CardholderInteraction
 import com.joinforage.forage.android.pos.services.emvchip.TerminalCapabilities
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.pos.services.vault.submission.PosBalanceCheckSubmission
-import com.joinforage.forage.android.pos.services.vault.submission.PosCapturePaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosDeferCapturePaymentSubmission
 import com.joinforage.forage.android.pos.services.vault.submission.PosDeferRefundPaymentSubmission
-import com.joinforage.forage.android.pos.services.vault.submission.PosRefundPaymentSubmission
 import org.json.JSONObject
 
 internal class TestableSecurePinCollector(private val isComplete: Boolean = true) :
@@ -49,7 +47,6 @@ internal class SubmissionTestCaseFactory(
     private val forageConfig: ForageConfig,
     private val ksnFileManager: KsnFileManager,
     private val keyRegisters: InMemoryKeyRegisters,
-    private val paymentMethodRef: String,
     private val paymentRef: String,
     private val posTerminalId: String,
     private val interaction: CardholderInteraction,
@@ -78,29 +75,6 @@ internal class SubmissionTestCaseFactory(
         return SubmissionTestCase(submission, logger, collector)
     }
 
-    fun newCapturePaymentSubmission(
-        pin: String = validPIN,
-        ksnFileManager: KsnFileManager = this.ksnFileManager,
-        paymentRef: String = this.paymentRef,
-        keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
-        logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId))
-    ): SubmissionTestCase<PosCapturePaymentSubmission> {
-        val collector = TestableSecurePinCollector()
-        val submission = PosCapturePaymentSubmission(
-            vaultSubmitter = RosettaPinSubmitter(pin, collector, vaultHttpEngine),
-            logLogger = logger,
-            ksnFileManager = ksnFileManager,
-            keystoreRegisters = keyRegisters,
-            paymentRef = paymentRef,
-            forageConfig = forageConfig,
-            posTerminalId = posTerminalId,
-            interaction = interaction,
-            capabilities = TerminalCapabilities.TapAndInsert
-        )
-        return SubmissionTestCase(submission, logger, collector)
-    }
-
     fun newDeferCapturePaymentSubmission(
         pin: String = validPIN,
         ksnFileManager: KsnFileManager = this.ksnFileManager,
@@ -120,35 +94,6 @@ internal class SubmissionTestCaseFactory(
             posTerminalId = posTerminalId,
             interaction = interaction,
             capabilities = TerminalCapabilities.TapAndInsert
-        )
-        return SubmissionTestCase(submission, logger, collector)
-    }
-
-    fun newRefundPaymentSubmission(
-        pin: String = validPIN,
-        ksnFileManager: KsnFileManager = this.ksnFileManager,
-        paymentRef: String = this.paymentRef,
-        keyRegisters: InMemoryKeyRegisters = this.keyRegisters,
-        vaultHttpEngine: IHttpEngine = this.vaultHttpEngine,
-        logger: InMemoryLogger = InMemoryLogger(LogAttributes(forageConfig, traceId, posTerminalId)),
-        amount: Float,
-        reason: String = "integration test refund",
-        metadata: Map<String, String> = emptyMap()
-    ): SubmissionTestCase<PosRefundPaymentSubmission> {
-        val collector = TestableSecurePinCollector()
-        val submission = PosRefundPaymentSubmission(
-            vaultSubmitter = RosettaPinSubmitter(pin, collector, vaultHttpEngine),
-            logLogger = logger,
-            ksnFileManager = ksnFileManager,
-            keystoreRegisters = keyRegisters,
-            paymentRef = paymentRef,
-            forageConfig = forageConfig,
-            posTerminalId = posTerminalId,
-            interaction = interaction,
-            capabilities = TerminalCapabilities.TapAndInsert,
-            amount = amount,
-            reason = reason,
-            metadata = metadata
         )
         return SubmissionTestCase(submission, logger, collector)
     }

@@ -22,8 +22,7 @@ fun ActionSelectionScreen(
     onBackButtonClicked: () -> Unit,
     onBalanceButtonClicked: () -> Unit,
     onPaymentButtonClicked: () -> Unit,
-    onRefundButtonClicked: () -> Unit,
-    onVoidButtonClicked: () -> Unit
+    onRefundButtonClicked: () -> Unit
 ) {
     ScreenWithBottomRow(
         mainContent = {
@@ -56,12 +55,6 @@ fun ActionSelectionScreen(
                     Text("Make a Refund / Return")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = onVoidButtonClicked,
-                    modifier = Modifier.fillMaxWidth().withTestId("pos_select_void_button")
-                ) {
-                    Text("Void / Reverse a Transaction")
-                }
             }
         },
         bottomRowContent = {
@@ -81,6 +74,5 @@ fun ActionSelectionScreenPreview() {
         onBalanceButtonClicked = {},
         onPaymentButtonClicked = {},
         onRefundButtonClicked = {}
-    ) {
-    }
+    )
 }

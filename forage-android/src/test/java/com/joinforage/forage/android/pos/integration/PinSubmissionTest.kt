@@ -1,5 +1,8 @@
 package com.joinforage.forage.android.pos.integration
 
+import com.joinforage.forage.android.core.forageapi.getAccessToken
+import com.joinforage.forage.android.core.forageapi.getSessionToken
+import com.joinforage.forage.android.core.logger.LoggableAttributes
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
@@ -10,7 +13,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.IncompleteP
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
-import com.joinforage.forage.android.core.services.forageapi.network.error.PosErrorResponseParser
 import com.joinforage.forage.android.core.services.forageapi.payment.SubmissionTestCaseFactory
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
@@ -19,18 +21,15 @@ import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.Loggable
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
-import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.pos.TestFailedRequestHttpEngine
-import com.joinforage.forage.android.pos.integration.forageapi.getAccessToken
-import com.joinforage.forage.android.pos.integration.forageapi.getSessionToken
-import com.joinforage.forage.android.pos.integration.forageapi.paymentmethod.dressUpPanAsTrack2
-import com.joinforage.forage.android.pos.integration.logger.LoggableAttributes
-import com.joinforage.forage.android.pos.integration.logger.LoggableAttributesFactory
+import com.joinforage.forage.android.pos.forageapi.paymentmethod.dressUpPanAsTrack2
+import com.joinforage.forage.android.pos.logger.PosLoggableAttributesFactory
 import com.joinforage.forage.android.pos.services.emvchip.MagSwipeInteraction
 import com.joinforage.forage.android.pos.services.encryption.storage.IPersistentStorage
 import com.joinforage.forage.android.pos.services.encryption.storage.InMemoryKeyRegisters
 import com.joinforage.forage.android.pos.services.encryption.storage.KsnFileManager
 import com.joinforage.forage.android.pos.services.encryption.storage.StringKsnManager
+import com.joinforage.forage.android.pos.services.network.error.PosErrorResponseParser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -40,10 +39,6 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 class PinSubmissionTest {
-
-    private class TestPmRefProvider(private val pmRef: String) : IPmRefProvider {
-        override suspend fun getPaymentMethodRef(): String = pmRef
-    }
 
     companion object {
         private val merchantRef = "e6b746712a" // "c67e8569c1"
@@ -81,25 +76,22 @@ class PinSubmissionTest {
                 forageConfig = forageConfig,
                 ksnFileManager = ksnFileManager,
                 keyRegisters = keyRegisters,
-                paymentMethodRef = paymentMethodRef,
                 paymentRef = paymentRef,
                 posTerminalId = posTerminalId,
                 interaction = interaction,
                 traceId = traceId
             )
 
-            successAttrs = LoggableAttributesFactory(
+            successAttrs = PosLoggableAttributesFactory(
                 forageConfig = forageConfig,
                 traceId = traceId,
-                posTerminalId = posTerminalId,
-                paymentMethodRef = paymentMethodRef
+                posTerminalId = posTerminalId
             )(UserAction.BALANCE)
 
-            failureAttrs = LoggableAttributesFactory(
+            failureAttrs = PosLoggableAttributesFactory(
                 forageConfig = forageConfig,
                 traceId = traceId,
-                posTerminalId = posTerminalId,
-                paymentMethodRef = paymentMethodRef
+                posTerminalId = posTerminalId
             )(UserAction.BALANCE, 500, MetricOutcome.FAILURE)
         }
     }
@@ -176,11 +168,10 @@ class PinSubmissionTest {
         assertThat(collector.wasCleared).isTrue
 
         // Verify the logs show the vault submission failure
-        failureAttrs = LoggableAttributesFactory(
+        failureAttrs = PosLoggableAttributesFactory(
             forageConfig = forageConfig,
             traceId = traceId,
-            posTerminalId = posTerminalId,
-            paymentMethodRef = paymentMethodRef
+            posTerminalId = posTerminalId
         )(UserAction.BALANCE, forageError)
         val expectedLogs = listOf(
             Loggable.Info("[balance]", "[START] Submit Attempt", failureAttrs.logAttrs.noPM),
@@ -302,49 +293,6 @@ class PinSubmissionTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun testMissingTokenException() = runTest {
-        val paymentMethodWithIncompleteToken = PaymentMethod(
-            ref = paymentMethodRef,
-            type = "ebt",
-            customerId = "dummy_customer_id",
-            balance = null,
-            card = EbtCard(
-                last4 = "7777",
-                fingerprint = "dummy_fingerprint",
-                token = "vgs_token,basis_theory_token", // Missing Forage token
-                number = "6777777777777777",
-                usState = null
-            ),
-            reusable = true
-        )
-
-        val (
-            submission,
-            logger,
-            collector
-        ) = submissionTestCaseFactory.newBalanceCheckSubmission()
-
-        val response = submission.submit()
-        assertThat(response).isEqualTo(UnknownErrorApiResponse)
-
-        // Verify the collector was cleared
-        assertThat(collector.wasCleared).isTrue
-
-        // Verify the logs show the missing token failure
-        val expectedLogs = listOf(
-            Loggable.Info("[balance]", "[START] Submit Attempt", failureAttrs.logAttrs.noPM),
-            Loggable.Error(
-                "[balance]",
-                "[END] Submission failed.\n\nVault missing token for PaymentMethod $paymentMethodRef",
-                null,
-                failureAttrs.logAttrs.all
-            )
-        )
-        assertThat(logger.logs).isEqualTo(expectedLogs)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
     fun testUnknownExceptionFailure() = runTest {
         val unexpectedException = RuntimeException("Unexpected error occurred")
         val (
@@ -372,49 +320,6 @@ class PinSubmissionTest {
                 "[balance]",
                 "[END] Submission failed.\n\nUnknown error occurred",
                 unexpectedException,
-                failureAttrs.logAttrs.all
-            )
-        )
-        assertThat(logger.logs).isEqualTo(expectedLogs)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testEbtCardMissingFullPanException() = runTest {
-        val paymentMethodWithMissingPan = PaymentMethod(
-            ref = paymentMethodRef,
-            type = "ebt",
-            customerId = "dummy_customer_id",
-            balance = null,
-            card = EbtCard(
-                last4 = "7777",
-                fingerprint = "dummy_fingerprint",
-                token = "vgs_token,basis_theory_token,forage_token",
-                number = null, // Missing full PAN
-                usState = null
-            ),
-            reusable = true
-        )
-
-        val (
-            submission,
-            logger,
-            collector
-        ) = submissionTestCaseFactory.newBalanceCheckSubmission()
-
-        val response = submission.submit()
-        assertThat(response).isEqualTo(UnknownErrorApiResponse)
-
-        // Verify the collector was cleared
-        assertThat(collector.wasCleared).isTrue
-
-        // Verify the logs show the missing PAN error
-        val expectedLogs = listOf(
-            Loggable.Info("[balance]", "[START] Submit Attempt", failureAttrs.logAttrs.noPM),
-            Loggable.Error(
-                "[balance]",
-                "[END] Submission failed.\n\nPaymentMethod $paymentMethodRef missing full PAN",
-                null,
                 failureAttrs.logAttrs.all
             )
         )

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedButton
@@ -27,8 +26,8 @@ import com.joinforage.forage.android.core.ui.element.state.ElementState
 
 @Composable
 fun PINEntryScreen(
-    paymentMethodRef: String?,
-    onSubmitButtonClicked: () -> Unit,
+    last4: String?,
+    onSubmitButtonClicked: (() -> Unit)? = null,
     onBackButtonClicked: () -> Unit,
     withPinElementReference: (element: ForageVaultElement<ElementState>) -> Unit,
     onDeferButtonClicked: (() -> Unit)? = null,
@@ -36,12 +35,12 @@ fun PINEntryScreen(
 ) {
     ScreenWithBottomRow(
         mainContent = {
-            if (paymentMethodRef != null) {
+            if (last4 != null) {
                 Card {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Payment Method", fontWeight = FontWeight.SemiBold)
                         Text(
-                            "Ref: $paymentMethodRef",
+                            "Last 4: $last4",
                             modifier = Modifier.withTestId("pos_payment_method_ref_text")
                         )
                     }
@@ -56,21 +55,22 @@ fun PINEntryScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    OutlinedButton(
-                        onClick = onSubmitButtonClicked,
-                        modifier = Modifier.withTestId("pos_submit_button")
-                    ) {
-                        Text("Complete Now")
-                    }
-
-                    if (onDeferButtonClicked != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
+                    if (onSubmitButtonClicked != null) {
+                        OutlinedButton(
+                            onClick = onSubmitButtonClicked,
+                            modifier = Modifier.withTestId("pos_submit_button")
+                        ) {
+                            Text("Complete Now")
+                        }
+                    } else if (onDeferButtonClicked != null) {
                         Button(
                             onClick = onDeferButtonClicked,
                             modifier = Modifier.withTestId("pos_collect_pin_defer_button")
                         ) {
                             Text("Defer to Server")
                         }
+                    } else {
+                        Text("TODO: No submit or deferSubmit method passed")
                     }
                 }
 
@@ -94,7 +94,7 @@ fun PINEntryScreen(
         },
         bottomRowContent = {
             Button(onClick = onBackButtonClicked) {
-                if (paymentMethodRef != null) {
+                if (last4 != null) {
                     Text("Back")
                 } else {
                     Text("Try Again")
@@ -108,7 +108,7 @@ fun PINEntryScreen(
 @Composable
 fun PINEntryScreenPreview() {
     PINEntryScreen(
-        paymentMethodRef = "",
+        last4 = "",
         onSubmitButtonClicked = {},
         onBackButtonClicked = {},
         withPinElementReference = {}
