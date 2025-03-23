@@ -8,8 +8,10 @@ package com.joinforage.forage.android.pos.services.emvchip
  * @property track2Data Information from the second track of the card's magnetic stripe, which typically contains the PAN, expiration date, service code, and discretionary data.
  * @property type An instance of `CardholderInteractionType`, indicating the method of card entry, such as swipe, tap, insert, or manual entry.
  */
-interface CardholderInteraction {
-    val rawPan: String
-    val type: CardholderInteractionType
-    val track2Data: String?
+abstract class CardholderInteraction(
+    internal val rawPan: String,
+    val type: CardholderInteractionType,
+    internal val track2Data: String?
+) {
+    val last4: String = rawPan.takeLast(4)
 }

@@ -7,12 +7,13 @@ package com.joinforage.forage.android.pos.services.emvchip
  * through a magnetic stripe reader. It is not applicable for other interaction
  * types such as tap or insert.
  */
-data class MagSwipeInteraction(
-    override val track2Data: String
-) : CardholderInteraction {
-    override val rawPan: String = Track2Parser(track2Data).rawPan
-    override val type = CardholderInteractionType.MagSwipe
-}
+class MagSwipeInteraction(
+    track2Data: String
+) : CardholderInteraction(
+    track2Data = track2Data,
+    type = CardholderInteractionType.MagSwipe,
+    rawPan = Track2Parser(track2Data).rawPan
+)
 
 private class Track2Parser(track2Data: String) {
     val rawPan: String = parsePan(track2Data)
