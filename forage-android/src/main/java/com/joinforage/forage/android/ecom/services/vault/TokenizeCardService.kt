@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.ecom.services.vault
 
 import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.core.services.forageapi.engine.ForageErrorResponseException
 import com.joinforage.forage.android.core.services.forageapi.engine.HttpRequestFailedException
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
@@ -8,7 +9,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownTime
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.vault.errors.IErrorStrategy
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
-import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
 
 internal class TokenizeCardService(
     val logger: LogLogger,
@@ -43,10 +43,10 @@ internal class TokenizeCardService(
 internal class TokenizationErrorStrategy(private val logLogger: LogLogger) : IErrorStrategy {
     override suspend fun handleError(error: Throwable, cleanup: () -> Unit): ForageApiResponse<String> {
         return when (error) {
-            is PaymentMethodService.FailedToCreatePaymentMethodException -> {
+            is ForageErrorResponseException -> {
                 cleanup()
-                logLogger.e("[END] Failed to tokenize PaymentMethod.")
-                UnknownErrorApiResponse
+                logLogger.e("[END] Failed to tokenize PaymentMethod.", error)
+                ForageApiResponse.Failure(error.forageError)
             }
             is HttpRequestFailedException -> {
                 cleanup()
