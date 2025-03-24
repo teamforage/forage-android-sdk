@@ -17,7 +17,7 @@ internal fun JSONObject.hasNonNull(fieldName: String): Boolean {
     return has(fieldName) && !isNull(fieldName)
 }
 
-fun generateTraceId(): String {
+internal fun generateTraceId(): String {
     // Seed the random number generator with current time
     val random = Random(System.currentTimeMillis())
     val length = 14
