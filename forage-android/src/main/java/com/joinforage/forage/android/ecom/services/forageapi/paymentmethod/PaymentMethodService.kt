@@ -24,24 +24,17 @@ internal class PaymentMethodService(
 ),
     IPaymentMethodService {
 
-    class FailedToCreatePaymentMethodException(e: Exception) :
-        Exception("Failed to create payment method", e)
-
     override suspend fun createPaymentMethod(
         rawPan: String,
         customerId: String?,
         reusable: Boolean
-    ): PaymentMethodResponse = try {
-        engine.sendRequest(
-            PostEcomPaymentMethodRequest(
-                forageConfig,
-                traceId,
-                rawPan,
-                customerId,
-                reusable
-            )
-        ).let { PaymentMethodResponse(it) }
-    } catch (e: Exception) {
-        throw FailedToCreatePaymentMethodException(e)
-    }
+    ): PaymentMethodResponse = engine.sendRequest(
+        PostEcomPaymentMethodRequest(
+            forageConfig,
+            traceId,
+            rawPan,
+            customerId,
+            reusable
+        )
+    ).let { PaymentMethodResponse(it) }
 }
