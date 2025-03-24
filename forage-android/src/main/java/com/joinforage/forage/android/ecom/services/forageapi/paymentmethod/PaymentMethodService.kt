@@ -20,8 +20,9 @@ internal class PaymentMethodService(
 ) : FetchPaymentMethodService(
     forageConfig,
     traceId,
-    engine,
-), IPaymentMethodService {
+    engine
+),
+    IPaymentMethodService {
 
     class FailedToCreatePaymentMethodException(e: Exception) :
         Exception("Failed to create payment method", e)
