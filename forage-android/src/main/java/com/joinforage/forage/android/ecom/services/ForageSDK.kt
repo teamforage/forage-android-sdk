@@ -217,7 +217,7 @@ class ForageSDK {
             paymentMethodService = pmService,
             forageConfig = forageConfig,
             logLogger = logger
-        ).rawSubmit()
+        ).submit()
     }
 
     /**
