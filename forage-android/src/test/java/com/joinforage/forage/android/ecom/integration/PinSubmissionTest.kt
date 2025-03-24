@@ -32,8 +32,10 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 
+@Ignore("Require server credentials and this is a public repo")
 class PinSubmissionTest {
 
     private class TestPmRefProvider(private val pmRef: String) : IPmRefProvider {
@@ -41,9 +43,9 @@ class PinSubmissionTest {
     }
 
     companion object {
-        private val merchantRef = "2af38883c9"
-        private val username = "SoOTl8Gyq4xpDlQixd1moh0ffD02CaN3vnqUZou7"
-        private val password = "ITBZBYO9FDqaOyjFIWWvAogqbEG61kKFI7QA1lkJBNskBsOIxU3Ts9NQmf5d0Ou3t2KTxvNJbtcyai8hMNKVUgHcvrmo4EeLcd3Fz81zXDSgWZmJsd0wQ73fZJz1DN12"
+        private val merchantRef = "your_merchant_id"
+        private val username = "your_client_app_id"
+        private val password = "your_client_app_secret"
         private val pan = "6777 7777 7777 7777".filter { it.isDigit() }
         private val badPIN = "1234"
         private val goodPIN = pan.takeLast(4)
