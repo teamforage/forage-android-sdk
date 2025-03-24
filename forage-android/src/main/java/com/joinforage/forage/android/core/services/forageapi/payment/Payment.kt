@@ -99,7 +99,7 @@ data class Payment(
     val deliveryAddress: Address?,
     val description: String,
     val fundingType: String,
-    val isDelivery: Boolean,
+    val isDelivery: Boolean?,
     val merchant: String,
     val metadata: Map<String, String>?,
     val paymentMethodRef: String,
@@ -121,7 +121,11 @@ data class Payment(
         },
         description = jsonObject.getString("description"),
         fundingType = jsonObject.getString("funding_type"),
-        isDelivery = jsonObject.getBoolean("is_delivery"),
+        isDelivery = if (jsonObject.hasNonNull("is_delivery")) {
+            jsonObject.getBoolean("is_delivery")
+        } else {
+            null
+        },
         merchant = jsonObject.getString("merchant"),
         metadata = if (jsonObject.hasNonNull("metadata")) {
             jsonObject.getJSONObject("metadata").toMap()
