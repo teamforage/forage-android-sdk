@@ -17,7 +17,7 @@ import com.joinforage.forage.android.core.services.forageapi.polling.ForageError
  * list of error `code` and `message` pairs.
  *
  */
-data class ForageError(
+data class ForageError internal constructor(
     val httpStatusCode: Int,
     val code: String,
     val message: String,
