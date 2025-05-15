@@ -7,7 +7,6 @@ import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.errors.IErrorStrategy
 import com.joinforage.forage.android.core.services.vault.metrics.IMetricsRecorder
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
-import java.util.UUID
 
 internal class PinSubmission(
     private val vaultSubmitter: RosettaPinSubmitter,
@@ -28,11 +27,7 @@ internal class PinSubmission(
             throw UserIncompletePinException()
         }
 
-        val request = requestBuilder.buildRequest(
-            "${UUID.randomUUID()}",
-            traceId,
-            vaultSubmitter
-        )
+        val request = requestBuilder.buildRequest(traceId, vaultSubmitter)
 
         metricsRecorder.startVaultProxyMetric()
         val response = vaultSubmitter.submit(request)
