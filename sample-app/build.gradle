@@ -75,7 +75,10 @@ dependencies {
     // including Datadog v2 in forage-android continues to work.
     // That is, if our workaround fails, the presence of datadog v1
     // in the sample app along side datadog v2 should fail to build
-    implementation("com.datadoghq:dd-sdk-android:1.19.2")
+    // NOTE: we need to comment this out for PCI compliance since
+    // 1.19.2 has a vulnerability; let's keep this here in case
+    // we ever need to debug in the future
+//    implementation("com.datadoghq:dd-sdk-android:1.19.2")
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
