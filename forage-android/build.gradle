@@ -72,8 +72,13 @@ android {
     }
 }
 
+// NOTE: this workaround is only necessary to support different
+// major versions of Datadog. If we learn that all of our clients
+// are using Datadog 2.X.X, then we could theoritically drop this
+// extra gradle work; though we could need it again when a v3 major
+// comes around
 shadowAarDependencies {
-    targetAar.set("com.datadoghq:dd-sdk-android-logs:2.2.0")
+    targetAar.set("com.datadoghq:dd-sdk-android-logs:2.21.0")
     targetPackageName.set("com.datadog")
     destinationPackageName.set("com.joinforage.datadog")
 
@@ -101,14 +106,10 @@ shadowAarDependencies {
      * implementation configuration
      */
     subDependencies.set([
-            "androidx.annotation:annotation:1.1.0",
-            "androidx.collection:collection:1.1.0",
-            "androidx.work:work-runtime:2.8.1",
-            "com.google.code.gson:gson:2.10.1",
-            "com.lyft.kronos:kronos-android:0.0.1-alpha11",
-            // TODO: CONSIDER UPGRADING TO V5
-            "com.squareup.okhttp3:okhttp:4.11.0",
-            "org.jetbrains.kotlin:kotlin-stdlib:1.8.10",
+        "com.google.code.gson:gson:2.10.1",
+        "com.lyft.kronos:kronos-android:0.0.1-alpha11",
+        "org.jetbrains.kotlin:kotlin-reflect:1.9.24",
+        "org.jetbrains.kotlin:kotlin-stdlib:1.9.24",
     ])
 }
 
@@ -118,6 +119,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
+    // NOTE: com.datadoghq:dd-sdk-android-logs:2.21.0 require this being
+    // 4.12.0, so we shouldn't bump to 5.X.X; 4.X.X are probably fine
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     testImplementation 'androidx.test:core-ktx:1.5.0'
 
