@@ -124,7 +124,6 @@ internal class SubmissionTestCaseFactory(
             errorStrategy = BaseErrorStrategy(logger),
             requestBuilder = object : ISubmitRequestBuilder {
                 override suspend fun buildRequest(
-                    idempotencyKey: String,
                     traceId: String,
                     vaultSubmitter: RosettaPinSubmitter
                 ) = object : ClientApiRequest.PostRequest(
@@ -132,7 +131,7 @@ internal class SubmissionTestCaseFactory(
                     forageConfig = forageConfig,
                     traceId = traceId,
                     apiVersion = Headers.ApiVersion.V_DEFAULT,
-                    headers = Headers(idempotencyKey = idempotencyKey),
+                    headers = Headers(idempotencyKey = "does not matter"),
                     body = JSONObject()
                 ) {}
             },

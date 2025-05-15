@@ -43,7 +43,6 @@ internal class EcomCapturePaymentSubmission(
 ) : ISubmitRequestBuilder {
 
     override suspend fun buildRequest(
-        idempotencyKey: String,
         traceId: String,
         vaultSubmitter: RosettaPinSubmitter
     ): ClientApiRequest {
@@ -55,7 +54,7 @@ internal class EcomCapturePaymentSubmission(
         return EcomRosettaCapturePaymentRequest(
             forageConfig = forageConfig,
             traceId = traceId,
-            idempotencyKey = idempotencyKey,
+            idempotencyKey = paymentRef,
             paymentMethod = vaultPm,
             paymentRef = paymentRef,
             rawPin = vaultSubmitter.plainTextPin

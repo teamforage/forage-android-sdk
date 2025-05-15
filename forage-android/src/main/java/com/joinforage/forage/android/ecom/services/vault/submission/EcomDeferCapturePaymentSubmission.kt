@@ -17,6 +17,7 @@ import com.joinforage.forage.android.core.services.vault.requests.RosettaDeferCa
 import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.ecom.services.vault.EcomBaseBodyBuilder
+import java.util.UUID
 
 private class EcomRosettaDeferCapturePaymentRequest(
     forageConfig: ForageConfig,
@@ -43,7 +44,6 @@ internal class EcomDeferCapturePaymentSubmission(
 ) : ISubmitRequestBuilder {
 
     override suspend fun buildRequest(
-        idempotencyKey: String,
         traceId: String,
         vaultSubmitter: RosettaPinSubmitter
     ): ClientApiRequest {
@@ -55,7 +55,7 @@ internal class EcomDeferCapturePaymentSubmission(
         return EcomRosettaDeferCapturePaymentRequest(
             forageConfig = forageConfig,
             traceId = traceId,
-            idempotencyKey = idempotencyKey,
+            idempotencyKey = UUID.randomUUID().toString(),
             paymentMethod = vaultPm,
             paymentRef = paymentRef,
             rawPin = vaultSubmitter.plainTextPin
