@@ -100,7 +100,7 @@ internal interface EditTextElement {
  * * [POS Terminal Android Quickstart](https://docs.joinforage.app/docs/forage-terminal-android)
  * * [Guide to styling Forage Android Elements](https://docs.joinforage.app/docs/forage-android-styling-guide)
  */
-interface ForageElement<T : ElementState> {
+interface ForageElement<out T : ElementState> {
     var typeface: Typeface?
 
     /**
