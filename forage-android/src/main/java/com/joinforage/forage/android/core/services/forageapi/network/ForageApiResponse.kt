@@ -10,6 +10,27 @@ import com.joinforage.forage.android.core.services.forageapi.polling.ForageError
 internal val UnknownErrorApiResponse =
     ForageApiResponse.Failure(500, "unknown_server_error", "Unknown Server Error")
 
+internal val UnknownTimeoutErrorResponse =
+    ForageApiResponse.Failure(504, "timeout_error", "An upstream service timed out. Try again later.")
+
+internal val IncompletePinError = ForageApiResponse.Failure(
+    400,
+    "user_error",
+    "Invalid EBT Card PIN entered. Please enter your 4-digit PIN."
+)
+
+internal fun PaymentMethodErrorResponse(paymentMethodRef: String) = ForageApiResponse.Failure(
+    500,
+    "server_error",
+    "Failed to fetch payment method $paymentMethodRef."
+)
+
+internal fun PaymentErrorResponse(paymentRef: String) = ForageApiResponse.Failure(
+    500,
+    "server_error",
+    "Failed to fetch payment $paymentRef."
+)
+
 /**
  * A model that represents the possible types of responses from the Forage API.
  */
@@ -106,9 +127,6 @@ sealed class ForageApiResponse<out T> {
 
         internal constructor(httpStatusCode: Int, code: String, message: String, details: ForageErrorDetails? = null) :
             this(ForageError(httpStatusCode, code, message, details))
-
-        internal constructor(httpStatusCode: Int, jsonString: String) :
-            this(ForageError(httpStatusCode, jsonString))
 
         override fun toString(): String = error.toString()
     }

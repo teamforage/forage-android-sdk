@@ -14,6 +14,7 @@ class PaymentMethodModelTests {
         val type = "ebt"
         val card = EbtCard(
             last4 = "4201",
+            number = null,
             token = "moss123",
             fingerprint = "fingerprint1234",
             usState = null
