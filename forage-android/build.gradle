@@ -110,6 +110,7 @@ shadowAarDependencies {
         "com.lyft.kronos:kronos-android:0.0.1-alpha11",
         "org.jetbrains.kotlin:kotlin-reflect:1.9.24",
         "org.jetbrains.kotlin:kotlin-stdlib:1.9.24",
+        "androidx.work:work-runtime:2.8.1",
     ])
 }
 
