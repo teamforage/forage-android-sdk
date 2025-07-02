@@ -62,7 +62,7 @@ class FlowCreatePaymentViewModel @Inject constructor(
         _ebtCashPaymentRefResult.value = paymentRef
     }
 
-    fun submitSnapAmount(amount: Long) = viewModelScope.launch {
+    fun submitSnapAmount(amount: String) = viewModelScope.launch {
         _isLoading.value = true
 
         repository.createPayment(
@@ -82,7 +82,7 @@ class FlowCreatePaymentViewModel @Inject constructor(
         }
     }
 
-    fun submitEbtCashAmount(amount: Long) = viewModelScope.launch {
+    fun submitEbtCashAmount(amount: String) = viewModelScope.launch {
         _isLoading.value = true
 
         repository.createPayment(
@@ -103,7 +103,7 @@ class FlowCreatePaymentViewModel @Inject constructor(
     }
 
     companion object {
-        private val FAKE_ADDRESS = Address(
+        internal val FAKE_ADDRESS = Address(
             city = "Los Angeles",
             country = "United States",
             line1 = "Street",
