@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_navigation_complete_flow_to_FlowTokenizeFragment"
             app:destination="@id/navigation_flow_tokenize" />
+        <action
+            android:id="@+id/action_navigation_complete_flow_to_FlowTokenizeFragment_sheet"
+            app:destination="@id/navigation_flow_tokenize_sheet" />
     </fragment>
 
     <fragment
@@ -38,6 +41,21 @@
         <action
             android:id="@+id/action_navigation_flow_tokenize_to_flowBalanceFragment"
             app:destination="@id/flowBalanceFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_flow_tokenize_sheet"
+        android:name="com.joinforage.android.example.ui.complete.flow.tokenize.FlowTokenizePaymentSheetFragment"
+        android:label="@string/title_tokenize_credit"
+        tools:layout="@layout/fragment_flow_tokenize_sheet">
+
+        <argument
+            android:name="bearer"
+            app:argType="string" />
+
+        <argument
+            android:name="merchantAccount"
+            app:argType="string" />
     </fragment>
 
     <fragment
