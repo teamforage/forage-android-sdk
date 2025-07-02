@@ -1,15 +1,18 @@
 <resources>
     <string name="app_name">forage-android</string>
-    <string name="title_tokenize_card">Tokenize</string>
+    <string name="title_tokenize_card">Tokenize Card</string>
     <string name="title_dashboard">Catalog</string>
     <string name="title_balance">Balance</string>
     <string name="title_setup">Setup Authentication</string>
     <string name="title_tokenize_ebt">Tokenize EBT Card</string>
+    <string name="title_tokenize_credit">Tokenize HSA/FSA Card</string>
     <string name="title_check_balance">Check Balance</string>
     <string name="title_create_payment">Create A Payment</string>
     <string name="title_capture_payment">Capture Payment</string>
     <string name="submit_button">Submit</string>
     <string name="next_button">Next</string>
+    <string name="enter_ebt_button">Enter EBT</string>
+    <string name="enter_credit_button">Enter HSA/FSA</string>
     <string name="check_balance_button">Check Balance</string>
     <string name="catalog_first_forage_edit_text_hint">OutlinedBox</string>
     <string name="catalog_second_forage_edit_text_hint">FilledBox</string>
@@ -17,12 +20,17 @@
     <string name="catalog_fourth_forage_edit_text_hint">EBT card number</string>
     <string name="tokenize_forage_edit_text_hint">PAN</string>
     <string name="bearer">Bearer</string>
-    <string name="bearer_token">AbCaccesstokenXyz</string>
     <string name="merchant_account_hint">Merchant Account</string>
-    <string name="merchant_account">8000009</string>
     <string name="pin">PIN</string>
     <string name="capture_snap">Capture SNAP</string>
     <string name="defer_capture_snap">Defer SNAP</string>
     <string name="capture_cash">Capture EBT Cash</string>
     <string name="defer_capture_cash">Defer EBT Cash</string>
+    <string name="cardholder_name_state">cardholderName: %1$s</string>
+    <string name="card_number_state">cardNumber: %1$s</string>
+    <string name="expiration_state">expiration: %1$s</string>
+    <string name="security_code_state">securityCode: %1$s</string>
+    <string name="zip_code_state">zipCode: %1$s</string>
+    <string name="combined_state">combined: %1$s</string>
+    <string name="payment_method_ref">payment method ref: %1$s</string>
 </resources>
