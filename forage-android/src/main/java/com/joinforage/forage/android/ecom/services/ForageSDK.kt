@@ -135,7 +135,7 @@ class ForageSDK {
         return tokenizeService.tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
-            reusable = reusable ?: true
+            reusable = reusable
         )
     }
 
