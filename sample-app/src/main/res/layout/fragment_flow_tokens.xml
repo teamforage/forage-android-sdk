@@ -50,14 +50,24 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/nextButton"
+            android:id="@+id/enterCreditButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="64dp"
-            android:text="@string/next_button"
+            android:text="@string/enter_credit_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/enterEbtButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="64dp"
+            android:text="@string/enter_ebt_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/enterCreditButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

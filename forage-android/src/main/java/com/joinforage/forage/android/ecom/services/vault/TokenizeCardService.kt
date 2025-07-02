@@ -8,6 +8,7 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownErro
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.vault.errors.IErrorStrategy
+import com.joinforage.forage.android.ecom.services.CreditCardParams
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
 
 internal class TokenizeCardService(
@@ -29,12 +30,23 @@ internal class TokenizeCardService(
         return ForageApiResponse.Success(response.json)
     }
 
+    private suspend fun _tokenizeCreditCard(creditCardParams: CreditCardParams): ForageApiResponse<String> {
+        val response = pmService.createCreditPaymentMethod(creditCardParams)
+        return ForageApiResponse.Success(response.json)
+    }
+
     suspend fun tokenizeCard(
         cardNumber: String,
         customerId: String?,
         reusable: Boolean
     ): ForageApiResponse<String> = try {
         _tokenizeCard(cardNumber, customerId, reusable)
+    } catch (e: Throwable) {
+        TokenizationErrorStrategy(logger).handleError(e) { /* Do Nothing ... */ }
+    }
+
+    suspend fun tokenizeCreditCard(creditCardParams: CreditCardParams): ForageApiResponse<String> = try {
+        _tokenizeCreditCard(creditCardParams)
     } catch (e: Throwable) {
         TokenizationErrorStrategy(logger).handleError(e) { /* Do Nothing ... */ }
     }

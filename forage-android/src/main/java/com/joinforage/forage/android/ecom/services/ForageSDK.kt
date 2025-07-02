@@ -13,6 +13,7 @@ import com.joinforage.forage.android.ecom.services.vault.submission.EcomCaptureP
 import com.joinforage.forage.android.ecom.services.vault.submission.EcomDeferCapturePaymentSubmission
 import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
+import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet
 
 /**
  * The entry point to the Forage SDK.
@@ -137,6 +138,38 @@ class ForageSDK {
             customerId = customerId,
             reusable = reusable
         )
+    }
+
+    suspend fun tokenizeCreditCard(params: TokenizeCreditCardParams): ForageApiResponse<String> {
+        val forageConfig = _getForageConfigOrThrow(params.foragePaymentSheet.getForageConfig())
+        val logger = EcomDatadogLoggerFactory(
+            params.foragePaymentSheet.context,
+            forageConfig,
+            params.customerId
+        ).makeLogger()
+        val pmService = PaymentMethodService(
+            forageConfig,
+            logger.traceId,
+            httpEngine
+        )
+        val tokenizeService = TokenizeCardService(
+            logger,
+            forageConfig,
+            pmService
+        )
+        val (expirationMM, expirationYYYY) = params.foragePaymentSheet.expiration
+        val creditCardParams = CreditCardParams(
+            cardNumber = params.foragePaymentSheet.cardNumber,
+            customerId = params.customerId,
+            reusable = params.reusable,
+            name = params.foragePaymentSheet.cardholderName,
+            zipCode = params.foragePaymentSheet.zipCode,
+            expirationMM = expirationMM,
+            expirationYYYY = expirationYYYY,
+            cvc = params.foragePaymentSheet.securityCode,
+            isHsaFsa = true
+        )
+        return tokenizeService.tokenizeCreditCard(creditCardParams)
     }
 
     /**
@@ -423,6 +456,24 @@ class ForageSDK {
  */
 data class TokenizeEBTCardParams(
     val foragePanEditText: ForagePANEditText,
+    val customerId: String? = null,
+    val reusable: Boolean = true
+)
+
+data class CreditCardParams(
+    val cardNumber: String,
+    val customerId: String? = null,
+    val reusable: Boolean = true,
+    val name: String,
+    val zipCode: String,
+    val expirationMM: Int,
+    val expirationYYYY: Int,
+    val cvc: String,
+    val isHsaFsa: Boolean
+)
+
+data class TokenizeCreditCardParams(
+    val foragePaymentSheet: ForagePaymentSheet,
     val customerId: String? = null,
     val reusable: Boolean = true
 )
