@@ -188,11 +188,6 @@ abstract class ForagePanElement @JvmOverloads constructor(
             }
     }
 
-    private val forageConfigManager = ForageConfigManager {
-            forageConfig ->
-        initWithForageConfig(forageConfig)
-    }
-
     /**
      * Sets the necessary [ForageConfig] configuration properties for a ForageElement.
      * **[setForageConfig] must be called before any other methods can be executed on the Element.**
@@ -212,10 +207,14 @@ abstract class ForagePanElement @JvmOverloads constructor(
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
     override fun setForageConfig(forageConfig: ForageConfig) {
-        forageConfigManager.forageConfig = forageConfig
+        if (this._forageConfig == null) {
+            initWithForageConfig(forageConfig)
+        }
+        this._forageConfig = forageConfig
     }
 
-    internal fun getForageConfig() = forageConfigManager.forageConfig
+    private var _forageConfig: ForageConfig? = null
+    internal fun getForageConfig() = _forageConfig
 
     private fun initWithForageConfig(forageConfig: ForageConfig) {
         _SET_ONLY_inputState = if (EnvConfig.inProd(forageConfig)) {

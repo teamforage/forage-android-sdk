@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
-import com.joinforage.forage.android.core.ui.element.ForageConfigManager
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
 
 /**
@@ -45,8 +44,6 @@ class ForagePINEditText @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : ForagePinElement(context, attrs, defStyleAttr), DynamicEnvElement {
 
-    private val forageConfigManager = ForageConfigManager {}
-
     /**
      * Sets the necessary [ForageConfig] configuration properties for a [ForagePINEditText].
      * **[setForageConfig] must be called before any other methods can be executed on the Element.**
@@ -65,9 +62,8 @@ class ForagePINEditText @JvmOverloads constructor(
      *
      * @param forageConfig A [ForageConfig] instance that specifies a `merchantId` and `sessionToken`.
      */
-    override fun setForageConfig(forageConfig: ForageConfig) {
-        forageConfigManager.forageConfig = forageConfig
-    }
+    override fun setForageConfig(forageConfig: ForageConfig) { this._forageConfig = forageConfig }
 
-    internal fun getForageConfig() = forageConfigManager.forageConfig
+    private var _forageConfig: ForageConfig? = null
+    internal fun getForageConfig() = _forageConfig
 }
