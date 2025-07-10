@@ -19,7 +19,8 @@ class FlowTokensFragment : BaseFragment<FragmentFlowTokensBinding>(R.layout.frag
         binding.nextButton.apply {
             setOnClickListener {
                 findNavController().navigate(
-                    viewModel.getNextDestination()
+                    R.id.action_navigation_complete_flow_to_FlowTokenizeFragment,
+                    viewModel.getBundle()
                 )
             }
         }

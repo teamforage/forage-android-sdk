@@ -176,7 +176,7 @@ abstract class ForagePanElement @JvmOverloads constructor(
 
                         // make the keyboard digits only instead of QWERTY. It is
                         // necessary to declare that we accept digits and " " so
-                        // that the app does not crash when the PanFormatTextWatcher
+                        // that the app does not crash when the FormatPanTextWatcher
                         // programmatically inserts spaces. By default it disallows
                         // whitespace
                         inputType = InputType.TYPE_CLASS_NUMBER
