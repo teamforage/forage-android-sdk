@@ -2,17 +2,23 @@ package com.joinforage.forage.android.core.services.telemetry
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
+import org.json.JSONException
 import org.json.JSONObject
 
 internal fun extractTenantIdFromToken(
     base64Util: IBase64Util,
     forageConfig: ForageConfig
-): String {
+): String? {
     val token = forageConfig.sessionToken
     val parts = token.split(".")
     val firstPart = parts[0].substringAfter("_")
     val decodedFirstPart = String(base64Util.decode(firstPart))
-    val jsonObject = JSONObject(decodedFirstPart)
+    val jsonObject: JSONObject
+    try {
+        jsonObject = JSONObject(decodedFirstPart)
+    } catch (e: JSONException) {
+        return null
+    }
     return jsonObject.getInt("t").toString() // the "t" key is the tenant id
 }
 
