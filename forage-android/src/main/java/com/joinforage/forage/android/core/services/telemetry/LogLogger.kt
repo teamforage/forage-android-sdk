@@ -8,12 +8,16 @@ internal fun extractTenantIdFromToken(
     base64Util: IBase64Util,
     forageConfig: ForageConfig
 ): String {
-    val token = forageConfig.sessionToken
-    val parts = token.split(".")
-    val firstPart = parts[0].substringAfter("_")
-    val decodedFirstPart = String(base64Util.decode(firstPart))
-    val jsonObject = JSONObject(decodedFirstPart)
-    return jsonObject.getInt("t").toString() // the "t" key is the tenant id
+    try {
+        val token = forageConfig.sessionToken
+        val parts = token.split(".")
+        val firstPart = parts[0].substringAfter("_")
+        val decodedFirstPart = String(base64Util.decode(firstPart))
+        val jsonObject = JSONObject(decodedFirstPart)
+        return jsonObject.getInt("t").toString() // the "t" key is the tenant id
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Bad session token", e)
+    }
 }
 
 internal abstract class LogLogger(
