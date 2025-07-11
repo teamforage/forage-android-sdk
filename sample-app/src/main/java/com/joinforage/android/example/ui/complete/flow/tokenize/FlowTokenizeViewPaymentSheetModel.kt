@@ -15,11 +15,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FlowTokenizeViewModelSheet @Inject constructor(
+class FlowTokenizeViewPaymentSheetModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val TAG = FlowTokenizeViewModelSheet::class.java.simpleName
+    private val TAG = FlowTokenizeViewPaymentSheetModel::class.java.simpleName
 
     val args = FlowTokenizeFragmentArgs.fromSavedStateHandle(savedStateHandle)
 

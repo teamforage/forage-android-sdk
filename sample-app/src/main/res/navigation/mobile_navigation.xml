@@ -45,7 +45,7 @@
 
     <fragment
         android:id="@+id/navigation_flow_tokenize_sheet"
-        android:name="com.joinforage.android.example.ui.complete.flow.tokenize.FlowTokenizeFragmentSheet"
+        android:name="com.joinforage.android.example.ui.complete.flow.tokenize.FlowTokenizePaymentSheetFragment"
         android:label="@string/title_tokenize_credit"
         tools:layout="@layout/fragment_flow_tokenize_sheet">
 

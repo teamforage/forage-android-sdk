@@ -157,16 +157,16 @@ class ForageSDK {
             forageConfig,
             pmService
         )
-        val (expirationMM, expirationYYYY) = params.foragePaymentSheet.expiration
+        val (expirationMM, expirationYYYY) = params.foragePaymentSheet.expiration.value
         val creditCardParams = CreditCardParams(
-            cardNumber = params.foragePaymentSheet.cardNumber,
+            cardNumber = params.foragePaymentSheet.cardNumber.value,
             customerId = params.customerId,
             reusable = params.reusable,
-            name = params.foragePaymentSheet.cardholderName,
-            zipCode = params.foragePaymentSheet.zipCode,
+            name = params.foragePaymentSheet.cardholderName.value,
+            zipCode = params.foragePaymentSheet.zipCode.value,
             expirationMM = expirationMM,
             expirationYYYY = expirationYYYY,
-            cvc = params.foragePaymentSheet.securityCode,
+            cvc = params.foragePaymentSheet.securityCode.value,
             isHsaFsa = true
         )
         return tokenizeService.tokenizeCreditCard(creditCardParams)

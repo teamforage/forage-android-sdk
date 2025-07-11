@@ -8,12 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.joinforage.android.example.databinding.FragmentFlowTokenizeSheetBinding
 import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet
+import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet.ForagePaymentSheetElementState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FlowTokenizeFragmentSheet : Fragment() {
+class FlowTokenizePaymentSheetFragment : Fragment() {
 
-    private val viewModel: FlowTokenizeViewModelSheet by viewModels()
+    private val viewModel: FlowTokenizeViewPaymentSheetModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,6 +55,17 @@ class FlowTokenizeFragmentSheet : Fragment() {
                 binding.errorResponse.text = e.toString()
             }
         }
+
+        fun handlePaymentSheetChange(elementState: ForagePaymentSheetElementState) {
+            val b: ForagePaymentSheet = elementState.getForagePaymentSheet()
+            val a = 0
+//            isFocused.text = "isFocused: ${state.isFocused}"
+//            isComplete.text = "isComplete: ${state.isComplete}"
+//            isEmpty.text = "isEmpty: ${state.isEmpty}"
+//            isValid.text = "isValid: ${state.isValid}"
+        }
+
+        binding.tokenizeForagePaymentSheet.setOnChangeEventListener(::handlePaymentSheetChange)
 
         return binding.root
     }
