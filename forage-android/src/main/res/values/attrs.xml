@@ -56,4 +56,11 @@
         <!-- {@deprecated hintTextColor customization for ForagePINEditText elements is no longer supported} -->
         <attr name="hintTextColor" format="color" />
     </declare-styleable>
+
+    <!-- Theme attribute for the default style for the ForagePaymentSheet component. -->
+    <attr name="foragePaymentSheetStyle" format="reference" />
+
+    <!-- Style attributes for the ForagePaymentSheet component. -->
+    <declare-styleable name="ForagePaymentSheet">
+    </declare-styleable>
 </resources>

@@ -16,10 +16,19 @@ class FlowTokensFragment : BaseFragment<FragmentFlowTokensBinding>(R.layout.frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.nextButton.apply {
+        binding.enterEbtButton.apply {
             setOnClickListener {
                 findNavController().navigate(
                     R.id.action_navigation_complete_flow_to_FlowTokenizeFragment,
+                    viewModel.getBundle()
+                )
+            }
+        }
+
+        binding.enterCreditButton.apply {
+            setOnClickListener {
+                findNavController().navigate(
+                    R.id.action_navigation_complete_flow_to_FlowTokenizeFragment_sheet,
                     viewModel.getBundle()
                 )
             }

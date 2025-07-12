@@ -29,7 +29,15 @@ data class PaymentMethod(
         } else {
             null
         },
-        card = EbtCard(jsonObject.getJSONObject("card")),
+        card = jsonObject.getString("type").let { type ->
+            jsonObject.getJSONObject("card").let { cardJson ->
+                when (type) {
+                    "ebt" -> EbtCard(cardJson)
+                    "credit" -> StripeCreditDebitCard(cardJson)
+                    else -> throw IllegalStateException(type)
+                }
+            }
+        },
         reusable = jsonObject.optBoolean("reusable", true)
     )
 }
