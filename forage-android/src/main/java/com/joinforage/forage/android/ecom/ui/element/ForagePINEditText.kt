@@ -5,23 +5,26 @@ import android.util.AttributeSet
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
+import com.joinforage.forage.android.core.ui.element.ForageElement
 import com.joinforage.forage.android.core.ui.element.ForagePinElement
+import com.joinforage.forage.android.ecom.services.ForageSDK
 
 /**
- * A [ForageElement][com.joinforage.forage.android.core.ui.element.ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
- * the [ForageSDK][com.joinforage.forage.android.ecom.services.ForageSDK] methods that:
- * * [Check a card's balance][com.joinforage.forage.android.ecom.services.ForageSDK.checkBalance]
- * * [Collect a card PIN to defer payment capture to the server][com.joinforage.forage.android.ecom.services.ForageSDK.deferPaymentCapture]
- * * [Capture a payment immediately][com.joinforage.forage.android.ecom.services.ForageSDK.capturePayment]
+ * A [ForageElement] that securely collects a card PIN. You need a [ForagePINEditText] to call
+ * the [ForageSDK] methods to:
+ * * [Check a card's balance][ForageSDK.checkBalance]
+ * * [Collect a card PIN to defer payment capture to the server][ForageSDK.deferPaymentCapture]
+ * * [Capture a payment immediately][ForageSDK.capturePayment]
  * ```xml
  * <!-- Example forage_pin_component.xml -->
  * <?xml version="1.0" encoding="utf-8"?>
- * <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ * <androidx.constraintlayout.widget.ConstraintLayout
+ *     xmlns:android="http://schemas.android.com/apk/res/android"
  *     xmlns:app="http://schemas.android.com/apk/res-auto"
  *     android:layout_width="match_parent"
  *     android:layout_height="match_parent">
  *
- *     <com.joinforage.forage.android.ui.ForagePINEditText
+ *     <com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
  *         android:id="@+id/foragePinEditText"
  *         android:layout_width="0dp"
  *         android:layout_height="wrap_content"
