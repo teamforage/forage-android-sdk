@@ -29,12 +29,23 @@ internal class TokenizeCardService(
         return ForageApiResponse.Success(response.json)
     }
 
+    private suspend fun _tokenizeCreditCard(creditCardParams: CreditCardParams): ForageApiResponse<String> {
+        val response = pmService.createCreditPaymentMethod(creditCardParams)
+        return ForageApiResponse.Success(response.json)
+    }
+
     suspend fun tokenizeCard(
         cardNumber: String,
         customerId: String?,
         reusable: Boolean
     ): ForageApiResponse<String> = try {
         _tokenizeCard(cardNumber, customerId, reusable)
+    } catch (e: Throwable) {
+        TokenizationErrorStrategy(logger).handleError(e) { /* Do Nothing ... */ }
+    }
+
+    suspend fun tokenizeCreditCard(creditCardParams: CreditCardParams): ForageApiResponse<String> = try {
+        _tokenizeCreditCard(creditCardParams)
     } catch (e: Throwable) {
         TokenizationErrorStrategy(logger).handleError(e) { /* Do Nothing ... */ }
     }
@@ -64,3 +75,14 @@ internal class TokenizationErrorStrategy(private val logLogger: LogLogger) : IEr
         }
     }
 }
+
+internal data class CreditCardParams(
+    val cardNumber: String,
+    val customerId: String? = null,
+    val reusable: Boolean = true,
+    val name: String,
+    val zipCode: String,
+    val expiration: Pair<Int, Int>,
+    val cvc: String,
+    val isHsaFsa: Boolean
+)
