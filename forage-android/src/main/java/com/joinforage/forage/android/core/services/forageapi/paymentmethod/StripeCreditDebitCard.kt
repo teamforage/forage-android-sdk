@@ -7,7 +7,6 @@ import org.json.JSONObject
  * @property brand
  * @property expMonth
  * @property expYear
- * @property bin
  * @property isHsaFsa
  * @property pspCustomerId
  * @property paymentMethodId
