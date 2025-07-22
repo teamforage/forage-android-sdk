@@ -28,6 +28,13 @@ ext {
             'https://github.com/teamforage/forage-android-sdk/tree/main'
 }
 
+configurations {
+    all {
+        // Sidestep "Error: commons-logging defines classes that conflict with classes now provided by Android."
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+}
+
 android {
     namespace 'com.joinforage.forage.android'
     compileSdk 33
@@ -123,6 +130,7 @@ dependencies {
     // NOTE: com.datadoghq:dd-sdk-android-logs:2.21.0 require this being
     // 4.12.0, so we shouldn't bump to 5.X.X; 4.X.X are probably fine
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation 'commons-validator:commons-validator:1.10.0'
 
     testImplementation 'androidx.test:core-ktx:1.5.0'
 
