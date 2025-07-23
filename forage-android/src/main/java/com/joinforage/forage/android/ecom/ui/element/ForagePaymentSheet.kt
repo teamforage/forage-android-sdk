@@ -56,11 +56,11 @@ class ForagePaymentSheet @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr),
     ForageElement<ForagePaymentSheet.CombinedElementState>,
     DynamicEnvElement {
-    private val cardholderNameEditText: TextInputEditText
-    private val cardNumberEditText: TextInputEditText
-    private val expirationEditText: TextInputEditText
-    private val securityCodeEditText: TextInputEditText
-    private val zipCodeEditText: TextInputEditText
+    internal val cardholderNameEditText: TextInputEditText
+    internal val cardNumberEditText: TextInputEditText
+    internal val expirationEditText: TextInputEditText
+    internal val securityCodeEditText: TextInputEditText
+    internal val zipCodeEditText: TextInputEditText
     private val allEditText: Iterable<TextInputEditText>
 
     private var onChangeEventListener: StatefulElementListener<CombinedElementState>? = null
