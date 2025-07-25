@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ebt_card_validation_error">"Invalid PAN"</string>
+    <string name="cardholder_name_hint">Cardholder Name*</string>
+    <string name="card_number_hint">Card number*</string>
+    <string name="expiration_hint">MM/YY*</string>
+    <string name="security_code_hint">CVC*</string>
+    <string name="zip_code_hint">Zip code*</string>
+    <string name="powered_by_forage">Powered by Forage</string>
 </resources>
