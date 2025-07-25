@@ -292,7 +292,7 @@ class ForagePaymentSheetTest {
     }
 
     @Test
-    fun `Verify get+set ForageConfig`() {
+    fun `Verify ForageConfig accessors`() {
         val forageConfig = ForageConfig(TEST_MERCHANT_ID, EXPIRED_SANDBOX_SESSION_TOKEN)
         foragePaymentSheet.setForageConfig(forageConfig)
         assertThat(foragePaymentSheet.getForageConfig()).isEqualTo(forageConfig)
