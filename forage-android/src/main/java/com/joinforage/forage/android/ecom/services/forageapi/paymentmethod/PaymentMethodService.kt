@@ -5,10 +5,13 @@ import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.FetchPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.IFetchPaymentMethodService
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethodResponse
+import com.joinforage.forage.android.ecom.services.forageapi.requests.PostEcomCreditPaymentMethodRequest
 import com.joinforage.forage.android.ecom.services.forageapi.requests.PostEcomPaymentMethodRequest
+import com.joinforage.forage.android.ecom.services.vault.CreditCardParams
 
 internal interface ICreatePaymentMethodService {
     suspend fun createPaymentMethod(rawPan: String, customerId: String?, reusable: Boolean): PaymentMethodResponse
+    suspend fun createCreditPaymentMethod(creditCardParams: CreditCardParams): PaymentMethodResponse
 }
 
 internal interface IPaymentMethodService : IFetchPaymentMethodService, ICreatePaymentMethodService
@@ -37,4 +40,13 @@ internal class PaymentMethodService(
             reusable
         )
     ).let { PaymentMethodResponse(it) }
+
+    override suspend fun createCreditPaymentMethod(creditCardParams: CreditCardParams): PaymentMethodResponse =
+        engine.sendRequest(
+            PostEcomCreditPaymentMethodRequest(
+                forageConfig,
+                traceId,
+                creditCardParams
+            )
+        ).let { PaymentMethodResponse(it) }
 }
