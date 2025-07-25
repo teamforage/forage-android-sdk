@@ -261,8 +261,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify combined state non-empty`() {
-        Espresso.onView(ViewMatchers.withId(R.id.cardholderNameEditText))
-            .perform(ViewActions.typeText("J"))
+        foragePaymentSheet.cardholderNameValue = "John Doe"
         with(foragePaymentSheet.getElementState()) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isFalse
@@ -273,16 +272,11 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify combined state complete`() {
-        Espresso.onView(ViewMatchers.withId(R.id.cardholderNameEditText))
-            .perform(ViewActions.typeText("J"))
-        Espresso.onView(ViewMatchers.withId(R.id.cardNumberEditText))
-            .perform(forceTypeText(TEST_HSA_FSA_CARD))
-        Espresso.onView(ViewMatchers.withId(R.id.expirationEditText))
-            .perform(forceTypeText("1234"))
-        Espresso.onView(ViewMatchers.withId(R.id.securityCodeEditText))
-            .perform(forceTypeText("123"))
-        Espresso.onView(ViewMatchers.withId(R.id.zipCodeEditText))
-            .perform(forceTypeText("12345"))
+        foragePaymentSheet.cardholderNameValue = "John Doe"
+        foragePaymentSheet.cardNumberValue = TEST_HSA_FSA_CARD
+        foragePaymentSheet.expirationValueAsString = "1234"
+        foragePaymentSheet.securityCodeValue = "123"
+        foragePaymentSheet.zipCodeValue = "12345"
         with(foragePaymentSheet.getElementState()) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -301,7 +295,7 @@ class ForagePaymentSheetTest {
     @Test
     fun `Verify clearText`() {
         Espresso.onView(ViewMatchers.withId(R.id.cardholderNameEditText))
-            .perform(ViewActions.typeText("J"))
+            .perform(ViewActions.typeText("John Doe"))
         Espresso.onView(ViewMatchers.withId(R.id.cardNumberEditText))
             .perform(forceTypeText(TEST_HSA_FSA_CARD))
         Espresso.onView(ViewMatchers.withId(R.id.expirationEditText))

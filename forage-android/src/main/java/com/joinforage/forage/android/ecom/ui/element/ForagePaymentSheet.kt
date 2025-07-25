@@ -109,12 +109,22 @@ class ForagePaymentSheet @JvmOverloads constructor(
         zipCodeEditText.keyListener = DigitsKeyListener.getInstance("0123456789-")
     }
 
-    internal val cardholderNameValue: String get() = cardholderNameEditText.text.toString().trim()
-    internal val cardNumberValue: String get() = cardNumberEditText.text.toString().replace(" ", "")
-    internal val expirationValueAsString get() = expirationEditText.text.toString().trim()
+    internal var cardholderNameValue: String
+        get() = cardholderNameEditText.text.toString().trim()
+        set(value) = cardholderNameEditText.setText(value)
+    internal var cardNumberValue: String
+        get() = cardNumberEditText.text.toString().replace(" ", "")
+        set(value) = cardNumberEditText.setText(value)
+    internal var expirationValueAsString
+        get() = expirationEditText.text.toString().trim()
+        set(value) = expirationEditText.setText(value)
     internal val expirationValue: Pair<Int, Int> get() = parseExpirationValue(expirationValueAsString)
-    internal val securityCodeValue: String get() = securityCodeEditText.text.toString().trim()
-    internal val zipCodeValue get() = zipCodeEditText.text.toString().trim()
+    internal var securityCodeValue: String
+        get() = securityCodeEditText.text.toString().trim()
+        set(value) = securityCodeEditText.setText(value)
+    internal var zipCodeValue
+        get() = zipCodeEditText.text.toString().trim()
+        set(value) = zipCodeEditText.setText(value)
 
     override fun setForageConfig(forageConfig: ForageConfig) {
         this._forageConfig = forageConfig
