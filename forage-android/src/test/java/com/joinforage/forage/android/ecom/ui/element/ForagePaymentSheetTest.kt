@@ -370,6 +370,15 @@ class ForagePaymentSheetTest {
         assertThat(changeCount).isEqualTo(36)
     }
 
+    @Test
+    fun `Verify ElementStateAdapter toString`() {
+        val fourValueString = foragePaymentSheet.getElementState().toString()
+        val fourValueList = fourValueString.split(' ')
+        assertThat(fourValueList).hasSizeGreaterThanOrEqualTo(4)
+        for (booleanExpected in fourValueList.subList(0, 3))
+            assertThat(booleanExpected.toBoolean().toString()).isEqualTo(booleanExpected)
+    }
+
     //
     // For an EditText with inputType="number", Espresso's typeText() doesn't have any impact
     // when run on Robolectric.
