@@ -3,6 +3,7 @@ package com.joinforage.forage.android.core.services
 import com.joinforage.forage.android.BuildConfig
 
 internal enum class EnvOption(val value: String) {
+    MOCK("mock"),
     LOCAL("local"),
     DEV("dev"),
     STAGING("staging"),
@@ -10,6 +11,9 @@ internal enum class EnvOption(val value: String) {
     CERT("cert"),
     PROD("prod")
 }
+
+// Set when actually using a MockWebServer
+internal var mockBaseUrl = "http://localhost"
 
 internal sealed class EnvConfig(
     val FLAVOR: EnvOption,
@@ -21,6 +25,13 @@ internal sealed class EnvConfig(
     // one spot (here) to reduce the pieces of source code have to couple
     // to BuildConfig.
     val PUBLISH_VERSION: String = BuildConfig.PUBLISH_VERSION
+
+    object Mock : EnvConfig(
+        FLAVOR = EnvOption.MOCK,
+        apiBaseUrl = mockBaseUrl,
+        vaultBaseUrl = mockBaseUrl,
+        ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
+    )
 
     object Local : EnvConfig(
         FLAVOR = EnvOption.LOCAL,
@@ -71,6 +82,7 @@ internal sealed class EnvConfig(
             if (parts.isEmpty()) return Sandbox
 
             return when (parts[0].lowercase()) {
+                "mock" -> Mock
                 "local" -> Local
                 "dev" -> Dev
                 "staging" -> Staging
