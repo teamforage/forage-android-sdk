@@ -7,6 +7,8 @@ import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.BaseDatadogLoggerFactory
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.LogService
+import javax.inject.Inject
+import javax.inject.Named
 
 internal class EcomDatadogLoggerFactory(
     context: Context,
@@ -23,4 +25,11 @@ internal class EcomDatadogLoggerFactory(
         customerId = customerId
     ),
     "[${LogService.Ecom.logPrefix}-v${EnvConfig.fromForageConfig(forageConfig).PUBLISH_VERSION}]"
-)
+) {
+    @Inject
+    constructor(
+        context: Context?,
+        forageConfig: ForageConfig,
+        @Named("customerId") customerId: String?
+    ) : this(context!!, forageConfig, customerId, generateTraceId())
+}

@@ -2,6 +2,7 @@ package com.joinforage.forage.android.ecom.integration
 import com.joinforage.forage.android.core.forageapi.getAccessToken
 import com.joinforage.forage.android.core.forageapi.getSessionToken
 import com.joinforage.forage.android.core.forageapi.payment.TestPaymentService
+import com.joinforage.forage.android.core.logger.InMemoryLogger
 import com.joinforage.forage.android.core.logger.LoggableAttributes
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
@@ -11,10 +12,14 @@ import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtBa
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.polling.ForageErrorDetails
 import com.joinforage.forage.android.core.services.generateTraceId
+import com.joinforage.forage.android.core.services.telemetry.LogAttributes
+import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.ecom.logger.EcomLoggableAttributesFactory
+import com.joinforage.forage.android.ecom.services.DaggerForageSDKTestComponent
+import com.joinforage.forage.android.ecom.services.ForageSDK
 import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,7 +57,7 @@ class MainIntegrationTest {
         private lateinit var payment: Payment
         private lateinit var failureAttrs: LoggableAttributes
         private lateinit var accessToken: String
-        private lateinit var submissionTestCaseFactory: SubmissionTestCaseFactory
+        private lateinit var logger: LogLogger
 
         @BeforeClass
         @JvmStatic
@@ -61,8 +66,9 @@ class MainIntegrationTest {
             accessToken = getAccessToken(username, password, env)
             val sessionToken = getSessionToken(accessToken, merchantRef)
             forageConfig = ForageConfig(merchantRef, sessionToken)
-            paymentMethodService = PaymentMethodService(forageConfig, traceId, httpEngine)
-            paymentService = TestPaymentService(ForageConfig(merchantRef, accessToken), traceId, httpEngine)
+            logger = InMemoryLogger(LogAttributes(forageConfig, traceId))
+            paymentMethodService = PaymentMethodService(forageConfig, logger, httpEngine)
+            paymentService = TestPaymentService(ForageConfig(merchantRef, accessToken), logger, httpEngine)
             paymentMethod = paymentMethodService.createPaymentMethod(
                 pan,
                 customerId = customerId,
@@ -72,18 +78,6 @@ class MainIntegrationTest {
                 paymentMethodRef = paymentMethod.ref
             )
             pmRefProvider = TestPmRefProvider(paymentMethod.ref)
-
-            // Initialize the submission test case factory
-            submissionTestCaseFactory = SubmissionTestCaseFactory(
-                pin = goodPin,
-                paymentMethodService = paymentMethodService,
-                paymentService = paymentService,
-                paymentRef = payment.ref,
-                forageConfig = forageConfig,
-                traceId = traceId,
-                vaultHttpEngine = httpEngine
-            )
-
             failureAttrs = EcomLoggableAttributesFactory(
                 forageConfig = forageConfig,
                 traceId = traceId,
@@ -95,11 +89,14 @@ class MainIntegrationTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun testEnd2EndHappyPath() = runTest {
-        // Get initial balance using new submission factory
-        val (balanceSubmission) = submissionTestCaseFactory.newBalanceCheckSubmission(
+        val component = DaggerForageSDKTestComponent.builder()
+            .forageConfig(forageConfig)
+            .securePinCollector(TestableSecurePinCollector(goodPin))
+            .build()
+        val balanceResponse = ForageSDK().checkBalance(
+            component = component,
             paymentMethodRef = paymentMethod.ref
         )
-        val balanceResponse = balanceSubmission.submit()
         val originalBalance = ((balanceResponse as ForageApiResponse.Success<String>).toBalance() as EbtBalance)
 
         // Test Cash Payment Flow (sync)
@@ -116,10 +113,15 @@ class MainIntegrationTest {
     private suspend fun testCashPaymentFlow(amount: String): Payment {
         // Create and capture cash payment
         val cashPayment = paymentService.createPayment(paymentMethod.ref, amount, "ebt_cash")
-        val (captureSubmission) = submissionTestCaseFactory.newCapturePaymentSubmission(
+
+        val component = DaggerForageSDKTestComponent.builder()
+            .forageConfig(forageConfig)
+            .securePinCollector(TestableSecurePinCollector(goodPin))
+            .build()
+        val captureResponse = ForageSDK().capturePayment(
+            component = component,
             paymentRef = cashPayment.ref
         )
-        val captureResponse = captureSubmission.submit()
         val capturedCash = ((captureResponse as ForageApiResponse.Success<String>).toPayment())
 
         // Verify balance was reduced by payment amount
@@ -139,10 +141,11 @@ class MainIntegrationTest {
     private suspend fun testSnapPaymentFlow(amount: String): Payment {
         // Create and defer capture SNAP payment
         val snapPayment = paymentService.createPayment(paymentMethod.ref, amount, "ebt_snap")
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
-            paymentRef = snapPayment.ref
-        )
-        val snapDeferResponse = deferSubmission.submit()
+        val component = DaggerForageSDKTestComponent.builder()
+            .forageConfig(forageConfig)
+            .securePinCollector(TestableSecurePinCollector(goodPin))
+            .build()
+        val snapDeferResponse = ForageSDK().deferPaymentCapture(component, snapPayment.ref)
         assertThat(snapDeferResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
         // Complete deferred capture
@@ -166,11 +169,14 @@ class MainIntegrationTest {
     @Test
     fun testBadPINScenarios() = runTest {
         // Test balance check with bad PIN
-        val (balanceSubmission) = submissionTestCaseFactory.newBalanceCheckSubmission(
-            pin = badPin,
+        val component = DaggerForageSDKTestComponent.builder()
+            .forageConfig(forageConfig)
+            .securePinCollector(TestableSecurePinCollector(badPin))
+            .build()
+        val balanceCheckResponse = ForageSDK().checkBalance(
+            component = component,
             paymentMethodRef = paymentMethod.ref
         )
-        val balanceCheckResponse = balanceSubmission.submit()
         assertBadPinError(balanceCheckResponse)
 
         // Test cash payment capture with bad PIN
@@ -179,11 +185,10 @@ class MainIntegrationTest {
             amount = "1.00",
             fundingType = "ebt_cash"
         )
-        val (captureSubmission) = submissionTestCaseFactory.newCapturePaymentSubmission(
-            paymentRef = cashPayment.ref,
-            pin = badPin
+        val captureResponse = ForageSDK().capturePayment(
+            component = component,
+            paymentRef = cashPayment.ref
         )
-        val captureResponse = captureSubmission.submit()
         assertBadPinError(captureResponse)
 
         // Test SNAP payment deferred capture with bad PIN
@@ -192,11 +197,10 @@ class MainIntegrationTest {
             amount = "1.00",
             fundingType = "ebt_snap"
         )
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
-            paymentRef = snapPayment.ref,
-            pin = badPin
+        val deferResponse = ForageSDK().deferPaymentCapture(
+            component = component,
+            paymentRef = snapPayment.ref
         )
-        val deferResponse = deferSubmission.submit()
         assertThat(deferResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
         val deferCaptureResponse = paymentService.captureDeferredPayment(snapPayment.ref, accessToken)
@@ -223,10 +227,11 @@ class MainIntegrationTest {
             fundingType = "ebt_snap"
         )
 
-        val (deferSubmission) = submissionTestCaseFactory.newDeferCapturePaymentSubmission(
-            paymentRef = snapPayment.ref
-        )
-        val snapDeferResponse = deferSubmission.submit()
+        val component = DaggerForageSDKTestComponent.builder()
+            .forageConfig(forageConfig)
+            .securePinCollector(TestableSecurePinCollector(goodPin))
+            .build()
+        val snapDeferResponse = ForageSDK().deferPaymentCapture(component, snapPayment.ref)
         assertThat(snapDeferResponse).isInstanceOf(ForageApiResponse.Success::class.java)
 
         // Attempt to capture the deferred payment

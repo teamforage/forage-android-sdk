@@ -3,15 +3,18 @@ package com.joinforage.forage.android.core.services.forageapi.payment
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.requests.GetPaymentRequest
+import com.joinforage.forage.android.core.services.telemetry.LogLogger
+import javax.inject.Inject
+import javax.inject.Named
 
 interface IPaymentService {
     suspend fun fetchPayment(paymentRef: String): Payment
 }
 
-internal open class PaymentService(
+internal open class PaymentService @Inject constructor(
     protected val forageConfig: ForageConfig,
-    protected val traceId: String,
-    protected val engine: IHttpEngine
+    protected val logger: LogLogger,
+    @Named("api") protected val engine: IHttpEngine
 ) : IPaymentService {
     class FailedToFetchPaymentException(val paymentRef: String, e: Exception) :
         Exception("Failed to fetch payment $paymentRef", e)
@@ -21,7 +24,7 @@ internal open class PaymentService(
             GetPaymentRequest(
                 paymentRef,
                 forageConfig,
-                traceId
+                logger.traceId
             )
         ).let { Payment(it) }
     } catch (e: Exception) {

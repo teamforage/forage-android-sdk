@@ -4,9 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
-import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 
 /**
@@ -21,9 +18,4 @@ abstract class ForageVaultElement<out T : ElementState> @JvmOverloads constructo
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : LinearLayout(context, attrs, defStyleAttr), ForageElement<T> {
-    internal abstract fun getVaultSubmitter(
-        envConfig: EnvConfig,
-        httpEngine: IHttpEngine
-    ): RosettaPinSubmitter
-}
+) : LinearLayout(context, attrs, defStyleAttr), ForageElement<T>

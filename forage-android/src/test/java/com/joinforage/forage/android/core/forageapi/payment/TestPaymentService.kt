@@ -6,16 +6,17 @@ import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
 import com.joinforage.forage.android.core.services.forageapi.payment.Payment
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.ecom.forageapi.refund.Refund
 import com.joinforage.forage.android.ecom.forageapi.refund.RefundPaymentRequest
 
 internal class TestPaymentService(
     forageConfig: ForageConfig,
-    traceId: String,
+    logger: LogLogger,
     engine: IHttpEngine
 ) : PaymentService(
     forageConfig,
-    traceId,
+    logger,
     engine
 ) {
     suspend fun createPayment(
@@ -33,7 +34,7 @@ internal class TestPaymentService(
                 metadata = metadata,
                 paymentMethodRef = paymentMethodRef,
                 forageConfig = forageConfig,
-                traceId = traceId
+                traceId = logger.traceId
             )
         ).let { Payment(it) }
 
@@ -44,7 +45,7 @@ internal class TestPaymentService(
                     CaptureDeferredPaymentRequest(
                         paymentRef = paymentRef,
                         forageConfig = ForageConfig(forageConfig.merchantId, accessToken),
-                        traceId = traceId
+                        traceId = logger.traceId
                     )
                 )
             )
@@ -65,7 +66,7 @@ internal class TestPaymentService(
                 reason = reason,
                 metadata = metadata,
                 forageConfig = forageConfig,
-                traceId = traceId
+                traceId = logger.traceId
             )
         ).let { Refund(it) }
 }

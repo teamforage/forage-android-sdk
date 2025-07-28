@@ -9,13 +9,13 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownTime
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.vault.errors.IErrorStrategy
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
+import javax.inject.Inject
 
-internal class TokenizeCardService(
+internal class TokenizeCardService @Inject constructor(
     val logger: LogLogger,
     val forageConfig: ForageConfig,
     val pmService: IPaymentMethodService
 ) {
-
     private suspend fun _tokenizeCard(
         cardNumber: String,
         customerId: String?,

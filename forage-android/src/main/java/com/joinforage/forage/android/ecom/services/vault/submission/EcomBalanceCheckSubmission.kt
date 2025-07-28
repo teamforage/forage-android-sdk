@@ -6,17 +6,19 @@ import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiR
 import com.joinforage.forage.android.core.services.forageapi.requests.RosettaVaultRequest
 import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.core.services.telemetry.UserAction
+import com.joinforage.forage.android.core.services.vault.ISecurePinCollector
 import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.services.vault.VaultPaymentMethod
 import com.joinforage.forage.android.core.services.vault.errors.BaseErrorStrategy
 import com.joinforage.forage.android.core.services.vault.errors.PaymentMethodErrorStrategy
-import com.joinforage.forage.android.core.services.vault.metrics.VaultMetricsRecorder
 import com.joinforage.forage.android.core.services.vault.requests.ISubmitRequestBuilder
 import com.joinforage.forage.android.core.services.vault.submission.BalanceCheckSubmission
 import com.joinforage.forage.android.core.services.vault.submission.ISubmitDelegate
-import com.joinforage.forage.android.core.services.vault.submission.PinSubmission
+import com.joinforage.forage.android.ecom.services.PinSubmissionFactory
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.IPaymentMethodService
 import com.joinforage.forage.android.ecom.services.vault.EcomBaseBodyBuilder
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import java.util.UUID
 
 private class EcomRosettaBalanceInquiryRequest(
@@ -33,14 +35,14 @@ private class EcomRosettaBalanceInquiryRequest(
     body = EcomBaseBodyBuilder(rawPin, paymentMethod.token).build()
 )
 
-internal class EcomBalanceCheckSubmission(
-    private val paymentMethodRef: String,
-    private val vaultSubmitter: RosettaPinSubmitter,
+internal class EcomBalanceCheckSubmission @AssistedInject constructor(
+    @Assisted private val paymentMethodRef: String,
+    private val pinCollector: ISecurePinCollector?,
     private val paymentMethodService: IPaymentMethodService,
     private val forageConfig: ForageConfig,
-    private val logLogger: LogLogger
+    private val logLogger: LogLogger,
+    private val pinSubmissionFactory: PinSubmissionFactory
 ) : ISubmitRequestBuilder, ISubmitDelegate {
-
     override suspend fun buildRequest(
         traceId: String,
         vaultSubmitter: RosettaPinSubmitter
@@ -57,21 +59,18 @@ internal class EcomBalanceCheckSubmission(
             traceId = traceId,
             idempotencyKey = UUID.randomUUID().toString(),
             paymentMethod = vaultPm,
-            rawPin = vaultSubmitter.plainTextPin
+            rawPin = pinCollector!!.getPin()
         )
     }
 
     override suspend fun rawSubmit(): ForageApiResponse<String> {
-        return PinSubmission(
-            vaultSubmitter = vaultSubmitter,
+        return pinSubmissionFactory.build(
             errorStrategy = PaymentMethodErrorStrategy(
                 logLogger,
                 BaseErrorStrategy(logLogger)
             ),
             requestBuilder = this,
-            metricsRecorder = VaultMetricsRecorder(logLogger),
-            userAction = UserAction.BALANCE,
-            logLogger = logLogger
+            userAction = UserAction.BALANCE
         ).submit()
     }
 

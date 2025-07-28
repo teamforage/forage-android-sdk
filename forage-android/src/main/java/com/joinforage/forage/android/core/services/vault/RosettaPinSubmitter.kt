@@ -6,11 +6,11 @@ import com.joinforage.forage.android.core.services.forageapi.network.ForageApiRe
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.EbtCard
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.requests.ClientApiRequest
+import javax.inject.Inject
+import javax.inject.Named
 
-internal class RosettaPinSubmitter(
-    val plainTextPin: String,
-    val collector: ISecurePinCollector,
-    val httpEngine: IHttpEngine
+internal class RosettaPinSubmitter @Inject constructor(
+    @Named("vault") val httpEngine: IHttpEngine
 ) {
     suspend fun submit(request: ClientApiRequest): ForageApiResponse.Success<String> = try {
         ForageApiResponse.Success(httpEngine.sendRequest(request))

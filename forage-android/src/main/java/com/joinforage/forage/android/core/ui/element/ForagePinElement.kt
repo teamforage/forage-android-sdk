@@ -16,10 +16,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.core.content.getSystemService
 import com.joinforage.forage.android.R
-import com.joinforage.forage.android.core.services.EnvConfig
-import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.vault.ISecurePinCollector
-import com.joinforage.forage.android.core.services.vault.RosettaPinSubmitter
 import com.joinforage.forage.android.core.ui.element.state.FocusState
 import com.joinforage.forage.android.core.ui.element.state.pin.PinEditTextState
 import com.joinforage.forage.android.core.ui.element.state.pin.PinInputState
@@ -43,7 +40,8 @@ abstract class ForagePinElement @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
-) : ForageVaultElement<PinEditTextState>(context, attrs, defStyleAttr), EditTextElement {
+) : ForageVaultElement<PinEditTextState>(context, attrs, defStyleAttr),
+    EditTextElement {
     private val _linearLayout: LinearLayout
     internal val _editText: EditText
 
@@ -223,20 +221,6 @@ abstract class ForagePinElement @JvmOverloads constructor(
         imm!!.showSoftInput(_editText, 0)
     }
 
-    override fun getVaultSubmitter(
-        envConfig: EnvConfig,
-        httpEngine: IHttpEngine
-    ): RosettaPinSubmitter = RosettaPinSubmitter(
-        _editText.text.toString(),
-        object : ISecurePinCollector {
-            override fun clearText() {
-                this@ForagePinElement.clearText()
-            }
-            override fun isComplete(): Boolean = inputState.isComplete
-        },
-        httpEngine
-    )
-
     // While the events that ForageElements expose mirrors the
     // blur, focus, change etc events of an Android view,
     // they represent different abstractions. Our users need to
@@ -305,4 +289,11 @@ abstract class ForagePinElement @JvmOverloads constructor(
     override fun setHintTextColor(hintTextColor: Int) {
         // no-op, deprecated!
     }
+
+    internal val securePinCollector: ISecurePinCollector get() =
+        object : ISecurePinCollector {
+            override fun getPin(): String = _editText.text.toString()
+            override fun clearText() = clearText()
+            override fun isComplete(): Boolean = getElementState().isComplete
+        }
 }

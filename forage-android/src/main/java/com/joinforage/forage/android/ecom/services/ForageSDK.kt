@@ -2,19 +2,15 @@ package com.joinforage.forage.android.ecom.services
 
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
+import com.joinforage.forage.android.core.services.forageapi.engine.IHttpEngine
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
-import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
-import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
-import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
-import com.joinforage.forage.android.ecom.services.telemetry.EcomDatadogLoggerFactory
 import com.joinforage.forage.android.ecom.services.vault.CreditCardParams
 import com.joinforage.forage.android.ecom.services.vault.TokenizeCardService
-import com.joinforage.forage.android.ecom.services.vault.submission.EcomBalanceCheckSubmission
-import com.joinforage.forage.android.ecom.services.vault.submission.EcomCapturePaymentSubmission
-import com.joinforage.forage.android.ecom.services.vault.submission.EcomDeferCapturePaymentSubmission
 import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet
+import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * The entry point to the Forage SDK.
@@ -37,7 +33,17 @@ import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet
  * Terminal transactions
  */
 class ForageSDK {
-    private val httpEngine = EcomOkHttpEngine()
+    @Inject
+    @Named("api")
+    internal lateinit var httpEngine: IHttpEngine
+
+    @Inject internal lateinit var tokenizeService: TokenizeCardService
+
+    @Inject internal lateinit var ecomBalanceCheckSubmissionFactory: EcomBalanceCheckSubmissionFactory
+
+    @Inject internal lateinit var ecomCapturePaymentSubmissionFactory: EcomCapturePaymentSubmissionFactory
+
+    @Inject internal lateinit var ecomDeferCapturePaymentSubmissionFactory: EcomDeferCapturePaymentSubmissionFactory
 
     /**
      * Retrieves the ForageConfig for a given ForageElement, or throws an exception if the
@@ -119,21 +125,14 @@ class ForageSDK {
     suspend fun tokenizeEBTCard(params: TokenizeEBTCardParams): ForageApiResponse<String> {
         val (foragePanEditText, customerId, reusable) = params
         val forageConfig = _getForageConfigOrThrow(foragePanEditText.getForageConfig())
-        val logger = EcomDatadogLoggerFactory(
-            foragePanEditText.context,
-            forageConfig,
-            customerId
-        ).makeLogger()
-        val pmService = PaymentMethodService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        val tokenizeService = TokenizeCardService(
-            logger,
-            forageConfig,
-            pmService
-        )
+
+        DaggerForageSDKComponent.builder()
+            .forageConfig(forageConfig)
+            .customerId(params.customerId)
+            .context(foragePanEditText.context)
+            .build()
+            .inject(this)
+
         return tokenizeService.tokenizeCard(
             cardNumber = foragePanEditText.getPanNumber(),
             customerId = customerId,
@@ -143,21 +142,14 @@ class ForageSDK {
 
     suspend fun tokenizeCreditCard(params: TokenizeCreditCardParams): ForageApiResponse<String> {
         val forageConfig = _getForageConfigOrThrow(params.foragePaymentSheet.getForageConfig())
-        val logger = EcomDatadogLoggerFactory(
-            params.foragePaymentSheet.context,
-            forageConfig,
-            params.customerId
-        ).makeLogger()
-        val pmService = PaymentMethodService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        val tokenizeService = TokenizeCardService(
-            logger,
-            forageConfig,
-            pmService
-        )
+
+        DaggerForageSDKComponent.builder()
+            .forageConfig(forageConfig)
+            .customerId(params.customerId)
+            .context(params.foragePaymentSheet.context)
+            .build()
+            .inject(this)
+
         val creditCardParams = CreditCardParams(
             cardNumber = params.foragePaymentSheet.cardNumberValue,
             customerId = params.customerId,
@@ -168,6 +160,7 @@ class ForageSDK {
             cvc = params.foragePaymentSheet.securityCodeValue,
             isHsaFsa = true
         )
+
         return tokenizeService.tokenizeCreditCard(creditCardParams)
     }
 
@@ -233,23 +226,22 @@ class ForageSDK {
     suspend fun checkBalance(params: CheckBalanceParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentMethodRef) = params
         val forageConfig = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
-        val logger = EcomDatadogLoggerFactory(
-            foragePinEditText.context,
-            forageConfig,
-            null
-        ).makeLogger()
-        val pmService = PaymentMethodService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        return EcomBalanceCheckSubmission(
-            paymentMethodRef = paymentMethodRef,
-            vaultSubmitter = foragePinEditText.getVaultSubmitter(forageConfig.envConfig, httpEngine),
-            paymentMethodService = pmService,
-            forageConfig = forageConfig,
-            logLogger = logger
-        ).submit()
+
+        val component = DaggerForageSDKComponent.builder()
+            .forageConfig(forageConfig)
+            .context(foragePinEditText.context)
+            .securePinCollector(foragePinEditText.securePinCollector)
+            .build()
+
+        return checkBalance(component, paymentMethodRef)
+    }
+
+    internal suspend fun checkBalance(
+        component: ForageSDKComponent,
+        paymentMethodRef: String
+    ): ForageApiResponse<String> {
+        component.inject(this)
+        return ecomBalanceCheckSubmissionFactory.build(paymentMethodRef).submit()
     }
 
     /**
@@ -320,29 +312,22 @@ class ForageSDK {
     suspend fun capturePayment(params: CapturePaymentParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val forageConfig = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
-        val logger = EcomDatadogLoggerFactory(
-            foragePinEditText.context,
-            forageConfig,
-            null
-        ).makeLogger()
-        val pmService = PaymentMethodService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        val paymentService = PaymentService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        return EcomCapturePaymentSubmission(
-            paymentRef = paymentRef,
-            vaultSubmitter = foragePinEditText.getVaultSubmitter(forageConfig.envConfig, httpEngine),
-            paymentMethodService = pmService,
-            paymentService = paymentService,
-            forageConfig = forageConfig,
-            logLogger = logger
-        ).submit()
+
+        val component = DaggerForageSDKComponent.builder()
+            .forageConfig(forageConfig)
+            .context(foragePinEditText.context)
+            .securePinCollector(foragePinEditText.securePinCollector)
+            .build()
+
+        return capturePayment(component, paymentRef)
+    }
+
+    internal suspend fun capturePayment(
+        component: ForageSDKComponent,
+        paymentRef: String
+    ): ForageApiResponse<String> {
+        component.inject(this)
+        return ecomCapturePaymentSubmissionFactory.build(paymentRef).submit()
     }
 
     /**
@@ -405,29 +390,22 @@ class ForageSDK {
     suspend fun deferPaymentCapture(params: DeferPaymentCaptureParams): ForageApiResponse<String> {
         val (foragePinEditText, paymentRef) = params
         val forageConfig = _getForageConfigOrThrow(foragePinEditText.getForageConfig())
-        val logger = EcomDatadogLoggerFactory(
-            foragePinEditText.context,
-            forageConfig,
-            null
-        ).makeLogger()
-        val pmService = PaymentMethodService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        val paymentService = PaymentService(
-            forageConfig,
-            logger.traceId,
-            httpEngine
-        )
-        return EcomDeferCapturePaymentSubmission(
-            paymentRef = paymentRef,
-            vaultSubmitter = foragePinEditText.getVaultSubmitter(forageConfig.envConfig, httpEngine),
-            paymentMethodService = pmService,
-            paymentService = paymentService,
-            forageConfig = forageConfig,
-            logLogger = logger
-        ).submit()
+
+        val component = DaggerForageSDKComponent.builder()
+            .forageConfig(forageConfig)
+            .context(foragePinEditText.context)
+            .securePinCollector(foragePinEditText.securePinCollector)
+            .build()
+
+        return deferPaymentCapture(component, paymentRef)
+    }
+
+    internal suspend fun deferPaymentCapture(
+        component: ForageSDKComponent,
+        paymentRef: String
+    ): ForageApiResponse<String> {
+        component.inject(this)
+        return ecomDeferCapturePaymentSubmissionFactory.build(paymentRef).submit()
     }
 }
 

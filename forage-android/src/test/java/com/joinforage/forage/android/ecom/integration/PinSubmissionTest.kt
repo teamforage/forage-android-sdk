@@ -3,7 +3,6 @@ package com.joinforage.forage.android.ecom.integration
 import com.joinforage.forage.android.core.TestFailedRequestHttpEngine
 import com.joinforage.forage.android.core.forageapi.getAccessToken
 import com.joinforage.forage.android.core.forageapi.getSessionToken
-import com.joinforage.forage.android.core.forageapi.payment.TestPaymentService
 import com.joinforage.forage.android.core.logger.LoggableAttributes
 import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
@@ -14,8 +13,6 @@ import com.joinforage.forage.android.core.services.forageapi.network.IncompleteP
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownErrorApiResponse
 import com.joinforage.forage.android.core.services.forageapi.network.UnknownTimeoutErrorResponse
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
-import com.joinforage.forage.android.core.services.forageapi.payment.Payment
-import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.core.services.forageapi.requests.BaseApiRequest
 import com.joinforage.forage.android.core.services.generateTraceId
 import com.joinforage.forage.android.core.services.telemetry.Loggable
@@ -23,8 +20,6 @@ import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 import com.joinforage.forage.android.core.services.vault.IPmRefProvider
 import com.joinforage.forage.android.ecom.logger.EcomLoggableAttributesFactory
-import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
-import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
 import com.joinforage.forage.android.ecom.services.network.error.EcomErrorResponseParser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -47,25 +42,17 @@ class PinSubmissionTest {
         private val username = "your_client_app_id"
         private val password = "your_client_app_secret"
         private val pan = "6777 7777 7777 7777".filter { it.isDigit() }
-        private val badPIN = "1234"
         private val goodPIN = pan.takeLast(4)
         private val env = EnvConfig.Dev
-        private val httpEngine = EcomOkHttpEngine()
         private val traceId = generateTraceId()
 
-        private lateinit var pmRefProvider: TestPmRefProvider
         private lateinit var forageConfig: ForageConfig
-        private lateinit var paymentMethodService: PaymentMethodService
-        private lateinit var paymentService: TestPaymentService
-        private lateinit var paymentMethod: PaymentMethod
-        private lateinit var payment: Payment
         private lateinit var successAttrs: LoggableAttributes
         private lateinit var failureAttrs: LoggableAttributes
         private lateinit var accessToken: String
         private lateinit var submissionTestCaseFactory: SubmissionTestCaseFactory
 
         private val paymentMethodRef = "fake_payment_method_ref"
-        private val paymentRef = "fake_payment_ref"
 
         @BeforeClass
         @JvmStatic
@@ -74,18 +61,9 @@ class PinSubmissionTest {
             accessToken = getAccessToken(username, password, env)
             val sessionToken = getSessionToken(accessToken, merchantRef)
             forageConfig = ForageConfig(merchantRef, sessionToken)
-            paymentMethodService = PaymentMethodService(forageConfig, traceId, httpEngine)
-            paymentService = TestPaymentService(ForageConfig(merchantRef, accessToken), traceId, httpEngine)
 
             // Initialize the submission test case factory
-            submissionTestCaseFactory = SubmissionTestCaseFactory(
-                pin = goodPIN,
-                forageConfig = forageConfig,
-                paymentMethodService = paymentMethodService,
-                paymentService = paymentService,
-                paymentRef = paymentRef,
-                traceId = traceId
-            )
+            submissionTestCaseFactory = SubmissionTestCaseFactory(forageConfig = forageConfig)
 
             successAttrs = EcomLoggableAttributesFactory(
                 forageConfig = forageConfig,
@@ -108,7 +86,7 @@ class PinSubmissionTest {
             submission,
             logger,
             collector
-        ) = submissionTestCaseFactory.newPinSubmissionAttempt()
+        ) = submissionTestCaseFactory.newPinSubmissionAttempt(pin = goodPIN)
         val response = submission.submit()
         assertThat(response).isInstanceOf(ForageApiResponse.Success::class.java)
 
@@ -130,7 +108,7 @@ class PinSubmissionTest {
             submission,
             logger,
             collector
-        ) = submissionTestCaseFactory.newPinSubmissionAttempt(isComplete = false)
+        ) = submissionTestCaseFactory.newPinSubmissionAttempt(pin = goodPIN, isComplete = false)
 
         val response = (submission.submit() as ForageApiResponse.Failure)
         assertThat(response).isEqualTo(IncompletePinError)
@@ -158,6 +136,7 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(
+            pin = goodPIN,
             vaultHttpEngine = object : IHttpEngine {
                 override suspend fun sendRequest(request: BaseApiRequest): String {
                     throw ForageErrorResponseException(forageError)
@@ -207,6 +186,7 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(
+            pin = goodPIN,
             vaultHttpEngine = object : IHttpEngine {
                 override suspend fun sendRequest(request: BaseApiRequest): String {
                     EcomErrorResponseParser().toForageError(200, malformedResponse.toString())
@@ -243,6 +223,7 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(
+            pin = goodPIN,
             vaultHttpEngine = TestFailedRequestHttpEngine(exception)
         )
 
@@ -274,6 +255,7 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(
+            pin = goodPIN,
             vaultHttpEngine = TestFailedRequestHttpEngine(exception)
         )
 
@@ -305,6 +287,7 @@ class PinSubmissionTest {
             logger,
             collector
         ) = submissionTestCaseFactory.newPinSubmissionAttempt(
+            pin = goodPIN,
             vaultHttpEngine = object : IHttpEngine {
                 override suspend fun sendRequest(request: BaseApiRequest): String {
                     throw unexpectedException
