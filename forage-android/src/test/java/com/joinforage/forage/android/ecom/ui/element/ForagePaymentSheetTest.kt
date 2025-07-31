@@ -1,13 +1,8 @@
 package com.joinforage.forage.android.ecom.ui.element
 
 import android.graphics.Typeface
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -15,9 +10,10 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
-import com.joinforage.forage.android.mock.MockForagePaymentSheet.Companion.EXPIRED_SANDBOX_SESSION_TOKEN
-import com.joinforage.forage.android.mock.MockForagePaymentSheet.Companion.TEST_HSA_FSA_CARD
-import com.joinforage.forage.android.mock.MockForagePaymentSheet.Companion.TEST_MERCHANT_ID
+import com.joinforage.forage.android.mock.TestForagePaymentSheet
+import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.MOCK_SESSION_TOKEN
+import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.TEST_HSA_FSA_CARD
+import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.TEST_MERCHANT_ID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
@@ -28,22 +24,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ForagePaymentSheetTest {
 
-    class ForagePaymentSheetFragment : Fragment() {
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ) = ForagePaymentSheet(inflater.context)
-    }
-
-    val foragePaymentSheet: ForagePaymentSheet by lazy {
-        val fragment = ForagePaymentSheetFragment()
-        launchFragmentInContainer(
-            themeResId = com.google.android.material.R.style.Theme_AppCompat,
-            instantiate = { fragment }
-        )
-        fragment.view as ForagePaymentSheet
-    }
+    val foragePaymentSheet: ForagePaymentSheet by lazy { TestForagePaymentSheet().create() }
 
     @Before
     fun before() = foragePaymentSheet.clearText()
@@ -287,7 +268,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify ForageConfig accessors`() {
-        val forageConfig = ForageConfig(TEST_MERCHANT_ID, EXPIRED_SANDBOX_SESSION_TOKEN)
+        val forageConfig = ForageConfig(TEST_MERCHANT_ID, MOCK_SESSION_TOKEN)
         foragePaymentSheet.setForageConfig(forageConfig)
         assertThat(foragePaymentSheet.getForageConfig()).isEqualTo(forageConfig)
     }
