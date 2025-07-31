@@ -131,12 +131,8 @@ class FlowCreatePaymentFragment : Fragment() {
         _binding = null
     }
 
-    private fun getSnapAmount(): Long {
-        return try {
-            binding.snapAmountEditText.text.toString().toLong()
-        } catch (e: NumberFormatException) {
-            0
-        }
+    private fun getSnapAmount(): String {
+        return binding.snapAmountEditText.text.toString()
     }
 
     private fun getPaymentRef(textField: TextInputEditText): String {
@@ -147,11 +143,7 @@ class FlowCreatePaymentFragment : Fragment() {
         }
     }
 
-    private fun getEbtCashAmount(): Long {
-        return try {
-            binding.ebtCashAmountEditText.text.toString().toLong()
-        } catch (e: NumberFormatException) {
-            0
-        }
+    private fun getEbtCashAmount(): String {
+        return binding.ebtCashAmountEditText.text.toString()
     }
 }

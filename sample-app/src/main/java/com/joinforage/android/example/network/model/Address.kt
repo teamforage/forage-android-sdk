@@ -1,6 +1,7 @@
 package com.joinforage.android.example.network.model
 
 import com.squareup.moshi.JsonClass
+import java.io.Serializable
 
 @JsonClass(generateAdapter = true)
 data class Address(
@@ -10,4 +11,4 @@ data class Address(
     val line2: String,
     val zipcode: String,
     val state: String
-)
+) : Serializable

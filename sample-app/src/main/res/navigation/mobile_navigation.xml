@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_navigation_complete_flow_to_FlowTokenizeFragment"
             app:destination="@id/navigation_flow_tokenize" />
+        <action
+            android:id="@+id/action_navigation_complete_flow_to_FlowTokenizeFragment_sheet"
+            app:destination="@id/navigation_tokenizeCredit" />
     </fragment>
 
     <fragment
@@ -38,6 +41,20 @@
         <action
             android:id="@+id/action_navigation_flow_tokenize_to_flowBalanceFragment"
             app:destination="@id/flowBalanceFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_tokenizeCredit"
+        android:name="com.joinforage.android.example.ui.complete.flow.tokenize.FlowTokenizePaymentSheetFragment"
+        android:label="@string/title_tokenize_credit"
+        tools:layout="@layout/fragment_flow_tokenize_credit">
+
+        <argument android:name="bearer" app:argType="string" />
+        <argument android:name="merchantAccount" app:argType="string" />
+
+        <action
+            android:id="@+id/action_tokenizeCredit_to_createCreditPayment"
+            app:destination="@id/flowCreateCreditPaymentFragment" />
     </fragment>
 
     <fragment
@@ -87,6 +104,32 @@
         <action
             android:id="@+id/action_flowCreatePaymentFragment_to_flowCapturePaymentFragment"
             app:destination="@id/flowCapturePaymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/flowCreateCreditPaymentFragment"
+        android:name="com.joinforage.android.example.ui.complete.flow.payment.create.FlowCreateCreditPaymentFragment"
+        android:label="@string/title_create_payment"
+        tools:layout="@layout/fragment_flow_create_credit_payment">
+
+        <argument android:name="bearer" app:argType="string" />
+        <argument android:name="merchantAccount" app:argType="string" />
+        <argument android:name="paymentMethodRef" app:argType="string" />
+
+        <action
+            android:id="@+id/action_flowCreateCreditPaymentFragment_to_flowCaptureCreditPaymentFragment"
+            app:destination="@id/flowCaptureCreditPaymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/flowCaptureCreditPaymentFragment"
+        android:name="com.joinforage.android.example.ui.complete.flow.payment.capture.FlowCaptureCreditPaymentFragment"
+        android:label="Capture Payment"
+        tools:layout="@layout/fragment_flow_capture_credit_payment">
+
+        <argument android:name="bearer" app:argType="string" />
+        <argument android:name="merchantAccount" app:argType="string" />
+        <argument android:name="payment" app:argType="com.joinforage.android.example.network.model.PaymentResponse" />
     </fragment>
 
     <fragment
