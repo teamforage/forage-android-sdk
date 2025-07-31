@@ -14,11 +14,19 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 @ExperimentalStdlibApi
 class ForageApiModule {
 
-    private fun provideRetrofit(baseUrl: String): Retrofit {
+    private fun provideRetrofit(baseUrl: Pair<String, String?>): Retrofit {
         val authInterceptor = AuthInterceptor()
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
-            .build()
+        baseUrl.second?.let { host ->
+            okHttpClient.addInterceptor({ chain ->
+                chain.proceed(
+                    chain.request().newBuilder()
+                        .addHeader("Host", host)
+                        .build()
+                )
+            })
+        }
 
         val moshi = Moshi.Builder()
             .addAdapter(Rfc3339DateJsonAdapter().nullSafe())
@@ -28,8 +36,8 @@ class ForageApiModule {
         val callAdapterFactory = ApiResponseCallAdapterFactory.create()
 
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
+            .baseUrl(baseUrl.first)
+            .client(okHttpClient.build())
             .addConverterFactory(moshiConverterFactory)
             .addCallAdapterFactory(callAdapterFactory)
             .build()

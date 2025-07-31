@@ -11,37 +11,37 @@ internal enum class EnvOption(val value: String) {
 
 internal sealed class EnvConfig(
     val FLAVOR: EnvOption,
-    val baseUrl: String
+    val baseUrl: Pair<String, String?>
 ) {
 
     object Local : EnvConfig(
         FLAVOR = EnvOption.Local,
-        baseUrl = "http://10.0.2.2:8000/"
+        baseUrl = Pair("http://10.0.2.2/", "api.joinforage.localhost")
     )
 
     object Dev : EnvConfig(
         FLAVOR = EnvOption.DEV,
-        baseUrl = "https://api.dev.joinforage.app/"
+        baseUrl = Pair("https://api.dev.joinforage.app/", null)
     )
 
     object Staging : EnvConfig(
         FLAVOR = EnvOption.STAGING,
-        baseUrl = "https://api.staging.joinforage.app/"
+        baseUrl = Pair("https://api.staging.joinforage.app/", null)
     )
 
     object Sandbox : EnvConfig(
         FLAVOR = EnvOption.SANDBOX,
-        baseUrl = "https://api.sandbox.joinforage.app/"
+        baseUrl = Pair("https://api.sandbox.joinforage.app/", null)
     )
 
     object Cert : EnvConfig(
         FLAVOR = EnvOption.CERT,
-        baseUrl = "https://api.cert.joinforage.app/"
+        baseUrl = Pair("https://api.cert.joinforage.app/", null)
     )
 
     object Prod : EnvConfig(
         FLAVOR = EnvOption.PROD,
-        baseUrl = "https://api.joinforage.app/"
+        baseUrl = Pair("https://api.joinforage.app/", null)
     )
 
     companion object {

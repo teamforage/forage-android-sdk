@@ -4,8 +4,18 @@ import com.joinforage.forage.android.core.services.forageapi.network.error.paylo
 import org.json.JSONObject
 
 internal abstract class ForageErrorResponseParser {
-    internal fun toForageError(httpStatusCode: Int, jsonString: String) =
-        toForageError(httpStatusCode, parseJson(jsonString))
+    internal fun toForageError(httpStatusCode: Int, jsonString: String): ForageError {
+        return try {
+            toForageError(httpStatusCode, parseJson(jsonString))
+        } catch (e: Exception) {
+            ForageError(
+                httpStatusCode = httpStatusCode,
+                code = "",
+                message = httpStatusCode.toString(),
+                details = null
+            )
+        }
+    }
 
     private fun toForageError(httpStatusCode: Int, errorPayload: ErrorPayload) = ForageError(
         httpStatusCode,

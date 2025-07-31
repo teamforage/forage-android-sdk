@@ -4,21 +4,26 @@ import com.joinforage.forage.android.core.services.EnvConfig
 import com.joinforage.forage.android.core.services.ForageConfig
 import org.json.JSONObject
 
-internal fun getApiBase(token: String) = EnvConfig.fromSessionToken(token).apiBaseUrl
-internal fun makeApiUrl(token: String, path: String) = "${getApiBase(token)}$path"
+internal fun getApiBase(token: String): Pair<String, String?> =
+    EnvConfig.fromSessionToken(token).let { Pair(it.apiBaseUrl, it.apiHost) }
+internal fun makeApiUrl(token: String, path: String): Pair<String, String?> =
+    getApiBase(token).let { Pair("${it.first}$path", it.second) }
 internal fun makeApiUrl(forageConfig: ForageConfig, path: String) =
     makeApiUrl(forageConfig.sessionToken, path)
-internal fun makeApiUrl(env: EnvConfig, path: String) = "${env.apiBaseUrl}$path"
+internal fun makeApiUrl(env: EnvConfig, path: String) =
+    Pair("${env.apiBaseUrl}$path", env.apiHost)
 
-internal fun getVaultBase(token: String) = EnvConfig.fromSessionToken(token).vaultBaseUrl
-internal fun makeVaultUrl(token: String, path: String) = "${getVaultBase(token)}$path"
+internal fun getVaultBase(token: String): Pair<String, String?> =
+    EnvConfig.fromSessionToken(token).let { Pair(it.vaultBaseUrl, it.vaultHost) }
+internal fun makeVaultUrl(token: String, path: String): Pair<String, String?> =
+    getVaultBase(token).let { Pair("${it.first}$path", it.second) }
 internal fun makeVaultUrl(forageConfig: ForageConfig, path: String) =
     makeVaultUrl(forageConfig.sessionToken, path)
 
 internal fun makeBearerAuthHeader(token: String) = "Bearer $token"
 
 internal sealed class ClientApiRequest(
-    url: String,
+    url: Pair<String, String?>,
     verb: HttpVerb,
     forageConfig: ForageConfig,
     traceId: String,
@@ -38,7 +43,7 @@ internal sealed class ClientApiRequest(
 ) {
 
     internal abstract class PostRequest(
-        url: String,
+        url: Pair<String, String?>,
         forageConfig: ForageConfig,
         traceId: String,
         apiVersion: Headers.ApiVersion,

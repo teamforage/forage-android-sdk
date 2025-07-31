@@ -34,10 +34,11 @@ internal abstract class BaseOkHttpEngine(
     }
 
     fun buildOkHttpRequest(request: BaseApiRequest): Request {
-        val builder = Request.Builder().url(request.url)
+        val builder = Request.Builder().url(request.url.first)
         request.headers.forEach { (key, value) ->
             builder.addHeader(key, value)
         }
+        request.url.second?.let { host -> builder.addHeader("Host", host) }
         when (request) {
             is ClientApiRequest.GetRequest -> {
                 builder.get()

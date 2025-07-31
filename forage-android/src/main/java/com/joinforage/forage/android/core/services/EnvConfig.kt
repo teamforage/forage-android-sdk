@@ -18,7 +18,9 @@ internal var mockBaseUrl = "http://localhost"
 internal sealed class EnvConfig(
     val FLAVOR: EnvOption,
     val apiBaseUrl: String,
+    val apiHost: String? = null,
     val vaultBaseUrl: String,
+    val vaultHost: String? = null,
     val ddClientToken: String
 ) {
     // For the time being, I figure we can consume BuildConfig in exactly
@@ -35,8 +37,10 @@ internal sealed class EnvConfig(
 
     object Local : EnvConfig(
         FLAVOR = EnvOption.LOCAL,
-        apiBaseUrl = "http://10.0.2.2:8000/",
-        vaultBaseUrl = "http://10.0.2.2:3999/",
+        apiBaseUrl = "http://10.0.2.2/",
+        apiHost = "api.joinforage.localhost",
+        vaultBaseUrl = "http://10.0.2.2/",
+        vaultHost = "vault.joinforage.localhost",
         ddClientToken = "pubf13cedf24ba2ad50d4b9cb0b0100bd4a"
     )
 
