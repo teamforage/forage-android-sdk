@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 data class CaptureRequest(
     @Json(name = "capture_amount") val captureAmount: String,
     @Json(name = "qualified_healthcare_total") val qualifiedHealthcareTotal: String,
-    @Json(name = "qualified_healthcare_subtotal") val qualifiedGHealthcareSubtotal: String,
+    @Json(name = "qualified_healthcare_subtotal") val qualifiedHealthcareSubtotal: String,
     @Json(name = "product_list") val productList: List<Product>
 ) {
     @JsonClass(generateAdapter = true)

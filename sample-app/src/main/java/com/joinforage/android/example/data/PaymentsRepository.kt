@@ -71,7 +71,7 @@ class PaymentsRepository(sessionToken: String) {
             CaptureRequest(
                 captureAmount = captureAmount,
                 qualifiedHealthcareTotal = captureAmount,
-                qualifiedGHealthcareSubtotal = captureAmount,
+                qualifiedHealthcareSubtotal = captureAmount,
                 productList = productList
             )
         )
