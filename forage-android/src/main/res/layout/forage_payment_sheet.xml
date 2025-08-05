@@ -7,108 +7,153 @@
     android:layout_height="match_parent"
     tools:context="com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet">
 
-    <!--
-        app:boxBackgroundMode="none"
-        app:hintEnabled="false"
-    -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/cardholderNameLayout"
+    <LinearLayout
+        android:id="@+id/cardholderNameBorder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/editable_frame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/cardholderNameEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cardholderNameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/cardholder_name_hint"
-            android:inputType="textPersonName"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            app:boxBackgroundMode="none"
+            android:layout_marginTop="10dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/cardNumberLayout"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cardholderNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:hint="@string/cardholder_name_hint"
+                android:inputType="textPersonName"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cardNumberBorder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:background="@drawable/editable_frame"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardholderNameLayout">
+        app:layout_constraintTop_toBottomOf="@id/cardholderNameBorder">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/cardNumberEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cardNumberLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/card_number_hint"
-            android:inputType="number"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            app:boxBackgroundMode="none"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cardNumberEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:hint="@string/card_number_hint"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/expirationSecurityCodeZipCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:baselineAligned="false"
+        android:layout_marginTop="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardNumberLayout">
+        app:layout_constraintTop_toBottomOf="@id/cardNumberBorder">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/expirationLayout"
+        <LinearLayout
+            android:id="@+id/expirationBorder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="10dp"
             android:layout_weight="4"
+            android:background="@drawable/editable_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/expirationEditText"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/expirationLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/expiration_hint"
-                android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                app:boxBackgroundMode="none"
+                android:layout_marginTop="10dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/securityCodeLayout"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/expirationEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:hint="@string/expiration_hint"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/securityCodeBorder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_weight="3"
+            android:background="@drawable/editable_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/securityCodeEditText"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/securityCodeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/security_code_hint"
-                android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                app:boxBackgroundMode="none"
+                android:layout_marginTop="10dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/zipCodeLayout"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/securityCodeEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:hint="@string/security_code_hint"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/zipCodeBorder"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="4"
+            android:background="@drawable/editable_frame"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/zipCodeEditText"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/zipCodeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/zip_code_hint"
-                android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                app:boxBackgroundMode="none"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/zipCodeEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:hint="@string/zip_code_hint"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <ImageView
