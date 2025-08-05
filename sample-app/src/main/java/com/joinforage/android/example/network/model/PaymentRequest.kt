@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PaymentRequest(
-    val amount: Long,
+    val amount: String,
     @Json(name = "funding_type")
     val fundingType: String,
     @Json(name = "payment_method")

@@ -2,6 +2,8 @@ package com.joinforage.android.example.data
 
 import com.joinforage.android.example.network.di.ForageApiModule
 import com.joinforage.android.example.network.model.Address
+import com.joinforage.android.example.network.model.AuthorizeRequest
+import com.joinforage.android.example.network.model.CaptureRequest
 import com.joinforage.android.example.network.model.PaymentRequest
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.skydoves.sandwich.ApiResponse
@@ -14,7 +16,7 @@ class PaymentsRepository(sessionToken: String) {
     suspend fun createPayment(
         bearerToken: String,
         fnsNumber: String,
-        amount: Long,
+        amount: String,
         fundingType: String,
         paymentMethod: String,
         description: String,
@@ -35,6 +37,42 @@ class PaymentsRepository(sessionToken: String) {
                 deliveryAddress = deliveryAddress,
                 isDelivery = isDelivery,
                 customerId = "android-test-customer-id-2"
+            )
+        )
+    }
+
+    suspend fun authorizePayment(
+        bearerToken: String,
+        fnsNumber: String,
+        paymentRef: String,
+        requestPartialAuthorization: Boolean
+    ): ApiResponse<PaymentResponse> {
+        val bearerString = "Bearer $bearerToken"
+        return forageApi.authorizePayment(
+            bearerString,
+            fnsNumber,
+            paymentRef,
+            AuthorizeRequest(requestPartialAuthorization)
+        )
+    }
+
+    suspend fun capturePayment(
+        bearerToken: String,
+        fnsNumber: String,
+        paymentRef: String,
+        captureAmount: String,
+        productList: List<CaptureRequest.Product>
+    ): ApiResponse<PaymentResponse> {
+        val bearerString = "Bearer $bearerToken"
+        return forageApi.capturePayment(
+            bearerString,
+            fnsNumber,
+            paymentRef,
+            CaptureRequest(
+                captureAmount = captureAmount,
+                qualifiedHealthcareTotal = captureAmount,
+                qualifiedHealthcareSubtotal = captureAmount,
+                productList = productList
             )
         )
     }

@@ -4,7 +4,7 @@
     <item
         android:id="@+id/navigation_complete_flow"
         android:icon="@drawable/ic_complete_flow_24"
-        android:title="@string/title_tokenize_ebt" />
+        android:title="@string/title_tokenize_card" />
 
     <item
         android:id="@+id/navigation_catalog"

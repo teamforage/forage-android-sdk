@@ -2,6 +2,7 @@ package com.joinforage.android.example.network.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serializable
 
 @JsonClass(generateAdapter = true)
 data class PaymentResponse(
@@ -29,5 +30,9 @@ data class PaymentResponse(
     var successDate: String?,
     var refunds: List<String>,
     @Json(name = "customer_id")
-    var customerId: String?
-)
+    var customerId: String?,
+    @Json(name = "requested_amount")
+    var requestedAmount: String?,
+    @Json(name = "authorization_amount")
+    var authorizationAmount: String?
+) : Serializable
