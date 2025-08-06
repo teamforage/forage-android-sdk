@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -41,7 +42,8 @@ abstract class ForagePanElement @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.foragePanEditTextStyle
 ) : LinearLayout(context, attrs, defStyleAttr), ForageElement<PanEditTextState>, EditTextElement, DynamicEnvElement {
     private val textInputEditText: TextInputEditText
-    private val textInputLayout: TextInputLayout
+
+    @VisibleForTesting internal val textInputLayout: TextInputLayout
 
     private var onFocusEventListener: SimpleElementListener? = null
     private var onBlurEventListener: SimpleElementListener? = null
