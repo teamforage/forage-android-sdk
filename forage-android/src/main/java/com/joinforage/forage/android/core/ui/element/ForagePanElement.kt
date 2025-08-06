@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import androidx.annotation.ColorInt
 import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -273,7 +274,7 @@ abstract class ForagePanElement @JvmOverloads constructor(
         inputState
     )
 
-    override fun setTextColor(textColor: Int) {
+    override fun setTextColor(@ColorInt textColor: Int) {
         // no-ops for now
     }
     override fun setTextSize(textSize: Float) {
@@ -282,18 +283,18 @@ abstract class ForagePanElement @JvmOverloads constructor(
     override fun setHint(hint: String) {
         // no-ops for now
     }
-    override fun setHintTextColor(hintTextColor: Int) {
+    override fun setHintTextColor(@ColorInt hintTextColor: Int) {
         // no-ops for now
     }
-    override fun setBoxStrokeColor(boxStrokeColor: Int) {
+    override fun setBoxStrokeColor(@ColorInt boxStrokeColor: Int) {
         textInputLayout.boxStrokeColor = boxStrokeColor
     }
 
     override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
         textInputLayout.boxStrokeWidth = boxStrokeWidth
     }
-    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
-        textInputLayout.boxStrokeWidthFocused = boxStrokeWidth
+    override fun setBoxStrokeWidthFocused(boxStrokeWidthFocused: Int) {
+        textInputLayout.boxStrokeWidthFocused = boxStrokeWidthFocused
     }
 
     internal fun getPanNumber(): String {

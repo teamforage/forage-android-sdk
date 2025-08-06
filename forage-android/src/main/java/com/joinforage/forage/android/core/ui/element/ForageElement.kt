@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.core.ui.element
 
 import android.graphics.Typeface
+import androidx.annotation.ColorInt
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 
@@ -63,14 +64,14 @@ internal interface EditTextElement {
      *
      * @param hintTextColor The color value in the form `0xAARRGGBB`.
      */
-    fun setHintTextColor(hintTextColor: Int)
+    fun setHintTextColor(@ColorInt hintTextColor: Int)
 
     /**
      * Sets the border color of the input field.
      *
      * @param boxStrokeColor The color value in the form `0xAARRGGBB`.
      */
-    fun setBoxStrokeColor(boxStrokeColor: Int)
+    fun setBoxStrokeColor(@ColorInt boxStrokeColor: Int)
 
     /**
      * Sets the border thickness of the input field.
@@ -82,9 +83,9 @@ internal interface EditTextElement {
     /**
      * Sets the border thickness of the input field when the field is in focus state.
      *
-     * @param boxStrokeWidth The scaled pixel size.
+     * @param boxStrokeWidthFocused The scaled pixel size.
      */
-    fun setBoxStrokeWidthFocused(boxStrokeWidth: Int)
+    fun setBoxStrokeWidthFocused(boxStrokeWidthFocused: Int)
 }
 
 /**
@@ -113,7 +114,7 @@ interface ForageElement<out T : ElementState> {
      *
      * @param textColor The color value in the form `0xAARRGGBB`.
      */
-    fun setTextColor(textColor: Int)
+    fun setTextColor(@ColorInt textColor: Int)
 
     /**
      * Sets the text size for the ForageElement.
