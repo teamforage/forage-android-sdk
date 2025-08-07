@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.annotation.ColorInt
 import androidx.core.content.getSystemService
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.EnvConfig
@@ -256,7 +257,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
 
     override fun getElementState(): PinEditTextState = pinEditTextState
 
-    override fun setTextColor(textColor: Int) {
+    override fun setTextColor(@ColorInt textColor: Int) {
         _editText.setTextColor(textColor)
     }
 
@@ -264,13 +265,13 @@ abstract class ForagePinElement @JvmOverloads constructor(
         _editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
 
-    override fun setBoxStrokeColor(boxStrokeColor: Int) {
+    override fun setBoxStrokeColor(@ColorInt boxStrokeColor: Int) {
         // no-ops for now
     }
     override fun setBoxStrokeWidth(boxStrokeWidth: Int) {
         // no-ops for now
     }
-    override fun setBoxStrokeWidthFocused(boxStrokeWidth: Int) {
+    override fun setBoxStrokeWidthFocused(boxStrokeWidthFocused: Int) {
         // no-ops for now
     }
 
@@ -302,7 +303,7 @@ abstract class ForagePinElement @JvmOverloads constructor(
     /**
      * @deprecated setHintTextColor (for **PIN** elements) is deprecated.
      */
-    override fun setHintTextColor(hintTextColor: Int) {
+    override fun setHintTextColor(@ColorInt hintTextColor: Int) {
         // no-op, deprecated!
     }
 }
