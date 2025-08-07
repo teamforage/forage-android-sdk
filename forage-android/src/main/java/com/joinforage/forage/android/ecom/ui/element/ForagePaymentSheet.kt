@@ -10,8 +10,8 @@ import android.util.AttributeSet
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
+import androidx.annotation.VisibleForTesting
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.getSystemService
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -184,10 +184,12 @@ abstract class ForagePaymentSheetField(
     private var onBlurEventListener: SimpleElementListener? = null
     private var focusState = FocusState.forEmptyInput()
 
-    // There's no getStroke() method on GradientDrawable so we have to cache
-    // initial values from editable_frame.xml.
-    internal var boxStrokeColor = 0xFFD0D0D0.toInt()
-    internal var boxStrokeWidth = 6
+    //
+    // There's no getStroke() method on GradientDrawable so we have to cache initial values.
+    //
+    @VisibleForTesting internal var boxStrokeColor = editText.resources.getColor(R.color.editable_frame_color)
+
+    @VisibleForTesting internal var boxStrokeWidth = editText.resources.getDimensionPixelSize(R.dimen.editable_frame_width)
 
     private fun restartFocusChangeListener() {
         editText.setOnFocusChangeListener { _, hasFocus ->
