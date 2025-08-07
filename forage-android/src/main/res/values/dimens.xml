@@ -7,4 +7,5 @@
     <dimen name="forage_logo_right_margin">0dp</dimen>
     <dimen name="forage_logo_bottom_margin">0dp</dimen>
     <dimen name="default_vertical_field">0dp</dimen>
+    <dimen name="editable_frame_width">2dp</dimen>
 </resources>

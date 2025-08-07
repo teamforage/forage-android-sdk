@@ -67,11 +67,11 @@ class ForageSDKTest {
 
         val foragePaymentSheet = TestForagePaymentSheet().create().apply {
             setForageConfig(ForageConfig(TEST_MERCHANT_ID, MOCK_SESSION_TOKEN))
-            cardholderNameValue = "John Doe"
-            cardNumberValue = TEST_HSA_FSA_CARD
-            expirationValueAsString = "12/34"
-            securityCodeValue = "123"
-            zipCodeValue = "12345"
+            cardholderNameField.value = "John Doe"
+            cardNumberField.value = TEST_HSA_FSA_CARD
+            expirationField.value = Pair(12, 34)
+            securityCodeField.value = "123"
+            zipCodeField.value = "12345"
         }
 
         val params = TokenizeCreditCardParams(
@@ -127,11 +127,11 @@ class ForageSDKTest {
 
         val foragePaymentSheet = TestForagePaymentSheet().create().apply {
             setForageConfig(ForageConfig(TEST_MERCHANT_ID, MOCK_SESSION_TOKEN))
-            cardholderNameValue = "John Doe"
-            cardNumberValue = TEST_HSA_FSA_CARD
-            expirationValueAsString = "12/34"
-            securityCodeValue = "123"
-            zipCodeValue = "12345"
+            cardholderNameField.value = "John Doe"
+            cardNumberField.value = TEST_HSA_FSA_CARD
+            expirationField.value = Pair(12, 34)
+            securityCodeField.value = "123"
+            zipCodeField.value = "12345"
         }
 
         val params = TokenizeCreditCardParams(
