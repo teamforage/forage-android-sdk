@@ -159,13 +159,13 @@ class ForageSDK {
             pmService
         )
         val creditCardParams = CreditCardParams(
-            cardNumber = params.foragePaymentSheet.cardNumberValue,
+            cardNumber = params.foragePaymentSheet.cardNumberField.value,
             customerId = params.customerId,
             reusable = params.reusable,
-            name = params.foragePaymentSheet.cardholderNameValue,
-            zipCode = params.foragePaymentSheet.zipCodeValue,
-            expiration = params.foragePaymentSheet.expirationValue,
-            cvc = params.foragePaymentSheet.securityCodeValue,
+            name = params.foragePaymentSheet.cardholderNameField.value,
+            zipCode = params.foragePaymentSheet.zipCodeField.value,
+            expiration = params.foragePaymentSheet.expirationField.value,
+            cvc = params.foragePaymentSheet.securityCodeField.value,
             isHsaFsa = true
         )
         return tokenizeService.tokenizeCreditCard(creditCardParams)

@@ -31,7 +31,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify cardholder name empty`() {
-        assertThat(foragePaymentSheet.cardholderNameValue).isEqualTo("")
+        assertThat(foragePaymentSheet.cardholderNameField.value).isEqualTo("")
         with(foragePaymentSheet.getElementState().cardholderNameState) {
             assertThat(isEmpty).isTrue
             assertThat(isValid).isFalse
@@ -44,7 +44,7 @@ class ForagePaymentSheetTest {
     fun `Verify cardholder name complete`() {
         Espresso.onView(ViewMatchers.withId(R.id.cardholderNameEditText))
             .perform(ViewActions.typeText("J"))
-        assertThat(foragePaymentSheet.cardholderNameValue).isEqualTo("J")
+        assertThat(foragePaymentSheet.cardholderNameField.value).isEqualTo("J")
         with(foragePaymentSheet.getElementState().cardholderNameState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -55,7 +55,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify card number empty`() {
-        assertThat(foragePaymentSheet.cardNumberValue).isEqualTo("")
+        assertThat(foragePaymentSheet.cardNumberField.value).isEqualTo("")
         with(foragePaymentSheet.getElementState().cardNumberState) {
             assertThat(isEmpty).isTrue
             assertThat(isValid).isFalse
@@ -68,7 +68,7 @@ class ForagePaymentSheetTest {
     fun `Verify card number short`() {
         Espresso.onView(ViewMatchers.withId(R.id.cardNumberEditText))
             .perform(forceTypeText("4"))
-        assertThat(foragePaymentSheet.cardNumberValue).isEqualTo("4")
+        assertThat(foragePaymentSheet.cardNumberField.value).isEqualTo("4")
         with(foragePaymentSheet.getElementState().cardNumberState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -81,7 +81,7 @@ class ForagePaymentSheetTest {
     fun `Verify card number failed Luhn`() {
         Espresso.onView(ViewMatchers.withId(R.id.cardNumberEditText))
             .perform(forceTypeText("4111111111111112"))
-        assertThat(foragePaymentSheet.cardNumberValue).isEqualTo("4111111111111112")
+        assertThat(foragePaymentSheet.cardNumberField.value).isEqualTo("4111111111111112")
         with(foragePaymentSheet.getElementState().cardNumberState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -94,7 +94,7 @@ class ForagePaymentSheetTest {
     fun `Verify card number complete`() {
         Espresso.onView(ViewMatchers.withId(R.id.cardNumberEditText))
             .perform(forceTypeText("4111111111111111"))
-        assertThat(foragePaymentSheet.cardNumberValue).isEqualTo("4111111111111111")
+        assertThat(foragePaymentSheet.cardNumberField.value).isEqualTo("4111111111111111")
         with(foragePaymentSheet.getElementState().cardNumberState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -105,8 +105,8 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify expiration empty`() {
-        assertThat(foragePaymentSheet.expirationValueAsString).isEqualTo("")
-        assertThatThrownBy { foragePaymentSheet.expirationValue }
+        assertThat(foragePaymentSheet.expirationField.expirationValueAsString).isEqualTo("")
+        assertThatThrownBy { foragePaymentSheet.expirationField.value }
             .isInstanceOf(IllegalStateException::class.java)
         with(foragePaymentSheet.getElementState().expirationState) {
             assertThat(isEmpty).isTrue
@@ -120,7 +120,7 @@ class ForagePaymentSheetTest {
     fun `Verify expiration short`() {
         Espresso.onView(ViewMatchers.withId(R.id.expirationEditText))
             .perform(forceTypeText("1"))
-        assertThatThrownBy { foragePaymentSheet.expirationValue }
+        assertThatThrownBy { foragePaymentSheet.expirationField.value }
             .isInstanceOf(IllegalStateException::class.java)
         with(foragePaymentSheet.getElementState().expirationState) {
             assertThat(isEmpty).isFalse
@@ -134,7 +134,7 @@ class ForagePaymentSheetTest {
     fun `Verify expiration complete`() {
         Espresso.onView(ViewMatchers.withId(R.id.expirationEditText))
             .perform(forceTypeText("1234"))
-        assertThat(foragePaymentSheet.expirationValue).isEqualTo(Pair(12, 2034))
+        assertThat(foragePaymentSheet.expirationField.value).isEqualTo(Pair(12, 2034))
         with(foragePaymentSheet.getElementState().expirationState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -145,7 +145,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify security code empty`() {
-        assertThat(foragePaymentSheet.securityCodeValue).isEqualTo("")
+        assertThat(foragePaymentSheet.securityCodeField.value).isEqualTo("")
         with(foragePaymentSheet.getElementState().securityCodeState) {
             assertThat(isEmpty).isTrue
             assertThat(isValid).isFalse
@@ -158,7 +158,7 @@ class ForagePaymentSheetTest {
     fun `Verify security code short`() {
         Espresso.onView(ViewMatchers.withId(R.id.securityCodeEditText))
             .perform(forceTypeText("1"))
-        assertThat(foragePaymentSheet.securityCodeValue).isEqualTo("1")
+        assertThat(foragePaymentSheet.securityCodeField.value).isEqualTo("1")
         with(foragePaymentSheet.getElementState().securityCodeState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -171,7 +171,7 @@ class ForagePaymentSheetTest {
     fun `Verify security code complete`() {
         Espresso.onView(ViewMatchers.withId(R.id.securityCodeEditText))
             .perform(forceTypeText("123"))
-        assertThat(foragePaymentSheet.securityCodeValue).isEqualTo("123")
+        assertThat(foragePaymentSheet.securityCodeField.value).isEqualTo("123")
         with(foragePaymentSheet.getElementState().securityCodeState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -182,7 +182,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify zip code empty`() {
-        assertThat(foragePaymentSheet.zipCodeValue).isEqualTo("")
+        assertThat(foragePaymentSheet.zipCodeField.value).isEqualTo("")
         with(foragePaymentSheet.getElementState().zipCodeState) {
             assertThat(isEmpty).isTrue
             assertThat(isValid).isFalse
@@ -195,7 +195,7 @@ class ForagePaymentSheetTest {
     fun `Verify zip code short`() {
         Espresso.onView(ViewMatchers.withId(R.id.zipCodeEditText))
             .perform(forceTypeText("1"))
-        assertThat(foragePaymentSheet.zipCodeValue).isEqualTo("1")
+        assertThat(foragePaymentSheet.zipCodeField.value).isEqualTo("1")
         with(foragePaymentSheet.getElementState().zipCodeState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -208,7 +208,7 @@ class ForagePaymentSheetTest {
     fun `Verify zip code complete`() {
         Espresso.onView(ViewMatchers.withId(R.id.zipCodeEditText))
             .perform(forceTypeText("12345"))
-        assertThat(foragePaymentSheet.zipCodeValue).isEqualTo("12345")
+        assertThat(foragePaymentSheet.zipCodeField.value).isEqualTo("12345")
         with(foragePaymentSheet.getElementState().zipCodeState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -221,7 +221,7 @@ class ForagePaymentSheetTest {
     fun `Verify zip code complete 9 digits`() {
         Espresso.onView(ViewMatchers.withId(R.id.zipCodeEditText))
             .perform(forceTypeText("12345-6789"))
-        assertThat(foragePaymentSheet.zipCodeValue).isEqualTo("12345-6789")
+        assertThat(foragePaymentSheet.zipCodeField.value).isEqualTo("12345-6789")
         with(foragePaymentSheet.getElementState().zipCodeState) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -242,7 +242,7 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify combined state non-empty`() {
-        foragePaymentSheet.cardholderNameValue = "John Doe"
+        foragePaymentSheet.cardholderNameField.value = "John Doe"
         with(foragePaymentSheet.getElementState()) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isFalse
@@ -253,11 +253,11 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify combined state complete`() {
-        foragePaymentSheet.cardholderNameValue = "John Doe"
-        foragePaymentSheet.cardNumberValue = TEST_HSA_FSA_CARD
-        foragePaymentSheet.expirationValueAsString = "1234"
-        foragePaymentSheet.securityCodeValue = "123"
-        foragePaymentSheet.zipCodeValue = "12345"
+        foragePaymentSheet.cardholderNameField.value = "John Doe"
+        foragePaymentSheet.cardNumberField.value = TEST_HSA_FSA_CARD
+        foragePaymentSheet.expirationField.value = Pair(12, 34)
+        foragePaymentSheet.securityCodeField.value = "123"
+        foragePaymentSheet.zipCodeField.value = "12345"
         with(foragePaymentSheet.getElementState()) {
             assertThat(isEmpty).isFalse
             assertThat(isValid).isTrue
@@ -286,17 +286,17 @@ class ForagePaymentSheetTest {
         Espresso.onView(ViewMatchers.withId(R.id.zipCodeEditText))
             .perform(forceTypeText("12345"))
         with(foragePaymentSheet) {
-            assertThat(cardholderNameValue).isNotEmpty()
-            assertThat(cardNumberValue).isNotEmpty()
-            assertThat(expirationValueAsString).isNotEmpty()
-            assertThat(securityCodeValue).isNotEmpty()
-            assertThat(zipCodeValue).isNotEmpty()
+            assertThat(cardholderNameField.value).isNotEmpty()
+            assertThat(cardNumberField.value).isNotEmpty()
+            assertThat(expirationField.expirationValueAsString).isNotEmpty()
+            assertThat(securityCodeField.value).isNotEmpty()
+            assertThat(zipCodeField.value).isNotEmpty()
             clearText()
-            assertThat(cardholderNameValue).isEmpty()
-            assertThat(cardNumberValue).isEmpty()
-            assertThat(expirationValueAsString).isEmpty()
-            assertThat(securityCodeValue).isEmpty()
-            assertThat(zipCodeValue).isEmpty()
+            assertThat(cardholderNameField.value).isEmpty()
+            assertThat(cardNumberField.value).isEmpty()
+            assertThat(expirationField.expirationValueAsString).isEmpty()
+            assertThat(securityCodeField.value).isEmpty()
+            assertThat(zipCodeField.value).isEmpty()
         }
     }
 
@@ -313,11 +313,11 @@ class ForagePaymentSheetTest {
         val specialColor = 0x808080
         with(foragePaymentSheet) {
             setTextColor(specialColor)
-            assertThat(cardholderNameEditText.textColors.defaultColor).isEqualTo(specialColor)
-            assertThat(cardNumberEditText.textColors.defaultColor).isEqualTo(specialColor)
-            assertThat(expirationEditText.textColors.defaultColor).isEqualTo(specialColor)
-            assertThat(securityCodeEditText.textColors.defaultColor).isEqualTo(specialColor)
-            assertThat(zipCodeEditText.textColors.defaultColor).isEqualTo(specialColor)
+            assertThat(cardholderNameField.editText.textColors.defaultColor).isEqualTo(specialColor)
+            assertThat(cardNumberField.editText.textColors.defaultColor).isEqualTo(specialColor)
+            assertThat(expirationField.editText.textColors.defaultColor).isEqualTo(specialColor)
+            assertThat(securityCodeField.editText.textColors.defaultColor).isEqualTo(specialColor)
+            assertThat(zipCodeField.editText.textColors.defaultColor).isEqualTo(specialColor)
         }
     }
 
@@ -326,11 +326,11 @@ class ForagePaymentSheetTest {
         val specialTextSize = 2.0f
         with(foragePaymentSheet) {
             setTextSize(specialTextSize)
-            assertThat(cardholderNameEditText.textSize).isEqualTo(specialTextSize)
-            assertThat(cardNumberEditText.textSize).isEqualTo(specialTextSize)
-            assertThat(expirationEditText.textSize).isEqualTo(specialTextSize)
-            assertThat(securityCodeEditText.textSize).isEqualTo(specialTextSize)
-            assertThat(zipCodeEditText.textSize).isEqualTo(specialTextSize)
+            assertThat(cardholderNameField.editText.textSize).isEqualTo(specialTextSize)
+            assertThat(cardNumberField.editText.textSize).isEqualTo(specialTextSize)
+            assertThat(expirationField.editText.textSize).isEqualTo(specialTextSize)
+            assertThat(securityCodeField.editText.textSize).isEqualTo(specialTextSize)
+            assertThat(zipCodeField.editText.textSize).isEqualTo(specialTextSize)
         }
     }
 
@@ -358,6 +358,60 @@ class ForagePaymentSheetTest {
         assertThat(fourValueList).hasSizeGreaterThanOrEqualTo(4)
         for (booleanExpected in fourValueList.subList(0, 3))
             assertThat(booleanExpected.toBoolean().toString()).isEqualTo(booleanExpected)
+    }
+
+    @Test
+    fun `Verify cardholderNameField setHint`() {
+        val randomHint = "random-hint"
+        assertThat(foragePaymentSheet.cardholderNameField.editText.hint).isNotEqualTo(randomHint)
+        foragePaymentSheet.cardholderNameField.setHint(randomHint)
+        assertThat(foragePaymentSheet.cardholderNameField.editText.hint).isEqualTo(randomHint)
+    }
+
+    @Test
+    fun `Verify cardholderNameField setHintTextColor`() {
+        val randomColor = 0x01234567
+        assertThat(foragePaymentSheet.cardholderNameField.layout.defaultHintTextColor?.defaultColor).isNotEqualTo(randomColor)
+        foragePaymentSheet.cardholderNameField.setHintTextColor(randomColor)
+        assertThat(foragePaymentSheet.cardholderNameField.layout.defaultHintTextColor?.defaultColor).isEqualTo(randomColor)
+    }
+
+    @Test
+    fun `Verify cardholderNameField setBoxStrokeColor`() {
+        val randomColor = 0x01234567
+        assertThat(foragePaymentSheet.cardholderNameField.boxStrokeColor).isNotEqualTo(randomColor)
+        foragePaymentSheet.cardholderNameField.setBoxStrokeColor(randomColor)
+        assertThat(foragePaymentSheet.cardholderNameField.boxStrokeColor).isEqualTo(randomColor)
+    }
+
+    @Test
+    fun `Verify cardholderNameField setBoxStrokeWidth`() {
+        val randomWidth = 4321
+        assertThat(foragePaymentSheet.cardholderNameField.boxStrokeWidth).isNotEqualTo(randomWidth)
+        foragePaymentSheet.cardholderNameField.setBoxStrokeWidth(randomWidth)
+        assertThat(foragePaymentSheet.cardholderNameField.boxStrokeWidth).isEqualTo(randomWidth)
+    }
+
+    @Test
+    fun `Verify setOnFocusEventListener`() {
+        foragePaymentSheet.cardNumberField.requestFocus()
+        assertThat(foragePaymentSheet.cardholderNameField.editText.isFocused).isFalse()
+        var gotFocusEvent = false
+        foragePaymentSheet.cardholderNameField.setOnFocusEventListener { gotFocusEvent = true }
+        foragePaymentSheet.cardholderNameField.requestFocus()
+        assertThat(foragePaymentSheet.cardholderNameField.editText.isFocused).isTrue()
+        assertThat(gotFocusEvent).isTrue()
+    }
+
+    @Test
+    fun `Verify setOnBlurEventListener`() {
+        foragePaymentSheet.cardholderNameField.requestFocus()
+        assertThat(foragePaymentSheet.cardholderNameField.editText.isFocused).isTrue()
+        var gotBlurEvent = false
+        foragePaymentSheet.cardholderNameField.setOnBlurEventListener { gotBlurEvent = true }
+        foragePaymentSheet.cardNumberField.requestFocus()
+        assertThat(foragePaymentSheet.cardholderNameField.editText.isFocused).isFalse()
+        assertThat(gotBlurEvent).isTrue()
     }
 
     //
