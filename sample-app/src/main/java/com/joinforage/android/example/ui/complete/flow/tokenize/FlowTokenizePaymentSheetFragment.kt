@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.joinforage.android.example.R
 import com.joinforage.android.example.databinding.FragmentFlowTokenizeCreditBinding
+import com.joinforage.android.example.ext.hideKeyboard
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.paymentmethod.PaymentMethod
 import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet.CombinedElementState
@@ -63,6 +64,7 @@ class FlowTokenizePaymentSheetFragment : Fragment() {
         viewModel.error.observe(viewLifecycleOwner, ::handleErrorChange)
 
         binding.submitButton.setOnClickListener {
+            it.context.hideKeyboard(it)
             viewModel.onSubmit(binding.tokenizeForagePaymentSheet)
         }
 
