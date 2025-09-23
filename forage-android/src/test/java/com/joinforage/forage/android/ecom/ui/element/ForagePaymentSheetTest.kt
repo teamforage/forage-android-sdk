@@ -10,6 +10,9 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.core.ui.element.CardExpiredError
+import com.joinforage.forage.android.ecom.ui.element.ExpirationElementState.Companion.secondDayOfFollowingMonth
+import com.joinforage.forage.android.ecom.ui.element.ExpirationField.Companion.formatExpirationValue
 import com.joinforage.forage.android.mock.TestForagePaymentSheet
 import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.MOCK_SESSION_TOKEN
 import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.TEST_HSA_FSA_CARD
@@ -20,6 +23,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.util.Calendar
+import java.util.TimeZone
 
 @RunWith(RobolectricTestRunner::class)
 class ForagePaymentSheetTest {
@@ -141,6 +146,47 @@ class ForagePaymentSheetTest {
             assertThat(isComplete).isTrue
             assertThat(validationError).isNull()
         }
+    }
+
+    @Test
+    fun `Verify firstDayOfFollowingMonth`() {
+        assertThat(secondDayOfFollowingMonth(Pair(1, 2025))).isEqualTo(secondDayOfGivenMonth(2, 2025))
+        assertThat(secondDayOfFollowingMonth(Pair(11, 2025))).isEqualTo(secondDayOfGivenMonth(12, 2025))
+        assertThat(secondDayOfFollowingMonth(Pair(12, 2025))).isEqualTo(secondDayOfGivenMonth(1, 2026))
+    }
+
+    @Test
+    fun `Verify expired card`() {
+        Espresso.onView(ViewMatchers.withId(R.id.expirationEditText))
+            .perform(forceTypeText("0125"))
+        assertThat(foragePaymentSheet.expirationField.value).isEqualTo(Pair(1, 2025))
+        with(foragePaymentSheet.getElementState().expirationState) {
+            assertThat(isEmpty).isFalse
+            assertThat(isValid).isTrue
+            assertThat(isComplete).isFalse
+            assertThat(validationError).isEqualTo(CardExpiredError)
+        }
+    }
+
+    @Test
+    fun `Verify unexpired card`() {
+        val nextYear = Calendar.getInstance().get(Calendar.YEAR) + 1
+        Espresso.onView(ViewMatchers.withId(R.id.expirationEditText))
+            .perform(forceTypeText(formatExpirationValue(Pair(1, nextYear))))
+        assertThat(foragePaymentSheet.expirationField.value).isEqualTo(Pair(1, nextYear))
+        with(foragePaymentSheet.getElementState().expirationState) {
+            assertThat(isEmpty).isFalse
+            assertThat(isValid).isTrue
+            assertThat(isComplete).isTrue
+            assertThat(validationError).isNull()
+        }
+    }
+
+    private fun secondDayOfGivenMonth(month: Int, year: Int): Calendar {
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendar.clear()
+        calendar.set(year, month - 1, 2, 0, 0, 0)
+        return calendar
     }
 
     @Test
