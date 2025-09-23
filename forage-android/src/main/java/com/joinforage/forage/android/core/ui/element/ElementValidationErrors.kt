@@ -40,3 +40,33 @@ val IncompleteEbtPinError = ElementValidationError(
 val WrongEbtPinError = ElementValidationError(
     detail = "Invalid EBT card PIN entered. Please enter your 4-digit PIN."
 )
+
+/**
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid cardholder name.
+ */
+val CardholderNameInvalidError = ElementValidationError(detail = "Cardholder name required")
+
+/**
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid expiration date.
+ */
+val ExpirationDateInvalidError = ElementValidationError(detail = "Expiration date required")
+
+/**
+ * A type of [ElementValidationError] that occurs when a customer submits an expiration date in the past.
+ */
+val CardExpiredError = ElementValidationError(detail = "Card is expired")
+
+/**
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid card number.
+ */
+val CardNumberInvalidError = ElementValidationError(detail = "Card number required")
+
+/**
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid security code.
+ */
+val SecurityCodeInvalidError = ElementValidationError(detail = "CVV required")
+
+/**
+ * A type of [ElementValidationError] that occurs when a customer submits an invalid zip code.
+ */
+val ZipCodeInvalidError = ElementValidationError(detail = "ZIP code required")

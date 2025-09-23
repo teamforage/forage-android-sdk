@@ -17,12 +17,18 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
+import com.joinforage.forage.android.core.ui.element.CardExpiredError
+import com.joinforage.forage.android.core.ui.element.CardNumberInvalidError
+import com.joinforage.forage.android.core.ui.element.CardholderNameInvalidError
 import com.joinforage.forage.android.core.ui.element.DynamicEnvElement
 import com.joinforage.forage.android.core.ui.element.EditTextElement
 import com.joinforage.forage.android.core.ui.element.ElementValidationError
+import com.joinforage.forage.android.core.ui.element.ExpirationDateInvalidError
 import com.joinforage.forage.android.core.ui.element.ForageElement
+import com.joinforage.forage.android.core.ui.element.SecurityCodeInvalidError
 import com.joinforage.forage.android.core.ui.element.SimpleElementListener
 import com.joinforage.forage.android.core.ui.element.StatefulElementListener
+import com.joinforage.forage.android.core.ui.element.ZipCodeInvalidError
 import com.joinforage.forage.android.core.ui.element.state.ElementState
 import com.joinforage.forage.android.core.ui.element.state.FocusState
 import com.joinforage.forage.android.core.ui.textwatcher.ExpirationTextWatcher
@@ -30,6 +36,8 @@ import com.joinforage.forage.android.core.ui.textwatcher.FormatPanTextWatcher
 import com.joinforage.forage.android.core.ui.textwatcher.TextWatcherAdapter
 import com.joinforage.forage.android.ecom.services.ForageSDK
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit
+import java.util.Calendar
+import java.util.TimeZone
 
 /**
  * A [ForageElement] that securely collects a customer's card number. You need a [ForagePaymentSheet]
@@ -271,12 +279,7 @@ class CardholderNameElementState(private val value: String) : ElementStateAdapte
     override val isEmpty get() = value.isEmpty()
     override val isValid get() = !isEmpty
     override val isComplete get() = isValid
-    override val validationError get() = (if (isComplete) null else CARDHOLDER_NAME_VALIDATION_ERROR)
-
-    companion object {
-        private val CARDHOLDER_NAME_VALIDATION_ERROR =
-            ElementValidationError("Cardholder name required")
-    }
+    override val validationError get() = (if (isComplete) null else CardholderNameInvalidError)
 }
 
 class CardholderNameField(
@@ -310,14 +313,20 @@ class CardholderNameField(
 class CardNumberElementState(private val value: String) : ElementStateAdapter() {
     override val isEmpty get() = value.isEmpty()
     override val isValid get() = CARD_NUMBER_VALID_REGEX.matches(value)
-    override val isComplete
-        get() = value.length == CARD_NUMBER_COMPLETE_LENGTH && LuhnCheckDigit().isValid(value)
-    override val validationError get() = (if (isComplete) null else CARD_NUMBER_VALIDATION_ERROR)
+    override val isComplete get() = validationError == null
+    override val validationError get() = validate(value)
+
+    private fun validate(value: String): ElementValidationError? {
+        return if (value.length == CARD_NUMBER_COMPLETE_LENGTH && LuhnCheckDigit().isValid(value)) {
+            null
+        } else {
+            CardNumberInvalidError
+        }
+    }
 
     companion object {
         private val CARD_NUMBER_VALID_REGEX = Regex("^\\d{1,16}$")
         private const val CARD_NUMBER_COMPLETE_LENGTH = 16
-        private val CARD_NUMBER_VALIDATION_ERROR = ElementValidationError("Card number required")
     }
 }
 
@@ -352,13 +361,42 @@ class CardNumberField(
 class ExpirationElementState(private val value: String) : ElementStateAdapter() {
     override val isEmpty get() = value.isEmpty()
     override val isValid get() = EXPIRATION_VALID_REGEX.matches(value)
-    override val isComplete get() = EXPIRATION_COMPLETE_REGEX.matches(value)
-    override val validationError get() = (if (isComplete) null else EXPIRATION_VALIDATION_ERROR)
+    override val isComplete get() = validationError == null
+    override val validationError get() = validate(value)
+
+    private fun validate(value: String): ElementValidationError? {
+        if (!EXPIRATION_COMPLETE_REGEX.matches(value)) {
+            return ExpirationDateInvalidError
+        }
+
+        val mmYyyy = ExpirationField.parseExpirationValue(value)
+        val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        if (!now.before(firstDayOfFollowingMonth(mmYyyy))) {
+            return CardExpiredError
+        }
+
+        return null
+    }
 
     companion object {
         private val EXPIRATION_VALID_REGEX = Regex("^\\d{1,2}/?\\d{0,2}$")
         private val EXPIRATION_COMPLETE_REGEX = Regex("^\\d{1,2}/\\d{1,2}$")
-        private val EXPIRATION_VALIDATION_ERROR = ElementValidationError("Expiration date required")
+
+        @VisibleForTesting
+        internal fun firstDayOfFollowingMonth(mmYyyy: Pair<Int, Int>): Calendar {
+            //
+            // Our SDK level is 21 so we have to do this the hard way.
+            //
+
+            val result: Calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            result.clear()
+
+            // The month value is zero-based so the "next month" is the exact value passed in.
+            // The Calendar class will wrap the month and advance the year automatically if needed.
+            result.set(mmYyyy.second, mmYyyy.first, 1, 0, 0, 0)
+
+            return result
+        }
     }
 }
 
@@ -414,13 +452,20 @@ class ExpirationField(
 class SecurityCodeElementState(private val value: String) : ElementStateAdapter() {
     override val isEmpty get() = value.isEmpty()
     override val isValid get() = SECURITY_CODE_VALID_REGEX.matches(value)
-    override val isComplete get() = SECURITY_CODE_COMPLETE_REGEX.matches(value)
-    override val validationError get() = (if (isComplete) null else SECURITY_CODE_VALIDATION_ERROR)
+    override val isComplete get() = validationError == null
+    override val validationError get() = validate(value)
+
+    private fun validate(value: String): ElementValidationError? {
+        return if (SECURITY_CODE_COMPLETE_REGEX.matches(value)) {
+            null
+        } else {
+            SecurityCodeInvalidError
+        }
+    }
 
     companion object {
         private val SECURITY_CODE_VALID_REGEX = Regex("^\\d{1,3}$")
         private val SECURITY_CODE_COMPLETE_REGEX = Regex("^\\d{3}$")
-        private val SECURITY_CODE_VALIDATION_ERROR = ElementValidationError("CVV required")
     }
 }
 
@@ -455,13 +500,20 @@ class SecurityCodeField(
 class ZipCodeElementState(private val value: String) : ElementStateAdapter() {
     override val isEmpty get() = value.isEmpty()
     override val isValid get() = ZIPCODE_VALID_REGEX.matches(value)
-    override val isComplete get() = ZIPCODE_COMPLETE_REGEX.matches(value)
-    override val validationError get() = (if (isComplete) null else ZIP_CODE_VALIDATION_ERROR)
+    override val isComplete get() = validationError == null
+    override val validationError get() = validate(value)
+
+    private fun validate(value: String): ElementValidationError? {
+        return if (ZIPCODE_COMPLETE_REGEX.matches(value)) {
+            null
+        } else {
+            ZipCodeInvalidError
+        }
+    }
 
     companion object {
         private val ZIPCODE_VALID_REGEX = Regex("^\\d{1,4}|(\\d{5}(-\\d{0,4})?)$")
         private val ZIPCODE_COMPLETE_REGEX = Regex("^\\d{5}(-\\d{4})?$")
-        private val ZIP_CODE_VALIDATION_ERROR = ElementValidationError("ZIP code required")
     }
 }
 
