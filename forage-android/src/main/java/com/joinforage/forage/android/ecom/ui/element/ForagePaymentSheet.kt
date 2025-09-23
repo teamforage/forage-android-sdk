@@ -371,7 +371,7 @@ class ExpirationElementState(private val value: String) : ElementStateAdapter() 
 
         val mmYyyy = ExpirationField.parseExpirationValue(value)
         val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-        if (!now.before(firstDayOfFollowingMonth(mmYyyy))) {
+        if (!now.before(secondDayOfFollowingMonth(mmYyyy))) {
             return CardExpiredError
         }
 
@@ -382,8 +382,19 @@ class ExpirationElementState(private val value: String) : ElementStateAdapter() 
         private val EXPIRATION_VALID_REGEX = Regex("^\\d{1,2}/?\\d{0,2}$")
         private val EXPIRATION_COMPLETE_REGEX = Regex("^\\d{1,2}/\\d{1,2}$")
 
+        /**
+         * Return a Calendar object representing midnight at the beginning of the second day of the
+         * given month and year.
+         *
+         * We use the second day of the month to resolve the uncertainty of exactly what point in
+         * time the card issuer considers the card expired. As a result we may allow vaulting of
+         * cards very recently expired.
+         *
+         * @param mmYyyy An integer pair containing the 1-based month and four digit year.
+         * @return A Calendar
+         */
         @VisibleForTesting
-        internal fun firstDayOfFollowingMonth(mmYyyy: Pair<Int, Int>): Calendar {
+        internal fun secondDayOfFollowingMonth(mmYyyy: Pair<Int, Int>): Calendar {
             //
             // Our SDK level is 21 so we have to do this the hard way.
             //
@@ -393,7 +404,7 @@ class ExpirationElementState(private val value: String) : ElementStateAdapter() 
 
             // The month value is zero-based so the "next month" is the exact value passed in.
             // The Calendar class will wrap the month and advance the year automatically if needed.
-            result.set(mmYyyy.second, mmYyyy.first, 1, 0, 0, 0)
+            result.set(mmYyyy.second, mmYyyy.first, 2, 0, 0, 0)
 
             return result
         }

@@ -11,7 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.joinforage.forage.android.R
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.ui.element.CardExpiredError
-import com.joinforage.forage.android.ecom.ui.element.ExpirationElementState.Companion.firstDayOfFollowingMonth
+import com.joinforage.forage.android.ecom.ui.element.ExpirationElementState.Companion.secondDayOfFollowingMonth
 import com.joinforage.forage.android.ecom.ui.element.ExpirationField.Companion.formatExpirationValue
 import com.joinforage.forage.android.mock.TestForagePaymentSheet
 import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.MOCK_SESSION_TOKEN
@@ -150,9 +150,9 @@ class ForagePaymentSheetTest {
 
     @Test
     fun `Verify firstDayOfFollowingMonth`() {
-        assertThat(firstDayOfFollowingMonth(Pair(1, 2025))).isEqualTo(firstDayOfGivenMonth(2, 2025))
-        assertThat(firstDayOfFollowingMonth(Pair(11, 2025))).isEqualTo(firstDayOfGivenMonth(12, 2025))
-        assertThat(firstDayOfFollowingMonth(Pair(12, 2025))).isEqualTo(firstDayOfGivenMonth(1, 2026))
+        assertThat(secondDayOfFollowingMonth(Pair(1, 2025))).isEqualTo(secondDayOfGivenMonth(2, 2025))
+        assertThat(secondDayOfFollowingMonth(Pair(11, 2025))).isEqualTo(secondDayOfGivenMonth(12, 2025))
+        assertThat(secondDayOfFollowingMonth(Pair(12, 2025))).isEqualTo(secondDayOfGivenMonth(1, 2026))
     }
 
     @Test
@@ -182,10 +182,10 @@ class ForagePaymentSheetTest {
         }
     }
 
-    private fun firstDayOfGivenMonth(month: Int, year: Int): Calendar {
+    private fun secondDayOfGivenMonth(month: Int, year: Int): Calendar {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.clear()
-        calendar.set(year, month - 1, 1, 0, 0, 0)
+        calendar.set(year, month - 1, 2, 0, 0, 0)
         return calendar
     }
 
