@@ -17,9 +17,9 @@ ext {
     PUBLISH_LICENSE_NAME = 'MIT License'
     PUBLISH_LICENSE_URL =
             'https://github.com/teamforage/forage-android-sdk/blob/main/LICENSE'
-    PUBLISH_DEVELOPER_ID = 'owenkim'
-    PUBLISH_DEVELOPER_NAME = 'Owen Kim'
-    PUBLISH_DEVELOPER_EMAIL = 'owenkim@forage.com'
+    PUBLISH_DEVELOPER_ID = 'teamforage'
+    PUBLISH_DEVELOPER_NAME = 'Forage Engineering'
+    PUBLISH_DEVELOPER_EMAIL = 'engineering@joinforage.com'
     PUBLISH_SCM_CONNECTION =
             'scm:git:github.com:teamforage/forage-android-sdk.git'
     PUBLISH_SCM_DEVELOPER_CONNECTION =
