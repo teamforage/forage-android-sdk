@@ -29,8 +29,8 @@ internal abstract class BaseDatadogLoggerFactory(
             variant = envConfig.FLAVOR.value
         ).build()
 
-        if (!Datadog.isInitialized()) {
-            Datadog.initialize(context, configuration, TrackingConsent.GRANTED)
+        if (!Datadog.isInitialized(FORAGE_DATADOG_INSTANCE_NAME)) {
+            Datadog.initialize(FORAGE_DATADOG_INSTANCE_NAME, context, configuration, TrackingConsent.GRANTED)
             val logsConfig = LogsConfiguration.Builder().build()
             Logs.enable(logsConfig)
         }
@@ -47,5 +47,9 @@ internal abstract class BaseDatadogLoggerFactory(
     fun makeLogger(): DatadogLogger {
         val dd = getDatadogLogEngine(context, forageConfig, logService)
         return DatadogLogger(dd, logAttrs, prefix)
+    }
+
+    companion object {
+        const val FORAGE_DATADOG_INSTANCE_NAME = "com.joinforage"
     }
 }
