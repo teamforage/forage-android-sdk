@@ -2,6 +2,7 @@ package com.joinforage.forage.android.core.services.telemetry
 
 import android.content.Context
 import com.joinforage.datadog.android.Datadog
+import com.joinforage.datadog.android.api.SdkCore
 import com.joinforage.datadog.android.core.configuration.Configuration
 import com.joinforage.datadog.android.log.Logger
 import com.joinforage.datadog.android.log.Logs
@@ -22,20 +23,25 @@ internal abstract class BaseDatadogLoggerFactory(
         forageConfig: ForageConfig,
         logService: LogService
     ): Logger {
-        val envConfig = EnvConfig.fromForageConfig(forageConfig)
-        val configuration = Configuration.Builder(
-            clientToken = envConfig.ddClientToken,
-            env = envConfig.FLAVOR.value,
-            variant = envConfig.FLAVOR.value
-        ).build()
+        val sdkCore: SdkCore = synchronized(this::class.java) {
+            if (Datadog.isInitialized(FORAGE_DATADOG_INSTANCE_NAME)) {
+                Datadog.getInstance(FORAGE_DATADOG_INSTANCE_NAME)
+            } else {
+                val envConfig = EnvConfig.fromForageConfig(forageConfig)
+                val configuration = Configuration.Builder(
+                    clientToken = envConfig.ddClientToken,
+                    env = envConfig.FLAVOR.value,
+                    variant = envConfig.FLAVOR.value
+                ).build()
 
-        if (!Datadog.isInitialized(FORAGE_DATADOG_INSTANCE_NAME)) {
-            Datadog.initialize(FORAGE_DATADOG_INSTANCE_NAME, context, configuration, TrackingConsent.GRANTED)
-            val logsConfig = LogsConfiguration.Builder().build()
-            Logs.enable(logsConfig)
+                Datadog.initialize(FORAGE_DATADOG_INSTANCE_NAME, context, configuration, TrackingConsent.GRANTED)!!.also {
+                    val logsConfig = LogsConfiguration.Builder().build()
+                    Logs.enable(logsConfig, it)
+                }
+            }
         }
 
-        return Logger.Builder()
+        return Logger.Builder(sdkCore)
             .setNetworkInfoEnabled(true)
             .setLogcatLogsEnabled(false)
             .setBundleWithTraceEnabled(true)
