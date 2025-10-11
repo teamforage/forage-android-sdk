@@ -1,6 +1,7 @@
 package com.joinforage.forage.android.core.services.telemetry
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.joinforage.datadog.android.Datadog
 import com.joinforage.datadog.android.api.SdkCore
 import com.joinforage.datadog.android.core.configuration.Configuration
@@ -18,29 +19,8 @@ internal abstract class BaseDatadogLoggerFactory(
     private val logAttrs: LogAttributes,
     private val prefix: String
 ) {
-    private fun getDatadogLogEngine(
-        context: Context,
-        forageConfig: ForageConfig,
-        logService: LogService
-    ): Logger {
-        val sdkCore: SdkCore = synchronized(this::class.java) {
-            if (Datadog.isInitialized(FORAGE_DATADOG_INSTANCE_NAME)) {
-                Datadog.getInstance(FORAGE_DATADOG_INSTANCE_NAME)
-            } else {
-                val envConfig = EnvConfig.fromForageConfig(forageConfig)
-                val configuration = Configuration.Builder(
-                    clientToken = envConfig.ddClientToken,
-                    env = envConfig.FLAVOR.value,
-                    variant = envConfig.FLAVOR.value
-                ).build()
-
-                Datadog.initialize(FORAGE_DATADOG_INSTANCE_NAME, context, configuration, TrackingConsent.GRANTED)!!.also {
-                    val logsConfig = LogsConfiguration.Builder().build()
-                    Logs.enable(logsConfig, it)
-                }
-            }
-        }
-
+    private fun getDatadogLogEngine(): Logger {
+        val sdkCore = getSdkCore()
         return Logger.Builder(sdkCore)
             .setNetworkInfoEnabled(true)
             .setLogcatLogsEnabled(false)
@@ -51,11 +31,37 @@ internal abstract class BaseDatadogLoggerFactory(
     }
 
     fun makeLogger(): DatadogLogger {
-        val dd = getDatadogLogEngine(context, forageConfig, logService)
+        val dd = getDatadogLogEngine()
         return DatadogLogger(dd, logAttrs, prefix)
+    }
+
+    @VisibleForTesting
+    internal fun getSdkCore(): SdkCore {
+        return synchronized(this::class.java) {
+            if (Datadog.isInitialized(FORAGE_DATADOG_INSTANCE_NAME)) {
+                Datadog.getInstance(FORAGE_DATADOG_INSTANCE_NAME)
+            } else {
+                val envConfig = EnvConfig.fromForageConfig(forageConfig)
+                val configuration = Configuration.Builder(
+                    clientToken = envConfig.ddClientToken,
+                    env = envConfig.FLAVOR.value,
+                    variant = envConfig.FLAVOR.value
+                ).build()
+
+                val sdkCore =
+                    Datadog.initialize(FORAGE_DATADOG_INSTANCE_NAME, context, configuration, TrackingConsent.GRANTED)
+                        ?: Datadog.getInstance(NO_OP_INSTANCE_NAME)
+
+                val logsConfig = LogsConfiguration.Builder().build()
+                Logs.enable(logsConfig, sdkCore)
+
+                sdkCore
+            }
+        }
     }
 
     companion object {
         const val FORAGE_DATADOG_INSTANCE_NAME = "com.joinforage"
+        const val NO_OP_INSTANCE_NAME = "no_such_instance"
     }
 }
