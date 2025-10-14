@@ -99,25 +99,26 @@ shadowAarDependencies {
      * Because of the intensive manipulations we are doing to the datadog AAR
      * artifact, we have yet to figure out an elegant way for Gradle to continue
      * handling the process for resolving the dependencies and sub-dependencies
-     * of datadog-android-sdk-logs.
+     * of dd-sdk-android-logs.
      *
      * Until we have a more eloquent answer, we are opting to manually install
-     * all the sub-dependencies that datadog-android-sdk-logs and its peer
-     * dependencies datadog-android-sdk-core require.
+     * all the sub-dependencies that dd-sdk-android-logs and its peer
+     * dependency dd-sdk-android-core require.
      *
      * These dependencies are listed publically on the maven central reposictory
-     * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-logs/2.2.0
-     * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-core/2.2.0
+     * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-logs/2.21.0
+     * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-core/2.21.0
      *
      * This function just organizes adding all of these dependencies to the
-     * implementation configuration
+     * implementation configuration.
      */
     subDependencies.set([
+        "androidx.annotation:annotation:1.9.1",
+        "androidx.collection:collection:1.4.5",
+        "androidx.work:work-runtime:2.8.1",
         "com.google.code.gson:gson:2.10.1",
         "com.lyft.kronos:kronos-android:0.0.1-alpha11",
-        "org.jetbrains.kotlin:kotlin-reflect:1.9.24",
         "org.jetbrains.kotlin:kotlin-stdlib:1.9.24",
-        "androidx.work:work-runtime:2.8.1",
     ])
 }
 
