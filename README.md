@@ -1,4 +1,4 @@
-# Forage Android SDK (`v4.2.0`)
+# Forage Android SDK (`v4.2.1`)
 
 You can use the Forage Android SDK to process online-only and/or Terminal POS EBT payments. The SDK provides UI components known as Forage Elements and associated methods that perform payment operations.
 
@@ -52,4 +52,4 @@ The `/sample-app/` folder in this repository contains a very simple integration 
 - Minimum API Level Android 5.0 (API level 21)
 - [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) v1.6.4
 - 3rd party libraries:
-  - [OkHttp](https://github.com/square/okhttp) v4.10.0
+  - [OkHttp](https://github.com/square/okhttp) v4.12.0
