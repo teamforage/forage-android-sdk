@@ -1,5 +1,7 @@
 package com.joinforage.forage.android.core.services.forageapi.requests
 
+import com.joinforage.forage.android.BuildConfig
+
 internal data class Headers(
     val posTerminalId: String? = null,
     val xKey: String? = null,
@@ -19,6 +21,7 @@ internal data class Headers(
     fun setContentType(contentType: ContentType) = this.copy(contentType = contentType)
 
     enum class HeaderKey(val key: String) {
+        X_FORAGE_ANDROID_SDK_VERSION("X-Forage-Android-Sdk-Version"),
         X_TERMINAL_ID("X-TERMINAL-ID"),
         X_KEY("X-KEY"),
         MERCHANT_ACCOUNT("Merchant-Account"),
@@ -42,6 +45,7 @@ internal data class Headers(
     }
 
     fun toMap(): Map<String, String> = mapOf(
+        HeaderKey.X_FORAGE_ANDROID_SDK_VERSION.key to BuildConfig.PUBLISH_VERSION,
         HeaderKey.X_TERMINAL_ID.key to posTerminalId,
         HeaderKey.X_KEY.key to xKey,
         HeaderKey.MERCHANT_ACCOUNT.key to merchantAccount,
