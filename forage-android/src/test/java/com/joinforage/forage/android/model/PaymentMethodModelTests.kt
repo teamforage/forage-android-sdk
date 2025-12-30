@@ -34,7 +34,6 @@ class PaymentMethodModelTests {
             }
         """.trimIndent()
 
-        val creditType = "credit"
         val creditCard = StripeCreditDebitCard(
             last4 = "4201",
             brand = "visa",
@@ -44,10 +43,10 @@ class PaymentMethodModelTests {
             pspCustomerId = "cus_12345678901234",
             paymentMethodId = "pm_123456789012345678901234"
         )
-        val creditBaseJsonString = """
+        fun creditBaseJsonString(cardType: String) = """
             {
                 "ref": "$ref",
-                "type": "$creditType",
+                "type": "$cardType",
                 "card": {
                     "last_4": "${creditCard.last4}",
                     "brand": "${creditCard.brand}",
@@ -88,19 +87,21 @@ class PaymentMethodModelTests {
 
     @Test
     fun `Credit card type without optional fields`() {
-        val paymentMethod = PaymentMethod(creditBaseJsonString)
+        for (cardType in listOf("credit", "debit", "prepaid")) {
+            val paymentMethod = PaymentMethod(creditBaseJsonString(cardType))
 
-        assertEquals(
-            PaymentMethod(
-                card = creditCard,
-                ref = ref,
-                type = creditType,
-                balance = null,
-                customerId = null,
-                reusable = true // should default to true
-            ),
-            paymentMethod
-        )
+            assertEquals(
+                PaymentMethod(
+                    card = creditCard,
+                    ref = ref,
+                    type = cardType,
+                    balance = null,
+                    customerId = null,
+                    reusable = true // should default to true
+                ),
+                paymentMethod
+            )
+        }
     }
 
     @Test
