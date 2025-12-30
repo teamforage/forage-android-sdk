@@ -51,6 +51,9 @@ allprojects {
             jvmTarget = JavaVersion.VERSION_1_8.toString()
         }
     }
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
 }
 
 apply from: "${rootDir}/scripts/publish-root.gradle"
