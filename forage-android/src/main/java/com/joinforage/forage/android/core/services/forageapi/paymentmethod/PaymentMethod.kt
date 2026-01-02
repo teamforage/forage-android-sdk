@@ -33,7 +33,7 @@ data class PaymentMethod(
             jsonObject.getJSONObject("card").let { cardJson ->
                 when (type) {
                     "ebt" -> EbtCard(cardJson)
-                    "credit" -> StripeCreditDebitCard(cardJson)
+                    "credit", "debit", "prepaid" -> StripeCreditDebitCard(cardJson)
                     else -> throw IllegalStateException(type)
                 }
             }
