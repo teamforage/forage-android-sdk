@@ -20,8 +20,8 @@ sealed class ForageErrorDetails {
         val cashBalance: String?
     ) : ForageErrorDetails() {
         internal constructor(detailsJson: JSONObject?) : this(
-            detailsJson?.opt("snap_balance") as String?,
-            detailsJson?.opt("cash_balance") as String?
+            detailsJson?.opt("snap_balance") as? String?,
+            detailsJson?.opt("cash_balance") as? String?
         )
 
         /**
