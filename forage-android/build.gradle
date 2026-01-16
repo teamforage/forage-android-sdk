@@ -3,7 +3,7 @@ import com.joinforage.ShadowAarDependenciesPlugin
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
+    id 'com.google.devtools.ksp'
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
 apply plugin: ShadowAarDependenciesPlugin
@@ -79,6 +79,12 @@ android {
     }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
 // NOTE: this workaround is only necessary to support different
 // major versions of Datadog. If we learn that all of our clients
 // are using Datadog 2.X.X, then we could theoritically drop this
@@ -142,7 +148,7 @@ dependencies {
     testImplementation 'org.assertj:assertj-core:3.18.0'
     testImplementation 'org.json:json:20220924'
     testImplementation 'org.robolectric:robolectric:4.10.3'
-    testImplementation "org.jetbrains.kotlin:kotlin-test:1.8.10"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:2.2.0"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testImplementation 'com.squareup.moshi:moshi:1.14.0'
     testImplementation 'com.squareup.moshi:moshi-adapters:1.14.0'

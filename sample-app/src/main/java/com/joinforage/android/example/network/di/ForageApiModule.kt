@@ -3,7 +3,6 @@ package com.joinforage.android.example.network.di
 import com.joinforage.android.example.network.ForageApi
 import com.joinforage.android.example.network.interceptors.AuthInterceptor
 import com.joinforage.android.example.network.model.EnvConfig
-import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.addAdapter
@@ -25,13 +24,11 @@ class ForageApiModule {
             .build()
 
         val moshiConverterFactory = MoshiConverterFactory.create(moshi)
-        val callAdapterFactory = ApiResponseCallAdapterFactory.create()
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(moshiConverterFactory)
-            .addCallAdapterFactory(callAdapterFactory)
             .build()
     }
 
