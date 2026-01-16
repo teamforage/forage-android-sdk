@@ -3,10 +3,12 @@
 plugins {
     id 'com.android.application' version '8.1.0' apply false
     id 'com.android.library' version '8.1.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
+    id 'org.jetbrains.kotlin.android' version '2.2.0' apply false
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.2.0' apply false
     id "com.diffplug.spotless" version "6.11.0"
     id 'androidx.navigation.safeargs' version '2.5.3' apply false
-    id 'com.google.dagger.hilt.android' version '2.44' apply false
+    id 'com.google.dagger.hilt.android' version '2.57' apply false
+    id 'com.google.devtools.ksp' version '2.2.0-2.0.2' apply false
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.jetbrains.kotlinx.kover' version '0.6.1'
     id "org.jetbrains.dokka" version "2.0.0"
@@ -44,13 +46,5 @@ spotless {
     }
 }
 
-
-allprojects {
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_1_8.toString()
-        }
-    }
-}
 
 apply from: "${rootDir}/scripts/publish-root.gradle"

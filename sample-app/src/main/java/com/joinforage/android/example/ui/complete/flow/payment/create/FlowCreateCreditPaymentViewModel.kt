@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.data.PaymentsRepository
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.ui.complete.flow.payment.create.FlowCreatePaymentViewModel.Companion.FAKE_ADDRESS
-import com.skydoves.sandwich.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,21 +44,24 @@ class FlowCreateCreditPaymentViewModel @Inject constructor(
             isDelivery = false
         )
 
-        when (createResponse) {
-            is ApiResponse.Success -> {
+        if (createResponse.isSuccessful) {
+            val createData = createResponse.body()
+            if (createData != null) {
                 val authorizeResponse = repository.authorizePayment(
                     args.bearer,
                     args.merchantAccount,
-                    createResponse.data.ref!!,
+                    createData.ref!!,
                     true
                 )
 
-                when (authorizeResponse) {
-                    is ApiResponse.Success -> _paymentResult.value = authorizeResponse.data
-                    is ApiResponse.Failure -> _errorResult.value = authorizeResponse.toString()
+                if (authorizeResponse.isSuccessful) {
+                    _paymentResult.value = authorizeResponse.body()
+                } else {
+                    _errorResult.value = authorizeResponse.toString()
                 }
             }
-            is ApiResponse.Failure -> _errorResult.value = createResponse.toString()
+        } else {
+            _errorResult.value = createResponse.toString()
         }
 
         _isLoading.value = false

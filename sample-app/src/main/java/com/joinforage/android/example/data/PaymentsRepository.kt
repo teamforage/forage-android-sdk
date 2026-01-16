@@ -6,7 +6,7 @@ import com.joinforage.android.example.network.model.AuthorizeRequest
 import com.joinforage.android.example.network.model.CaptureRequest
 import com.joinforage.android.example.network.model.PaymentRequest
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.skydoves.sandwich.ApiResponse
+import retrofit2.Response
 
 class PaymentsRepository(sessionToken: String) {
 
@@ -23,7 +23,7 @@ class PaymentsRepository(sessionToken: String) {
         metadata: Map<String, String> = mapOf(),
         deliveryAddress: Address,
         isDelivery: Boolean
-    ): ApiResponse<PaymentResponse> {
+    ): Response<PaymentResponse> {
         val bearerString = "Bearer $bearerToken"
         return forageApi.createPayment(
             bearerString,
@@ -46,7 +46,7 @@ class PaymentsRepository(sessionToken: String) {
         fnsNumber: String,
         paymentRef: String,
         requestPartialAuthorization: Boolean
-    ): ApiResponse<PaymentResponse> {
+    ): Response<PaymentResponse> {
         val bearerString = "Bearer $bearerToken"
         return forageApi.authorizePayment(
             bearerString,
@@ -62,7 +62,7 @@ class PaymentsRepository(sessionToken: String) {
         paymentRef: String,
         captureAmount: String,
         productList: List<CaptureRequest.Product>
-    ): ApiResponse<PaymentResponse> {
+    ): Response<PaymentResponse> {
         val bearerString = "Bearer $bearerToken"
         return forageApi.capturePayment(
             bearerString,

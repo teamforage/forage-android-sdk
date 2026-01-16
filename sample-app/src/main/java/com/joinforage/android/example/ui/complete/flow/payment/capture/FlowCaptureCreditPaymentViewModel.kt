@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.data.PaymentsRepository
 import com.joinforage.android.example.network.model.CaptureRequest
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.skydoves.sandwich.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,9 +47,10 @@ class FlowCaptureCreditPaymentViewModel @Inject constructor(
             )
         )
 
-        when (captureResponse) {
-            is ApiResponse.Success -> _paymentResult.value = captureResponse.data
-            is ApiResponse.Failure -> _errorResult.value = captureResponse.toString()
+        if (captureResponse.isSuccessful) {
+            _paymentResult.value = captureResponse.body()
+        } else {
+            _errorResult.value = captureResponse.toString()
         }
 
         _isLoading.value = false

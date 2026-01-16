@@ -8,8 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.data.PaymentsRepository
 import com.joinforage.android.example.network.model.Address
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -65,7 +63,7 @@ class FlowCreatePaymentViewModel @Inject constructor(
     fun submitSnapAmount(amount: String) = viewModelScope.launch {
         _isLoading.value = true
 
-        repository.createPayment(
+        val response = repository.createPayment(
             bearer,
             merchantAccount,
             amount = amount,
@@ -74,18 +72,18 @@ class FlowCreatePaymentViewModel @Inject constructor(
             description = "desc",
             deliveryAddress = FAKE_ADDRESS,
             isDelivery = false
-        ).onSuccess {
-            _snapPaymentResult.value = data
-            _isLoading.value = false
-        }.onFailure {
-            _isLoading.value = false
+        )
+
+        if (response.isSuccessful) {
+            _snapPaymentResult.value = response.body()
         }
+        _isLoading.value = false
     }
 
     fun submitEbtCashAmount(amount: String) = viewModelScope.launch {
         _isLoading.value = true
 
-        repository.createPayment(
+        val response = repository.createPayment(
             bearer,
             merchantAccount,
             amount = amount,
@@ -94,12 +92,12 @@ class FlowCreatePaymentViewModel @Inject constructor(
             description = "desc",
             deliveryAddress = FAKE_ADDRESS,
             isDelivery = false
-        ).onSuccess {
-            _ebtCashPaymentResult.value = data
-            _isLoading.value = false
-        }.onFailure {
-            _isLoading.value = false
+        )
+
+        if (response.isSuccessful) {
+            _ebtCashPaymentResult.value = response.body()
         }
+        _isLoading.value = false
     }
 
     companion object {
