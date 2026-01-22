@@ -44,7 +44,8 @@ class FlowCaptureCreditPaymentViewModel @Inject constructor(
                         gtin = "00300450406026",
                         name = "TYLNL EX/S EASY SWALLW CP 24",
                         unitPrice = captureAmount,
-                        quantity = "1"
+                        quantity = "1",
+                        eligibility = "hsa_fsa"
                     )
                 )
             )
