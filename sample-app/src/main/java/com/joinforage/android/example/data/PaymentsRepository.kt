@@ -78,7 +78,7 @@ class PaymentsRepository(sessionToken: String) {
         return httpClient.post(
             "api/payments/$paymentRef/authorize/",
             request,
-            headers,
+            headers
         )
     }
 
