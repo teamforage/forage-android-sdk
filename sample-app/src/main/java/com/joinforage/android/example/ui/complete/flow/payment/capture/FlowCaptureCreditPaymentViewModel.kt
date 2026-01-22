@@ -6,9 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.data.PaymentsRepository
+import com.joinforage.android.example.network.HttpException
 import com.joinforage.android.example.network.model.CaptureRequest
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.skydoves.sandwich.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,24 +33,27 @@ class FlowCaptureCreditPaymentViewModel @Inject constructor(
         _isLoading.value = true
         _errorResult.value = null
 
-        val captureResponse = repository.capturePayment(
-            args.bearer,
-            args.merchantAccount,
-            args.payment.ref!!,
-            captureAmount,
-            listOf(
-                CaptureRequest.Product(
-                    gtin = "00300450406026",
-                    name = "TYLNL EX/S EASY SWALLW CP 24",
-                    unitPrice = captureAmount,
-                    quantity = "1"
+        try {
+            val captureResponse = repository.capturePayment(
+                args.bearer,
+                args.merchantAccount,
+                args.payment.ref!!,
+                captureAmount,
+                listOf(
+                    CaptureRequest.Product(
+                        gtin = "00300450406026",
+                        name = "TYLNL EX/S EASY SWALLW CP 24",
+                        unitPrice = captureAmount,
+                        quantity = "1"
+                    )
                 )
             )
-        )
-
-        when (captureResponse) {
-            is ApiResponse.Success -> _paymentResult.value = captureResponse.data
-            is ApiResponse.Failure -> _errorResult.value = captureResponse.toString()
+            _paymentResult.value = captureResponse
+        } catch (e: Exception) {
+            _errorResult.value = when (e) {
+                is HttpException -> "HTTP ${e.statusCode}: ${e.responseBody}"
+                else -> e.message ?: "Payment capture failed"
+            }
         }
 
         _isLoading.value = false
