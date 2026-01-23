@@ -6,9 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.data.PaymentsRepository
+import com.joinforage.android.example.network.HttpException
 import com.joinforage.android.example.network.model.PaymentResponse
 import com.joinforage.android.example.ui.complete.flow.payment.create.FlowCreatePaymentViewModel.Companion.FAKE_ADDRESS
-import com.skydoves.sandwich.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,32 +34,37 @@ class FlowCreateCreditPaymentViewModel @Inject constructor(
         _paymentResult.value = null
         _errorResult.value = null
 
-        val createResponse = repository.createPayment(
-            args.bearer,
-            args.merchantAccount,
-            amount = authorizationAmount,
-            fundingType = "credit_payfac",
-            paymentMethod = args.paymentMethodRef,
-            description = "desc",
-            deliveryAddress = FAKE_ADDRESS,
-            isDelivery = false
-        )
+        try {
+            val createResponse = repository.createPayment(
+                args.bearer,
+                args.merchantAccount,
+                amount = authorizationAmount,
+                fundingType = "credit_payfac",
+                paymentMethod = args.paymentMethodRef,
+                description = "desc",
+                deliveryAddress = FAKE_ADDRESS,
+                isDelivery = false
+            )
 
-        when (createResponse) {
-            is ApiResponse.Success -> {
+            try {
                 val authorizeResponse = repository.authorizePayment(
                     args.bearer,
                     args.merchantAccount,
-                    createResponse.data.ref!!,
+                    createResponse.ref!!,
                     true
                 )
-
-                when (authorizeResponse) {
-                    is ApiResponse.Success -> _paymentResult.value = authorizeResponse.data
-                    is ApiResponse.Failure -> _errorResult.value = authorizeResponse.toString()
+                _paymentResult.value = authorizeResponse
+            } catch (e: Exception) {
+                _errorResult.value = when (e) {
+                    is HttpException -> "HTTP ${e.statusCode}: ${e.responseBody}"
+                    else -> e.message ?: "Authorization failed"
                 }
             }
-            is ApiResponse.Failure -> _errorResult.value = createResponse.toString()
+        } catch (e: Exception) {
+            _errorResult.value = when (e) {
+                is HttpException -> "HTTP ${e.statusCode}: ${e.responseBody}"
+                else -> e.message ?: "Payment creation failed"
+            }
         }
 
         _isLoading.value = false

@@ -1,5 +1,6 @@
 package com.joinforage.android.example.ui.complete.flow.payment.create
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -8,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.joinforage.android.example.data.PaymentsRepository
 import com.joinforage.android.example.network.model.Address
 import com.joinforage.android.example.network.model.PaymentResponse
-import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,6 +17,7 @@ import javax.inject.Inject
 class FlowCreatePaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val TAG = FlowCreatePaymentViewModel::class.java.simpleName
     private val args = FlowCreatePaymentFragmentArgs.fromSavedStateHandle(savedStateHandle)
     val merchantAccount = args.merchantAccount
     val bearer = args.bearer
@@ -65,19 +65,21 @@ class FlowCreatePaymentViewModel @Inject constructor(
     fun submitSnapAmount(amount: String) = viewModelScope.launch {
         _isLoading.value = true
 
-        repository.createPayment(
-            bearer,
-            merchantAccount,
-            amount = amount,
-            fundingType = "ebt_snap",
-            paymentMethod = args.paymentMethodRef,
-            description = "desc",
-            deliveryAddress = FAKE_ADDRESS,
-            isDelivery = false
-        ).onSuccess {
-            _snapPaymentResult.value = data
-            _isLoading.value = false
-        }.onFailure {
+        try {
+            val response = repository.createPayment(
+                bearer,
+                merchantAccount,
+                amount = amount,
+                fundingType = "ebt_snap",
+                paymentMethod = args.paymentMethodRef,
+                description = "desc",
+                deliveryAddress = FAKE_ADDRESS,
+                isDelivery = false
+            )
+            _snapPaymentResult.value = response
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create SNAP payment", e)
+        } finally {
             _isLoading.value = false
         }
     }
@@ -85,19 +87,21 @@ class FlowCreatePaymentViewModel @Inject constructor(
     fun submitEbtCashAmount(amount: String) = viewModelScope.launch {
         _isLoading.value = true
 
-        repository.createPayment(
-            bearer,
-            merchantAccount,
-            amount = amount,
-            fundingType = "ebt_cash",
-            paymentMethod = args.paymentMethodRef,
-            description = "desc",
-            deliveryAddress = FAKE_ADDRESS,
-            isDelivery = false
-        ).onSuccess {
-            _ebtCashPaymentResult.value = data
-            _isLoading.value = false
-        }.onFailure {
+        try {
+            val response = repository.createPayment(
+                bearer,
+                merchantAccount,
+                amount = amount,
+                fundingType = "ebt_cash",
+                paymentMethod = args.paymentMethodRef,
+                description = "desc",
+                deliveryAddress = FAKE_ADDRESS,
+                isDelivery = false
+            )
+            _ebtCashPaymentResult.value = response
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create EBT Cash payment", e)
+        } finally {
             _isLoading.value = false
         }
     }

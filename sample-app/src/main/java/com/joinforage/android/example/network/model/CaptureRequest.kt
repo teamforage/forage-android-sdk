@@ -15,6 +15,7 @@ data class CaptureRequest(
         val gtin: String,
         val name: String,
         @Json(name = "unit_price") val unitPrice: String,
-        val quantity: String
+        val quantity: String,
+        val eligibility: String
     )
 }
