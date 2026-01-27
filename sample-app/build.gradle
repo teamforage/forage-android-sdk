@@ -1,11 +1,11 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'androidx.navigation.safeargs.kotlin'
-    id 'com.google.dagger.hilt.android'
-    id "org.jetbrains.kotlin.kapt"
-    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
-    id("org.jetbrains.kotlin.plugin.serialization").version("1.8.10")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.androidx.navigation.safeargs.kotlin)
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.com.google.devtools.ksp)
+    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
 }
 
 android {
@@ -80,39 +80,41 @@ dependencies {
     // we ever need to debug in the future
 //    implementation("com.datadoghq:dd-sdk-android:1.19.2")
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.7.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1'
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.kotlinx.serialization.json
 
-    implementation 'com.google.dagger:hilt-android:2.44'
+    implementation libs.hilt.android
     implementation files('libs/CpaySDKLibV4.0.9_20230420.jar')
-    kapt 'com.google.dagger:hilt-compiler:2.44'
+    kapt libs.hilt.compiler
 
     // Compose
-    implementation 'androidx.compose.ui:ui-android:1.5.4'
-    implementation 'androidx.activity:activity-compose:1.8.2'
-    implementation 'androidx.navigation:navigation-compose:2.7.6'
-    implementation "androidx.compose.material3:material3:1.1.2"
-    implementation 'androidx.compose.ui:ui-tooling:1.5.4'
-    debugImplementation 'androidx.compose.ui:ui-tooling-preview:1.5.4'
+    implementation libs.androidx.ui.android
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.navigation.compose
+    implementation libs.androidx.material3
+    implementation libs.androidx.ui.tooling
+    debugImplementation libs.androidx.ui.tooling.preview
 
     // Used only for doing requests from the sample app, not a requirement for the ForageSDK
     // Retrofit + Moshi to create the Payment Object
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.squareup.moshi:moshi:1.14.0'
-    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
-    ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
-    implementation 'com.squareup.moshi:moshi-adapters:1.14.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation libs.okhttp
+    implementation libs.converter.moshi
+    implementation libs.moshi
+    implementation libs.moshi.kotlin
+    ksp libs.moshi.kotlin.codegen
+    implementation libs.moshi.adapters
+    implementation libs.logging.interceptor
+    implementation libs.kotlinx.coroutines.android
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
-    debugImplementation 'androidx.fragment:fragment-testing:1.5.4'
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+    debugImplementation libs.androidx.fragment.testing
 }

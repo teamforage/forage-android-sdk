@@ -1,10 +1,10 @@
 import com.joinforage.ShadowAarDependenciesPlugin
 
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id("com.google.devtools.ksp").version("1.8.10-1.0.9")
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.com.google.devtools.ksp)
+    alias(libs.plugins.jetbrains.kotlinx.kover)
 }
 apply plugin: ShadowAarDependenciesPlugin
 
@@ -81,7 +81,7 @@ android {
 
 // NOTE: this workaround is only necessary to support different
 // major versions of Datadog. If we learn that all of our clients
-// are using Datadog 2.X.X, then we could theoritically drop this
+// are using Datadog 2.X.X, then we could theoretically drop this
 // extra gradle work; though we could need it again when a v3 major
 // comes around
 shadowAarDependencies {
@@ -105,7 +105,7 @@ shadowAarDependencies {
      * all the sub-dependencies that dd-sdk-android-logs and its peer
      * dependency dd-sdk-android-core require.
      *
-     * These dependencies are listed publically on the maven central reposictory
+     * These dependencies are listed publicly on the maven central repository
      * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-logs/2.21.0
      * - https://mvnrepository.com/artifact/com.datadoghq/dd-sdk-android-core/2.21.0
      *
@@ -123,36 +123,36 @@ shadowAarDependencies {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.kotlinx.coroutines.android
     implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
     // NOTE: com.datadoghq:dd-sdk-android-logs:2.21.0 require this being
     // 4.12.0, so we shouldn't bump to 5.X.X; 4.X.X are probably fine
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation 'commons-validator:commons-validator:1.10.0'
+    implementation libs.okhttp
+    implementation libs.commons.validator
 
-    testImplementation 'androidx.test:core-ktx:1.5.0'
-    testImplementation "androidx.fragment:fragment-testing:1.6.2"
-    testImplementation 'androidx.test.espresso:espresso-core:3.5.0'
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.3'
-    testImplementation 'me.jorgecastillo:hiroaki-core:0.2.3'
-    testImplementation 'org.assertj:assertj-core:3.18.0'
-    testImplementation 'org.json:json:20220924'
-    testImplementation 'org.robolectric:robolectric:4.10.3'
-    testImplementation "org.jetbrains.kotlin:kotlin-test:1.8.10"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
-    testImplementation 'com.squareup.moshi:moshi:1.14.0'
-    testImplementation 'com.squareup.moshi:moshi-adapters:1.14.0'
+    testImplementation libs.core.ktx
+    testImplementation libs.androidx.fragment.testing
+    testImplementation libs.androidx.espresso.core
+    testImplementation libs.junit
+    testImplementation libs.mockwebserver
+    testImplementation libs.hiroaki.core
+    testImplementation libs.assertj.core
+    testImplementation libs.json
+    testImplementation libs.robolectric
+    testImplementation libs.kotlin.test
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.moshi
+    testImplementation libs.moshi.adapters
 
     // Use Mockito judiciously (mainly for mocking views)!
     // Opt for dependency injection and inheritance over Mockito
-    testImplementation 'org.mockito:mockito-core:5.8.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
+    testImplementation libs.mockito.core
+    testImplementation libs.mockito.kotlin
 
-    ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
+    ksp libs.moshi.kotlin.codegen
 }
 
 
