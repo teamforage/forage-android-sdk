@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dokka-docs
-          path: reference-docs/
+          path: reference-docs
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -49,6 +49,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: dokka-docs
+          path: reference-docs
 
       - name: Deploy to Netlify
         run: netlify deploy --dir reference-docs --site 37a34c3e-f83c-44f3-8e0d-94570eb9f8fd --auth ${{ secrets.NETLIFY_API_TOKEN }}
