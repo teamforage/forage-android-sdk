@@ -52,4 +52,4 @@ jobs:
           path: reference-docs
 
       - name: Deploy to Netlify
-        run: netlify deploy --dir reference-docs --site 37a34c3e-f83c-44f3-8e0d-94570eb9f8fd --auth ${{ secrets.NETLIFY_API_TOKEN }}
+        run: netlify deploy --prod --dir reference-docs --site 37a34c3e-f83c-44f3-8e0d-94570eb9f8fd --auth ${{ secrets.NETLIFY_API_TOKEN }}
