@@ -105,7 +105,6 @@ dependencies {
     // Used only for doing requests from the sample app, not a requirement for the ForageSDK
     // Retrofit + Moshi to create the Payment Object
     implementation libs.okhttp
-    implementation libs.converter.moshi
     implementation libs.moshi
     implementation libs.moshi.kotlin
     ksp libs.moshi.kotlin.codegen

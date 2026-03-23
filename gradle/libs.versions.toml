@@ -8,7 +8,6 @@ lifecycleLivedataKtx = "2.5.1"
 moshi = "1.14.0"
 navigationFragmentKtx = "2.5.3"
 okhttp = "4.12.0"
-retrofit = "2.9.0"
 uiAndroid = "1.5.4"
 
 [libraries]
@@ -30,7 +29,6 @@ androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref =
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiAndroid" }
 assertj-core = { module = "org.assertj:assertj-core", version = "3.18.0" }
 commons-validator = { module = "commons-validator:commons-validator", version = "1.10.0" }
-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 core-ktx = { module = "androidx.test:core-ktx", version = "1.5.0" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
@@ -51,9 +49,7 @@ moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.10.3" }
-sandwich = { module = "com.github.skydoves:sandwich", version = "1.3.2" }
 
 [plugins]
 android-application = { id = 'com.android.application', version.ref = 'android' }
