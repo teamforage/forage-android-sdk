@@ -1,8 +1,8 @@
 [versions]
-android = "8.1.0"
-hiltAndroid = "2.44"
+android = "8.13.2"
+hiltAndroid = "2.58"
 junit = "4.13.2"
-kotlin = "1.8.10"
+kotlin = "2.3.20"
 kotlinxCoroutinesAndroid = "1.6.4"
 lifecycleLivedataKtx = "2.5.1"
 moshi = "1.14.0"
@@ -60,7 +60,8 @@ androidx-navigation-safeargs-kotlin = { id = 'androidx.navigation.safeargs.kotli
 gradle-nexus-publish-plugin = { id = 'io.github.gradle-nexus.publish-plugin', version = '2.0.0' }
 jetbrains-kotlinx-kover = { id = 'org.jetbrains.kotlinx.kover', version = '0.6.1' }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
-com-google-devtools-ksp = { id = "com.google.devtools.ksp", version = "1.8.10-1.0.9" }
-dagger-hilt-android = { id = 'com.google.dagger.hilt.android', version = '2.44' }
+com-google-devtools-ksp = { id = "com.google.devtools.ksp", version = "2.2.21-2.0.4" }
+dagger-hilt-android = { id = 'com.google.dagger.hilt.android', version.ref = "hiltAndroid" }
 org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
