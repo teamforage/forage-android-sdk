@@ -22,3 +22,5 @@ SecretRingKey.gpg
 
 # Dokka HTML documentation
 reference-docs/
+
+.vscode
