@@ -24,8 +24,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e  # v6.1.0
-        with:
-          arguments: forage-android:lint
+
+      - name: Run Lint
+        run: ./gradlew forage-android:lint
 
       - uses: github/codeql-action/upload-sarif@v2
         with:
