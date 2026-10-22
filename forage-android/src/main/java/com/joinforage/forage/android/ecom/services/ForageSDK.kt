@@ -1,11 +1,19 @@
 package com.joinforage.forage.android.ecom.services
 
+import androidx.activity.ComponentActivity
+import androidx.webkit.WebViewFeature
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.ForageConfigNotSetException
 import com.joinforage.forage.android.core.services.forageapi.network.ForageApiResponse
+import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.forageapi.payment.PaymentService
+import com.joinforage.forage.android.core.services.telemetry.LogLogger
 import com.joinforage.forage.android.ecom.services.forageapi.engine.EcomOkHttpEngine
 import com.joinforage.forage.android.ecom.services.forageapi.paymentmethod.PaymentMethodService
+import com.joinforage.forage.android.ecom.services.moment.Moment
+import com.joinforage.forage.android.ecom.services.moment.MomentResult
+import com.joinforage.forage.android.ecom.services.moment.MomentTelemetry
+import com.joinforage.forage.android.ecom.services.moment.openMoment
 import com.joinforage.forage.android.ecom.services.telemetry.EcomDatadogLoggerFactory
 import com.joinforage.forage.android.ecom.services.vault.CreditCardParams
 import com.joinforage.forage.android.ecom.services.vault.TokenizeCardService
@@ -15,6 +23,7 @@ import com.joinforage.forage.android.ecom.services.vault.submission.EcomDeferCap
 import com.joinforage.forage.android.ecom.ui.element.ForagePANEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePINEditText
 import com.joinforage.forage.android.ecom.ui.element.ForagePaymentSheet
+import com.joinforage.forage.android.ecom.ui.moment.MomentActivity
 
 /**
  * The entry point to the Forage SDK.
@@ -429,6 +438,50 @@ class ForageSDK {
             logLogger = logger
         ).submit()
     }
+
+    /**
+     * Opens a [Moment], a Forage-hosted page that completes one task with the customer (like
+     * entering their EBT Card PIN), full screen over [activity].
+     *
+     * Only one moment can be open at a time. Cancelling the calling coroutine closes the moment.
+     * ```kotlin
+     * // Example createMoment call in a Fragment
+     * lifecycleScope.launch {
+     *     val result = ForageSDK().createMoment(
+     *         requireActivity(),
+     *         CreateMomentParams(
+     *             forageConfig = ForageConfig(merchantId, sessionToken),
+     *             moment = Moment.PaymentCollectPin(paymentRef = snapPaymentRef)
+     *         )
+     *     )
+     *
+     *     when (result) {
+     *         MomentResult.Completed -> // capture the payment from your server
+     *         MomentResult.Dismissed -> // the customer closed the moment
+     *         is MomentResult.Failed -> // handle result.error
+     *     }
+     * }
+     * ```
+     * @param activity The activity to show the moment over.
+     * @param params A [CreateMomentParams] model with the [ForageConfig] and the [Moment] to open.
+     * @return A [MomentResult]. Failures are returned as [MomentResult.Failed], not thrown.
+     */
+    suspend fun createMoment(activity: ComponentActivity, params: CreateMomentParams): MomentResult =
+        openMoment(
+            params,
+            telemetry = MomentTelemetry(makeMomentLogger(activity, params.forageConfig), params.moment.name),
+            isSupported = { WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) }
+        ) { sessionId ->
+            activity.startActivity(MomentActivity.intent(activity, sessionId))
+        }
+
+    // telemetry must never stop a moment from opening, e.g. if the session token can't be parsed
+    private fun makeMomentLogger(activity: ComponentActivity, forageConfig: ForageConfig): LogLogger? =
+        try {
+            EcomDatadogLoggerFactory(activity.applicationContext, forageConfig, customerId = null).makeLogger()
+        } catch (e: Exception) {
+            null
+        }
 }
 
 /**
@@ -527,4 +580,17 @@ data class CapturePaymentParams(
 data class DeferPaymentCaptureParams(
     val foragePinEditText: ForagePINEditText,
     val paymentRef: String
+)
+
+/**
+ * A model that represents the parameters that Forage requires to open a moment.
+ * [CreateMomentParams] are passed to the
+ * [createMoment][com.joinforage.forage.android.ecom.services.ForageSDK.createMoment] method.
+ *
+ * @property forageConfig The [ForageConfig] with your merchant ID and a session token.
+ * @property moment The [Moment] to open, like [Moment.PaymentCollectPin].
+ */
+data class CreateMomentParams(
+    val forageConfig: ForageConfig,
+    val moment: Moment
 )
