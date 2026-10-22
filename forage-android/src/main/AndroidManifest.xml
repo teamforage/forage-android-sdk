@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <application>
+    <!-- hosts moments opened with ForageSDK.createMoment. configChanges keeps the
+         WebView alive through rotation and other config changes, and adjustResize lets
+         the activity pad the page out of the keyboard's way -->
+    <activity
+        android:name=".ecom.ui.moment.MomentActivity"
+        android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density"
+        android:exported="false"
+        android:windowSoftInputMode="adjustResize"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar" />
 </application>
 </manifest>
