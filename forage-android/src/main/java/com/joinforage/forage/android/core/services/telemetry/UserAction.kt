@@ -5,5 +5,6 @@ internal enum class UserAction(val value: String) {
     CAPTURE("capture"),
     DEFER_CAPTURE("defer_capture"),
     REFUND("refund"),
-    DEFER_REFUND("defer_refund");
+    DEFER_REFUND("defer_refund"),
+    CREATE_MOMENT("create_moment");
 }
