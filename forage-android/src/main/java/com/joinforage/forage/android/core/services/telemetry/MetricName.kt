@@ -13,5 +13,17 @@ internal enum class MetricName(val value: String) {
     [GET] EncryptionKey -> [GET] PaymentMethod -> [POST] to VGS/BT -> [GET] Poll for Response ->
     [GET] PaymentMethod -> Return Balance
      */
-    CUSTOMER_PERCEIVED_RESPONSE("customer_perceived_response");
+    CUSTOMER_PERCEIVED_RESPONSE("customer_perceived_response"),
+
+    /*
+    MOMENT_READY refers to the time from createMoment being called until the moment's page
+    sends input_ready, when the customer can start using it.
+     */
+    MOMENT_READY("moment_ready"),
+
+    /*
+    MOMENT_OUTCOME refers to how a moment ended (completed, dismissed or failed) and the time from
+    createMoment being called until it ended.
+     */
+    MOMENT_OUTCOME("moment_outcome");
 }
