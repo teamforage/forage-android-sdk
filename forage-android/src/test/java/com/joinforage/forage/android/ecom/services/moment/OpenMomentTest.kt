@@ -6,7 +6,6 @@ import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.Loggable
 import com.joinforage.forage.android.ecom.services.CreateMomentParams
-import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.MOCK_SESSION_TOKEN
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -25,7 +24,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class OpenMomentTest {
-    private val forageConfig = ForageConfig(merchantId = "mid123", sessionToken = MOCK_SESSION_TOKEN)
+    private val forageConfig = ForageConfig(merchantId = "mid123", sessionToken = MOMENT_TEST_SESSION_TOKEN)
     private val logger = InMemoryLogger(LogAttributes(forageConfig, traceId = "trace"))
     private val launched = mutableListOf<String>()
 
