@@ -6,7 +6,6 @@ import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
 import com.joinforage.forage.android.core.services.telemetry.Loggable
-import com.joinforage.forage.android.mock.TestForagePaymentSheet.Companion.MOCK_SESSION_TOKEN
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,7 +20,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class MomentSessionTest {
-    private val forageConfig = ForageConfig(merchantId = "mid123", sessionToken = MOCK_SESSION_TOKEN)
+    private val forageConfig = ForageConfig(merchantId = "mid123", sessionToken = MOMENT_TEST_SESSION_TOKEN)
     private val logger = InMemoryLogger(LogAttributes(forageConfig, traceId = "trace"))
     private var nowMs = 1_000L
     private val telemetry = MomentTelemetry(logger, "payment_collect_pin") { nowMs }
@@ -241,7 +240,7 @@ class MomentSessionTest {
         telemetry.settled(MomentResult.Failed(ForageError(400, "user_error", "bad")), reachedReady = true)
 
         val logged = logger.logs.joinToString { "${it.msg} ${it.attrs.values}" }
-        assertFalse(logged.contains(MOCK_SESSION_TOKEN))
+        assertFalse(logged.contains(MOMENT_TEST_SESSION_TOKEN))
         assertFalse(logged.contains("secret-ref"))
     }
 

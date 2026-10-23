@@ -467,9 +467,17 @@ class ForageSDK {
      * @return A [MomentResult]. Failures are returned as [MomentResult.Failed], not thrown.
      */
     suspend fun createMoment(activity: ComponentActivity, params: CreateMomentParams): MomentResult =
+        createMoment(activity, params, makeMomentLogger(activity, params.forageConfig))
+
+    // tests pass their own logger, since the real one starts the process-wide Datadog SDK
+    internal suspend fun createMoment(
+        activity: ComponentActivity,
+        params: CreateMomentParams,
+        logger: LogLogger?
+    ): MomentResult =
         openMoment(
             params,
-            telemetry = MomentTelemetry(makeMomentLogger(activity, params.forageConfig), params.moment.name),
+            telemetry = MomentTelemetry(logger, params.moment.name),
             isSupported = { WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) }
         ) { sessionId ->
             activity.startActivity(MomentActivity.intent(activity, sessionId))
