@@ -5,9 +5,8 @@ import com.joinforage.forage.android.core.services.forageapi.network.UnknownErro
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
 import org.json.JSONObject
 
-
 internal object MomentProtocol {
-    // This need to match what the internal JS SDK expects
+    // This needs to match what the internal JS SDK expects
     const val BRIDGE_NAME = "forageSdk"
     const val SDK_NAME = "forage-android-sdk"
 
