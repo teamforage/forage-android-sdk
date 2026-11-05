@@ -11,7 +11,7 @@ import java.net.URLEncoder
  * A Forage-hosted page that [createMoment][com.joinforage.forage.android.ecom.services.ForageSDK.createMoment]
  * opens for the customer to complete a task.
  */
-sealed class Moment {
+abstract class Moment internal constructor() {
     // where the moment's page lives and the params it goes in its URL
     internal abstract val name: String
     internal abstract val path: String
