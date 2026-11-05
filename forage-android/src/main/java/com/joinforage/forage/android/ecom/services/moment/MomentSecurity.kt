@@ -1,24 +1,20 @@
 package com.joinforage.forage.android.ecom.services.moment
 
 /**
- * The checks that keep anything other than the moment's own page from using the bridge.
- *
- * The page doesn't check where messages come from, so these are what protect the moment.
- * `allowedOriginRules` already keeps the bridge object out of other origins' frames, and these
- * checks back it up.
+ * Verifies the messages being received are from the known moment URL
  */
 internal object MomentSecurity {
     /**
-     * Whether to accept a message from the page. Only the moment's main frame on its own origin
-     * can talk to us, not the iframes it embeds (like the PIN field's vault iframe).
+     * Whether to accept a message from the page. Check isMainFrame to ensure we only get moment
+     * events and don't get events from other things embedded within the moment (like input-iframes).
      */
     fun shouldAcceptMessage(isMainFrame: Boolean, sourceOrigin: String, allowedOrigin: String): Boolean =
         isMainFrame && originOf(sourceOrigin) == allowedOrigin
 
     /**
-     * Whether to block a navigation. The page itself can't navigate away from the moment's
+     * Whether to allow a navigation. The page itself can't navigate away from the moment's
      * origin, so nothing else can receive the bridge. Iframes in the page can load what they need.
      */
-    fun shouldBlockNavigation(isForMainFrame: Boolean, url: String, allowedOrigin: String): Boolean =
-        isForMainFrame && originOf(url) != allowedOrigin
+    fun shouldAllowNavigation(isForMainFrame: Boolean, url: String, allowedOrigin: String): Boolean =
+        !isForMainFrame || originOf(url) == allowedOrigin
 }

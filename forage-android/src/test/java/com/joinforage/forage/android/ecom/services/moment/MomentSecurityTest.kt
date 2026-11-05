@@ -38,17 +38,17 @@ class MomentSecurityTest {
 
     @Test
     fun `lets the main frame navigate within the moment's origin`() {
-        assertFalse(MomentSecurity.shouldBlockNavigation(isForMainFrame = true, url = "$allowedOrigin/payment/collect-pin?paymentRef=other", allowedOrigin = allowedOrigin))
+        assertTrue(MomentSecurity.shouldAllowNavigation(isForMainFrame = true, url = "$allowedOrigin/payment/collect-pin?paymentRef=other", allowedOrigin = allowedOrigin))
     }
 
     @Test
     fun `blocks the main frame from leaving the moment's origin`() {
-        assertTrue(MomentSecurity.shouldBlockNavigation(isForMainFrame = true, url = "https://evil.example.com/", allowedOrigin = allowedOrigin))
-        assertTrue(MomentSecurity.shouldBlockNavigation(isForMainFrame = true, url = "javascript:alert(1)", allowedOrigin = allowedOrigin))
+        assertFalse(MomentSecurity.shouldAllowNavigation(isForMainFrame = true, url = "https://evil.example.com/", allowedOrigin = allowedOrigin))
+        assertFalse(MomentSecurity.shouldAllowNavigation(isForMainFrame = true, url = "javascript:alert(1)", allowedOrigin = allowedOrigin))
     }
 
     @Test
     fun `lets iframes load from other origins`() {
-        assertFalse(MomentSecurity.shouldBlockNavigation(isForMainFrame = false, url = "https://vault.example.com/pin", allowedOrigin = allowedOrigin))
+        assertTrue(MomentSecurity.shouldAllowNavigation(isForMainFrame = false, url = "https://vault.example.com/pin", allowedOrigin = allowedOrigin))
     }
 }

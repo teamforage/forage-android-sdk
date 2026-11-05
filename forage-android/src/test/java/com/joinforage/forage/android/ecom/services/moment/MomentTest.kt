@@ -6,7 +6,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class MomentProtocolTest {
+class MomentTest {
     private val moment = Moment.PaymentCollectPin(paymentRef = "abc 123")
 
     private fun configFor(env: String) = ForageConfig(merchantId = "mid123", sessionToken = "${env}_token")
@@ -73,18 +73,18 @@ class MomentProtocolTest {
 
     @Test
     fun `parses events from the page`() {
-        assertEquals(MomentEvent.Hello, parseMomentEvent("""{"type":"input_hello"}"""))
-        assertEquals(MomentEvent.Ready, parseMomentEvent("""{"type":"input_ready","usecase":"moment"}"""))
-        assertEquals(MomentEvent.Closed, parseMomentEvent("""{"type":"moment_closed"}"""))
-        assertEquals(MomentEvent.Succeeded, parseMomentEvent("""{"type":"submit_success"}"""))
+        assertEquals(MomentEvent.Hello, MomentEvent.parse("""{"type":"input_hello"}"""))
+        assertEquals(MomentEvent.Ready, MomentEvent.parse("""{"type":"input_ready","usecase":"moment"}"""))
+        assertEquals(MomentEvent.Closed, MomentEvent.parse("""{"type":"moment_closed"}"""))
+        assertEquals(MomentEvent.Success, MomentEvent.parse("""{"type":"submit_success"}"""))
         assertEquals(
-            MomentEvent.Succeeded,
-            parseMomentEvent("""{"type":"submit_success","payload":{"ref":"abc"}}""")
+            MomentEvent.Success,
+            MomentEvent.parse("""{"type":"submit_success","payload":{"ref":"abc"}}""")
         )
 
-        val failed = parseMomentEvent(
+        val failed = MomentEvent.parse(
             """{"type":"submit_failure","payload":{"code":"resource_not_found","httpStatusCode":404,"message":"nope"}}"""
-        ) as MomentEvent.Failed
+        ) as MomentEvent.Failure
         assertEquals("resource_not_found", failed.error.code)
         assertEquals(404, failed.error.httpStatusCode)
         assertEquals("nope", failed.error.message)
@@ -92,16 +92,22 @@ class MomentProtocolTest {
 
     @Test
     fun `treats a failure payload that isn't a ForageError as unknown_server_error`() {
-        val failed = parseMomentEvent("""{"type":"submit_failure","payload":"oops"}""") as MomentEvent.Failed
+        listOf(
+            """"oops"""",
+            """{"code":"resource_not_found","httpStatusCode":404}""",
+            """{"code":"resource_not_found","httpStatusCode":"404","message":"nope"}"""
+        ).forEach { payload ->
+            val failed = MomentEvent.parse("""{"type":"submit_failure","payload":$payload}""") as MomentEvent.Failure
 
-        assertEquals("unknown_server_error", failed.error.code)
-        assertEquals(500, failed.error.httpStatusCode)
+            assertEquals("unknown_server_error", failed.error.code, payload)
+            assertEquals(500, failed.error.httpStatusCode, payload)
+        }
     }
 
     @Test
     fun `ignores unknown and malformed messages`() {
-        assertNull(parseMomentEvent("""{"type":"something_new"}"""))
-        assertNull(parseMomentEvent("not json"))
+        assertNull(MomentEvent.parse("""{"type":"something_new"}"""))
+        assertNull(MomentEvent.parse("not json"))
     }
 
     @Test
