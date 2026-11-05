@@ -23,12 +23,12 @@ internal class MomentSession(
     var teardown: (() -> Unit)? = null
 
     private val handler = Handler(Looper.getMainLooper())
-    private val loadDeadline = Runnable { settle(MomentResult.Failed(momentLoadTimeoutError)) }
+    private val loadDeadline = Runnable { settle(MomentResult.Failed(MomentProtocol.LOAD_TIMEOUT_ERROR)) }
     private var settled = false
     private var isReady = false
 
     fun startLoadDeadline() {
-        handler.postDelayed(loadDeadline, MOMENT_LOAD_DEADLINE_MS)
+        handler.postDelayed(loadDeadline, MomentProtocol.LOAD_DEADLINE_MS)
     }
 
     /** The page sent `input_ready`. Only the first call does anything. */
@@ -48,8 +48,8 @@ internal class MomentSession(
         when (event) {
             MomentEvent.Hello -> reply(initMessage)
             MomentEvent.Ready -> ready()
-            MomentEvent.Succeeded -> settle(MomentResult.Completed)
-            is MomentEvent.Failed -> settle(MomentResult.Failed(event.error))
+            MomentEvent.Success -> settle(MomentResult.Completed)
+            is MomentEvent.Failure -> settle(MomentResult.Failed(event.error))
             MomentEvent.Closed -> settle(MomentResult.Dismissed)
         }
     }

@@ -82,8 +82,8 @@ class MomentSessionTest {
     fun `maps page events to results`() {
         val error = ForageError(404, "resource_not_found", "nope")
         val cases = listOf(
-            MomentEvent.Succeeded to MomentResult.Completed,
-            MomentEvent.Failed(error) to MomentResult.Failed(error),
+            MomentEvent.Success to MomentResult.Completed,
+            MomentEvent.Failure(error) to MomentResult.Failed(error),
             MomentEvent.Closed to MomentResult.Dismissed
         )
 
@@ -103,7 +103,7 @@ class MomentSessionTest {
         session.startLoadDeadline()
 
         session.handle(MomentEvent.Ready) {}
-        advanceBy(MOMENT_LOAD_DEADLINE_MS)
+        advanceBy(MomentProtocol.LOAD_DEADLINE_MS)
 
         assertTrue(results.isEmpty())
     }
@@ -127,7 +127,7 @@ class MomentSessionTest {
         val session = session()
         session.startLoadDeadline()
 
-        advanceBy(MOMENT_LOAD_DEADLINE_MS - 1)
+        advanceBy(MomentProtocol.LOAD_DEADLINE_MS - 1)
         assertTrue(results.isEmpty())
 
         advanceBy(1)
@@ -145,7 +145,7 @@ class MomentSessionTest {
 
         advanceBy(1_000)
         session.ready()
-        advanceBy(MOMENT_LOAD_DEADLINE_MS * 2)
+        advanceBy(MomentProtocol.LOAD_DEADLINE_MS * 2)
 
         assertTrue(results.isEmpty())
     }
@@ -221,7 +221,7 @@ class MomentSessionTest {
     fun `logs a failed moment as an error with its code`() {
         val session = session()
         session.startLoadDeadline()
-        advanceBy(MOMENT_LOAD_DEADLINE_MS)
+        advanceBy(MomentProtocol.LOAD_DEADLINE_MS)
 
         val outcome = metrics("moment_outcome").single()
         assertEquals("failure", outcome.attrs["event_outcome"])

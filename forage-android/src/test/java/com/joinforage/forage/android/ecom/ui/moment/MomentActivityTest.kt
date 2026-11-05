@@ -14,9 +14,9 @@ import androidx.webkit.WebViewCompat
 import com.joinforage.forage.android.core.logger.InMemoryLogger
 import com.joinforage.forage.android.core.services.ForageConfig
 import com.joinforage.forage.android.core.services.telemetry.LogAttributes
-import com.joinforage.forage.android.ecom.services.moment.MOMENT_BRIDGE_NAME
 import com.joinforage.forage.android.ecom.services.moment.MOMENT_TEST_SESSION_TOKEN
 import com.joinforage.forage.android.ecom.services.moment.MomentLocation
+import com.joinforage.forage.android.ecom.services.moment.MomentProtocol
 import com.joinforage.forage.android.ecom.services.moment.MomentResult
 import com.joinforage.forage.android.ecom.services.moment.MomentSession
 import com.joinforage.forage.android.ecom.services.moment.MomentSessions
@@ -89,7 +89,7 @@ class MomentActivityTest {
     private fun listener(): WebViewCompat.WebMessageListener {
         val captor = argumentCaptor<WebViewCompat.WebMessageListener>()
         webViewCompat.verify {
-            WebViewCompat.addWebMessageListener(any(), eq(MOMENT_BRIDGE_NAME), eq(setOf(ORIGIN)), captor.capture())
+            WebViewCompat.addWebMessageListener(any(), eq(MomentProtocol.BRIDGE_NAME), eq(setOf(ORIGIN)), captor.capture())
         }
         return captor.lastValue
     }
@@ -145,7 +145,7 @@ class MomentActivityTest {
 
         assertEquals(listOf<MomentResult>(MomentResult.Completed), results)
         assertTrue(activity.isFinishing)
-        webViewCompat.verify { WebViewCompat.removeWebMessageListener(any(), eq(MOMENT_BRIDGE_NAME)) }
+        webViewCompat.verify { WebViewCompat.removeWebMessageListener(any(), eq(MomentProtocol.BRIDGE_NAME)) }
     }
 
     @Test

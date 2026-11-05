@@ -24,12 +24,12 @@ import androidx.webkit.JavaScriptReplyProxy
 import androidx.webkit.WebMessageCompat
 import androidx.webkit.WebViewCompat
 import com.joinforage.forage.android.core.services.forageapi.network.error.ForageError
-import com.joinforage.forage.android.ecom.services.moment.MOMENT_BRIDGE_NAME
+import com.joinforage.forage.android.ecom.services.moment.MomentEvent
+import com.joinforage.forage.android.ecom.services.moment.MomentProtocol
 import com.joinforage.forage.android.ecom.services.moment.MomentResult
 import com.joinforage.forage.android.ecom.services.moment.MomentSecurity
 import com.joinforage.forage.android.ecom.services.moment.MomentSession
 import com.joinforage.forage.android.ecom.services.moment.MomentSessions
-import com.joinforage.forage.android.ecom.services.moment.parseMomentEvent
 
 /**
  * Shows a moment's page full screen in a WebView owned by the SDK. Declares `configChanges`
@@ -77,13 +77,13 @@ internal class MomentActivity : ComponentActivity() {
         // check each message, since only the top-level page may talk to us
         WebViewCompat.addWebMessageListener(
             webView,
-            MOMENT_BRIDGE_NAME,
+            MomentProtocol.BRIDGE_NAME,
             setOf(allowedOrigin)
         ) { _: WebView, message: WebMessageCompat, sourceOrigin: Uri, isMainFrame: Boolean, replyProxy: JavaScriptReplyProxy ->
             if (!MomentSecurity.shouldAcceptMessage(isMainFrame, sourceOrigin.toString(), allowedOrigin)) {
                 return@addWebMessageListener
             }
-            val event = message.data?.let { parseMomentEvent(it) } ?: return@addWebMessageListener
+            val event = message.data?.let { MomentEvent.parse(it) } ?: return@addWebMessageListener
             session.handle(event) { replyProxy.postMessage(it) }
         }
 
@@ -97,7 +97,7 @@ internal class MomentActivity : ComponentActivity() {
         )
 
         val teardown = {
-            WebViewCompat.removeWebMessageListener(webView, MOMENT_BRIDGE_NAME)
+            WebViewCompat.removeWebMessageListener(webView, MomentProtocol.BRIDGE_NAME)
             finish()
         }
         this.teardown = teardown
@@ -160,13 +160,13 @@ internal class MomentActivity : ComponentActivity() {
     ) : WebViewClient() {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
-            MomentSecurity.shouldBlockNavigation(request.isForMainFrame, request.url.toString(), allowedOrigin)
+            !MomentSecurity.shouldAllowNavigation(request.isForMainFrame, request.url.toString(), allowedOrigin)
 
         // before API 24 we can't tell the top-level page from iframes, so treat every
         // navigation as the top-level page. TODO(verify): the vault iframe loads on API 21-23
         @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean =
-            MomentSecurity.shouldBlockNavigation(isForMainFrame = true, url = url, allowedOrigin = allowedOrigin)
+            !MomentSecurity.shouldAllowNavigation(isForMainFrame = true, url = url, allowedOrigin = allowedOrigin)
 
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {

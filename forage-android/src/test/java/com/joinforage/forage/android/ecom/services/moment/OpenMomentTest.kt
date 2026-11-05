@@ -83,7 +83,7 @@ class OpenMomentTest {
         val call = async(start = CoroutineStart.UNDISPATCHED) { open() }
 
         val session = assertNotNull(MomentSessions.get(launched.single()))
-        session.handle(MomentEvent.Succeeded) {}
+        session.handle(MomentEvent.Success) {}
 
         assertEquals(MomentResult.Completed, call.await())
     }
