@@ -7,11 +7,7 @@ import com.joinforage.forage.android.core.services.telemetry.MetricOutcome
 import com.joinforage.forage.android.core.services.telemetry.UserAction
 
 /**
- * Logs one moment's lifecycle to Datadog. The iOS SDK sends the same `moment_ready` and
- * `moment_outcome` metrics with the same attributes, so one dashboard covers both: when it's called, when the page is ready, and how it
- * ended. Times are measured from when createMoment was called.
- *
- * Only logs the moment's name, never its params or the session token.
+ * Logs one moment's lifecycle to Datadog. Times are measured from when createMoment was called.
  *
  * @param logger `null` if a logger couldn't be created, in which case nothing is logged
  * @param clock The current time in milliseconds. Injected for tests.
@@ -66,8 +62,6 @@ internal class MomentTelemetry(
                 logger.m("[Moment] Outcome recorded", attrs.copy(metricOutcome = MetricOutcome.DISMISSED))
             }
             is MomentResult.Failed -> {
-                // the code and message tell failures apart, e.g. timeout_error for the load
-                // deadline and the WebView's render process going away
                 val error = result.error
                 logger.e("[Moment] Failed $summary: ${error.code} (${error.httpStatusCode}) ${error.message}")
                 logger.m(

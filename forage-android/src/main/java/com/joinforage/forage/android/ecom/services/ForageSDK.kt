@@ -440,8 +440,8 @@ class ForageSDK {
     }
 
     /**
-     * Opens a [Moment], a Forage-hosted page that completes one task with the customer (like
-     * entering their EBT Card PIN), full screen over [activity].
+     * Opens a [Moment], a Forage-hosted page for a customer to complete a task (like entering their
+     * EBT Card PIN). It renders as a full screen over [activity].
      *
      * Only one moment can be open at a time. Cancelling the calling coroutine closes the moment.
      * ```kotlin
@@ -469,7 +469,6 @@ class ForageSDK {
     suspend fun createMoment(activity: ComponentActivity, params: CreateMomentParams): MomentResult =
         createMoment(activity, params, makeMomentLogger(activity, params.forageConfig))
 
-    // tests pass their own logger, since the real one starts the process-wide Datadog SDK
     internal suspend fun createMoment(
         activity: ComponentActivity,
         params: CreateMomentParams,
@@ -483,7 +482,6 @@ class ForageSDK {
             activity.startActivity(MomentActivity.intent(activity, sessionId))
         }
 
-    // telemetry must never stop a moment from opening, e.g. if the session token can't be parsed
     private fun makeMomentLogger(activity: ComponentActivity, forageConfig: ForageConfig): LogLogger? =
         try {
             EcomDatadogLoggerFactory(activity.applicationContext, forageConfig, customerId = null).makeLogger()

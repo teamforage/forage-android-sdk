@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.webkit.CookieManager
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -44,8 +43,6 @@ internal class MomentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // no session means the app process was killed and restarted. the createMoment call
-        // is gone too, so there's nothing to show
         val session = MomentSessions.get(intent.getStringExtra(EXTRA_SESSION_ID))
         if (session == null) {
             finish()
@@ -66,15 +63,12 @@ internal class MomentActivity : ComponentActivity() {
             allowFileAccess = false
             allowContentAccess = false
         }
-        // TODO(verify): the PIN field is a cross-origin vault iframe, which may need
-        // third-party cookies. WebView blocks them by default
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
         webView.webViewClient = MomentWebViewClient(allowedOrigin) {
             session.settle(MomentResult.Failed(renderProcessGoneError))
         }
 
-        // the bridge object is only injected into frames from the moment's origin. we also
-        // check each message, since only the top-level page may talk to us
+        // this is what actually sets up the listener for messages from the displayed page. we only
+        // add this listener for known moment URLs and only accept messagse from the top-level page
         WebViewCompat.addWebMessageListener(
             webView,
             MomentProtocol.BRIDGE_NAME,
@@ -163,7 +157,9 @@ internal class MomentActivity : ComponentActivity() {
             !MomentSecurity.shouldAllowNavigation(request.isForMainFrame, request.url.toString(), allowedOrigin)
 
         // before API 24 we can't tell the top-level page from iframes, so treat every
-        // navigation as the top-level page. TODO(verify): the vault iframe loads on API 21-23
+        // navigation as the top-level page. `shouldOverrideUrlLoading` is deprecated, but we still
+        // want this behavior on older devices, so by overriding it Kotlin wants us to mark our
+        // function as deprecated too.
         @Deprecated("Deprecated in Java")
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean =
             !MomentSecurity.shouldAllowNavigation(isForMainFrame = true, url = url, allowedOrigin = allowedOrigin)

@@ -7,7 +7,7 @@ import java.util.UUID
 /**
  * One open moment. Connects the suspended `createMoment` call to the
  * [MomentActivity][com.joinforage.forage.android.ecom.ui.moment.MomentActivity] showing it,
- * and makes sure it settles exactly once.
+ * and makes sure it settles.
  *
  * Everything here runs on the main thread.
  */
@@ -19,7 +19,6 @@ internal class MomentSession(
 ) {
     val id: String = UUID.randomUUID().toString()
 
-    /** Set by the activity while it's showing this moment, so settling can close it */
     var teardown: (() -> Unit)? = null
 
     private val handler = Handler(Looper.getMainLooper())
@@ -31,7 +30,6 @@ internal class MomentSession(
         handler.postDelayed(loadDeadline, MomentProtocol.LOAD_DEADLINE_MS)
     }
 
-    /** The page sent `input_ready`. Only the first call does anything. */
     fun ready() {
         if (settled || isReady) return
         isReady = true
@@ -54,12 +52,11 @@ internal class MomentSession(
         }
     }
 
-    /** The customer pressed Back. */
+    /** The customer triggered the native Android Back behavior on their device. */
     fun back() {
         settle(MomentResult.Dismissed)
     }
 
-    /** Tears the moment down, then delivers the result. Only the first call does anything. */
     fun settle(result: MomentResult) {
         if (settled) return
         settled = true

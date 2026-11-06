@@ -12,12 +12,13 @@ import kotlin.coroutines.resume
 
 /**
  * Everything [createMoment][com.joinforage.forage.android.ecom.services.ForageSDK.createMoment]
- * does, apart from the parts that need a real device, so tests can run it.
+ * does other than the parts that need a real device. Standalone for testing.
  *
  * @param isSupported Whether this device's WebView supports moments. Only checked once the
  * params are valid.
- * @param launch Shows the moment with the given session ID, i.e. starts the
- * [MomentActivity][com.joinforage.forage.android.ecom.ui.moment.MomentActivity].
+ * @param launch Starts the
+ * [MomentActivity][com.joinforage.forage.android.ecom.ui.moment.MomentActivity] with the given
+ * session ID.
  */
 internal suspend fun openMoment(
     params: CreateMomentParams,
@@ -29,7 +30,6 @@ internal suspend fun openMoment(
     val (forageConfig, moment) = params
     telemetry.called()
 
-    // failures before the moment opens are logged here, and the session logs the rest
     fun failBeforeOpening(error: ForageError) =
         MomentResult.Failed(error).also { telemetry.settled(it, reachedReady = false) }
 
@@ -38,8 +38,8 @@ internal suspend fun openMoment(
             ForageError(400, "user_error", "Invalid moment params provided for ${moment.name}")
         )
     }
-    // the bridge relies on addWebMessageListener, which can restrict which origins and
-    // frames reach it. older WebViews don't have it, and there's no safe fallback
+    // Sending and receiving messages needs `addWebMessageListener`. Older versions of WebView
+    // don't have it and there isn't really a safe fallback we can use.
     if (!isSupported()) {
         return failBeforeOpening(
             ForageError(500, "unknown_server_error", "This device's WebView doesn't support moments")
