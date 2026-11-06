@@ -41,4 +41,8 @@
     <string name="payment_detail">detail: %1$s</string>
     <string name="authorization_amount_hint">Authorization amount</string>
     <string name="capture_amount_hint">Capture amount</string>
+    <string name="moment_payment_ref">Payment ref</string>
+    <string name="moment_base_url">Moment base URL override (blank uses the token\'s env)</string>
+    <string name="moment_base_url_default">http://10.0.2.2:3000</string>
+    <string name="open_payment_collect_pin_moment">Open payment_collect_pin moment</string>
 </resources>
