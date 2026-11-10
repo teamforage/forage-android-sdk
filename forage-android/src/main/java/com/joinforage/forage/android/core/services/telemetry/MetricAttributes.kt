@@ -5,7 +5,9 @@ internal data class MetricAttributes(
     val httpStatus: Int? = null,
     val responseTimeMs: Double? = null,
     val metricOutcome: MetricOutcome? = null,
-    val forageErrorCode: String? = null
+    val forageErrorCode: String? = null,
+    val momentName: String? = null,
+    val momentReachedReady: Boolean? = null
 ) : ILoggableAttributes {
     val eventType = LogType.METRIC
 
@@ -15,15 +17,19 @@ internal data class MetricAttributes(
         EVENT_NAME("event_name"),
         EVENT_OUTCOME("event_outcome"),
         FORAGE_ERROR_CODE("forage_error_code"),
+        MOMENT_NAME("moment_name"),
+        MOMENT_REACHED_READY("moment_reached_ready"),
         LOG_TYPE("log_type");
     }
 
     override fun toMap(): Map<String, String> = mapOf(
-        AttributeKey.HTTP_STATUS.key to httpStatus.toString(),
-        AttributeKey.RESPONSE_TIME_MS.key to responseTimeMs.toString(),
+        AttributeKey.HTTP_STATUS.key to httpStatus?.toString(),
+        AttributeKey.RESPONSE_TIME_MS.key to responseTimeMs?.toString(),
         AttributeKey.EVENT_NAME.key to metricName.value,
         AttributeKey.EVENT_OUTCOME.key to metricOutcome?.value,
         AttributeKey.FORAGE_ERROR_CODE.key to forageErrorCode,
+        AttributeKey.MOMENT_NAME.key to momentName,
+        AttributeKey.MOMENT_REACHED_READY.key to momentReachedReady?.toString(),
         AttributeKey.LOG_TYPE.key to eventType.value
     ).filterValues { it != null }
         .mapValues { it.value!! }

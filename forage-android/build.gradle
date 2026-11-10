@@ -125,6 +125,7 @@ shadowAarDependencies {
 dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
+    implementation libs.androidx.webkit
     implementation libs.material
     implementation libs.kotlinx.coroutines.android
     implementation "javax.ws.rs:javax.ws.rs-api:2.1@jar"
