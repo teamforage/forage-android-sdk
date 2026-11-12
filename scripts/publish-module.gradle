@@ -1,19 +1,29 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    if (project.plugins.findPlugin("com.android.library")) {
-        // source code for forage-android
-        from android.sourceSets.main.java.srcDirs
-    } else {
-        // source code for sample-app
+def isAndroidLibrary = project.plugins.findPlugin("com.android.library") != null
+
+if (isAndroidLibrary) {
+    // AGP builds the sources jar (releaseSourcesJar) and attaches it to
+    // components.release. Don't register our own Jar task as well: both
+    // write build/libs/<name>-<version>-sources.jar, which makes Gradle fail
+    // generateMetadataFileForReleasePublication with an implicit-dependency error.
+    android {
+        publishing {
+            singleVariant("release") {
+                withSourcesJar()
+            }
+        }
+    }
+} else {
+    task androidSourcesJar(type: Jar) {
+        archiveClassifier.set('sources')
         from sourceSets.main.java.srcDirs
     }
-}
 
-artifacts {
-    archives androidSourcesJar
+    artifacts {
+        archives androidSourcesJar
+    }
 }
 
 group = PUBLISH_GROUP_ID
@@ -35,17 +45,16 @@ afterEvaluate {
                 // around for themselves.
 
                 // this code block exposes primary artifact (the executable)
-                if (project.plugins.findPlugin("com.android.library")) {
-                    // executable for forage-android
+                if (isAndroidLibrary) {
+                    // executable + sources jar for forage-android
+                    // (sources come from withSourcesJar() above)
                     from components.release
                 } else {
                     // executable for sample-app
                     artifact("$buildDir/libs/${project.getName()}-${version}.jar")
+                    // source code, created above by `task androidSourcesJar(type: Jar)`
+                    artifact androidSourcesJar
                 }
-
-                // this code block exposes the source code (human readable)
-                // it is created above by `task androidSourcesJar(type: Jar)`
-                artifact androidSourcesJar
 
                 // Mostly self-explanatory metadata
                 pom {
